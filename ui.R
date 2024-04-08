@@ -1,0 +1,137 @@
+page_navbar(
+  fillable = FALSE, # stops full page rendering in tiny screens
+  window_title = "ScotPHO profiles",
+  id = "nav", # id required for profile buttons
+  collapsible = TRUE, # collapse tabs on smaller screens
+  lang = "en",
+  bg = phs_colours(colourname = "phs-purple"), # backgroung navbar colour
+  #heme = phs_theme, # dashboard theme - defined in global script
+  tags$head(
+    # required for spinecharts
+    tags$script(src = "https://code.highcharts.com/highcharts.js"),
+    # required for homepage styling
+    includeCSS("www/styles.css")), # required to specify formatting (particularly of landing page)
+
+  useShinyjs(), # something to do with geography filters  
+  
+  # homepage ---------------------------------------------------------------------
+  nav_panel(value = "Home",
+            title = "Home",
+            htmlTemplate("landing-page.html", # sits in separate script
+                         
+                         # button to navigate to about scotpho tab
+                         about_scotpho_button = actionButton("test", 
+                                                             label = "About us", 
+                                                             icon = icon("circle-info"), 
+                                                             class = "hero-button"
+                         ),
+                         
+                         # button to navigate to indicator definitions tab
+                         explore_indicators_button = actionButton("test_2", 
+                                                                  label = "Explore indicators", 
+                                                                  icon = icon("magnifying-glass"), 
+                                                                  class = "hero-button"
+                         ),
+                         # buttons to navigate to profile tabs
+                         profile_buttons = tagList(
+                           layout_column_wrap(
+                             profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", profile_icon = "line-chart"),   
+                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", profile_icon = "line-chart")
+                           ),
+                           layout_column_wrap(
+                             profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco", profile_icon = "line-chart")
+                           )
+                         )
+            )
+  ),
+  # drop-down menu containing profile tabs
+  navbarMenu(
+    title = "Change profile",
+    
+    # Health and wellbeing
+    nav_panel(value = "HWB", 
+              title = "Health & Wellbeing", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+    
+    # Children and young people 
+    nav_panel(value = "CYP", 
+              title = "Children & Young people", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+    
+    # care and wellbeing 
+    nav_panel(value = "CWB", 
+              title = "Care & Wellbeing", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+    
+    # alcohol
+    nav_panel(value = "ALC", 
+              title = "Alcohol", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+    
+    # drugs
+    nav_panel(value = "DRG", 
+              title = "Drugs", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+    
+    # mental health
+    nav_panel(value = "MEN", 
+              title= "Mental Health", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+              
+    # population
+    # mental health
+    nav_panel(value = "POP", 
+              "Population", 
+              navset_tab(
+                nav_panel(title = "Summary"),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities")))
+    ), #close nav menu
+
+  nav_spacer(),
+  
+  # data tab -------------------------------------------------------------------
+  nav_panel("Download data"),
+  
+  # source code link -------------------------------------------------------------------
+  nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/rstudio/shiny", target = "_blank")),
+  
+  # other tabs -----------------------------------------------------------------
+  nav_menu(
+    title = "More information",
+    nav_panel(title = "About ScotPHO"),
+    nav_panel(title = "Indicator definitions")
+  )
+)
+
+### END

@@ -1,0 +1,196 @@
+
+
+
+/* a grey container to place dashboard items in*/ 
+.grey-container{
+  background-color:#F7F7F7
+}
+ 
+
+ /* responsive layout for items placed in container - for larger screens*/
+.container-inner-contents{
+  display: flex;
+  flex-direction: row;
+  padding-left:10px;
+  padding-right:10px;
+}  
+
+ /* responsive layout for items placed in container - for for smaller screens*/
+@media (max-width: 800px) {
+.container-inner-contents {
+    flex-direction: column;
+}
+}
+
+
+
+
+/* HOMEPAGE STYLING ---------------------*/ 
+
+/* section 1: the hero at top of homepage*/ 
+
+.hero{
+  /* Using "linear-gradient" to add gradient to the image. This will make the text easier to read */
+  background-image: linear-gradient(to bottom right, #0078d4, rgba(0, 0, 0, 0)), url("logo_scotpho_updated.png");
+
+ /* Set a specific height/add padding */
+  height: 50%;
+  display: flex;
+  padding-left:45px;
+  padding-right:45px;
+  padding-top:20px;
+  padding-bottom:35px;
+
+  /* Position and center the image to scale nicely on all screens */
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+
+/* formatting the header within the hero*/
+.hero h1{
+  font-size: 36px;
+  font-weight: 700;
+  color:white;
+  }
+  
+  
+/* formatting the tagline within the hero*/
+.hero h2{
+ font-size: 18px;
+    color: white;
+    margin-top: 5px;
+    margin-bottom: 15px;
+  }
+
+
+
+
+/* Adding orange border to buttons when 'focused' on for accessibility reasons*/
+.hero-button:focus {
+  outline: 3px solid orange;}
+  
+
+/* section 2: boxes on homepage linking to different tabs*/ 
+
+
+/* Homepage - styling clickable buttons to take to new tab*/
+.featured-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    box-shadow: rgb(27 31 35 / 10%) 0 1px 0;
+    flex:1; /* ensures that the boxes are evenly spaced in the container*/
+    margin:5px;
+    color:black;
+    }
+    
+/* Homepage - styling clickable buttons to take to new tab - change backaground color to lght grey on hover*/    
+ .featured-item:hover{
+   cursor: pointer;
+   background-color: #e0e0e0;
+   
+
+}   
+
+
+
+/* Tab buttons - centre position all the text  */     
+.features-text-section {
+    text-align: center!important;
+    padding: 1rem;
+}
+
+
+
+
+/* Format icons on homepage*/ 
+.icon-box {
+    height: 75px;
+    width: 75px;
+    border-radius: 50%;
+    margin: 15px auto 35px auto;
+    margin-bottom:10px;
+    background: #a6a6a6;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #def4ff;
+    color: #3f3685;
+
+}
+
+
+/* section 3: what's new/ indicator updates boxes*/ 
+
+
+/* make small cards in middle container white with even space between them in the container */
+.white-box{
+  background-color:white;
+  padding:10px;
+  margin:10px;
+  flex: 1;
+} 
+
+
+
+/* Section 4: Additional links ------------------*/ 
+
+/* Footer container for bottom of homepage*/ 
+.phs-purple-container{
+  background-color:#3f3685; /* Make PHS purple to match PHS website footer*/
+}
+
+
+
+/* Add left border to groups of links on smaller screens to make easier to read */ 
+@media (max-width: 800px) {
+  .links-item > a {
+   border-left-style:solid;
+   padding-left:10px;
+  }
+}
+
+.links-item > a{
+  color:#d2cfeb;
+  font-size:16px;
+  text-decoration: none;
+}
+
+.bottom-links > a{
+  color: #d2cfeb;
+  font-size:16px;
+}
+
+
+
+/* Displays links in footer from top to bottom */ 
+.links-item{
+  display:flex;
+  margin:10px;
+  flex-direction:column;
+  flex:1;
+  color: #d2cfeb; /* Changes links 'groups' headers colorn to light purple*/ 
+}
+
+
+
+/* Styling bottom section of footer (i.e. links to stay in contact, newsletter sign up etc.*/
+.bottom-links {
+  display:flex;
+  flex-direction:row;
+  column-gap:20px;
+  padding:15px;
+}
+
+
+
+
+
