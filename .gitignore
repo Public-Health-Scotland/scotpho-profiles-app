@@ -1,0 +1,34 @@
+# they include API keys
+cookie-control.js
+deploying_app.R
+deploy.R
+
+tempPlot.png
+
+#Not needed
+rsconnect
+.Rproj.user
+.Rhistory
+.Ruserdata
+*.Rproj
+testing.R
+
+
+
+# 'data' folder #
+data/
+archive/
+
+# Common text files that may contain data #
+*.[cC][sS][vV]
+*.[tT][xX][tT]
+
+# Excel files #
+*.[xX][lL][sS][xXmMtT]?
+
+
+
+# R data files #
+*.[rR][dD][aA][tT][aA]
+*.[rR][dD][sS]
+*.[rR][dD][aA]
