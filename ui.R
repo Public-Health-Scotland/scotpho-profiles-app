@@ -1,23 +1,30 @@
+###############################################
+#
+# App main ui script
+#
+##############################################
+
+
 page_navbar(
-  fillable = FALSE, # stops full page rendering in tiny screens
+  fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
-  id = "nav", # id required for profile buttons
+  id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
   collapsible = TRUE, # collapse tabs on smaller screens
   lang = "en",
-  bg = phs_colours(colourname = "phs-purple"), # backgroung navbar colour
-  #heme = phs_theme, # dashboard theme - defined in global script
+  bg = phs_colours(colourname = "phs-purple"), # background navbar colour
+  #theme = phs_theme, # dashboard theme - defined in global script
   tags$head(
     # required for spinecharts
     tags$script(src = "https://code.highcharts.com/highcharts.js"),
     # required for homepage styling
     includeCSS("www/styles.css")), # required to specify formatting (particularly of landing page)
 
-  useShinyjs(), # something to do with geography filters  
+  useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package  
   
   # homepage ---------------------------------------------------------------------
   nav_panel(value = "Home",
             title = "Home",
-            htmlTemplate("landing-page.html", # sits in separate script
+            htmlTemplate("landing-page.html", # sits in separate file in app folder
                          
                          # button to navigate to about scotpho tab
                          about_scotpho_button = actionButton("test", 
@@ -124,14 +131,14 @@ page_navbar(
   nav_panel("Download data"),
   
   # source code link -------------------------------------------------------------------
-  nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/rstudio/shiny", target = "_blank")),
+  nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-tool/tree/master/shiny_app", target = "_blank")),
   
   # other tabs -----------------------------------------------------------------
   nav_menu(
     title = "More information",
     nav_panel(title = "About ScotPHO"),
-    nav_panel(title = "Indicator definitions")
-  )
-)
+    nav_panel(title = "Indicator definitions"))
+
+) #close main server function
 
 ### END
