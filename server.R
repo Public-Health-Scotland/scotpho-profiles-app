@@ -30,6 +30,25 @@ function(input, output, session) {
   profile_homepage_btn_modSERVER("drg_nav", nav_id = "DRG", parent_session = session)
   
   
+  # reactive values to store geography selections
+  selected_areatype <- reactiveVal()
+  selected_areaname <- reactiveVal()
+  
+  
+  # logic controlling the header at the top of each tab which contains details on the profile selected
+  # and as dynamic text displaying the areatype and areaname selected
+  # as well as an action link which when clicked on displays the areatype and areaname filters
+  tab_header_mod_server("hwb_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("cyp_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("cwb_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("alc_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("men_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("pop_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("tob_header", selected_areatype, selected_areaname)
+  tab_header_mod_server("drg_header", selected_areatype, selected_areaname)
+  
+  
+  
   
 } # close main server function
 
