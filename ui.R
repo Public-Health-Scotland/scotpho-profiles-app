@@ -63,6 +63,7 @@ page_navbar(
     # Health and wellbeing
     nav_panel(value = "HWB", 
               title = "Health & Wellbeing", 
+              tab_header_mod_ui("hwb_header", profile_name = "Health and Wellbeing"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
@@ -72,6 +73,7 @@ page_navbar(
     # Children and young people 
     nav_panel(value = "CYP", 
               title = "Children & Young people", 
+              tab_header_mod_ui("cyp_header", profile_name = "Children and Young People"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
@@ -81,6 +83,7 @@ page_navbar(
     # care and wellbeing 
     nav_panel(value = "CWB", 
               title = "Care & Wellbeing", 
+              tab_header_mod_ui("cwb_header", profile_name = "Care and Wellbeing"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
@@ -90,6 +93,7 @@ page_navbar(
     # alcohol
     nav_panel(value = "ALC", 
               title = "Alcohol", 
+              tab_header_mod_ui("alc_header", profile_name = "Alcohol"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
@@ -99,6 +103,7 @@ page_navbar(
     # drugs
     nav_panel(value = "DRG", 
               title = "Drugs", 
+              tab_header_mod_ui("drg_header", profile_name = "Drugs"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
@@ -108,6 +113,7 @@ page_navbar(
     # mental health
     nav_panel(value = "MEN", 
               title= "Mental Health", 
+              tab_header_mod_ui("men_header", profile_name = "Mental Health"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
@@ -118,6 +124,7 @@ page_navbar(
     # mental health
     nav_panel(value = "POP", 
               "Population", 
+              tab_header_mod_ui("pop_header", profile_name = "Population"),
               navset_tab(
                 nav_panel(title = "Summary"),
                 nav_panel(title = "Trends"),
