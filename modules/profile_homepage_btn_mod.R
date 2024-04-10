@@ -6,7 +6,7 @@
 #
 # Used to create buttons (which are technically bslib cards) on the profiles tool homepage
 # which, when clicked, allow users to navigate to a particular profile
-# The buttons will take 'profile name' and an icon which are supplied in main server script.
+# The buttons will take 'profile name' and an icon which are supplied in main ui script.
 # The location/set of the tab the button will take you to is linked to sections of code in the main ui script 
 # Consistent naming of id and nav_id are essential for linking up buttons to tabs within the app
 ###############################################################################.
