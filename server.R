@@ -30,6 +30,17 @@ function(input, output, session) {
   profile_homepage_btn_modSERVER("drg_nav", nav_id = "DRG", parent_session = session)
   
   
+  # logic controlling opening of About ScotPHO and Explore Indicators pages
+  # from landing page 
+  observeEvent(input$test, {
+    nav_select(id="nav",
+               selected = "About ScotPHO")})
+  observeEvent(input$test_2, {
+    nav_select(id="nav",
+               selected = "Indicator definitions")})
+  
+  
+  
   # reactive values to store geography selections
   selected_areatype <- reactiveVal()
   selected_areaname <- reactiveVal()
