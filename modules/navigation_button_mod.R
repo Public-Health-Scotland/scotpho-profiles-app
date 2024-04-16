@@ -12,7 +12,7 @@
 #module UI function -
 #name is mandatory but icon is optional
 
-button_modUI <- function(button_id, button_name, button_icon=NULL){
+navigation_button_modUI <- function(button_id, button_name, button_icon=NULL){
   ns <- shiny::NS(button_id)
   tagList(
     # custom js function to close the nav menu in the nav bar 1000 millisecs after button is clicked
@@ -26,7 +26,7 @@ button_modUI <- function(button_id, button_name, button_icon=NULL){
 
 #module server function - 
 
-button_modSERVER <- function(id, nav_id, parent_session) {
+navigation_button_modSERVER <- function(id, nav_id, parent_session) {
   shiny::moduleServer(id, function(input, output, session) {
     
     shiny::observeEvent(input$button_nav, {
@@ -55,7 +55,7 @@ button_modSERVER <- function(id, nav_id, parent_session) {
 #                   nav_panel(title = "tab 1",
 #                             value = "t1",
 #                             p("Tab number 1"),
-#                             button_modUI(button_id="go_to_tab2",
+#                             navigation_button_modUI(button_id="go_to_tab2",
 #                                          button_name="Tab 2",
 #                                          button_icon = icon("otter"))),
 #                   nav_panel(title = "tab 2",
@@ -65,10 +65,10 @@ button_modSERVER <- function(id, nav_id, parent_session) {
 # 
 # 
 # server <- function(input, output, session) {
-#   button_modSERVER(id = "go_to_tab2", nav_id="t2", parent_session=session)
+#   navigation_button_modSERVER(id = "go_to_tab2", nav_id="t2", parent_session=session)
 # 
 # }
 # 
 # shinyApp(ui, server)
 # 
-# 
+
