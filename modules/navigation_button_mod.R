@@ -1,5 +1,5 @@
 ###############################################################################.
-# MODULE: button_mod ---- 
+# MODULE: navigation_button_mod ---- 
 #
 # Used to create buttons throughout the app which, when clicked, allow users to 
 # navigate to another page in the tool
