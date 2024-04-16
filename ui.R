@@ -25,20 +25,14 @@ page_navbar(
   nav_panel(value = "Home",
             title = "Home",
             htmlTemplate("landing-page.html", # sits in separate file in app folder
+                         # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
                          
-                         # button to navigate to about scotpho tab
-                         about_scotpho_button = actionButton("test", 
-                                                             label = "About us", 
-                                                             icon = icon("circle-info"), 
-                                                             class = "hero-button"
+                         additional_info_buttons = layout_columns(button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info")),
+                                                                      button_modUI(button_id = "about_profiles",button_name = "About the profiles", button_icon = icon("circle-info")),
+                                                                      button_modUI(button_id="explore_indicators", button_name = "Explore indicators", button_icon = icon("magnifying-glass"))
                          ),
-                         
-                         # button to navigate to indicator definitions tab
-                         explore_indicators_button = actionButton("test_2", 
-                                                                  label = "Explore indicators", 
-                                                                  icon = icon("magnifying-glass"), 
-                                                                  class = "hero-button"
-                         ),
+                        
+                                                                  
                          # buttons to navigate to profile tabs
                          profile_buttons = tagList(
                            layout_column_wrap(
@@ -144,7 +138,8 @@ page_navbar(
   nav_menu(
     title = "More information",
     nav_panel(title = "About ScotPHO"),
-    nav_panel(title = "Indicator definitions"))
+    nav_panel(title = "About Profiles"),
+    nav_panel(title = "Indicator Definitions"))
 
 ) #close main server function
 

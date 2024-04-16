@@ -32,13 +32,9 @@ function(input, output, session) {
   
   # logic controlling opening of About ScotPHO and Explore Indicators pages
   # from landing page 
-  observeEvent(input$test, {
-    nav_select(id="nav",
-               selected = "About ScotPHO")})
-  observeEvent(input$test_2, {
-    nav_select(id="nav",
-               selected = "Indicator definitions")})
-  
+  button_modSERVER("about_us", nav_id="About ScotPHO", parent_session = session)
+  button_modSERVER("about_profiles", nav_id="About Profiles", parent_session = session)
+  button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
   
   
   # reactive values to store geography selections
