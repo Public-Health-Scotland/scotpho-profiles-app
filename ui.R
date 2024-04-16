@@ -65,7 +65,7 @@ page_navbar(
               title = "Health & Wellbeing", 
               tab_header_mod_ui("hwb_header", profile_name = "Health and Wellbeing"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -75,7 +75,7 @@ page_navbar(
               title = "Children & Young people", 
               tab_header_mod_ui("cyp_header", profile_name = "Children and Young People"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("cyp_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -85,7 +85,7 @@ page_navbar(
               title = "Care & Wellbeing", 
               tab_header_mod_ui("cwb_header", profile_name = "Care and Wellbeing"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -95,7 +95,7 @@ page_navbar(
               title = "Alcohol", 
               tab_header_mod_ui("alc_header", profile_name = "Alcohol"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("alc_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -105,7 +105,7 @@ page_navbar(
               title = "Drugs", 
               tab_header_mod_ui("drg_header", profile_name = "Drugs"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("drg_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -115,7 +115,7 @@ page_navbar(
               title= "Mental Health", 
               tab_header_mod_ui("men_header", profile_name = "Mental Health"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("men_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -126,7 +126,7 @@ page_navbar(
               "Population", 
               tab_header_mod_ui("pop_header", profile_name = "Population"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("pop_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities")))
