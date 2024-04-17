@@ -30,6 +30,13 @@ function(input, output, session) {
   profile_homepage_btn_modSERVER("drg_nav", nav_id = "DRG", parent_session = session)
   
   
+  # logic controlling opening of About ScotPHO and Explore Indicators pages
+  # from landing page 
+  navigation_button_modSERVER("about_us", nav_id="About ScotPHO", parent_session = session)
+  navigation_button_modSERVER("about_profiles", nav_id="About Profiles", parent_session = session)
+  navigation_button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
+  
+  
   # reactive values to store geography selections
   selected_areatype <- reactiveVal()
   selected_areaname <- reactiveVal()
