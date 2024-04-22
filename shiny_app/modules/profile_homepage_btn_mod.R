@@ -1,6 +1,3 @@
-
-###to do - need a fix to close the nav menu when navigates to a profile tab - monica
-
 ###############################################################################.
 # MODULE: profile_homepage_btn_mod ---- 
 #
