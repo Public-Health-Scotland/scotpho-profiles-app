@@ -31,7 +31,13 @@ function(input, output, session) {
   profile_homepage_btn_modSERVER("tob_nav", nav_id = "TOB", parent_session = session)
   profile_homepage_btn_modSERVER("drg_nav", nav_id = "DRG", parent_session = session)
 
-
+  
+  # logic controlling opening of About ScotPHO and Explore Indicators pages
+  # from landing page 
+  navigation_button_modSERVER("about_us", nav_id="about", parent_session = session)
+  navigation_button_modSERVER("about_profiles", nav_id="profiles", parent_session = session)
+  navigation_button_modSERVER("explore_indicators", nav_id="definitions", parent_session = session)
+  
   
   
   # data filtered by profile (input$nav stores info on the tab the user is on)

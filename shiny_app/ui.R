@@ -13,7 +13,7 @@ page_navbar(
   lang = "en",
   useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package 
   # display a header with info on selected profile/geography + geography filters (only when not on homepage)
-  header = conditionalPanel(condition = "input.nav !== 'Home'", tab_header_mod_ui(id = "main_header")), 
+  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'profiles' && input.nav !== 'definitions' && input.nav !== 'about'", tab_header_mod_ui(id = "main_header")), 
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
   theme = phs_theme, # dashboard theme - defined in global script
   tags$head(
@@ -27,18 +27,10 @@ page_navbar(
             title = "Home",
             htmlTemplate("landing-page.html", # sits in separate file in app folder
                          
-                         # button to navigate to about scotpho tab
-                         about_scotpho_button = actionButton("test", 
-                                                             label = "About us", 
-                                                             icon = icon("circle-info"), 
-                                                             class = "hero-button"
-                         ),
-                         
-                         # button to navigate to indicator definitions tab
-                         explore_indicators_button = actionButton("test_2", 
-                                                                  label = "Explore indicators", 
-                                                                  icon = icon("magnifying-glass"), 
-                                                                  class = "hero-button"
+                         # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
+                         additional_info_buttons = layout_columns(navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info")),
+                                                                  navigation_button_modUI(button_id = "about_profiles",button_name = "About the profiles", button_icon = icon("circle-info")),
+                                                                  navigation_button_modUI(button_id="explore_indicators", button_name = "Explore indicators", button_icon = icon("magnifying-glass"))
                          ),
                          # buttons to navigate to profile tabs
                          profile_buttons = tagList(
@@ -137,8 +129,10 @@ page_navbar(
   # other tabs -----------------------------------------------------------------
   nav_menu(
     title = "More information",
-    nav_panel(title = "About ScotPHO"),
-    nav_panel(title = "Indicator definitions"))
+    nav_panel(title = "About ScotPHO", value = "about"),
+    nav_panel(title = "About Profiles", value = "profiles"),
+    nav_panel(title = "Indicator definitions", value = "definitions")
+    )
   
 ) #close main ui
 

@@ -20,10 +20,12 @@ summary_table_ui <- function(id) {
   tagList(
     bslib::card(
       card_header(
-        div(style = "text-align: right;",
-          actionLink(ns("help"), label = "Help"), 
-                  downloadButton(ns("download_summary_pdf"), "Download PDF report")#,
-                  #download_data_btns_ui(ns("download_summary_data"))
+            layout_columns(
+              col_widths = c(5, 2, 3, 2),
+              NULL,
+          actionButton(ns("help"), label = "Help"), 
+          downloadButton(ns("download_summary_pdf"), "Download PDF report"),
+          download_data_btns_ui(ns("download_summary_data"))
                   )
         
         )
@@ -154,6 +156,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                 defaultExpanded = T,
                 sortable = F,
                 highlight = TRUE,
+                theme = reactableTheme(
+                  headerStyle = list(backgroundColor = "#ECECEC")
+                ),
                 columns = list(
                   
                   # domain column 

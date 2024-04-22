@@ -14,6 +14,10 @@
 # when using this function, need to choose profile name and icon 
 profile_homepage_btn_modUI <- function(id, profile_name, profile_icon) {
   ns <- NS(id)
+  tagList(
+    # custom js function to close the nav menu in the nav bar 1000 millisecs after button is clicked
+    shinyjs::extendShinyjs(text = " shinyjs.closeNavMenu = function() {
+        setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
   bslib::card(
     full_screen = FALSE,
     bslib::card_body(
@@ -22,7 +26,9 @@ profile_homepage_btn_modUI <- function(id, profile_name, profile_icon) {
                    div(class = "d-flex flex-column align-items-center", 
                        div(class = "icon-box",icon(profile_icon, class = "fa-3x")),
                        h3(profile_name),
-                       icon("chevron-right", class = "fa-1x")))))}
+                       icon("chevron-right", class = "fa-1x")))))
+  )
+  }
 
 
 # module server function
@@ -32,7 +38,10 @@ profile_homepage_btn_modSERVER <- function(id, nav_id, parent_session) {
     observeEvent(input$profile_nav, {
       bslib::nav_select(id = "nav", 
                         selected = nav_id, 
-                        session = parent_session)})
+                        session = parent_session)
+      
+      shinyjs::js$closeNavMenu()
+      })
   }) #close moduleServer
 } # close server
 
@@ -42,7 +51,9 @@ profile_homepage_btn_modSERVER <- function(id, nav_id, parent_session) {
 ##############################################################################
 # library(bslib)
 # library(shiny)
+# library(shinyjs)
 # ui <- page_navbar(id = "nav",
+#                     useShinyJs(),
 #                   title = "Profile card module example",
 #                   nav_panel(title = "tab 1",
 #                             value = "t1",
