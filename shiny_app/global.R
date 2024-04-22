@@ -32,25 +32,10 @@ list.files("modules") |>
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 
-# 4. Dashboard theme ---------------------------------------------------------------
-
-# see https://rstudio.github.io/bslib/articles/bs5-variables/ for list of all variables 
-phs_theme <- bs_theme(version = 5, # bootstrap version 5
-                      "nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta"), # multi-tab cards colour when selected
-                      "nav-tabs-link-active-color" = "white", # multi-tab cards font colour when selected
-                      "form-label-font-weight" = "700") |> # filter label font weight
-  
-  # adding custom styling for particular bits of ui (for instance making some bits of text purple without affecting all text)
-  bs_add_rules(
-    list(
-      ".geography-header { color: #9B4393; font-weight: 600 !important; }", # geography header light phs purple colour
-      ".profile-header { color: #3F3685; font-weight: bold !important; }"  # profile header darker phs purple colour
-    )
-  )
-  
 
 
-# profile names 
+
+# profile names list - for returning full profile name for tab header
 profiles_list <- list(
   HWB = "Health and Wellbeing",
   CWB = "Care and Wellbeing",
@@ -62,5 +47,33 @@ profiles_list <- list(
   MEN = "Mental Health")
 
 
-# partnership names 
+# HSC partnership names - used as the choices for an additional parent area filter 
+# when intermediate zone/localities are selected to reduce the number of IZ/localities
 partnership_name <- sort(geo_lookup$areaname[geo_lookup$areatype=="HSC partnership"]) 
+
+
+
+
+
+
+# 4. Dashboard theme ---------------------------------------------------------------
+
+# see https://rstudio.github.io/bslib/articles/bs5-variables/ for list of all variables 
+phs_theme <- bs_theme(version = 5, # bootstrap version 5
+                      "nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta"), # multi-tab cards colour when selected
+                      "nav-tabs-link-active-color" = "white", # multi-tab cards font colour when selected
+                      "form-label-font-weight" = "700") |> # filter labels font weight
+  
+  # adding custom styling for particular bits of ui (for instance making some bits of text purple without affecting all text)
+  # note: could move over some stuff from css file into here i.e. for some of the landing page styling?
+  bs_add_rules(
+    list(
+      ".geography-header { color: #9B4393; font-weight: 600 !important; }", # geography header light phs purple colour
+      ".profile-header { color: #3F3685; font-weight: bold !important; }"  # profile header darker phs purple colour
+    )
+  )
+  
+
+
+
+

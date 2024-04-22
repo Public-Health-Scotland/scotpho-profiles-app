@@ -33,7 +33,7 @@ function(input, output, session) {
 
   
   # logic controlling opening of About ScotPHO and Explore Indicators pages
-  # from landing page 
+  # from landing page. The logic for this is effectively the same as the above module.
   navigation_button_modSERVER("about_us", nav_id="about", parent_session = session)
   navigation_button_modSERVER("about_profiles", nav_id="profiles", parent_session = session)
   navigation_button_modSERVER("explore_indicators", nav_id="definitions", parent_session = session)
@@ -41,20 +41,23 @@ function(input, output, session) {
   
   
   # data filtered by profile (input$nav stores info on the tab the user is on)
-  # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is ALC
+  # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
   # note: since not yet filtered by geography here, this can be used to pass to other modules to create
   # summary views, rank views, trend views where other geography comparators may be required
   profile_data <- reactive({
     main_dataset |>
+      # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document 
       filter(substr(profile_domain1, 1, 3) == input$nav |
                substr(profile_domain2, 1, 3) == input$nav |
                substr(profile_domain3, 1, 3) == input$nav) |>
+      # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+      # is assigned to more than one profile (and therefore more than one domain)
       mutate(domain = as.factor(case_when(
         substr(profile_domain1,1,3)== input$nav ~
           substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
         substr(profile_domain2,1,3)== input$nav ~
           substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-        TRUE ~ substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))) %>%
+        TRUE ~ substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))) |>
       arrange(domain)
   })
 
@@ -68,11 +71,11 @@ function(input, output, session) {
   
   
   # logic controlling the header at the top of each tab which contains details on the profile selected
-  # and dynamic text displaying the areatype and areaname selected
+  # and dynamic text displaying the areatype, areaname and profile selected
   # as well as an action link which when clicked on displays the areatype and areaname filters
-  # also returns the selected areaname and areatype which can be used within other modules
+  # also then returns the selected areaname and areatype which can be used within other modules
   # for example, you could pass the 'profile_data' dataframe to a module, alongside 'geo_selections' 
-  # to further filter the profile data. To filter using these values, you would do i.e. 
+  # to further filter the profile data. To filter using these values within a module , you would do i.e. 
   # data <- profile_data() |>
   # filter(areaname == geo_selections()$areaname & areatype == geo_selections()$areatype)
   geo_selections <- tab_header_mod_server("main_header", profile_name_full)

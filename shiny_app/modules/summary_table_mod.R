@@ -1,5 +1,6 @@
 ### to do 
 # - decide how to present scotland data since spine chart doesn't make sense?
+# get small example app working properly
 
 
 
@@ -19,21 +20,18 @@ summary_table_ui <- function(id) {
   ns <- NS(id)
   tagList(
     bslib::card(
-      card_header(
+      bslib::card_header(
             layout_columns(
               col_widths = c(5, 2, 3, 2),
               NULL,
-          actionButton(ns("help"), label = "Help"), 
-          downloadButton(ns("download_summary_pdf"), "Download PDF report"),
-          download_data_btns_ui(ns("download_summary_data"))
-                  )
-        
-        )
-      ,
+              actionButton(ns("help"), label = "Help"), 
+              downloadButton(ns("download_summary_pdf"), "Download PDF report"),
+              download_data_btns_ui(ns("download_summary_data"))
+              )
+            ),
       card_body(
         withSpinner(reactableOutput(ns("summary_table"))) # summary table
-       
-    )
+       )
     )
 )
 

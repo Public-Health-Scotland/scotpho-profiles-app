@@ -10,6 +10,7 @@
 
 
 # UI function 
+# id = unique id 
 download_data_btns_ui <- function(id) {
   ns <- NS(id) # namespace
   shinyWidgets::dropdownButton(
@@ -24,6 +25,9 @@ download_data_btns_ui <- function(id) {
 
 
 # Server function 
+# id = unique id 
+# data = name of data to download
+# selectedColumns = vector of column names to include in data download (if required)
 download_data_btns_server <- function(id, data, selectedColumns = NULL) {
   moduleServer(id, function(input, output, session) {
     
