@@ -28,29 +28,28 @@ indicator_filter_mod_server <- function(id, filtered_data) {
 # example usage
 ##############################################################################
 # library(shiny)
+# library(dplyr)
 # 
-# data_1 <- data.frame(indicator = c("a", "b", "c"),
-#                      value = c(1, 2, 3))
+# data <- data.frame(indicator = c("a", "b", "c"),
+#                    number = c(1, 2, 3))
 # 
-# data_2 <- data.frame(indicator = c("e", "f", "g"),
-#                      value = c(4, 5, 6))
+# 
 # 
 # 
 # ui <- fluidPage(
-#   radioButtons(inputId = "dataset_filter", label = "dataset:", choices = c("dataset 1", "dataset 2")),
+#   radioButtons(inputId = "filter", label = "number:", choices = c(1, 2, 3)),
 #   indicator_filter_mod_ui("dynamic_filter")
 # )
 # 
 # 
 # server <- function(input, output, session){
 # 
-#   selected_data <- reactive({
-#       switch(input$dataset_filter,
-#              "dataset 1" = data_1,
-#              "dataset 2" = data_2)
+#   selected_number <- reactive({
+#       data |>
+#       filter(number == input$filter)
 #   })
 # 
-# indicator_filter_mod_server("dynamic_filter", filtered_data = selected_data)
+# indicator_filter_mod_server("dynamic_filter", filtered_data = selected_number)
 # 
 # 
 # }
