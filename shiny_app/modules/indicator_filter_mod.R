@@ -30,8 +30,8 @@ indicator_filter_mod_server <- function(id, filtered_data) {
 # library(shiny)
 # library(dplyr)
 # 
-# data <- data.frame(indicator = c("a", "b", "c"),
-#                    number = c(1, 2, 3))
+# data <- data.frame(indicator = c("a", "b", "c", "d"),
+#                    number = c(1, 2, 3, 3))
 # 
 # 
 # 
