@@ -90,7 +90,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 create_indicator_plot <- function(data, chosen_area_colour) {
   plot <- ggplot(data, aes(x = indicator, y = GraphPoint, fill = quantiles)) +
     geom_bar(stat = "identity", width = 0.75) +
-    scale_fill_manual(values = c("one" = "#D3D3D3", "two" = "#A4A4A4", "three" = "#D3D3D3", "four" = "white")) +
+    scale_fill_manual(values = c("worst" = "#D3D3D3", "p25" = "#A4A4A4", "p75" = "#D3D3D3", "best" = "white")) +
     geom_hline(yintercept = 0.5, col = "red") +
     ylim(0, 1) +
     geom_point(data = NULL, aes(x = indicator, y = chosen_value), shape = 19, size = 4, col = chosen_area_colour) +
@@ -113,8 +113,8 @@ graph_directory <- tempdir()
 
 # # pivot reactive dataframe in longer format (required for ggplot)
  df <- params$reactive_df %>%
-   select(indicator, one, two, three, four, scotland_value, measure, chosen_value, marker_colour, def_period, type_definition) %>%
-   pivot_longer(cols = c("one", "two", "three", "four"), values_to = "GraphPoint", names_to = "quantiles")
+   select(indicator, worst, p25, p75, best, scotland_value, measure, chosen_value, marker_colour, def_period, type_definition) %>%
+   pivot_longer(cols = c("worst", "p25", "p75", "best"), values_to = "GraphPoint", names_to = "quantiles")
 
 
 # required to ensure special characters displays correctly
@@ -131,7 +131,7 @@ df <- df %>%
   mutate(across('type_definition', str_replace, 'population', ''))
 
 # order quantiles so stacked in correct order.
-df$quantiles <- factor(df$quantiles, levels = c("one", "two", "three", "four"))
+df$quantiles <- factor(df$quantiles, levels = c("worst", "p25", "p75", "best"))
 
 
 
