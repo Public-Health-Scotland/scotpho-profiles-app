@@ -14,12 +14,27 @@ indicator_filter_mod_ui <- function(id) {
 # server function
 # id = unique id
 # filtered_data = reactive df which determines available choices for the filter 
-indicator_filter_mod_server <- function(id, filtered_data) {
+indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
-    observe({
-      updateSelectInput(session, "indicator_filter", choices = unique(filtered_data()$indicator))
+    available_indicators <- reactive({
+      unique(filtered_data()$indicator[filtered_data()$areatype == geo_selections()$areatype & 
+                                            filtered_data()$areaname == geo_selections()$areaname])
     })
+    
+    # update indicator choices
+    observe({
+      updateSelectInput(session, "indicator_filter", choices = available_indicators())
+    })
+    
+    
+    # store selected indicator as reactive value
+    return(
+      reactive({
+      list(indicator = input$indicator_filter)
+    })
+    )
+    
   })
 }
 
@@ -29,28 +44,60 @@ indicator_filter_mod_server <- function(id, filtered_data) {
 ##############################################################################
 # library(shiny)
 # library(dplyr)
+# library(bslib)
 # 
-# data <- data.frame(indicator = c("a", "b", "c", "d"),
-#                    number = c(1, 2, 3, 3))
+# # data
+# dummy_data <- data.frame(
+#                    tab = c("tab1", "tab1", "tab1", "tab1"),
+#                    areatype = c("Health board", "Health board", "Health board", "Health board"),
+#                    areaname = c("NHS GGC", "NHS Grampian", "NH FV", "NHS Highland"),
+#                    indicator = c("a", "b", "c", "d"))
 # 
 # 
 # 
-# 
-# ui <- fluidPage(
-#   radioButtons(inputId = "filter", label = "number:", choices = c(1, 2, 3)),
-#   indicator_filter_mod_ui("dynamic_filter")
+# # ui 
+# ui <- page_navbar(
+#   title = "indicator filter mod example",
+#   id = "main_nav",
+#   nav_panel(
+#     title = "Tab 1", value = "tab1",
+#   selectInput(inputId = "areatype", label = "areatype:", choices = c("Health board"), selected = "Health board"),
+#   selectInput(inputId = "areaname", label = "areaname:", choices = unique(dummy_data$areaname)),
+#   indicator_filter_mod_ui("dynamic_indicators"),
+#   textOutput("indicator_result")
+#   )
 # )
 # 
 # 
+# # server 
 # server <- function(input, output, session){
 # 
-#   selected_number <- reactive({
-#       data |>
-#       filter(number == input$filter)
-#   })
+# # store selected geographies
+# geo_selections <- reactive({
+#   list(
+#     areaname = input$areaname,
+#     areatype = input$areatype
+#   )
+# })
 # 
-# indicator_filter_mod_server("dynamic_filter", filtered_data = selected_number)
 # 
+# # filter dummy data
+# tab_data <- reactive({
+#   dummy_data |>
+#     filter(tab == input$main_nav)
+# })
+#   
+# 
+# 
+# # call module which returns selected indicator 
+# selected_indicator <- indicator_filter_mod_server("dynamic_indicators", filtered_data = tab_data, geo_selections = geo_selections)
+# 
+# 
+# 
+# # print selected indicator
+# output$indicator_result <- renderText({
+#   paste0("selected indicator: ", as.character(selected_indicator()))
+# })
 # 
 # }
 # 
