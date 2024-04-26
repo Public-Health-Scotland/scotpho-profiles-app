@@ -37,7 +37,6 @@ rank_mod_ui <- function(id) {
           height = 250,
           full_screen = TRUE,
           card_header(
-            class = "d-flex justify-content-between",
             "Bar chart",
             checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
           ),
@@ -51,7 +50,7 @@ rank_mod_ui <- function(id) {
           full_screen = TRUE,
           card_header("map plot"),
           card_body(highchartOutput(ns("rank_map"))),
-          card_footer(actionLink(ns("link2"), label = "click here"))
+          card_footer(download_chart_mod_ui(ns("save_rank_map")))
         )
         
       ) # close column wrap
@@ -96,7 +95,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
     })
     
     
-    download_chart_mod_server(id = "save_rank_barchart", chart_id = "rank_barchart")
+    download_chart_mod_server(id = "save_rank_barchart", chart_id = sessions$ns("rank_barchart"))
     
     
     # output$table <- renderReactable({
