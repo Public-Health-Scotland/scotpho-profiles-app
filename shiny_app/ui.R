@@ -59,7 +59,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
                 nav_panel(title = "Inequalities"))),
     
     # Children and young people 
@@ -68,7 +68,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("cyp_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("cyp_rank")),
                 nav_panel(title = "Inequalities"))),
     
     # care and wellbeing 
@@ -77,7 +77,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
                 nav_panel(title = "Inequalities"))),
     
     # alcohol
@@ -86,7 +86,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("alc_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("alc_rank")),
                 nav_panel(title = "Inequalities"))),
     
     # drugs
@@ -95,7 +95,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("drg_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("drg_rank")),
                 nav_panel(title = "Inequalities"))),
     
     # mental health
@@ -104,7 +104,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("men_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("men_rank")),
                 nav_panel(title = "Inequalities"))),
     
     # population
@@ -114,7 +114,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("pop_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank"),
+                nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
                 nav_panel(title = "Inequalities")))
   ), #close nav menu
   

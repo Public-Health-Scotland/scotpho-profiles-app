@@ -60,6 +60,8 @@ function(input, output, session) {
         TRUE ~ substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))) |>
       arrange(domain)
   })
+  
+
 
   
   # get the full profile name of the profile selected
@@ -76,8 +78,11 @@ function(input, output, session) {
   # also then returns the selected areaname and areatype which can be used within other modules
   # for example, you could pass the 'profile_data' dataframe to a module, alongside 'geo_selections' 
   # to further filter the profile data. To filter using these values within a module , you would do i.e. 
-  # data <- profile_data() |>
+  # data <- reactive({
+  # profile_data() |>
   # filter(areaname == geo_selections()$areaname & areatype == geo_selections()$areatype)
+  # })
+  
   geo_selections <- tab_header_mod_server("main_header", profile_name_full)
   
   
@@ -93,6 +98,20 @@ function(input, output, session) {
   summary_table_server("pop_summary", geo_selections, profile_name_full, profile_data)
   summary_table_server("tob_summary", geo_selections, profile_name_full, profile_data)
   summary_table_server("drg_summary", geo_selections, profile_name_full, profile_data)
+  
+  
+  
+  
+# rank data based on global rank filters (indicator, comparators)
+rank_mod_server("hwb_rank", profile_data, geo_selections)
+rank_mod_server("cyp_rank", profile_data, geo_selections)
+rank_mod_server("cwb_rank", profile_data, geo_selections)
+rank_mod_server("alc_rank", profile_data, geo_selections)
+rank_mod_server("men_rank", profile_data, geo_selections)
+rank_mod_server("pop_rank", profile_data, geo_selections)
+rank_mod_server("tob_rank", profile_data, geo_selections)
+rank_mod_server("drg_rank", profile_data, geo_selections)
+
   
 } # close main server function
 
