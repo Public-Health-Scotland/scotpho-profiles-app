@@ -142,22 +142,54 @@ page_navbar(
   # other tabs -----------------------------------------------------------------
   nav_menu(
     title = "More information",
+    
+    # about scotpho tab
     nav_panel(title = "About ScotPHO"),
-    nav_panel(title = "About Profiles", accordion(
-      open= FALSE, #no accordion panels open on loading
-      multiple = TRUE, #allows multiple profile accordion panels to be open at once
-      h1("About the ScotPHO Profiles"),
-      fluidRow("Here is some information about each of the ScotPHO profiles"),
-      accordion_panel("Health and Wellbeing", icon=icon("line-chart"), fluidRow("Here is some information about health and wellbeing"), navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")),
-      accordion_panel("Children and Young People", icon=icon("line-chart"), fluidRow("Here is some information about children and young people"), navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")),
-      accordion_panel("Care and Wellbeing", icon=icon("line-chart"), fluidRow("Here is some information about the care and wellbeing portfolio"), navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")),
-      accordion_panel("Alcohol", icon=icon("line-chart"), fluidRow("Here is some information about alcohol"), navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")),
-      accordion_panel("Drugs", icon=icon("line-chart"), fluidRow("Here is some information about drugs"), navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")),
-      accordion_panel("Mental Health", icon=icon("line-chart"), fluidRow("Here is some information about mental health"), navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")),
-      accordion_panel("Population", icon=icon("line-chart"), fluidRow("Here is some information about population"), navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")),
-      accordion_panel("Tobacco", icon=icon("line-chart"), fluidRow("Here is some information about tobacco"), navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile"))
+    
+    # about profiles tab (to do: replace placeholder text)
+    nav_panel(title = "About Profiles", 
+              accordion(
+                open= FALSE, #no accordion panels open on loading
+                multiple = TRUE, #allows multiple profile accordion panels to be open at once
+                h1("About the ScotPHO Profiles"),
+                p("Here is some information about each of the ScotPHO profiles."),
+                accordion_panel("Health and Wellbeing", icon=icon("line-chart"), 
+                      p("Here is some information about health and wellbeing"), 
+                      navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")
+                      ),
+                accordion_panel("Children and Young People", icon=icon("line-chart"), 
+                      p("Here is some information about children and young people"), 
+                      navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
+                      ),
+                accordion_panel("Care and Wellbeing", icon=icon("line-chart"), 
+                      p("Here is some information about the care and wellbeing portfolio"), 
+                      navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
+                      ),
+                accordion_panel("Alcohol", icon=icon("line-chart"), 
+                      p("Here is some information about alcohol"), 
+                      navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
+                      ),
+                accordion_panel("Drugs", icon=icon("line-chart"), 
+                      p("Here is some information about drugs"), 
+                      navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
+                      ),
+                accordion_panel("Mental Health", icon=icon("line-chart"), 
+                      p("Here is some information about mental health"), 
+                      navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
+                      ),
+                accordion_panel("Population", icon=icon("line-chart"), 
+                      p("Here is some information about population"), 
+                      navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")
+                      ),
+                accordion_panel("Tobacco", icon=icon("line-chart"), 
+                      p("Here is some information about tobacco"), 
+                      navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile")
+                      )
     )),
-    nav_panel(title = "Indicator Definitions"))
+    
+    # indicator definitions tab
+    nav_panel(title = "Indicator Definitions")
+    ) # close nav menu
 
 ) #close main server function
 
