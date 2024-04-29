@@ -16,8 +16,8 @@ library(arrow) # for reading parquet files
 
 
 # 2. Sourcing modules --------------------------------------------------------------
-list.files("modules") |> 
-  map(~ source(paste0("modules/", .)))
+list.files("modules", full.names = TRUE, recursive = TRUE) |>
+  map(~ source(.))
 
 
 # 3. Required datafiles ------------------------------------------------------------
