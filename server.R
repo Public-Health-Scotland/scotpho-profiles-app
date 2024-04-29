@@ -36,6 +36,8 @@ function(input, output, session) {
   navigation_button_modSERVER("about_profiles", nav_id="About Profiles", parent_session = session)
   navigation_button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
   
+  navigation_button_modSERVER("recent_updates", nav_id="Indicator Definitions", parent_session = session)
+  
   
   # reactive values to store geography selections
   selected_areatype <- reactiveVal()
@@ -55,7 +57,15 @@ function(input, output, session) {
   tab_header_mod_server("drg_header", selected_areatype, selected_areaname)
   
   
-  
+  # logic controlling buttons within the "About Profiles" tab linking back to indicator pages
+  navigation_button_modSERVER("view_profile_HWB", nav_id="HWB", parent_session = session)
+  navigation_button_modSERVER("view_profile_CYP", nav_id="CYP", parent_session = session)
+  navigation_button_modSERVER("view_profile_CWB", nav_id="CWB", parent_session = session)
+  navigation_button_modSERVER("view_profile_ALC", nav_id="ALC", parent_session = session)
+  navigation_button_modSERVER("view_profile_MEN", nav_id="MEN", parent_session = session)
+  navigation_button_modSERVER("view_profile_POP", nav_id="POP", parent_session = session)
+  navigation_button_modSERVER("view_profile_DRG", nav_id="DRG", parent_session = session)
+  navigation_button_modSERVER("view_profile_TOB", nav_id="TOB", parent_session = session)
   
 } # close main server function
 
