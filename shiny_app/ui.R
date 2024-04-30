@@ -12,7 +12,7 @@ page_navbar(
   collapsible = TRUE, # collapse tabs on smaller screens
   lang = "en",
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
-  #theme = phs_theme, # dashboard theme - defined in global script
+  theme = phs_theme, # dashboard theme - defined in global script
   tags$head(
     # required for spinecharts
     tags$script(src = "https://code.highcharts.com/highcharts.js"),
@@ -20,6 +20,17 @@ page_navbar(
     includeCSS("www/styles.css")), # required to specify formatting (particularly of landing page)
 
   useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package  
+  
+  # header that appears across the top of each profile tab 
+  # including geography filters and info detailing selected geography and profile
+  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO'",
+                            tagList(
+                              uiOutput("profile_header"),
+                              uiOutput("areatype_header"),
+                              uiOutput("areaname_header"),
+                            global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
+                            )), 
+  
   
   # homepage ---------------------------------------------------------------------
   nav_panel(value = "Home",
@@ -61,9 +72,8 @@ page_navbar(
     # Health and wellbeing
     nav_panel(value = "HWB", 
               title = "Health & Wellbeing", 
-              tab_header_mod_ui("hwb_header", profile_name = "Health and Wellbeing"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -71,9 +81,8 @@ page_navbar(
     # Children and young people 
     nav_panel(value = "CYP", 
               title = "Children & Young people", 
-              tab_header_mod_ui("cyp_header", profile_name = "Children and Young People"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("cyp_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -81,9 +90,8 @@ page_navbar(
     # care and wellbeing 
     nav_panel(value = "CWB", 
               title = "Care & Wellbeing", 
-              tab_header_mod_ui("cwb_header", profile_name = "Care and Wellbeing"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -91,9 +99,8 @@ page_navbar(
     # alcohol
     nav_panel(value = "ALC", 
               title = "Alcohol", 
-              tab_header_mod_ui("alc_header", profile_name = "Alcohol"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("alc_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -101,9 +108,8 @@ page_navbar(
     # drugs
     nav_panel(value = "DRG", 
               title = "Drugs", 
-              tab_header_mod_ui("drg_header", profile_name = "Drugs"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("drg_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -111,9 +117,8 @@ page_navbar(
     # mental health
     nav_panel(value = "MEN", 
               title= "Mental Health", 
-              tab_header_mod_ui("men_header", profile_name = "Mental Health"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("men_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities"))),
@@ -122,9 +127,8 @@ page_navbar(
     
     nav_panel(value = "POP", 
               "Population", 
-              tab_header_mod_ui("pop_header", profile_name = "Population"),
               navset_tab(
-                nav_panel(title = "Summary"),
+                nav_panel(title = "Summary", summary_table_ui("pop_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities")))

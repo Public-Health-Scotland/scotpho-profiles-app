@@ -30,34 +30,14 @@ function(input, output, session) {
   profile_homepage_btn_modSERVER("drg_nav", nav_id = "DRG", parent_session = session)
   
   
-  # logic controlling opening of About ScotPHO and Explore Indicators pages
-  # from landing page 
+  # logic controlling opening of About ScotPHO, About ScotPHO and Explore Indicators pages from landing page
   navigation_button_modSERVER("about_us", nav_id="About ScotPHO", parent_session = session)
   navigation_button_modSERVER("about_profiles", nav_id="About Profiles", parent_session = session)
   navigation_button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
-  
-  navigation_button_modSERVER("recent_updates", nav_id="Indicator Definitions", parent_session = session)
-  
-  
-  # reactive values to store geography selections
-  selected_areatype <- reactiveVal()
-  selected_areaname <- reactiveVal()
+  navigation_button_modSERVER("indicator_schedule", nav_id="Indicator Definitions", parent_session = session)
   
   
-  # logic controlling the header at the top of each tab which contains details on the profile selected
-  # and as dynamic text displaying the areatype and areaname selected
-  # as well as an action link which when clicked on displays the areatype and areaname filters
-  tab_header_mod_server("hwb_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("cyp_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("cwb_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("alc_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("men_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("pop_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("tob_header", selected_areatype, selected_areaname)
-  tab_header_mod_server("drg_header", selected_areatype, selected_areaname)
-  
-  
-  # logic controlling buttons within the "About Profiles" tab linking back to indicator pages
+  # logic controlling buttons within the "About Profiles" tab linking back to profile pages
   navigation_button_modSERVER("view_profile_HWB", nav_id="HWB", parent_session = session)
   navigation_button_modSERVER("view_profile_CYP", nav_id="CYP", parent_session = session)
   navigation_button_modSERVER("view_profile_CWB", nav_id="CWB", parent_session = session)
@@ -66,6 +46,78 @@ function(input, output, session) {
   navigation_button_modSERVER("view_profile_POP", nav_id="POP", parent_session = session)
   navigation_button_modSERVER("view_profile_DRG", nav_id="DRG", parent_session = session)
   navigation_button_modSERVER("view_profile_TOB", nav_id="TOB", parent_session = session)
+  
+  
+  # stores selected 'areaname' and selected 'areatype' which can be used throughout other modules
+  # to filter data by geography, like this: geo_selections()$areaname 
+  geo_selections <- global_geography_filters_server("geo_filters", geo_lookup)
+
+  
+  # reactive values to store info on selected profile 
+  profile_name <- reactiveVal() # to store full name (i.e. Health and Wellbeing)
+  profile <- reactiveVal() # to store abbreviated name (i.e. HWB)
+
+  
+  # when a user switches tab, update the 2 x reactive values created above 
+  observeEvent(input$nav, {
+    profile(input$nav) # update the object called 'profile' with the nav id (i.e. HWB)
+    profile_name(profiles_list[[input$nav]]) # update the object called 'profile_name' with the long version of the name (i.e. Health and wellbeing)
+  })
+  
+  
+  # dynamic header showing selected profile 
+  output$profile_header <- renderUI({
+    tags$h1("Profile:", profile_name(), class = "profile-header")
+  })
+
+
+  # dynamic header showing selected areatype
+  output$areatype_header <- renderUI({
+    tags$h2("Area type:", geo_selections()$areatype, class = "geography-header")
+  })
+
+  # dynamic header showing selected areaname
+  output$areaname_header <- renderUI({
+    tags$h2("Area name:", geo_selections()$areaname, class = "geography-header")
+  })
+
+  
+  
+  
+    
+  # data filtered by profile (input$nav stores info on the tab the user is on)
+  # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
+  # note: since not yet filtered by geography here, this can be used to pass to other modules to create
+  # summary views, rank views, trend views where other geography comparators may be required
+  profile_data <- reactive({
+    main_dataset |>
+      # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document 
+      filter(substr(profile_domain1, 1, 3) == profile() |
+               substr(profile_domain2, 1, 3) == profile() |
+               substr(profile_domain3, 1, 3) == profile()) |>
+      # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+      # is assigned to more than one profile (and therefore more than one domain)
+      mutate(domain = as.factor(case_when(
+        substr(profile_domain1,1,3)== profile() ~
+          substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+        substr(profile_domain2,1,3)== profile() ~
+          substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+        TRUE ~ substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))) |>
+      arrange(domain)
+  })
+  
+  
+  # logic controlling summary tables
+  # takes profile data and further filters by selected geography
+  # prepares summary data and displays in a table with spinecharts
+  summary_table_server("hwb_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("cyp_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("alc_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("drg_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("men_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("pop_summary", geo_selections, profile_name, profile_data)
+  
   
 } # close main server function
 
