@@ -131,7 +131,17 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("pop_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
+                nav_panel(title = "Inequalities"))),
+    #tobacco
+    
+    nav_panel(value = "TOB",
+              "Tobacco",
+              navset_tab(
+                nav_panel(title = "Summary", summary_table_ui("tob_summary")),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank", rank_mod_ui("tob_rank")),
                 nav_panel(title = "Inequalities")))
+    
 
     ), #close nav menu
 
