@@ -130,6 +130,13 @@ function(input, output, session) {
   rank_mod_server("pop_rank", profile_data, geo_selections)
   rank_mod_server("tob_rank", profile_data, geo_selections)
   
+  # logic controlling rank visualisations
+  # takes profile data and further filters by selected areatype
+  inequalities_layout_server("hwb_inequalitites", profile_data, geo_selections)
+  
+  indicator_definition_btn_server("hwb_inequalitites", profile_data)
+  
+  
 } # close main server function
 
 ##END
