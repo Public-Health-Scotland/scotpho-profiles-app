@@ -124,11 +124,19 @@ page_navbar(
                 nav_panel(title = "Inequalities"))),
               
     # population
-    
     nav_panel(value = "POP", 
               "Population", 
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("pop_summary")),
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank"),
+                nav_panel(title = "Inequalities"))),
+    
+    # tobacco
+    nav_panel(value = "TOB",
+              "Tobacco",
+              navset_tab(
+                nav_panel(title = "Summary", summary_table_ui("tob_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank"),
                 nav_panel(title = "Inequalities")))

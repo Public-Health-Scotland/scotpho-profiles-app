@@ -117,6 +117,7 @@ function(input, output, session) {
   summary_table_server("drg_summary", geo_selections, profile_name, profile_data)
   summary_table_server("men_summary", geo_selections, profile_name, profile_data)
   summary_table_server("pop_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("tob_summary", geo_selections, profile_name, profile_data)
   
   
 } # close main server function
