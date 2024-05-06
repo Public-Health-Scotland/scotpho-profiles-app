@@ -125,6 +125,7 @@ page_navbar(
 
     # population
 
+
     nav_panel(value = "POP",
               "Population",
               navset_tab(
@@ -132,8 +133,10 @@ page_navbar(
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
                 nav_panel(title = "Inequalities"))),
-    #tobacco
+
     
+    # tobacco
+
     nav_panel(value = "TOB",
               "Tobacco",
               navset_tab(
