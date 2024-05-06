@@ -71,7 +71,8 @@ global_geography_filters_server <- function(id, geo_lookup) {
     return(reactive({
       list(
         areatype = input$areatype,
-        areaname = input$areaname
+        areaname = input$areaname,
+        parent_area = input$parent_area
       )
     }))
     

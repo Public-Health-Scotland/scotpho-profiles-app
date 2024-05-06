@@ -52,7 +52,7 @@ function(input, output, session) {
   # to filter data by geography, like this: geo_selections()$areaname 
   geo_selections <- global_geography_filters_server("geo_filters", geo_lookup)
 
-  
+
   # reactive values to store info on selected profile 
   profile_name <- reactiveVal() # to store full name (i.e. Health and Wellbeing)
   profile <- reactiveVal() # to store abbreviated name (i.e. HWB)
@@ -119,6 +119,16 @@ function(input, output, session) {
   summary_table_server("pop_summary", geo_selections, profile_name, profile_data)
   summary_table_server("tob_summary", geo_selections, profile_name, profile_data)
   
+  # logic controlling rank visualisations
+  # takes profile data and further filters by selected areatype
+  rank_mod_server("hwb_rank", profile_data, geo_selections)
+  rank_mod_server("cyp_rank", profile_data, geo_selections)
+  rank_mod_server("cwb_rank", profile_data, geo_selections)
+  rank_mod_server("alc_rank", profile_data, geo_selections)
+  rank_mod_server("drg_rank", profile_data, geo_selections)
+  rank_mod_server("men_rank", profile_data, geo_selections)
+  rank_mod_server("pop_rank", profile_data, geo_selections)
+  rank_mod_server("tob_rank", profile_data, geo_selections)
   
 } # close main server function
 

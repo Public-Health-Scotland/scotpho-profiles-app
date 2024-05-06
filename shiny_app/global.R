@@ -21,6 +21,14 @@ library(htmlwidgets) # for download buttons
 library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable)
+library(leaflet)
+library(sf) # note: eventually remove this from here
+
+
+
+
+
+
 
 
 # 2. Sourcing modules --------------------------------------------------------------
@@ -31,6 +39,24 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
+
+# shapefiles (for map) 
+ca_bound <- readRDS("data/CA_boundary.rds") # Council area
+hb_bound <- readRDS("data/HB_boundary.rds") # Health board
+hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
+hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
+iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
+
+# transform so in right format to join to main dataset 
+# this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
+ca_bound <- sf::st_as_sf(ca_bound)
+hb_bound <- sf::st_as_sf(hb_bound)
+hscp_bound <- sf::st_as_sf(hscp_bound)
+hscloc_bound <- sf::st_as_sf(hscloc_bound)
+iz_bound <- sf::st_as_sf(iz_bound)
+
+
+
 
 
 # 4. lists ----------------------------------------------------------
@@ -60,6 +86,9 @@ areatype_list <- c("Alcohol & drug partnership",
                    "HSC partnership",  
                    "Intermediate zone",
                    "Scotland")
+
+
+rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HSC partnership", "Scotland", "Health board")]
 
 
 
