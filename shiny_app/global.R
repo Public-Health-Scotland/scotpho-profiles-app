@@ -22,7 +22,7 @@ library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable)
 library(leaflet)
-library(sf)
+library(sf) # note: eventually remove this from here
 
 
 
