@@ -57,7 +57,7 @@ function(input, output, session) {
   profile_name <- reactiveVal() # to store full name (i.e. Health and Wellbeing)
   profile <- reactiveVal() # to store abbreviated name (i.e. HWB)
 
-  
+
   # when a user switches tab, update the 2 x reactive values created above 
   observeEvent(input$nav, {
     profile(input$nav) # update the object called 'profile' with the nav id (i.e. HWB)
@@ -82,8 +82,17 @@ function(input, output, session) {
   })
 
   
+# ve working
+ # #trying to capture and store indicator selected name
   
-  
+ #  indicator_name <-reactiveVal() #store full indicator name
+ #  observeEvent(input$indicator_selection, {
+ #    
+ #    profile(input$nav) # update the object called 'profile' with the nav id (i.e. HWB)
+ #    profile_name(profiles_list[[input$nav]]) # update the object called 'profile_name' with the long version of the name (i.e. Health and wellbeing)
+ #  })
+ #    
+ #  
     
   # data filtered by profile (input$nav stores info on the tab the user is on)
   # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
@@ -130,9 +139,9 @@ function(input, output, session) {
   rank_mod_server("pop_rank", profile_data, geo_selections)
   rank_mod_server("tob_rank", profile_data, geo_selections)
   
-  # logic controlling rank visualisations
+  # logic controlling inequalities layout page
   # takes profile data and further filters by selected areatype
-  inequalities_layout_server("hwb_inequalitites", profile_data, geo_selections)
+  inequality_server("hwb_inequality", profile_data, geo_selections)
   
   indicator_definition_btn_server("hwb_inequalitites", profile_data)
   
