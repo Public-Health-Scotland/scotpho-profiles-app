@@ -143,7 +143,6 @@ function(input, output, session) {
   # takes profile data and further filters by selected areatype
   inequality_server("hwb_inequality", profile_data, geo_selections)
   
-  indicator_definition_btn_server("hwb_inequalitites", profile_data)
   
   
 } # close main server function

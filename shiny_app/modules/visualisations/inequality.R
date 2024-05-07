@@ -8,7 +8,8 @@ inequality_ui <- function(id) {
       sidebar = sidebar(width = 300,
                         indicator_filter_mod_ui(ns("indicator_filter")),
                         paste0("some text"),
-                        actionButton(ns("indicator_definition"), label = "Definition", icon= icon('info'))
+                        indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                        #actionButton(ns("indicator_definition"), label = "Definition", icon= icon('info'))
                         #indicator_definition_btn_ui(ns("hwb_inequality"))
       )# close sidebar
 
@@ -23,10 +24,11 @@ inequality_server <- function(id, profile_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
       
       
+    
       # return selected indicator
       selected_indicator <- indicator_filter_mod_server("indicator_filter", profile_data, geo_selections)
       
-      
+      indicator_definition_btn_server("inequalities_ind_def",selected_indicator=selected_indicator())   
       
       # create basic rank data - filtering by selected indicator, selected areatype and the max year
       definition_data <- reactive({
