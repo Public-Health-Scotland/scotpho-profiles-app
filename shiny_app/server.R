@@ -82,18 +82,6 @@ function(input, output, session) {
   })
 
   
-# ve working
- # #trying to capture and store indicator selected name
-  
- #  indicator_name <-reactiveVal() #store full indicator name
- #  observeEvent(input$indicator_selection, {
- #    
- #    profile(input$nav) # update the object called 'profile' with the nav id (i.e. HWB)
- #    profile_name(profiles_list[[input$nav]]) # update the object called 'profile_name' with the long version of the name (i.e. Health and wellbeing)
- #  })
- #    
- #  
-    
   # data filtered by profile (input$nav stores info on the tab the user is on)
   # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
   # note: since not yet filtered by geography here, this can be used to pass to other modules to create

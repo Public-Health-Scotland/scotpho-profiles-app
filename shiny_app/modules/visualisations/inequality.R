@@ -23,42 +23,12 @@ inequality_ui <- function(id) {
 inequality_server <- function(id, profile_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
       
-      
-    
+     
       # return selected indicator
       selected_indicator <- indicator_filter_mod_server("indicator_filter", profile_data, geo_selections)
       
-      indicator_definition_btn_server("inequalities_ind_def",selected_indicator=selected_indicator())   
-      
-      # create basic rank data - filtering by selected indicator, selected areatype and the max year
-      definition_data <- reactive({
-        profile_data() |>
-          filter(indicator == selected_indicator() & areatype == geo_selections()$areatype) |>
-          filter(year == max(year)) |>
-          arrange(measure)
-      })
-      
-      
-      
-       # Filter dataframe based on selected category
-      # indicator_to_define <- reactive({
-      #   subset(techdoc, indicator_name == input$indicator_name)
-      # })
-
-      output$filter_output <- renderText({
-        "bla"
-      })
-
-      
-      observeEvent(input$indicator_definition, {
-        showModal(
-          modalDialog(
-            title = "modal dialog title",
-            textOutput("filter_output")
-          )
-        )
-      })
-      
+      indicator_definition_btn_server("inequalities_ind_def", selected_indicator=selected_indicator())   
+     
       
 
     }
