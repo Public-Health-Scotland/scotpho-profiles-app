@@ -22,7 +22,7 @@ indicator_definition_btn_server <- function(id, selected_indicator) {
         observeEvent(input$indicator_definition, {
         showModal(
           modalDialog(
-            title = selected_indicator()
+            title = selected_indicator
           )
         )
       })
