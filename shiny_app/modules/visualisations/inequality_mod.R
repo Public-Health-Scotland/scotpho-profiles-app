@@ -28,7 +28,7 @@ inequality_server <- function(id, profile_data, geo_selections) {
       selected_indicator <- indicator_filter_mod_server("indicator_filter", profile_data, geo_selections)
       
 
-      indicator_definition_btn_server("inequalities_ind_def", selected_indicator=selected_indicator())   
+      indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator)   
      
 
 
