@@ -24,7 +24,7 @@ indicator_definition_btn_server <- function(id, selected_indicator) {
       #filter techdoc by selected indicator
       filtered_indicator <- reactive({
         techdoc |>
-          filter(indicator_name==selected_indicator)})
+          filter(indicator_name == selected_indicator())})
 
       
       #content of ModalDialog box
@@ -33,7 +33,7 @@ indicator_definition_btn_server <- function(id, selected_indicator) {
           modalDialog(
            title = "Definition:",
             #insert indicator name (formatted in bold & underlined) followed by indicator definition
-            HTML(paste(sprintf("<b><u>%s</b></u> <br> %s ", selected_indicator,
+            HTML(paste(sprintf("<b><u>%s</b></u> <br> %s ", selected_indicator(),
                               filtered_indicator()$indicator_definition, collapse = "<br><br>"))),
             easyClose = TRUE,fade=FALSE,footer = modalButton("Close (Esc)") #easyclose allows you to use 'Esc' button to close modal 
           )
