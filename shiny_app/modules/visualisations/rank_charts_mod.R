@@ -1,7 +1,12 @@
 # to do :
-# 2. create indicator title and def-type sub-title
-# 4. add chart title
+# sort time comparison dummbell chart colours?
+# add mini app to show how module works
 
+
+###############################################################################
+# MODULE: rank_charts_mod ---- 
+# prepares the rank section of the app
+##############################################################################
 rank_mod_ui <- function(id) {
   ns <- NS(id)
   tagList(
