@@ -18,8 +18,9 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     available_indicators <- reactive({
-      unique(filtered_data()$indicator[filtered_data()$areatype == geo_selections()$areatype & 
-                                         filtered_data()$areaname == geo_selections()$areaname])
+      req(geo_selections())
+      dt <- setDT(filtered_data())
+      dt <- unique(dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]$indicator)
     })
     
     # update indicator choices
