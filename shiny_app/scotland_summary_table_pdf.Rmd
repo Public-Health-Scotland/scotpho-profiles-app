@@ -1,0 +1,219 @@
+---
+title: ""
+output: pdf_document
+geometry: margin=0.5cm
+params:
+  reactive_df: NA
+  chosen_area: NA
+  chosen_profile: NA
+  chosen_geography_level: NA
+header-includes:
+   - \usepackage[default]{sourcesanspro}
+   - \usepackage[T1]{fontenc}
+   - \usepackage{fancyhdr}
+   - \usepackage{graphicx}
+   - \usepackage{longtable}
+   - \usepackage{tabu}
+   - \usepackage{booktabs}
+   - \usepackage{array}
+   - \usepackage{multirow}
+   - \usepackage{wrapfig}
+   - \usepackage{float}
+   - \usepackage{colortbl}
+   - \usepackage{pdflscape}
+   - \usepackage{threeparttable}
+   - \usepackage{threeparttablex}
+   - \usepackage[normalem]{ulem}
+   - \usepackage{makecell}
+   - \usepackage{xcolor}
+mainfont: SourceSansPro
+
+
+---
+
+
+```{r echo=FALSE, message= FALSE}
+
+library(ggplot2)
+library(dplyr)
+library(kableExtra)
+library(tidyr)
+library(knitr)
+library(stringr)
+
+chosen_area <- gsub("&", "\\\\&", params$chosen_area)
+
+
+profile <- if(params$chosen_profile == "HWB"){
+  "Health and Wellbeing"
+} else if (params$chosen_profile == "CYP"){
+  "Children and Young People"
+} else if (params$chosen_profile == "MEN"){
+  "Mental Health"
+} else if (params$chosen_profile == "ALC"){
+  "Alcohol"
+} else if (params$chosen_profile == "TOB"){
+  "Tobacco control"
+} else if (params$chosen_profile == "DRG"){
+  "Drugs"
+} else if (params$chosen_profile == "CWB"){
+  "Care and Wellbeing"
+} else {"Population"
+}
+
+```
+
+
+
+  \begin{minipage}{0.6\textwidth}
+    \raggedright
+    \textbf{\large{`r params$chosen_geography_level` summary}} \\
+    ScotPHO Profile: `r profile`
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \raggedleft
+    \includegraphics[width=100pt]{scotpho_reduced.png}
+  \end{minipage}
+
+
+
+```{r setup, include=FALSE, dev="cairo_pdf"} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+
+```{r echo=FALSE, message= FALSE}
+
+
+# function to create spine plot for each indicator
+create_indicator_trend_line <- function(data) {
+  plot <- ggplot(data, aes(x = years, y = measures)) +
+  geom_line(color = phs_colors(colourname = "phs-blue")) +
+  geom_point(shape = 16, color = phs_colors(colourname = "phs-blue")) + 
+  theme_void() +
+  theme(plot.background = element_rect(fill = "white", color = "white"),
+        panel.background = element_rect(fill = "white", color = "white"),
+        plot.title = element_text(hjust = 0.5))
+
+
+  
+  return(plot)
+}
+
+
+# temporary folder to save charts to
+graph_directory <- tempdir()
+
+
+
+# # pivot reactive dataframe in longer format (required for ggplot)
+ df <- params$reactive_df |>
+   unnest(cols = c(years, measures))
+
+
+# required to ensure special characters displays correctly
+df$indicator <- str_replace_all(df$indicator, "%", "\\\\%")
+df$indicator <- str_replace(df$indicator, "&", "\\\\&")
+
+
+
+# trim down some measure descriptions
+df <- df %>%
+  mutate(across('type_definition', str_replace, 'Age-sex standardised rate', 'EASR')) %>%
+  mutate(across('type_definition', str_replace, 'children aged', ',')) %>%
+  mutate(across('type_definition', str_replace, 'Population', '')) %>%
+  mutate(across('type_definition', str_replace, 'population', ''))
+
+
+# the data to be displayed in table
+table <- df %>%
+  select(indicator, measure, def_period, type_definition) %>%
+  distinct() %>%
+  mutate(ind = paste0(
+    "\\textbf{",indicator, "}\n", "\\textit{\\small", def_period, " . ", type_definition, "}"))%>%
+  select(ind, measure) %>%
+  mutate(id = row_number())
+
+
+table$ind <- linebreak(table$ind)
+
+
+
+# get unique indicator list
+ unique_indicators <- unique(df$indicator)
+
+ # Counter variable to keep track of which chart being generated
+counter <- 1
+
+# Iterate over each indicator and create/save a spineplot
+
+for (indicator in unique_indicators) {
+
+  # Filter the data for the current indicator
+  indicator_data <- df %>% filter(indicator == !!indicator)
+
+
+ # create the plot
+  plot <- create_indicator_trend_line(indicator_data)
+
+ # create filename
+  filename <- sprintf("%s/%s.png", graph_directory, counter)
+
+ # increase counter variable
+   counter <- counter + 1
+
+ # Save the plot as a PNG with the filename created
+  ggsave(filename, plot = plot, units="mm", width=60, height=6, dpi=300)
+}
+
+
+# define column headers for the pdf table
+col_names = c("indicator", "Scotland", "Trend")
+
+```
+
+
+
+```{r, echo= FALSE, message = FALSE}
+
+ # the final table to be displayed with charts embedded
+table %>%
+
+  knitr::kable(
+    format = "latex", # must be in latex format for pdf download
+    booktabs = TRUE, # generic formatting
+    escape = FALSE, # ensures latex formatting on indicator column works (i.e.bold/italics,linebreaks)
+    longtable = TRUE,
+    col.names = col_names
+     ) %>% # ensures table goes across multiple pages when too long
+  
+  # format header
+  row_spec(0, background = "#032F4F", color = "white") %>%
+
+  # set column widths
+   column_spec(1, width = "27em") %>% # indicator column
+   column_spec(2, width = "6em") %>% # scotland column
+
+
+  # embed chart images on each row of final column
+   kableExtra::column_spec(3, image = sprintf("%s/%s.png", graph_directory, table$id), color = "white") %>%
+
+  # repeats column headings when table goes across multiple pages
+   kable_styling(latex_options = c("repeat_header")) %>%
+
+  # add footnote with link to profiles tool
+  footnote(general="\\\\url{https://scotland.shinyapps.io/ScotPHO_profiles_tool/}",
+           general_title = "Source: ", footnote_as_chunk = T, escape=F) %>%
+
+  # add lines under each row
+  row_spec(1:nrow(table), hline_after = T, background = "white")
+
+
+
+
+
+
+
+
+```
