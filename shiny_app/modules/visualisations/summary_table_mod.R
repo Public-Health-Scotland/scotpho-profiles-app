@@ -146,6 +146,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     # prepare scotland summary data 
     scotland_summary <- reactive({
+      req(selected_geo()$areatype == "Scotland")
       
       # set the profile data to data.table format
       dt <- setDT(filtered_data())
@@ -492,17 +493,24 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         
         td <- tempdir() # create a temporary directory
         
-        tempReport <- file.path(td, "spinecharts.Rmd") # rmarkdown file 
+        markdown_doc <- ifelse(selected_geo()$areatype == "Scotland", "scotland_summary_table_pdf.Rmd", "spinecharts.Rmd")
+        
+        tempReport <- file.path(td, markdown_doc) # rmarkdown file 
         tempLogo <- file.path(td, "scotpho_reduced.png") # scotpho logo to add to pdf
         
-        file.copy("spinecharts.Rmd", tempReport, overwrite = TRUE) 
+        file.copy(markdown_doc, tempReport, overwrite = TRUE) 
         file.copy("scotpho_reduced.png", tempLogo, overwrite = TRUE)
         
         # Set up parameters to pass to Rmd document
-        params <- list(reactive_df = local_summary(),
-                       chosen_area = selected_geo()$areaname,
-                       chosen_profile = selected_profile(),
-                       chosen_geography_level = selected_geo()$areatype
+        params <- list(
+          reactive_df = if (selected_geo()$areatype == "Scotland") {
+          scotland_summary()
+        } else {
+          local_summary()
+        },
+         chosen_area = selected_geo()$areaname,
+         chosen_profile = selected_profile(),
+         chosen_geography_level = selected_geo()$areatype
         )
         
         # create the pdf report 
