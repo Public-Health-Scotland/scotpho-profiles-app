@@ -225,34 +225,26 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      
      # map data --------------------------------------
      # dynamically selects shapefile and joins with map data
-     map_data <- reactive({
-       
-       # get correct shapefile
-       shapefile <- switch(geo_selections()$areatype,
-                   "Health board" = hb_bound,
-                   "Council area" = ca_bound,
-                   "HSC partnership" = hscp_bound,
-                   "HSC locality" = hscloc_bound,
-                   "Intermediate zone" = iz_bound,
-                   "Scotland" = scot_bound
-       )
-       
-       # further filter if HSCL or IZ selected
-       areaname <- if(geo_selections()$areatype == "HSC locality"){
-         shapefile <- shapefile |>
-           filter(hscp2019name == geo_selections()$parent_area)
-       } else if(geo_selections()$areatype == "Intermediate zone"){
-         shapefile <- shapefile |>
-           filter(council == geo_selections()$parent_area)
-       } else {
-         shapefile
-       }
-
-       # attach rank data to shapefile
-       shapefile <- shapefile |> 
-         left_join(rank_data(), by = join_by(code))
-       
-     })
+    map_data <- reactive({
+      # get correct shapefile
+      x <- switch(geo_selections()$areatype,
+                  "Health board" = hb_bound,
+                  "Council area" = ca_bound,
+                  "HSC partnership" = hscp_bound,
+                  "HSC locality" = hscloc_bound,
+                  "Intermediate zone" = iz_bound,
+                  "Scotland" = scot_bound
+      )
+      # further filter if HSCL or IZ selected
+      if(geo_selections()$areatype == "HSC locality"){
+        x <- x |> filter(hscp2019name == geo_selections()$parent_area)
+      } else if(geo_selections()$areatype == "Intermediate zone"){
+        x <- x |> filter(council == geo_selections()$parent_area)
+      } else{
+        x
+      }
+      x <- x |> left_join(rank_data(), by = join_by(code))
+    })
      
      
      
@@ -388,16 +380,17 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
 
      
      # leaflet map -------
-     
-     # colour palette for map if no comparator selected
-     # creates a gradient where higher values = darker and lower values = lighter
+
+     # Global definition of value_palette
      value_palette <- reactive({
-       if(geo_selections()$areatype != "Scotland") {
-         colorNumeric("Blues", domain = map_data()$measure)
+       if(length(unique(map_data()$measure)) > 1) {
+         colorNumeric(palette = "Blues", domain = map_data()$measure)
        } else {
-         colorFactor("Blues", domain = NULL)
+         function(x) { phs_colors(colourname = "phs-purple") }
        }
      })
+
+
      
      output$rank_map <- renderLeaflet({
        leaflet(map_data()) |>
@@ -420,10 +413,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
                        bringToFront = TRUE
                        )
                      ) |>
-         addLegend(pal = value_palette(), 
-                   values = map_data()$measure,
-                   title = "", opacity = 0.7,
-                   position = "bottomright") |>
+
          # add option to save chart as png
          onRender(
            "function(el, x) {
@@ -455,6 +445,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
        } else {
          leafletProxy("rank_map", session) |>
            clearShapes() |>
+           clearControls() |>
            addPolygons(data = map_data(), weight = 1, color = "black",
                        fillColor = ~value_palette()(measure),
                        fillOpacity = 0.5, 
