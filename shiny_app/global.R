@@ -26,11 +26,6 @@ library(sf) # note: eventually remove this from here
 
 
 
-
-
-
-
-
 # 2. Sourcing modules --------------------------------------------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
@@ -40,6 +35,8 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 techdoc <- readRDS("data/techdoc.rds") # indicator technical info lookup
+geo_lookup <- setDT(geo_lookup)
+
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area
@@ -47,7 +44,7 @@ hb_bound <- readRDS("data/HB_boundary.rds") # Health board
 hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
-
+scot_bound <- readRDS("data/scot_bound.rds") # scotland
 # transform so in right format to join to main dataset 
 # this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
 ca_bound <- sf::st_as_sf(ca_bound)
@@ -55,6 +52,7 @@ hb_bound <- sf::st_as_sf(hb_bound)
 hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
+scot_bound <- sf::st_as_sf(scot_bound)
 
 
 # 4. lists ----------------------------------------------------------

@@ -16,6 +16,8 @@ page_navbar(
   tags$head(
     # required for spinecharts
     tags$script(src = "https://code.highcharts.com/highcharts.js"),
+    #required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
+    tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),
     # required for homepage styling
     includeCSS("www/styles.css")), # required to specify formatting (particularly of landing page)
 
