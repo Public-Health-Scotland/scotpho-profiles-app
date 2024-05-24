@@ -8,21 +8,21 @@
 # note this module is passed to the header argument  of page_navbar so that it appears at the top of every single tab (conditional panels can be used to hide from specific tabs - see example app below)
 ###############################################################################.
 
-# ui function:
-# id = unique id
+#ui function:
+#id = unique id
 global_geography_filters_ui <- function(id, areatype_choices, parent_area_choices) {
   ns <- NS(id)
-  
-  
+
+
   tagList(
-    # link to show/hide geography filters when clicked on 
-    shiny::actionLink(inputId = ns("show_geo_filters"), label = "Change area", icon = icon("filter")) |> 
+    # link to show/hide geography filters when clicked on
+    shiny::actionLink(inputId = ns("show_geo_filters"), label = "Change area", icon = icon("filter")) |>
       bslib::tooltip("Click to change geography"),
-    
+
     # hidden filters to display when link clicked
     shinyjs::hidden(
       tags$div(
-        id = ns("geo_filters"), 
+        id = ns("geo_filters"),
         layout_column_wrap(
           width = 1/2,
           selectInput(ns("areatype"), "Area type:", choices = areatype_choices, selected = "Scotland"),
@@ -32,7 +32,7 @@ global_geography_filters_ui <- function(id, areatype_choices, parent_area_choice
             # extra filter if Intermediate zone/locality selected (hidden by default)
             shinyjs::hidden(selectInput(ns("parent_area"), label = "First select a region for localities or intermediate zones", choices = parent_area_choices, width = "100%"))
           )
-        ) 
+        )
       ) # close div
     )# close hidden function
   ) # close taglist
@@ -44,51 +44,50 @@ global_geography_filters_ui <- function(id, areatype_choices, parent_area_choice
 # selected_profile = name of variable storing profile selection
 global_geography_filters_server <- function(id, geo_lookup) {
   moduleServer(id, function(input, output, session) {
-    
+
     # toggle geography filters on and off when actionLink clicked
     shinyjs::onclick(id = "show_geo_filters", {
       shinyjs::toggle(id = "geo_filters")
     })
-    
+
     # show/hide extra geography filter and
     # update choices for areaname based on areatype selection
     observeEvent(c(input$areatype, input$parent_area), {
       if (input$areatype %in% c("HSC locality", "Intermediate zone") && !is.null(input$parent_area)) {
-        area_choices <- sort(geo_lookup$areaname[geo_lookup$areatype == input$areatype & geo_lookup$parent_area == input$parent_area])
+
+        area_choices <- geo_lookup[areatype == input$areatype & parent_area == input$parent_area]$areaname
         shinyjs::show("parent_area")
       } else {
-        area_choices <- sort(geo_lookup$areaname[geo_lookup$areatype == input$areatype])
+        area_choices <- geo_lookup[areatype == input$areatype]$areaname
         shinyjs::hide("parent_area")
       }
-      
+
       updateSelectInput(session, "areaname", choices = area_choices)
-    })
-    
-    
-    
-    # # Return the selected areatype and areaname
-    # # which can be used within other modules
-    return(reactive({
+    }, ignoreInit = TRUE)
+
+
+
+    # Return the selected areatype and areaname
+    # which can be used within other modules
+    geo_selections <- eventReactive({
+      input$areaname  # trigger only when areaname changes
+    }, {
       list(
-        areatype = input$areatype,
+        areatype = isolate(input$areatype),
         areaname = input$areaname,
         parent_area = input$parent_area
       )
-    }))
+    })
     
-    # selections <- reactiveValues(areatype = NULL, areaname = NULL)
-    # 
-    # # Update reactive values based on user input
-    # observe({
-    #   selections$areatype <- input$areatype
-    #   selections$areaname <- input$areaname
-    # })
-    # 
-    # # Return the reactiveValues object
-    # return(selections)
+    # Return the reactive values
+    return(geo_selections)
     
+
   })
 }
+
+
+
 
 
 ##############################################################################
@@ -98,6 +97,7 @@ global_geography_filters_server <- function(id, geo_lookup) {
 # library(bslib)
 # library(shiny)
 # library(shinyjs)
+#library(data.table)
 # 
 # # dummy data
 # main_dataset <- data.frame(areatype = c("Scotland", "Health board", "Health board", "Council area", "Council area",  "HSC partnership", "Intermediate zone", "Intermediate zone"),
@@ -106,6 +106,7 @@ global_geography_filters_server <- function(id, geo_lookup) {
 # 
 # # geography lookup
 # geo_lookup <- unique(main_dataset)
+# geo_lookup <- setDT(geo_lookup) # set to data.table format 
 # 
 # 
 # # HSC partnerships
