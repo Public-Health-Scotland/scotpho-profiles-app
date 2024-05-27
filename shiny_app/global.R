@@ -26,11 +26,6 @@ library(sf) # note: eventually remove this from here
 
 
 
-
-
-
-
-
 # 2. Sourcing modules --------------------------------------------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
@@ -39,8 +34,8 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
+techdoc <- readRDS("data/techdoc.rds") # indicator technical info lookup
 geo_lookup <- setDT(geo_lookup)
-
 
 
 # shapefiles (for map) 
@@ -58,9 +53,6 @@ hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
 scot_bound <- sf::st_as_sf(scot_bound)
-
-
-
 
 
 # 4. lists ----------------------------------------------------------

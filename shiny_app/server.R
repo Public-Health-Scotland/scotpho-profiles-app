@@ -57,7 +57,7 @@ function(input, output, session) {
   profile_name <- reactiveVal() # to store full name (i.e. Health and Wellbeing)
   profile <- reactiveVal() # to store abbreviated name (i.e. HWB)
 
-  
+
   # when a user switches tab, update the 2 x reactive values created above 
   observeEvent(input$nav, {
     profile(input$nav) # update the object called 'profile' with the nav id (i.e. HWB)
@@ -82,9 +82,6 @@ function(input, output, session) {
   })
 
   
-  
-  
-    
   # data filtered by profile (input$nav stores info on the tab the user is on)
   # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
   # note: since not yet filtered by geography here, this can be used to pass to other modules to create
@@ -139,9 +136,9 @@ function(input, output, session) {
   rank_mod_server("pop_rank", profile_data, geo_selections)
   rank_mod_server("tob_rank", profile_data, geo_selections)
   
-
-
-  
+  # logic controlling inequalities layout page
+  # takes profile data and further filters by selected areatype
+  inequality_server("hwb_inequality", profile_data, geo_selections)
   
 } # close main server function
 

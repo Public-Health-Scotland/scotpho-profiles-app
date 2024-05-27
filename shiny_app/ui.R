@@ -78,7 +78,7 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
-                nav_panel(title = "Inequalities"))),
+                nav_panel(title = "Inequalities", inequality_ui("hwb_inequality")))),
 
     # Children and young people
     nav_panel(value = "CYP",
