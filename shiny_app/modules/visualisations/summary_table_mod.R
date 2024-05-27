@@ -1,5 +1,4 @@
 ### to do 
-# - decide how to present scotland data since spine chart doesn't make sense?
 # get small example app working properly
 
 
@@ -48,23 +47,20 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
   moduleServer(id, function(input, output, session) {
     
     
-    summaryData <- reactive({
-      
-      # filter data by areatype and areaname
-      dt <- filtered_data() |>
-        filter(areaname == selected_geo()$areaname & areatype == selected_geo()$areatype)
-      
+    # prepare local summary data 
+    local_summary <- reactive({
+      req(selected_geo()$areatype != "Scotland")
       
       # convert to data.table format (using data.table package) to run quicker 
-      dt <- as.data.table(dt)
+      dt <- setDT(filtered_data())
       
-      
-      # filter by chosen area and get latest data for each indicator
+      # filter data by areatype and areaname
+      dt <- dt[areaname == selected_geo()$areaname & areatype == selected_geo()$areatype]
+
+      # get latest data for each indicator
       chosen_area <- dt[type_definition != "Number",
                         .SD[!is.na(measure) & year == max(year)], by = indicator]
-      
-      
-      
+
       # include scotland figures for comparison
       scotland <- main_dataset[areaname == "Scotland"]
       chosen_area <- chosen_area[scotland, on = c("ind_id", "year"), scotland_value := scotland$measure]
@@ -146,46 +142,80 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     })
     
     
+    
+    
+    # prepare scotland summary data 
+    scotland_summary <- reactive({
+      req(selected_geo()$areatype == "Scotland")
+      
+      # set the profile data to data.table format
+      dt <- setDT(filtered_data())
+      
+      # filter on scotland 
+      dt <- dt[areaname == "Scotland" & type_definition != "number"]
+      
+      # order the data before grouping
+      setorder(dt, indicator, year)
+      
+      # aggregate to 1 row per indicator (this step is equivalent using group_by() and summarise() from dplyr)
+      dt <- dt[,.(measures = list(measure), # for the trend chart 
+                  years = list(year), # for the trend chart 
+                  domain = first(domain), # for the table 
+                  def_period = last(def_period), # for the table
+                  type_definition = first(type_definition), # for the table
+                  measure = first(measure)),# for the table
+               by = indicator]
+      
+      # create some additional cols
+      dt <- dt[, trend := NA] # empty column to place chart in 
+      dt <- dt[, unique_id := paste0(indicator, Sys.time())] # unique id for each chart 
+      
+      # set domain column as the first in the table
+      setcolorder(dt, "domain")
+      
+      dt
+      
+      
+    })
+    
+
+    
+    
     output$summary_table <- renderReactable({
       
-      req(selected_geo())
-      req(selected_profile())
-      req(filtered_data())
+      # determine which dataset to use
+      data <- if(selected_geo()$areatype == "Scotland"){
+        scotland_summary()
+      } else {
+        local_summary()
+      }
       
-      reactable(summaryData(),
-                compact = TRUE,
-                defaultExpanded = T,
-                sortable = F,
-                highlight = TRUE,
-                theme = reactableTheme(
-                  headerStyle = list(backgroundColor = "#ECECEC")
-                ),
-                columns = list(
-                  
-                  # domain column 
-                  domain = colDef(
-                    name = "domain",
-                    maxWidth = 120,
-                    # this JS function hides domain name from appearing on every row
-                    # i.e. gives appearance of 'merged' cells
-                    style = JS("function(rowInfo, column, state) {
+      
+      # domain column 
+      domain =  colDef(
+        name = "domain",
+        maxWidth = 120,
+        # this JS function hides domain name from appearing on every row
+        # i.e. gives appearance of 'merged' cells
+        style = JS("function(rowInfo, column, state) {
                                          const prevRow = state.pageRows[rowInfo.viewIndex - 1]
                                          if (prevRow && rowInfo.values['domain'] === prevRow['domain']) {
                                            return {visibility: 'hidden'}
                                          }
                                        }
-                                     ")),
-                  
-                  # indicator column --------
-                  indicator = colDef(
-                    name = "indicator",
-                    minWidth = 320,
-                    html = TRUE,
-                    
-                    # this JS function creates clickable links to view trend data
-                    # when user clicks an indicator, it navigates to 'trends' tab
-                    # and updates filters on that tab to that particular indicator and users chosen geography area
-                    cell = JS(" function(rowInfo){
+                                     "))
+      
+      
+      # indicator column --------
+      indicator = colDef(
+        name = "indicator",
+        minWidth = 320,
+        html = TRUE,
+        
+        # this JS function creates clickable links to view trend data
+        # when user clicks an indicator, it navigates to 'trends' tab
+        # and updates filters on that tab to that particular indicator and users chosen geography area
+        cell = JS(" function(rowInfo){
                                               return `<div>
                                                       <div style =  'font-weight: bold;'>${rowInfo.values['indicator']}</div>
                                                       <div style = 'margin-top: 3px;'>
@@ -195,33 +225,35 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                                                                   <span> • </span><span>${rowInfo.values['def_period']}
                                                                   </span>
                                                                      </div>
-                                                                   </div>`;}")),
-                  
-                  
-                  
-                  # Scotland column -------
-                  scotland_value = colDef(
-                    maxWidth = 80,
-                    name = "Scotland",
-                    cell = function(value){
-                      div(style = "margin-top: 19px;", value)
-                    }
-                  ),
-                  
-                  # Chosen area column -------
-                  measure = colDef(
-                    maxWidth = 80,
-                    name = as.character(selected_geo()$areaname),
-                    cell = function(value){
-                      div(style = "margin-top: 19px;", value)
-                    }
-                  ),
-                  
-                  
-                  # spine chart column
-                  chart = colDef(html = T,
-                                 minWidth = 200,
-                                 cell = JS("
+                                                                   </div>`;}"))
+      
+      # Scotland column -------
+      scotland_value = colDef(
+        maxWidth = 80,
+        name = "Scotland",
+        cell = function(value){
+          div(style = "margin-top: 19px;", value)
+        }
+      )
+      
+      
+      
+      # Chosen area column -------
+      measure = colDef(
+        maxWidth = 80,
+        name = as.character(selected_geo()$areaname),
+        cell = function(value){
+          div(style = "margin-top: 19px;", value)
+        }
+      )
+      
+      
+      
+      
+      # spine chart column
+      chart = colDef(html = T,
+                     minWidth = 200,
+                     cell = JS("
               function(rowInfo) {
                 var containerId = rowInfo.row.unique_id;
                 var rowData = rowInfo.row;
@@ -312,18 +344,130 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
 
                 return chartHTML;
               }
-            ")),
-            # hidden columns that are used for other parts of the summary table (i.e. within other columns or for the spine chart )
-                  worst = colDef(show = FALSE),
-                  p25 = colDef(show = FALSE),
-                  p75 = colDef(show = FALSE),
-                  best = colDef(show = FALSE),
-                  chosen_value = colDef(show = FALSE),
-                  def_period = colDef(show = FALSE),
-                  marker_colour = colDef(show = FALSE),
-                  type_definition = colDef(show = FALSE),
-                  unique_id = colDef(show = FALSE)
-                ), defaultPageSize = nrow(summaryData()))
+            "))
+      
+      
+      
+      trend = colDef(
+        html = TRUE,
+        cell = JS("
+            function(rowInfo) {
+              var containerId = rowInfo.row.unique_id;
+              var chartHTML = '<div id=\"' + containerId + '\" style=\"height: 100px; width: 100%\"></div>';
+              
+              setTimeout(function() {
+                Highcharts.chart(containerId, {
+                  chart: {
+                    type: 'line',
+                    animation: false
+                  },
+                  title: {
+                    text: ''
+                  },
+                  xAxis: {
+                    categories: rowInfo.row.years,
+                    labels: {
+                      enabled: false
+                    },
+                    title: {
+                      text: null
+                    },
+                    tickLength: 0,
+                    lineWidth: 0
+                  },
+                  yAxis: {
+                    title: {
+                      text: null,
+                      
+                    },
+                    labels: {
+                      enabled: false
+                    },
+                    gridLineWidth: 0
+                  },
+                  series: [{
+                    name: '',
+                    data: rowInfo.row.measures,
+                    color: '#0078D4',
+                    marker: {
+                    enabled: true,
+                    radius: 3 
+                    }
+                    
+                  }],
+                  credits: {
+                      enabled: false
+                    },
+                    exporting: {
+                      enabled: false
+                    },
+                    tooltip: {
+                      enabled: false
+                    },
+                    legend: { 
+                    enabled: false 
+                    },
+                    plotOptions: {
+                      series: {
+                        animation: false,
+                        stacking: 'normal',
+                        dataLabels: {
+                          enabled: false
+                        },
+                        enableMouseTracking: false
+                      }
+                    }
+                });
+              }, 20); // add brief delay before rendering charts
+              
+              return chartHTML;
+            }
+          ")
+      )
+      
+      
+      
+      if(selected_geo()$areatype == "Scotland"){
+        cols <- list(domain = domain, 
+                     indicator = indicator,
+                     measure = measure, 
+                     trend = trend,
+                     def_period = colDef(show = FALSE),
+                     years = colDef(show = FALSE),
+                     measures = colDef(show = FALSE),
+                     type_definition = colDef(show = FALSE),
+                     unique_id = colDef(show = FALSE)
+                     )
+      } else {
+        cols <- list(domain = domain, 
+                     indicator = indicator, 
+                     scotland_value = scotland_value, 
+                     measure = measure, 
+                     chart = chart,
+                     worst = colDef(show = FALSE),
+                     p25 = colDef(show = FALSE),
+                     p75 = colDef(show = FALSE),
+                     best = colDef(show = FALSE),
+                     chosen_value = colDef(show = FALSE),
+                     def_period = colDef(show = FALSE),
+                     marker_colour = colDef(show = FALSE),
+                     type_definition = colDef(show = FALSE),
+                     unique_id = colDef(show = FALSE))
+      }
+      
+      
+      reactable(data,
+                compact = TRUE,
+                defaultPageSize = nrow(data),
+                defaultExpanded = T,
+                sortable = F,
+                highlight = TRUE,
+                theme = reactableTheme(
+                  headerStyle = list(backgroundColor = "#ECECEC")
+                ),
+                columns = cols)
+      
+ 
       
       
     })
@@ -331,7 +475,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     
     # download data module 
-    download_data_btns_server("download_summary_data", summaryData())
+    download_data_btns_server("download_summary_data", local_summary())
     
     
     
@@ -349,17 +493,24 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         
         td <- tempdir() # create a temporary directory
         
-        tempReport <- file.path(td, "spinecharts.Rmd") # rmarkdown file 
+        markdown_doc <- ifelse(selected_geo()$areatype == "Scotland", "scotland_summary_table_pdf.Rmd", "spinecharts.Rmd")
+        
+        tempReport <- file.path(td, markdown_doc) # rmarkdown file 
         tempLogo <- file.path(td, "scotpho_reduced.png") # scotpho logo to add to pdf
         
-        file.copy("spinecharts.Rmd", tempReport, overwrite = TRUE) 
+        file.copy(markdown_doc, tempReport, overwrite = TRUE) 
         file.copy("scotpho_reduced.png", tempLogo, overwrite = TRUE)
         
         # Set up parameters to pass to Rmd document
-        params <- list(reactive_df = summaryData(),
-                       chosen_area = selected_geo()$areaname,
-                       chosen_profile = selected_profile(),
-                       chosen_geography_level = selected_geo()$areatype
+        params <- list(
+          reactive_df = if (selected_geo()$areatype == "Scotland") {
+          scotland_summary()
+        } else {
+          local_summary()
+        },
+         chosen_area = selected_geo()$areaname,
+         chosen_profile = selected_profile(),
+         chosen_geography_level = selected_geo()$areatype
         )
         
         # create the pdf report 
