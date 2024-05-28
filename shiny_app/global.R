@@ -34,7 +34,7 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
-techdoc <- readRDS("data/techdoc.rds") # indicator technical info lookup
+techdoc <- read_parquet("data/techdoc") # indicator technical info lookup
 geo_lookup <- setDT(geo_lookup)
 
 
@@ -66,7 +66,8 @@ profiles_list <- list(
   ALC = "Alcohol",
   POP = "Population",
   TOB = "Tobacco",
-  MEN = "Mental Health")
+  MEN = "Mental Health",
+  ALL = "All Indicators")
 
 
 # HSC partnership names - used as the choices for an additional parent area filter 
