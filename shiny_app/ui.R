@@ -25,7 +25,7 @@ page_navbar(
 
   # header that appears across the top of each profile tab
   # including geography filters and info detailing selected geography and profile
-  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO'",
+  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO' && input.nav !== 'dt'",
                             tagList(
                               uiOutput("profile_header"),
                               uiOutput("areatype_header"),
@@ -153,7 +153,72 @@ page_navbar(
   nav_spacer(),
 
   # data tab -------------------------------------------------------------------
-  nav_panel("Download data"),
+            nav_panel("Download data",
+                      value = "dt",
+                      page_sidebar(fillable = FALSE,
+                                   sidebar = sidebar(width = 300, padding = 20,
+                                                     
+                                                     h2("Filters"),
+                                                     
+                                                     # clear filters button
+                                                     actionButton("clear_table_filters",
+                                                                  label = "Clear all filters",
+                                                                  icon ("eraser"),
+                                                                  class = "down"),
+
+                                                     
+                                                     # Geography filters
+                                                     jstreeOutput("geography_selector"),
+                                                     
+                                                     # profile filters
+                                                     virtualSelectInput(inputId = "profile_selector",
+                                                                        label = "Select profile(s)",
+                                                                        choices = unname(profiles_list),
+                                                                        disableSelectAll = FALSE,
+                                                                        multiple = TRUE,
+                                                                        search = TRUE,
+                                                                        searchByStartsWith = TRUE,
+                                                                        width = '100%',
+                                                                        zIndex = 100),
+                                                     
+                                                     # indicator filters
+                                                     virtualSelectInput(inputId = "indicator_selector",
+                                                                        label = "Select indicator(s)",
+                                                                        noOptionsText = "Select atleast one geography to see what indicators are available",
+                                                                        choices = NULL,
+                                                                        disableSelectAll = TRUE,
+                                                                        multiple = TRUE,
+                                                                        search = TRUE,
+                                                                        searchByStartsWith = TRUE,
+                                                                        dropboxWrapper = "body",
+                                                                        dropboxWidth = '400px',
+                                                                        width = '100%',
+                                                                        zIndex = 100),
+                                                     
+                                                     
+                                                     # time period filter
+                                                     radioGroupButtons(
+                                                       inputId = "time_period_selector",
+                                                       label = "Select time period:",
+                                                       choices = c("Latest available year", "All years"),
+                                                       selected = "Latest available year"
+                                                     )
+                                                     
+                                   ), # close sidebar
+                                   
+                                   h1("Data table"),
+                                   p("Use the filters to build a data table, which can then be downloaded in various
+	                                 formats using the button below. Please note that the table below is a preview. 
+	                                 The downloaded dataset will contain more columns containing metadata than are presented here."),
+                                   
+                                   # download data button
+                                   download_data_btns_ui(id = "datatable_downloads"),
+                                   
+                                   # data table
+                                   reactableOutput("data_tab_table")
+                                   
+                      ) # close layout
+            ), # close data table nav
 
   # source code link -------------------------------------------------------------------
   nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-tool/tree/master/shiny_app", target = "_blank")),
