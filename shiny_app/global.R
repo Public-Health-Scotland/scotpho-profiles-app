@@ -43,7 +43,7 @@ main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optda
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
-
+techdoc <- read_parquet("data/techdoc") # indicator technical info lookup
 
 
 # shapefiles (for map) 
