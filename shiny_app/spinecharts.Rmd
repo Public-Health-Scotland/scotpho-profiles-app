@@ -42,24 +42,7 @@ library(knitr)
 library(stringr)
 
 chosen_area <- gsub("&", "\\\\&", params$chosen_area)
-
-
-profile <- if(params$chosen_profile == "HWB"){
-  "Health and Wellbeing"
-} else if (params$chosen_profile == "CYP"){
-  "Children and Young People"
-} else if (params$chosen_profile == "MEN"){
-  "Mental Health"
-} else if (params$chosen_profile == "ALC"){
-  "Alcohol"
-} else if (params$chosen_profile == "TOB"){
-  "Tobacco control"
-} else if (params$chosen_profile == "DRG"){
-  "Drugs"
-} else if (params$chosen_profile == "CWB"){
-  "Care and Wellbeing"
-} else {"Population"
-}
+profile <- gsub("&", "\\\\&", params$chosen_profile)
 
 ```
 
@@ -113,7 +96,7 @@ graph_directory <- tempdir()
 
 # # pivot reactive dataframe in longer format (required for ggplot)
  df <- params$reactive_df %>%
-   select(indicator, worst, p25, p75, best, scotland_value, measure, chosen_value, marker_colour, def_period, type_definition) %>%
+   select(domain, indicator, worst, p25, p75, best, scotland_value, measure, chosen_value, marker_colour, def_period, type_definition) %>%
    pivot_longer(cols = c("worst", "p25", "p75", "best"), values_to = "GraphPoint", names_to = "quantiles")
 
 
@@ -137,11 +120,11 @@ df$quantiles <- factor(df$quantiles, levels = c("worst", "p25", "p75", "best"))
 
 # the data to be displayed in table
 table <- df %>%
-  select(indicator, scotland_value, measure, def_period, type_definition) %>%
+  select(domain, indicator, scotland_value, measure, def_period, type_definition) %>%
   distinct() %>%
   mutate(ind = paste0(
     "\\textbf{",indicator, "}\n", "\\textit{\\small", def_period, " . ", type_definition, "}"))%>%
-  select(ind, measure, scotland_value) %>%
+  select(domain, ind, measure, scotland_value) %>%
   rename(scotland  = scotland_value) %>%
   mutate(id = row_number())
 
@@ -182,9 +165,11 @@ for (indicator in unique_indicators) {
 
 # # escape the '&' symbol from chosen geography so displays in column headers
  chosen_area <- gsub("&", "\\\\&", params$chosen_area)
+ # escape the '&' symbol from domains 
+ table$domain <- gsub("&", "\\\\&", table$domain)
 
 # define column headers for the pdf table
-col_names = c("indicator", chosen_area, "Scotland", "Spine chart"
+col_names = c("Domain", "Indicator", chosen_area, "Scotland", "Spine chart"
               )
 
 ```
@@ -195,7 +180,7 @@ col_names = c("indicator", chosen_area, "Scotland", "Spine chart"
 
  # the final table to be displayed with charts embedded
 table %>%
-
+  group_by(domain) %>%
   knitr::kable(
     format = "latex", # must be in latex format for pdf download
     booktabs = TRUE, # generic formatting
@@ -208,12 +193,13 @@ table %>%
   row_spec(0, background = "#032F4F", color = "white") %>%
 
   # set column widths
-   column_spec(1, width = "27em") %>% # indicator column
-   column_spec(2, width = "6em") %>% # chosen area column
-   column_spec(3, width = "3em") %>% # scotland column
+  column_spec(1, width = "8em") %>% # domaincolumn
+   column_spec(2, width = "20em") %>% # indicator column
+   column_spec(3, width = "6em") %>% # chosen area column
+   column_spec(4, width = "3em") %>% # scotland column
 
   # embed chart images on each row of final column
-   kableExtra::column_spec(4, image = sprintf("%s/%s.png", graph_directory, table$id), color = "white") %>%
+   kableExtra::column_spec(5, image = sprintf("%s/%s.png", graph_directory, table$id), color = "white") %>%
 
   # repeats column headings when table goes across multiple pages
    kable_styling(latex_options = c("repeat_header")) %>%
@@ -222,8 +208,9 @@ table %>%
   footnote(general="\\\\url{https://scotland.shinyapps.io/ScotPHO_profiles_tool/}",
            general_title = "Source: ", footnote_as_chunk = T, escape=F) %>%
 
-  # add lines under each row
-  row_spec(1:nrow(table), hline_after = T, background = "white")
+  # prevent domain from appearing on every row of column 
+    kableExtra::collapse_rows(columns = 1, valign = "top", row_group_label_position = "first", custom_latex_hline = 2:5, longtable_clean_cut = F)
+
 
 
 

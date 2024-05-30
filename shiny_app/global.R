@@ -23,6 +23,13 @@ library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable)
 library(leaflet)
 library(sf) # note: eventually remove this from here
+library(jsTreeR) # for data tab geography filters
+library(shinyWidgets)
+
+
+
+
+
 
 
 
@@ -34,8 +41,9 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
+geo_lookup <- setDT(geo_lookup) 
+main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc") # indicator technical info lookup
-geo_lookup <- setDT(geo_lookup)
 
 
 # shapefiles (for map) 
@@ -55,6 +63,9 @@ iz_bound <- sf::st_as_sf(iz_bound)
 scot_bound <- sf::st_as_sf(scot_bound)
 
 
+
+
+
 # 4. lists ----------------------------------------------------------
 
 # profile names list - for returning full profile name for tab header
@@ -68,6 +79,7 @@ profiles_list <- list(
   TOB = "Tobacco",
   MEN = "Mental Health",
   ALL = "All Indicators")
+
 
 
 # HSC partnership names - used as the choices for an additional parent area filter 
@@ -106,5 +118,4 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".btn-download_btns_menu { padding: 0}" # remove padding from download buttons menu so fits nicely in card footers
     )
   )
-
 
