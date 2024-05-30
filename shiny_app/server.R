@@ -140,6 +140,12 @@ function(input, output, session) {
   # takes profile data and further filters by selected areatype
   inequality_server("hwb_inequality", profile_data, geo_selections)
   
+  
+  # logic controlling inequalities layout page
+  # takes profile data and further filters by selected areatype
+  pop_groups_server("cwb_pop_groups", profile_data, geo_selections)
+  
+  
 } # close main server function
 
 ##END

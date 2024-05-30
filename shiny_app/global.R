@@ -37,6 +37,12 @@ geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 techdoc <- readRDS("data/techdoc.rds") # indicator technical info lookup
 geo_lookup <- setDT(geo_lookup)
 
+# temp data upload and simple wrangle
+i_data <- read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa.csv")
+
+test_data <-i_data %>% 
+  filter(split_name!="simd"&split_name!="geog")
+
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area
