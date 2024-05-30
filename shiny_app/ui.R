@@ -51,14 +51,18 @@ page_navbar(
                            layout_column_wrap(
                              profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", profile_icon = "line-chart"),
                              profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", profile_icon = "line-chart")
+                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", profile_icon = "line-chart")
                            ),
                            layout_column_wrap(
+                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", profile_icon = "line-chart"),
                              profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", profile_icon = "line-chart")
+                           ),
+                           
+                           layout_column_wrap(
                              profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco", profile_icon = "line-chart")
+                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco", profile_icon = "line-chart"),
+                             profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", profile_icon = "line-chart")
                            )
                          ),
 
@@ -145,7 +149,14 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("tob_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("tob_rank")),
-                nav_panel(title = "Inequalities")))
+                nav_panel(title = "Inequalities"))),
+    
+    nav_panel(value = "ALL",
+              "All Indicators",
+              navset_tab(
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank", rank_mod_ui("all_rank"))
+              ))
     
 
     ), #close nav menu

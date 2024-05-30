@@ -28,6 +28,8 @@ function(input, output, session) {
   profile_homepage_btn_modSERVER("pop_nav", nav_id = "POP", parent_session = session)
   profile_homepage_btn_modSERVER("tob_nav", nav_id = "TOB", parent_session = session)
   profile_homepage_btn_modSERVER("drg_nav", nav_id = "DRG", parent_session = session)
+  profile_homepage_btn_modSERVER("all_nav", nav_id = "ALL", parent_session = session)
+  
   
   
   # logic controlling opening of About ScotPHO, About ScotPHO and Explore Indicators pages from landing page
@@ -113,7 +115,13 @@ function(input, output, session) {
     dt <- setorder(dt, domain)
   })
   
-  
+  # create reactive dataset for all indicators to pass to module
+  # note: this will need modified when we move to individual profile datasets
+  # will need to combine the profile datasets and then remove any duplicates
+  all_indicators_data <- reactive({
+    main_dataset
+  })
+
   
   # logic controlling summary tables
   # takes profile data and further filters by selected geography
@@ -137,6 +145,8 @@ function(input, output, session) {
   rank_mod_server("men_rank", profile_data, geo_selections)
   rank_mod_server("pop_rank", profile_data, geo_selections)
   rank_mod_server("tob_rank", profile_data, geo_selections)
+  rank_mod_server("all_rank", all_indicators_data, geo_selections)
+  
   
   
   

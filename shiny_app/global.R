@@ -77,7 +77,8 @@ profiles_list <- list(
   ALC = "Alcohol",
   POP = "Population",
   TOB = "Tobacco",
-  MEN = "Mental Health")
+  MEN = "Mental Health",
+  ALL = "All Indicators")
 
 
 
