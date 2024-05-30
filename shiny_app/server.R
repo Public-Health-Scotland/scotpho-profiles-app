@@ -51,13 +51,13 @@ function(input, output, session) {
   # stores selected 'areaname' and selected 'areatype' which can be used throughout other modules
   # to filter data by geography, like this: geo_selections()$areaname 
   geo_selections <- global_geography_filters_server("geo_filters", geo_lookup)
-
-
+  
+  
   # reactive values to store info on selected profile 
   profile_name <- reactiveVal() # to store full name (i.e. Health and Wellbeing)
   profile <- reactiveVal() # to store abbreviated name (i.e. HWB)
-
-
+  
+  
   # when a user switches tab, update the 2 x reactive values created above 
   observeEvent(input$nav, {
     profile(input$nav) # update the object called 'profile' with the nav id (i.e. HWB)
@@ -69,18 +69,21 @@ function(input, output, session) {
   output$profile_header <- renderUI({
     tags$h1("Profile:", profile_name(), class = "profile-header")
   })
-
-
+  
+  
   # dynamic header showing selected areatype
   output$areatype_header <- renderUI({
     tags$h2("Area type:", geo_selections()$areatype, class = "geography-header")
   })
-
+  
   # dynamic header showing selected areaname
   output$areaname_header <- renderUI({
     tags$h2("Area name:", geo_selections()$areaname, class = "geography-header")
   })
-
+  
+  
+  
+  
   
   # data filtered by profile (input$nav stores info on the tab the user is on)
   # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
@@ -93,14 +96,14 @@ function(input, output, session) {
     dt <- dt[substr(profile_domain1, 1, 3) == profile() |
                substr(profile_domain2, 1, 3) == profile() |
                substr(profile_domain3, 1, 3) == profile()]
-
-      # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-      # is assigned to more than one profile (and therefore more than one domain)
+    
+    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+    # is assigned to more than one profile (and therefore more than one domain)
     dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profile(), 
-                           substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                           fifelse(substr(profile_domain2, 1, 3) == profile(), 
-                                   substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                   substr(profile_domain3, 5, nchar(as.vector(profile_domain3))))
+                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+                                 fifelse(substr(profile_domain2, 1, 3) == profile(), 
+                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3))))
     )]
     
     # Convert 'domain' to factor
@@ -108,11 +111,10 @@ function(input, output, session) {
     
     # Arrange by 'domain'
     dt <- setorder(dt, domain)
-    
   })
   
-
-
+  
+  
   # logic controlling summary tables
   # takes profile data and further filters by selected geography
   # prepares summary data and displays in a table with spinecharts
@@ -124,7 +126,7 @@ function(input, output, session) {
   summary_table_server("men_summary", geo_selections, profile_name, profile_data)
   summary_table_server("pop_summary", geo_selections, profile_name, profile_data)
   summary_table_server("tob_summary", geo_selections, profile_name, profile_data)
-
+  
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype
   rank_mod_server("hwb_rank", profile_data, geo_selections)
@@ -136,9 +138,219 @@ function(input, output, session) {
   rank_mod_server("pop_rank", profile_data, geo_selections)
   rank_mod_server("tob_rank", profile_data, geo_selections)
   
-  # logic controlling inequalities layout page
-  # takes profile data and further filters by selected areatype
-  inequality_server("hwb_inequality", profile_data, geo_selections)
+  
+  
+  
+  ###############################################
+  #
+  # Server logic for data tab
+  #
+  ###############################################
+
+  # Update indicator filter choices ----
+  # based on geography selected
+  # (and further updating if profile also selected)
+  observe({
+    
+    # return selected geographies
+    paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
+    
+    # filter selected dataset by selected geographies
+    data <- main_dataset |>
+      subset(path %in% paths)
+    
+    # create vector of available indicators
+    available_indicators <- unique(data$indicator)
+    
+    # Store the current selection of indicators (if there were any)
+    # i.e. if you've switched dataset but had previously selected some indicators
+    current_selected_indicators <- input$indicator_selector
+    
+    
+    # Further filter indicators if a profile is selected
+    if (!is.null(input$profile_selector) && input$profile_selector != "") {
+      
+      profile_filtered_data <- data |>
+        filter(if_any(contains("profile_domain"),
+                      ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_selector, profiles_list)]))
+      
+      
+      
+      
+      
+      available_indicators <- unique(profile_filtered_data$indicator)
+      
+    }
+    
+    
+    # Update the filter choices
+    updateVirtualSelect(session = session,
+                        inputId = "indicator_selector",
+                        choices = available_indicators)
+    
+    # Reapply the previous selection if they are still valid
+    valid_selections <- intersect(current_selected_indicators, available_indicators)
+    
+    if (!is.null(valid_selections) && length(valid_selections) > 0) {
+      updateVirtualSelect(session = session,
+                          inputId = "indicator_selector",
+                          selected = valid_selections)
+      
+    }
+    
+  })
+  
+  
+  
+  ## reset all filters -----
+  # when 'clear filters' button is clicked 
+  observeEvent(input$clear_table_filters, {
+    
+    # reset the dataset selector to "Main Dataset"
+    updateRadioGroupButtons(session, 
+                            inputId = "dataset_selector", 
+                            selected = "Main Dataset")
+    
+    # reset the geographies to those available for the main dataset
+    jstreeUpdate(session, "geography_selector", main_data_geo_nodes)
+    
+    
+    # reset the time period filter to max year per indicator
+    updateRadioGroupButtons(session = session,
+                            inputId = "time_period",
+                            selected = "Latest available year")
+    
+    # reset the indicator list to those present in main dataset
+    updateVirtualSelect(session = session,
+                        inputId = "indicator",
+                        selected = NULL,
+                        choices = NULL)
+    
+    # reset the profile filter
+    updateVirtualSelect(session = session,
+                        inputId = "profile_selector",
+                        selected = NULL,
+                        choices = profiles_list)
+    
+  })
+  
+  
+
+  
+  
+  # render the geography filter ----
+  #using the dynamic choices from step above
+  output$geography_selector <- renderJstree({
+    jstree(
+      main_data_geo_nodes,
+      checkboxes = TRUE,
+      selectLeavesOnly = TRUE,
+      theme = "proton"
+    )
+  })
+  
+
+  
+  
+  # data to display/download ----
+  tableData <- reactive({
+    
+    # selected dataset
+    data <- main_dataset 
+    
+    # filter by selected geographies
+    paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
+    data <- data |> subset(path %in% paths)
+    
+    
+    # filter by time period 
+    if(input$time_period_selector == "Latest available year") {
+      setDT(data) # switch to data.table format here as quicker than grouping using dplyr
+      data <- data[, .SD[year == max(year)], by = indicator]
+    } else data
+    
+
+    
+    
+    # if profile selected (but indicators have not been)
+    # then filter by selected profiles only 
+    if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
+      data <- data |>
+        filter(if_any(contains("profile_domain"),
+                      ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_selector, profiles_list)]))
+      
+      
+      # if a profile has been selected (and some indicators too)
+      # then filter by profile and indicator
+    } else if(isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
+      
+      data <- data |>
+        filter(if_any(contains("profile_domain"),
+                      ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_selector, profiles_list)])) |>
+        filter(indicator %in% input$indicator_selector)
+      
+      
+      
+      # if no profile has been selected but some indicators have
+      # then filter by indicators only 
+    } else if(!isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
+      
+      data <- data |>
+        filter(indicator %in% input$indicator_selector)
+      
+    } else {
+      
+      # if nothings been selected from profile or indicator filter then return all available indicators
+      # for chosen dataset/geography/time period
+      data <- data
+    }
+    
+    # rename some columns 
+    data <- data |>
+      rename(area_code = code, 
+             area_type = areatype, 
+             area_name = areaname, 
+             period = def_period, 
+             upper_confidence_interval = upci, 
+             lower_confidence_interval = lowci)
+    
+    # columns to return
+      data <- data |>
+        select(area_code, area_type, area_name, year, period, type_definition,
+               indicator, numerator, measure, 
+               upper_confidence_interval, lower_confidence_interval) 
+               
+    
+  })
+  
+  
+  # table of results ---------
+  # table of results ---------
+  output$data_tab_table <- renderReactable({
+    
+    reactable(tableData() ,
+              compact = TRUE,
+              columns = list(
+                area_code = colDef(show = FALSE),
+                year = colDef(show = FALSE),
+                upper_confidence_interval = colDef(show = FALSE),
+                lower_confidence_interval = colDef(show = FALSE),
+                indicator = colDef(minWidth = 200),
+                area_type = colDef(name = "Area type"),
+                area_name = colDef(name = "Area name"),
+                type_definition = colDef(name = "Type definition")
+              )
+    )
+    
+  })
+  
+  
+  
+  
+  # data table bulk download  -------
+  download_data_btns_server(id = "datatable_downloads", data = tableData)
+  
+  
   
 } # close main server function
 
