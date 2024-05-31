@@ -78,9 +78,10 @@ page_navbar(
     # Health and wellbeing
     nav_panel(value = "HWB",
               title = "Health & Wellbeing",
+              navigation_button_modUI(button_id="about_hwb", button_name = "About this profile", button_icon = icon("circle-info")),
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
                 nav_panel(title = "Inequalities", inequality_ui("hwb_inequality")))),
 
@@ -89,7 +90,7 @@ page_navbar(
               title = "Children & Young people",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("cyp_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("cyp_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("cyp_rank")),
                 nav_panel(title = "Inequalities"))),
 
@@ -98,7 +99,7 @@ page_navbar(
               title = "Care & Wellbeing",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("cwb_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
                 nav_panel(title = "Inequalities"))),
 
@@ -107,7 +108,7 @@ page_navbar(
               title = "Alcohol",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("alc_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("alc_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("alc_rank")),
                 nav_panel(title = "Inequalities"))),
 
@@ -116,7 +117,7 @@ page_navbar(
               title = "Drugs",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("drg_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("drg_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("drg_rank")),
                 nav_panel(title = "Inequalities"))),
 
@@ -130,24 +131,21 @@ page_navbar(
                 nav_panel(title = "Inequalities"))),
 
     # population
-
-
     nav_panel(value = "POP",
               "Population",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("pop_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("pop_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
                 nav_panel(title = "Inequalities"))),
 
     
     # tobacco
-
     nav_panel(value = "TOB",
               "Tobacco",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("tob_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("tob_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("tob_rank")),
                 nav_panel(title = "Inequalities"))),
     

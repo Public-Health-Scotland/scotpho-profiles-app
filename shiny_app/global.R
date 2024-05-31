@@ -82,9 +82,15 @@ profiles_list <- list(
 
 
 
-# HSC partnership names - used as the choices for an additional parent area filter 
+# Area names by geography type  including HB, CA, HSCP, alcohol and drugs partnership
+# HSC partnership names - also used as the choices for an additional parent area filter 
 # when intermediate zone/localities are selected to reduce the number of IZ/localities
 hscp_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="HSC partnership"]) 
+hb_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Health board"])
+ca_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Council area"])
+adp_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Alcohol & drug partnership"])
+hsc_loc_list <- sort(geo_lookup$areaname[geo_lookup$areatype== "HSC locality"])
+imz_list <- sort(geo_lookup$areaname[geo_lookup$areatype== "Intermediate zone"])
 
 
 # geography areatypes
@@ -119,3 +125,50 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
     )
   )
 
+
+# 6. Highcharter theme --------------------------------------------------------------
+
+chart_theme <- hc_theme(
+  
+  colors = c("#000000", "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99",
+             "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928"),
+  
+  chart = list(backgroundColor = NULL,
+               style = list(fontSize = "14px",
+                            fontFamily = "Arial")),
+  
+  title = list(
+    align = "left",
+    style = list(fontSize = "16px",
+                 fontWeight = "bold",
+                 color = "black",
+                 fontFamily = "Arial")), 
+  
+  subtitle = list(
+    align = "left",
+    style = list(color = "black",
+                 fontFamily = "Arial")),
+  
+  xAxis = list(
+    labels = list(
+      style = list(
+        fontSize = "14px"))),
+  
+  yAxis = list(
+    labels = list(
+      style = list(
+        fontSize = "14px")),
+    min = 0),
+  
+  legend = list(
+    itemStyle = list(fontFamily = "Arial",
+                     color = "black"),
+    itemHoverStyle = list(color = "black")),
+  
+  tooltip = list(
+    shadow = FALSE,
+    crosshairs = TRUE,
+    style = list(
+      fontFamily = "Arial",
+      fontSize = "14px"))
+)
