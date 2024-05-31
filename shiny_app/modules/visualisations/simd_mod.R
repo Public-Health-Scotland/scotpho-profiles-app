@@ -19,7 +19,7 @@ simd_navpanel_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    page_sidebar(
+    layout_sidebar(
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
                         # 3 x help buttons
