@@ -44,7 +44,7 @@ geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc") # indicator technical info lookup
-
+simd_dataset <- read_parquet("data/deprivation_data")
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area
