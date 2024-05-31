@@ -70,81 +70,46 @@ pop_groups_server <- function(id, profile_data, geo_selections) {
 
     # set data to be used in rank and trend charts
     filtered_data<- reactive({
-      subset(test_data, split_name== input$split_filter)
+      test_data() %>% 
+        filter(split_name== input$split_filter)
     })
 
 
+    pop_rank_data <- reactive({
+      filtered_data() %>%
+        filter(year == max(year))
+    })
     
   ############################################
   # Visualisations / data table  ----
   #############################################
   # 
-  output$pop_rank_chart <- renderHighchart({
-
-    # if there' no comparator selected, or the selected comparator is "area" then create a bar chart
-    # if(input$ci_switch == FALSE ) {
-
-      pop_rank_data = filtered_data%>%
-        filter(year==max(year))
-
-      x <-  hchart(object = pop_rank_data(),
-                   type = "bar", hcaes(x = split_value, y = rate)) |>
-        hc_yAxis(gridLineWidth = 0) 
-      #}
-
-  #     # include confidence intervals when ci switch is turned on on
-  # else if(input$ci_switch == TRUE) {
-  #       x <- x |>
-  #         hc_add_series(pop_rank_data(), "errorbar", hcaes(x = split_value, y = rate, low = lowci, high = upci), zIndex = 10)
-  #     }
-  # 
-  #   #x
-
-  })
+    output$pop_rank_chart <- renderHighchart({
+      shiny::validate(
+        need(nrow(pop_rank_data()) > 0, "Data data are not available at the selected level. Please select either Scotland, Health board or Council area.")
+      )
+      
+      x <- hchart(pop_rank_data(), 
+                  type = "column", hcaes(x = sub_code, y = rate, color = phs_colors("phs-blue"))) %>%
+        hc_yAxis(gridLineWidth = 0) %>%
+        hc_chart(backgroundColor = 'white') %>%
+        hc_xAxis(title = list(text = "")) %>%
+        hc_yAxis(title = list(text = "")) %>%
+        hc_plotOptions(series = list(animation = FALSE),
+                       column = list(groupPadding = 0))
+      
+      
+      
+      if(input$ci_switch) {
+        x <- x |>
+          hc_add_series(pop_rank_data(), "errorbar", hcaes(x = sub_code, low = lowci, high = upci), zIndex = 10)
+      }
+      
+      x
+    }) # end pop_rank_chart
     
-    # pop trend chart
-    output$pop_trend_chart <- renderHighchart({
-      
-      # create reactive dataset filtered by selected indicator and geography area
-      pop_trend_chart <- reactive({
-        filtered_data()  %>%
-          filter(split_name== input$split_filter)
-        })
-      
-      # define objects for chart titles and labels
-      selected_area <- unique(filtered_data()$location_name)
-      definition <- unique(filtered_data()$def_period)
-      split_name <- input$split_filter
-      chart_title <- paste(definition, "in", selected_area, "by", split_name)
-      
-      
-      # generate name value for line chart
-      selected_split <- unique(filtered_data()$split_value)
-      
-        # create highchart object
-      chart <- highchart() %>%
-        hc_add_series(pop_trend_chart(),
-                      type = "line",
-                      hcaes(x = year, y = rate, group=split_value),
-                      name = selected_split) %>%
-        
-        
-        # rename titles and format legend
-        hc_title(text = chart_title) %>%
-        # hc_subtitle(text = type_definition) %>%
-        hc_xAxis(title = "") %>%
-        #  hc_yAxis(title = list(text = type_definition)) %>%
-        hc_legend(align = "left", verticalAlign = "top") %>%
-        #format tooltip
-        hc_tooltip(headerFormat = "", shared = TRUE) %>%
-        # set theme (defined in global script) currently copied from cd_trend and run in console
-        hc_add_theme(chart_theme)
-
-    
-    })
-    }
-    
- )    
+    }# closemodule server
+ )    # module server
 }# close server function
   
   

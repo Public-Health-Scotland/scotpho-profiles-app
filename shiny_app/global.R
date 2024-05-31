@@ -23,7 +23,7 @@ library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable)
 library(leaflet)
 library(sf) # note: eventually remove this from here
-
+library(readr) #im additiona will remove in future
 
 
 # 2. Sourcing modules --------------------------------------------------------------
