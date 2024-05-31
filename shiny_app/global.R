@@ -20,11 +20,12 @@ library(dplyr) # data wrangling
 library(htmlwidgets) # for download buttons
 library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
-library(reactable)
-library(leaflet)
+library(reactable) # for data tables
+library(leaflet) # for map
 library(sf) # note: eventually remove this from here
 library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
+library(bsicons) # for icons
 
 
 
