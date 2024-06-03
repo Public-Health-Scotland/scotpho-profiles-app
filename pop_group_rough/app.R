@@ -71,6 +71,29 @@ palette = phs_colours(c('phs-purple','phs-rust',  'phs-teal', 'phs-blue', 'phs-g
 split_name_list = unique(test_data$split_name)
 split_value_list = unique(test_data$split_value)
 
+# colour_pal_im = c(split_value == "16-24", phs_colors(colourname = "phs-purple"),
+#                    split_value == "25-34", phs_colors(colourname = "phs-magenta"),
+#                    split_value == "35-44", phs_colors(colourname = "phs-teal"),
+#                    split_value == "35-44", phs_colors(colourname = "phs-blue"),
+#                    split_value == "45-54", phs_colors(colourname = "phs-green"),
+#                    #
+#                    split_value == "55-64", phs_colors(colourname = "phs-purple-50"),
+#                    split_value == "65-74", phs_colors(colourname = "phs-rust"),
+#                    split_value == "75+", phs_colors(colourname = "phs-liberty"),
+#                    split_value == "Total ages", phs_colors(colourname = "phs-blue"),
+#                    #
+#                    split_value == "All sex", phs_colors(colourname = "phs-purple"),
+#                    split_value == "Female", phs_colors(colourname = "phs-teal"),
+#                    split_value == "Male", phs_colors(colourname = "phs-blue"),
+#                    #
+#                    split_value == "limiting_li", phs_colors(colourname = "phs-purple"),
+#                    split_value == "no_li", phs_colors(colourname = "phs-teal"),
+#                    split_value == "non_limiting_li", phs_colors(colourname = "phs-blue"),
+#                                )
+
+#color = "#FF0000", #red colour for average line
+
+
 
 ui <- fluidPage(
   useShinyjs(),  # Include shinyjs
