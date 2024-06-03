@@ -24,7 +24,7 @@ rank_mod_ui <- function(id) {
                         layout_column_wrap(
                           1/2,
                         actionButton(ns("rank_help"), label = "Help"),
-                        actionButton(ns("placeholder"), label = "Placeholder")
+                        indicator_definition_btn_ui(ns("rank_ind_def"))
                         ),
                         
                         # indicator filter (note this is a module)
@@ -153,7 +153,8 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
                                                        filtered_data = profile_data, 
                                                        geo_selections = geo_selections)
      
-
+    # calls definition button module server script and passes the actual indicator selected)
+    indicator_definition_btn_server("rank_ind_def", selected_indicator = selected_indicator)  
      
      # prepares data to be plotted --------------------------------------------
      rank_data <- reactive({
