@@ -257,6 +257,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       
       # create highchart object
       chart <- highchart() %>%
+        hc_plotOptions(series=list(animation=FALSE)) %>%
         hc_add_series(trend_chart_data_global(),
                       type = "line",
                       hcaes(x = year,
