@@ -143,14 +143,10 @@ function(input, output, session) {
     ineq_splits_data
   })  
   
-   # inequality_server("hwb_inequality", profile_data, geo_selections)
-  
-  
-  inequality_server(id = "hwb_inequality", dataset = ineq_splits_temporary, geo_selections = geo_selections)
-  
+
   # logic controlling inequalities layout page
   # takes profile data and further filters by selected areatype
-  pop_groups_server("cwb_pop_groups", profile_data, geo_selections)
+  pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections)
   
   
 } # close main server function

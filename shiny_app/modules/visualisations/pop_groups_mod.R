@@ -9,7 +9,7 @@
 
 ## ui function -----------------------------------------------------------------------
 # id = unique id 
-inequality_ui <- function(id) {
+pop_groups_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
@@ -90,7 +90,7 @@ inequality_ui <- function(id) {
 #######################################################
 
 
-inequality_server <- function(id, dataset, geo_selections) {
+pop_groups_server <- function(id, dataset, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     
