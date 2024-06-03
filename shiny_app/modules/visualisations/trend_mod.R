@@ -288,13 +288,29 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       if(input$ci_switch_trends == TRUE) {
         
         chart <- chart %>% 
+          
           hc_add_series(
-            trend_chart_data(),
+            trend_chart_data_global(),
             type = "arearange",
             name = "95% confidence interval",
             linked_to = ":previous",
-            hcaes(x = year, low = lowci, high = upci),
-            color = hex_to_rgba("grey", 0.2),
+            hcaes(x = year, low = lowci, high = upci, group = areaname),
+            #color = hex_to_rgba("grey", 0.2),
+            fillOpacity = 0.2,
+            zIndex = -1, # plots the CI series behind the line series
+            marker = list(enabled = FALSE, # removes the markers for the CI series
+                          states = list(
+                            hover = list(
+                              enabled = FALSE)))) %>% 
+          
+          hc_add_series(
+            trend_chart_data_comparators(),
+            type = "arearange",
+            name = "95% confidence interval",
+            linked_to = ":previous",
+            hcaes(x = year, low = lowci, high = upci, group = areaname),
+            #color = hex_to_rgba("grey", 0.2),
+            fillOpacity = 0.2,
             zIndex = -1, # plots the CI series behind the line series
             marker = list(enabled = FALSE, # removes the markers for the CI series
                           states = list(
