@@ -100,7 +100,8 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
-                nav_panel(title = "Inequalities"))),
+                nav_panel(title = "Deprivation", simd_navpanel_ui("cwb_simd")),
+                nav_panel(title = "Population Groups"))),
 
     # alcohol
     nav_panel(value = "ALC",

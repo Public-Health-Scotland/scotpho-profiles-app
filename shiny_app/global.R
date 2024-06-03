@@ -20,11 +20,12 @@ library(dplyr) # data wrangling
 library(htmlwidgets) # for download buttons
 library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
-library(reactable)
-library(leaflet)
+library(reactable) # for data tables
+library(leaflet) # for map
 library(sf) # note: eventually remove this from here
 library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
+library(bsicons) # for icons
 
 
 
@@ -44,7 +45,7 @@ geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc") # indicator technical info lookup
-
+simd_dataset <- read_parquet("data/deprivation_data")
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area
@@ -115,7 +116,8 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
     list(
       ".geography-header { color: #9B4393; font-weight: 600 !important; }", # geography header light phs purple colour
       ".profile-header { color: #3F3685; font-weight: bold !important; }", # profile header darker phs purple colour
-      ".btn-download_btns_menu { padding: 0}" # remove padding from download buttons menu so fits nicely in card footers
+      ".btn-download_btns_menu { padding: 0}", # remove padding from download buttons menu so fits nicely in card footers
+      ".chart-header { font-weight: bold !important;}" # make chart titles bold
     )
   )
 

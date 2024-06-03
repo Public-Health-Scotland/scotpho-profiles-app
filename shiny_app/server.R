@@ -123,6 +123,11 @@ function(input, output, session) {
   })
 
   
+  # temporarily making simd data reactive 
+  simd_data2 <- reactive({
+    simd_dataset
+  })
+  
   # logic controlling summary tables
   # takes profile data and further filters by selected geography
   # prepares summary data and displays in a table with spinecharts
@@ -148,7 +153,8 @@ function(input, output, session) {
   rank_mod_server("all_rank", all_indicators_data, geo_selections)
   
   
-  
+  # logic controlling simd visualisations
+  simd_navpanel_server("cwb_simd", simd_data2, geo_selections)
   
   
   ###############################################
@@ -334,7 +340,6 @@ function(input, output, session) {
   })
   
   
-  # table of results ---------
   # table of results ---------
   output$data_tab_table <- renderReactable({
     
