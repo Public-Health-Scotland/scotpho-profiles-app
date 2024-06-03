@@ -14,18 +14,20 @@
 
 
 # module ui function
-# when using this function, need to choose profile name and icon 
-profile_homepage_btn_modUI <- function(id, profile_name, profile_icon) {
+# icon and description of the profile are optional arguments
+profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, description = NULL){
   ns <- NS(id)
   bslib::card(
     full_screen = FALSE,
     bslib::card_body(
-      actionLink(inputId = ns("profile_nav"), 
-                 label = 
-                   div(class = "d-flex flex-column align-items-center", 
-                       div(class = "icon-box",icon(profile_icon, class = "fa-3x")),
-                       h3(profile_name),
-                       icon("chevron-right", class = "fa-1x")))))}
+      actionLink(inputId = ns("profile_nav"), style = "text-decoration: none; color: black;",
+                 div(class = "d-flex flex-column align-items-center", 
+                     div(icon(profile_icon, class = "fa-3x")),
+                     br(),
+                     h3(profile_name, style = "color: #3F3685; font-weight: 700;"),
+                     p(description)))))
+}
+
 
 
 # module server function
