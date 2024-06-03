@@ -298,6 +298,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
             hcaes(x = year, low = lowci, high = upci, group = areaname),
             #color = hex_to_rgba("grey", 0.2),
             fillOpacity = 0.2,
+            showInLegend = FALSE, # don't need CI labels in legend
             zIndex = -1, # plots the CI series behind the line series
             marker = list(enabled = FALSE, # removes the markers for the CI series
                           states = list(
@@ -312,6 +313,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
             hcaes(x = year, low = lowci, high = upci, group = areaname),
             #color = hex_to_rgba("grey", 0.2),
             fillOpacity = 0.2,
+            showInLegend = FALSE, # don't need CI labels in legend
             zIndex = -1, # plots the CI series behind the line series
             marker = list(enabled = FALSE, # removes the markers for the CI series
                           states = list(
