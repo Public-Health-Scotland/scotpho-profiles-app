@@ -138,8 +138,15 @@ function(input, output, session) {
   
   # logic controlling inequalities layout page
   # takes profile data and further filters by selected areatype
-  inequality_server("hwb_inequality", profile_data, geo_selections)
+
+  ineq_splits_temporary <- reactive({
+    ineq_splits_data
+  })  
   
+   # inequality_server("hwb_inequality", profile_data, geo_selections)
+  
+  
+  inequality_server(id = "hwb_inequality", dataset = ineq_splits_temporary, geo_selections = geo_selections)
   
   # logic controlling inequalities layout page
   # takes profile data and further filters by selected areatype

@@ -78,10 +78,10 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
-                nav_panel(title = "Inequalities", inequality_ui("hwb_inequality"))
+                nav_panel(title = "Inequalities", inequality_ui("hwb_inequality")),
                 
                 #####
-               # nav_panel(title = "Population groups", pop_groups_ui("hwb_summary"))
+                nav_panel(title = "Population groups", pop_groups_ui("inequality_ui"))
                 ###
                 )),
     
