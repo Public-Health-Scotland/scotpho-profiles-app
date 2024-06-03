@@ -73,7 +73,7 @@ simd_navpanel_ui <- function(id) {
           bslib::nav_item(
             bslib::popover(
               title = "Filters",
-              bsicons::bs_icon("gear", size = "1.7em"),
+              bsicons::bs_icon("bi-card_checklist", size = "1.7em"),
               checkboxInput(ns("bar_ci_switch"), label = " include confidence intervals", FALSE),
               selectInput(ns("simd_years_filter"), label = "select year", choices = NULL)
             )
@@ -223,12 +223,11 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
       # add the totals back on as a column 
       dt <- dt[totals, on = "trend_axis"]
       # create colour palette
-      dt <- dt[, colour_pal := fcase(quintile == "1 - most deprived", phs_colors(colourname = "phs-purple"),
-                                     quintile == "2", phs_colors(colourname = "phs-magenta"),
-                                     quintile == "3", phs_colors(colourname = "phs-teal"),
-                                     quintile == "4", phs_colors(colourname = "phs-blue"),
-                                     default = phs_colors(colourname = "phs-green"))]
-      
+      dt <- dt[, colour_pal := fcase(quintile == "1 - most deprived", phs_colors(colourname = "phs-blue"),
+                                     quintile == "2", colour = "#c8c6d1", # phs graphite (need colours that are unique for line chart but effectively not noticible when rendered)
+                                     quintile == "3", colour = "#c8c6d2", # phs graphite-ish
+                                     quintile == "4", colour = "#c8c6d3", # phs graphite -ish#2
+                                     default = phs_colors(colourname = "phs-magenta"))]
       dt
       
     })
@@ -348,7 +347,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
           trend_data(),
           "line",
           name = "Average",
-          color = "#FF0000",
+          color = "#C73918",
           hcaes(x = trend_axis, y = avg)
         )
         
@@ -409,7 +408,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
           name = "Average",
           data = bar_data()$avg,
           type = "line",
-          color = "#FF0000", #red colour for average line
+          color = "#C73918", #red colour for average line
           marker = list(enabled = FALSE),
           enableMouseTracking = FALSE) #turns off mouse tracking on average line only
       }
