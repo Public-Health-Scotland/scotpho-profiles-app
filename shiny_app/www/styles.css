@@ -1,9 +1,7 @@
-
-
-
 /* a grey container to place dashboard items in*/ 
 .grey-container{
-  background-color:#F7F7F7
+  background-color:#F7F7F7;
+  padding: 10px;
 }
  
 
@@ -67,70 +65,6 @@
 
 
 
-
-/* Adding orange border to buttons when 'focused' on for accessibility reasons*/
-.hero-button:focus {
-  outline: 3px solid orange;}
-  
-
-/* section 2: boxes on homepage linking to different tabs*/ 
-
-
-/* Homepage - styling clickable buttons to take to new tab*/
-.featured-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    box-shadow: rgb(27 31 35 / 10%) 0 1px 0;
-    flex:1; /* ensures that the boxes are evenly spaced in the container*/
-    margin:5px;
-    color:black;
-    }
-    
-/* Homepage - styling clickable buttons to take to new tab - change backaground color to lght grey on hover*/    
- .featured-item:hover{
-   cursor: pointer;
-   background-color: #e0e0e0;
-   
-
-}   
-
-
-
-/* Tab buttons - centre position all the text  */     
-.features-text-section {
-    text-align: center!important;
-    padding: 1rem;
-}
-
-
-
-
-/* Format icons on homepage*/ 
-.icon-box {
-    height: 75px;
-    width: 75px;
-    border-radius: 50%;
-    margin: 15px auto 35px auto;
-    margin-bottom:10px;
-    background: #a6a6a6;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #def4ff;
-    color: #3f3685;
-
-}
-
-
-/* section 3: what's new/ indicator updates boxes*/ 
-
-
 /* make small cards in middle container white with even space between them in the container */
 .white-box{
   background-color:white;
@@ -189,8 +123,3 @@
   column-gap:20px;
   padding:15px;
 }
-
-
-
-
-
