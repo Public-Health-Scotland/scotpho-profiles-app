@@ -278,12 +278,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(
           (areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) | # filter by global geography selection
-            areaname %in% input$hb_filter |  # filter by selected health boards
-            areaname %in% input$ca_filter | # filter by selected council areas
-            areaname %in% input$adp_filter |# filter by selected adps
-            areaname %in% input$hscp_filter | #filter by selected hscps
-            areaname %in% IMZ_selection() | # filter by selected IZs
-            areaname %in% Locality_selection() # filter by selected HSC localities
+            (areaname %in% input$hb_filter & areatype == "Health board")|  # filter by selected health boards
+            (areaname %in% input$ca_filter & areatype == "Council area")| # filter by selected council areas
+            (areaname %in% input$adp_filter & areatype == "Alcohol & drug partnership") |# filter by selected adps
+            (areaname %in% input$hscp_filter & areatype == "HSC partnership")| #filter by selected hscps
+            (areaname %in% IMZ_selection() & areatype == "Intermediate zone")| # filter by selected IZs
+            (areaname %in% Locality_selection() & areatype == "HSC locality")# filter by selected HSC localities
         )
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
