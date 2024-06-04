@@ -123,3 +123,8 @@
   column-gap:20px;
   padding:15px;
 }
+
+
+
+/*Style for actionbuttons (reduces padding around text) */
+.act-btn{ padding: 10px 10px; margin-top: 5px; margin-left: 3px}
