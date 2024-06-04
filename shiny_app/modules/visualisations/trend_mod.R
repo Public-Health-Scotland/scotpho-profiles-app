@@ -316,7 +316,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       
       # display 3 x titles
       tagList(
-        tags$h5(selected_indicator()), # selected indicator
+        tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
         tags$h6(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)), # time range
         tags$p(trend_data()$type_definition[1]) # type definiton
       )
