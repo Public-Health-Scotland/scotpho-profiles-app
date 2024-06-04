@@ -365,7 +365,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       # create highchart object
       chart <- hchart(trend_data(), 
                       "line", 
-                      hcaes(x = trend_axis, y = measure, group = areaname)) |>
+                      hcaes(x = trend_axis, y = measure, group = areaname),
+                      marker = list(enabled = TRUE)
+                      ) |>
         hc_plotOptions(series=list(animation=FALSE)) |>
         hc_xAxis(title = "") |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
@@ -383,7 +385,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         # title for downloaded version
         hc_exporting(
           chartOptions = list(
-            title = list(text = paste0(selected_indicator()))
+            title = list(text = paste0(selected_indicator())),
+            subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)))
           )
         )
       
