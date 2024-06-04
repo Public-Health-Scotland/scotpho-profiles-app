@@ -165,7 +165,7 @@ server <- function(input, output, session) {
   
   
   # ###############
-  # # trend chart
+  # # pop trend chart
   output$pop_trend_chart <- renderHighchart({
     
     # create reactive dataset filtered by selected indicator and geography area
