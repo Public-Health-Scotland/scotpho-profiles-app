@@ -8,7 +8,7 @@
 indicator_definition_btn_ui <- function(id) {
   ns <- NS(id)
   tagList(
-      actionButton(ns("indicator_definition"), label = "Definition",icon= icon('info'))
+      actionButton(ns("indicator_definition"), label = "Definition",icon= icon('info'), class = "btn-sm")
     )
 
 }
