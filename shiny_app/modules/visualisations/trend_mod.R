@@ -357,6 +357,11 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         input$numerator_button_trends == "Rate" ~ paste0(unique(trend_data()$type_definition)))
       
       
+      # create vector of colours - needs to be the same length as the 
+      # number of lines that need to be plotted otherwise CI colours
+      # wont match up properly
+      colours <- head(phs_palette, length(unique(trend_data()$areaname)))
+      
       # create highchart object
       chart <- hchart(trend_data(), 
                       "line", 
@@ -367,7 +372,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         hc_yAxis(title = list(text = type_definition)) |>
         hc_legend(align = "left", verticalAlign = "top") |>
         hc_chart(backgroundColor = 'white') |>
-        hc_colors(phs_palette) |>
 
         
         # format tooltip
@@ -405,7 +409,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         
       }
       
-      chart
+      # add phs colours
+      chart <- chart |>
+        hc_colors(colours)
+      
+      
+      chart 
     })
     
     
@@ -434,7 +443,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     # server for chart and data downloads
     download_chart_mod_server(id = "download_trends_chart", chart_id = session$ns("trend_chart"))
-    download_data_btns_server(id = "download_trends_data", data = trend_chart_data_global)
+    download_data_btns_server(id = "download_trends_data", data = trend_data)
     
     
   }
