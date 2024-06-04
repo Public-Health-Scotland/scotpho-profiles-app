@@ -367,6 +367,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         hc_yAxis(title = list(text = type_definition)) |>
         hc_legend(align = "left", verticalAlign = "top") |>
         hc_chart(backgroundColor = 'white') |>
+        hc_colors(phs_palette) |>
+
         
         # format tooltip
         hc_tooltip(headerFormat = "",
