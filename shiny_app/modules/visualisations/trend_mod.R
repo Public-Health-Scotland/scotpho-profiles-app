@@ -379,7 +379,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         # title for downloaded version
         hc_exporting(
           chartOptions = list(
-            title = list(text = selected_indicator())
+            title = list(text = paste0(selected_indicator()))
           )
         )
       
