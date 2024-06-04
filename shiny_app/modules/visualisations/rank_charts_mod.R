@@ -23,8 +23,8 @@ rank_mod_ui <- function(id) {
                         # help buttons
                         layout_column_wrap(
                           1/2,
-                        actionButton(ns("rank_help"), label = "Help"),
-                        indicator_definition_btn_ui(ns("rank_ind_def"))
+                        actionButton(ns("rank_help"), label = "Help", class="act-btn"),
+                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")
                         ),
                         
                         # indicator filter (note this is a module)
