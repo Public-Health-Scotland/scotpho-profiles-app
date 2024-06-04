@@ -126,6 +126,6 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
   )
 
 # phs colours for charts with dynamic number of lines/bars
-phs_palette <- unname(unlist(phsstyles::phs_colours()))
+phs_palette <- unname(unlist(phs_colours()))
 
 
