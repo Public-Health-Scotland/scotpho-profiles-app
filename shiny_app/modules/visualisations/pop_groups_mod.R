@@ -140,7 +140,7 @@ pop_groups_ui <- function(id) {
           # to do IM
           # tab 2: data table # still need to creat this
           bslib::nav_panel("Table",
-                           reactableOutput(ns("trend_table"))
+                           reactableOutput(ns("pop_trend_table"))
           ),
           
           bslib::nav_spacer(),
@@ -198,7 +198,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     # update years choices for bar chart filter, depending on indicator selected
     observe({
       
-      available_years <- pop_rank_data() |>
+      available_years <- dataset() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         arrange(desc(year)) |>
         pull(unique(year))
@@ -417,8 +417,20 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     # Tables ---------
     ###########################################
     
-    # trend data table -------
+    # rank data table -------
     output$pop_rank_table <- renderReactable({
+      
+      data <- pop_trend_data() |>
+        select(year, sub_code, rate)
+      
+      reactable(data = data,
+                defaultExpanded = TRUE,
+                defaultPageSize = nrow(data)
+      )
+    })
+    
+    # trend data table -------
+    output$pop_trend_table <- renderReactable({
       
       data <- pop_trend_data() |>
         select(year, sub_code, rate)
