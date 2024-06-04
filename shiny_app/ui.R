@@ -99,7 +99,7 @@ page_navbar(
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
                 nav_panel(title = "Inequalities"),
-                nav_panel(title = "Pop", pop_groups_ui("cwb_pop_groups")))
+                nav_panel(title = "Population Groups", pop_groups_ui("cwb_pop_groups")))
     ),
     
     # alcohol

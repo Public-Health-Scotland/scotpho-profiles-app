@@ -7,58 +7,6 @@
 ## MODULE UI
 #######################################################
 
-###  use these themes temporatily
-# 6. Highcharter theme --------------------------------------------------------------
-
-chart_theme <- hc_theme(
-  
-  colors = c("#000000", "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99",
-             "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928"),
-  
-  chart = list(backgroundColor = NULL,
-               style = list(fontSize = "14px",
-                            fontFamily = "Arial")),
-  
-  title = list(
-    align = "left",
-    style = list(fontSize = "16px",
-                 fontWeight = "bold",
-                 color = "black",
-                 fontFamily = "Arial")), 
-  
-  subtitle = list(
-    align = "left",
-    style = list(color = "black",
-                 fontFamily = "Arial")),
-  
-  xAxis = list(
-    labels = list(
-      style = list(
-        fontSize = "14px"))),
-  
-  yAxis = list(
-    labels = list(
-      style = list(
-        fontSize = "14px")),
-    min = 0),
-  
-  legend = list(
-    itemStyle = list(fontFamily = "Arial",
-                     color = "black"),
-    itemHoverStyle = list(color = "black")),
-  
-  tooltip = list(
-    shadow = FALSE,
-    crosshairs = TRUE,
-    style = list(
-      fontFamily = "Arial",
-      fontSize = "14px"))
-)
-
-###
-
-
-
 ## ui function -----------------------------------------------------------------------
 # id = unique id 
 pop_groups_ui <- function(id) {
@@ -127,7 +75,8 @@ pop_groups_ui <- function(id) {
                       download_data_btns_ui(ns("pop_rank_download")))
         ), # close bar chart card
         
-        ######  take monica's trend card and adapt
+
+        ######  based on deprivation trend card
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
@@ -137,7 +86,6 @@ pop_groups_ui <- function(id) {
                            uiOutput(ns("pop_trend_title")), # title
                            highchartOutput(ns("pop_trend_chart")) # chart
           ),
-          # to do IM
           # tab 2: data table # still need to creat this
           bslib::nav_panel("Table",
                            reactableOutput(ns("pop_trend_table"))
@@ -150,13 +98,14 @@ pop_groups_ui <- function(id) {
             bslib::popover(
               title = "Filters",
               bsicons::bs_icon("gear",size = "1.7em"),
-              checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
+              # too many CI for age split, removed at this stage
+              checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE) 
             )
           ),
           # card footer - download buttons
           card_footer(class = "d-flex justify-content-between",
-                      download_chart_mod_ui(ns("save_simd_trendchart")),
-                      download_data_btns_ui(ns("simd_trendchart_download")))
+                      download_chart_mod_ui(ns("save_pop_trendchart")),
+                      download_data_btns_ui(ns("pop_trend_download")))
         ) # close trend card
         
         
@@ -181,13 +130,12 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     ## Dynamic filters -----
     ######################################################
     
-    ## update choices for inequalities split filter, depending on what indicator was selected
+    ## update choices for population split filter, depending on what indicator was selected
     observe({
       
       available_splits <- dataset() |>
         filter(indicator == selected_indicator()) |>
         pull(unique(split_name))
-      
       
       updateSelectInput(session, inputId = "split_filter", choices = available_splits)
       
@@ -201,11 +149,24 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       available_years <- dataset() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         arrange(desc(year)) |>
-        pull(unique(year))
+        pull(unique(def_period))
       
       updateSelectInput(session, inputId = "pop_years_filter",
                         choices = available_years, selected = available_years[1])
     })
+    
+    # update split_value choices for bar chart filter, depending on indicator selected
+    observe({
+      
+      available_years <- dataset() |>
+        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+        #arrange(desc(year)) |>
+        pull(unique(def_period))
+      
+      updateSelectInput(session, inputId = "pop_values_filter",
+                        choices = available_years, selected = available_years[1])
+    })
+    
     
     
     
@@ -266,19 +227,9 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       #                             split_value == "non_limiting_li", phs_colors(colourname = "phs-blue")]
        })
     
-    
-    # take trend data and create single year data (for rank bar chart)
-    # pop_rank_data <- reactive({
-    #   pop_trend_data() |>
-    #     filter(year == max(year))
-    #   
-    #   
-    # })
-    # 
-    
     pop_rank_data <- reactive({
       pop_trend_data() |>
-        filter(year == input$pop_years_filter)
+        filter(def_period == input$pop_years_filter)
     })
     
     # pop_rank_data <- reactive({
@@ -290,17 +241,17 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     #######################################################
     
     output$pop_rank_title <- renderUI({
-      
-      # ensure there is data available, otherwise show message instead
+            # ensure there is data available, otherwise show message instead
       shiny::validate(
         need( nrow(pop_trend_data()) > 0, "No indicators available")
       )
       
       # if data is available display chart title
       tagList(
-        tags$h5(selected_indicator(), " split by ", input$split_filter, class = "chart-header"),
-        tags$h6(pop_rank_data()$year[1]), # time period
-        tags$p("Percentage meeting the MVPA") # measure type
+        tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
+        tags$h6(pop_rank_data()$trend_axis[1]), # time period 
+        tags$p(pop_rank_data()$rate_type[1]) # measure type
+        #tags$p("Percentage meeting the MVPA") # measure type
       )
     })
     
@@ -315,10 +266,13 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       
       # if data is available display chart title
       tagList(
-        tags$h5(selected_indicator(), " split by ", input$split_filter, class = "chart-header"),
-        tags$h6(pop_trend_data()$year[1]), # time period
-        tags$p("Percentage meeting the MVPA") # measure type
-      )
+        tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
+        #tags$h6(pop_trend_data()$year[1]), # time period
+        tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
+        tags$p(pop_trend_data()$rate_type[1]) # measure type
+                #tags$p("Percentage meeting the MVPA") # measure type
+        
+              )
     })
     
     ############################################
@@ -357,8 +311,8 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     output$pop_trend_chart <- renderHighchart({
       
       # define objects for chart titles and labels
-      # selected_area <- unique(pop_trend_data()$location_name)
-      # definition <- unique(pop_trend_data()$def_period)
+      # selected_area <- unique(pop_()$location_name)
+      # definition <- unique(pop_()$def_period)
       # split_name <- input$split_filter
       # chart_title <- paste(definition, "in", selected_area, "by", split_name)
       
@@ -447,8 +401,21 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     # Downloads  ----
     #############################################
     # needs addressed
-    download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("pop_trend_chart"))
-    download_data_btns_server(id = "simd_trendchart_download", data = pop_trend_data())
+    download_chart_mod_server(id = "save_pop_rankchart", chart_id = session$ns("pop_rank_chart"))
+    download_data_btns_server(id = "pop_rank_download", data = pop_trend_data())
+    
+    download_chart_mod_server(id = "save_pop_trendchart", chart_id = session$ns("pop_trend_chart"))
+    download_data_btns_server(id = "pop_trend_download", data = pop_trend_data())
+    # download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
+    # download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
+    # 
+    # download_data_btns_server(id = "simd_barchart_download", data = bar_data())
+    # download_data_btns_server(id = "simd_trendchart_download", data = trend_data())
+    # 
+    
+
+
+    
     
     
   }

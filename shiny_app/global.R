@@ -38,21 +38,16 @@ techdoc <- readRDS("data/techdoc.rds") # indicator technical info lookup
 geo_lookup <- setDT(geo_lookup)
 
 #temp data upload and simple wrangle
-i_data <- read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa.csv")
 
-test_data <-i_data %>%
-  filter(split_name!="simd"&split_name!="geog")
-
-
-
-ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa.csv") |>
+ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa_im.csv") |>
   rename(areatype = geography,
          areaname = location_name) |>
   mutate(areatype = case_when(areatype == "healthboard" ~ "Health board",
                               areatype == "scotland" ~ "Scotland",
-                              areatype == "Council" ~ "Council area", TRUE ~ areatype)) |>
+                              areatype == "council" ~ "Council area", TRUE ~ areatype)) |>
   mutate(areaname = case_when(areaname == "scotland" ~ "Scotland", TRUE ~ areaname)) |>
-  mutate(indicator = "Meets recommendations")
+  mutate(indicator = "Meets recommendations")|>
+  filter(split_name!="simd")
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area
