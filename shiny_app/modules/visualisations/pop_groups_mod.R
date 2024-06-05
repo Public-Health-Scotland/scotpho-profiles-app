@@ -418,7 +418,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     ############################################
     # Downloads  ----
     #############################################
-    # needs addressed
     download_chart_mod_server(id = "save_pop_rankchart", chart_id = session$ns("pop_rank_chart"))
     download_data_btns_server(id = "pop_rank_download", data = pop_trend_data)
     
