@@ -378,12 +378,18 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     # rank data table -------
     output$pop_rank_table <- renderReactable({
       
-      data <- pop_trend_data() |>
-        select(year, sub_code, rate)
+      data <- pop_rank_data() |>
+        select(def_period, split_value, rate)
       
       reactable(data = data,
                 defaultExpanded = TRUE,
-                defaultPageSize = nrow(data)
+                defaultPageSize = nrow(data),
+                # rename some columns 
+                columns = list(
+                  def_period = colDef(name = "Time Period"),
+                  split_value = colDef(name = "Population Group"),
+                  rate = colDef(name = "Measure")
+      )
       )
     })
     
@@ -391,12 +397,20 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     output$pop_trend_table <- renderReactable({
       
       data <- pop_trend_data() |>
-        select(year, sub_code, rate)
+        select(def_period, split_value, rate)
       
-      reactable(data = data,
+         reactable(data = data,
                 defaultExpanded = TRUE,
-                defaultPageSize = nrow(data)
+                defaultPageSize = nrow(data),
+                # rename some columns 
+                columns = list(
+                  def_period = colDef(name = "Time Period"),
+                  split_value = colDef(name = "Population Group"),
+                  rate = colDef(name = "Measure")
+                )
       )
+      
+      
     })
     
     ### need to create pop trend table
