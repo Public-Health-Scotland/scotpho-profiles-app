@@ -1,6 +1,7 @@
 ################################
-# MODULE: inequality_mod ---- 
-# prepares the layout displaying the inequalities splitss
+# MODULE: Population module ---- 
+# prepares the layout displaying the population group splits
+
 ################################
 
 #######################################################
@@ -76,7 +77,7 @@ pop_groups_ui <- function(id) {
         ), # close bar chart card
         
 
-        ######  based on deprivation trend card
+        ######  based on deprivation trend card addeded "pop_" to distinguish the two
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
@@ -107,9 +108,7 @@ pop_groups_ui <- function(id) {
                       download_chart_mod_ui(ns("save_pop_trendchart")),
                       download_data_btns_ui(ns("pop_trend_download")))
         ) # close trend card
-        
-        
-      ) # close layout column wrap
+              ) # close layout column wrap
       
     ) # close sidebar layout
   ) # close taglist
@@ -142,7 +141,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       
     })
     
-    
     # update years choices for bar chart filter, depending on indicator selected
     observe({
       
@@ -154,21 +152,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       updateSelectInput(session, inputId = "pop_years_filter",
                         choices = available_years, selected = available_years[1])
     })
-    
-    # update split_value choices for bar chart filter, depending on indicator selected
-    observe({
-      
-      available_years <- dataset() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
-        #arrange(desc(year)) |>
-        pull(unique(def_period))
-      
-      updateSelectInput(session, inputId = "pop_values_filter",
-                        choices = available_years, selected = available_years[1])
-    })
-    
-    
-    
+
     
     #######################################################
     ## Reactive data / values ----
@@ -231,11 +215,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       pop_trend_data() |>
         filter(def_period == input$pop_years_filter)
     })
-    
-    # pop_rank_data <- reactive({
-    #   pop_trend_data()[year == input$pop_years_filter]
-    # })
-    
+
     #######################################################
     ## dynamic text  ----
     #######################################################
@@ -251,7 +231,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
         tags$h6(pop_rank_data()$trend_axis[1]), # time period 
         tags$p(pop_rank_data()$rate_type[1]) # measure type
-        #tags$p("Percentage meeting the MVPA") # measure type
       )
     })
     
@@ -270,8 +249,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         #tags$h6(pop_trend_data()$year[1]), # time period
         tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
         tags$p(pop_trend_data()$rate_type[1]) # measure type
-                #tags$p("Percentage meeting the MVPA") # measure type
-        
               )
     })
     
@@ -294,7 +271,14 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         hc_xAxis(title = list(text = "")) %>%
         hc_yAxis(title = list(text = "")) %>%
         hc_plotOptions(series = list(animation = FALSE),
-                       column = list(groupPadding = 0))
+                       column = list(groupPadding = 0))|>
+        # add extra bits to chart for downloaded version (still need to add subtitles?)
+        hc_exporting(
+          chartOptions = list(
+            title = list(text = paste0(selected_indicator(), "split by ", input$split_filter, 
+                                       " for time period: ",pop_rank_data()$trend_axis[1]))
+          )
+        )
       
       
       
@@ -310,20 +294,15 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     
     output$pop_trend_chart <- renderHighchart({
       
-      # define objects for chart titles and labels
-      # selected_area <- unique(pop_()$location_name)
-      # definition <- unique(pop_()$def_period)
-      # split_name <- input$split_filter
-      # chart_title <- paste(definition, "in", selected_area, "by", split_name)
+      # shiny::validate(
+      #   need( nrow(pop_rank_data()) > 3, paste0("There are insufficent data points for this indicator to generate a trend chart "))
+      # )
       
       
-      # generate name value for line chart
-      selected_split <- unique(pop_trend_data()$split_value)
-      x <- hchart(pop_trend_data(), 
-                  "line", 
-                  hcaes(x = trend_axis, y =rate, group = split_value),
-                  color = unique(pop_trend_data()$colour_pal)) |>
-                    
+          x <- hchart(pop_trend_data(), 
+                               "line",
+                               hcaes(x = trend_axis, y = rate, group = split_value),
+                               color = unique(pop_trend_data()$colour_pal)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
         hc_yAxis(title = list(text = "")) |>
@@ -346,24 +325,49 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         hc_tooltip(
           crosshairs = TRUE,
           borderWidth = 1,
-          table = TRUE)  #|> add back on if extending options
+          table = TRUE
+        ) |>
         # add extra bits to chart for downloaded version (still need to add subtitles?)
-        # hc_exporting(
-        #   chartOptions = list(
-        #     title = list(text = paste0(selected_indicator(), " split by SIMD Quintile"))
-        #   )
-       # )
+        hc_exporting(
+          chartOptions = list(
+            title = list(text = paste0(selected_indicator(), " split by ", input$split_filter))
+          )
+        )
       
-      # add averae line if switch turned on 
-    #  if(input$average_switch == TRUE){
-
-        # x <- x |> hc_add_series(
-        #   trend_data(),
-        #   "line",
-        #   name = "Average",
-        #   color = "#FF0000",
-        #   hcaes(x = trend_axis, y = avg)
-        # )
+      # # add averae line if switch turned on 
+      # if(input$average_switch == TRUE){
+      #   
+      #   x <- x |> hc_add_series(
+      #     trend_data(),
+      #     "line",
+      #     name = "Average",
+      #     color = "#FF0000",
+      #     hcaes(x = trend_axis, y = avg)
+      #   )
+      #   
+      # }
+      
+      
+      # if the confidence interval switch turned on, plot cis
+      if(input$trend_ci_switch == TRUE){
+        
+        x <- x |>
+          hc_add_series(pop_trend_data(), 
+                        type = "arearange", 
+                        hcaes(x = trend_axis, low = lowci, high = upci, group = split_value),  
+                        color = hex_to_rgba("grey", 0.2), 
+                        linkedTo = ":previous",
+                        showInLegend = FALSE,
+                        enableMouseTracking = FALSE,
+                        zIndex = -1, # plots the CI series behind the line series
+                        marker = list(enabled = FALSE, # removes the markers for the CI series
+                                      states = list(
+                                        hover = list(
+                                          enabled = FALSE))))
+      }
+      
+      x
+      
       
     }) #end  pop trend chart
     
@@ -406,18 +410,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     
     download_chart_mod_server(id = "save_pop_trendchart", chart_id = session$ns("pop_trend_chart"))
     download_data_btns_server(id = "pop_trend_download", data = pop_trend_data())
-    # download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
-    # download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
-    # 
-    # download_data_btns_server(id = "simd_barchart_download", data = bar_data())
-    # download_data_btns_server(id = "simd_trendchart_download", data = trend_data())
-    # 
-    
-
-
-    
-    
-    
-  }
-  )
-}
+  } # module server
+  )# module server
+} # pop groups server
