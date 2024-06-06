@@ -69,6 +69,7 @@ rank_mod_ui <- function(id) {
       # bar chart card ----------------------
       navset_card_pill(
         full_screen = TRUE,
+        height = 550,
         nav_panel("chart",
                   uiOutput(ns("rank_title")), # title
                   highchartOutput(ns("rank_chart")) # chart
@@ -84,7 +85,7 @@ rank_mod_ui <- function(id) {
             checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
           )
         ),
-        footer = card_footer(class = "d-flex justify-content-between",
+        card_footer(class = "d-flex justify-content-between",
                              download_chart_mod_ui(ns("save_rank_chart")),
                              download_data_btns_ui(ns("rank_download")))
       ),
@@ -92,6 +93,7 @@ rank_mod_ui <- function(id) {
       # map card -------------------
       
       card(
+        height = 550,
         full_screen = TRUE,
         leafletOutput(ns("rank_map")) # map
         )
