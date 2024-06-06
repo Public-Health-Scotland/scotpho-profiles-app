@@ -20,14 +20,13 @@ summary_table_ui <- function(id) {
   tagList(
     bslib::card(
       bslib::card_header(
-            layout_columns(
-              col_widths = c(5, 2, 3, 2),
-              NULL,
-              actionButton(ns("help"), label = "Help"), 
-              downloadLink(ns("download_summary_pdf"), "Download PDF report"),
-              download_data_btns_ui(ns("download_summary_data"))
+              class = "d-flex flex-row-reverse",
+              layout_columns(
+                actionButton(ns("help"), label = "Help", class = "btn-sm"),
+              actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
+              download_data_btns_ui(ns("download_summary_data")),
               )
-            ),
+              ),
       card_body(
         withSpinner(reactableOutput(ns("summary_table"))) # summary table
        )
