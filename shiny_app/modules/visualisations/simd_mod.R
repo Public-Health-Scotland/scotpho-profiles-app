@@ -22,16 +22,18 @@ simd_navpanel_ui <- function(id) {
     layout_sidebar(
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
+                        # indicator filter (note this is a module)
+                        indicator_filter_mod_ui(ns("simd_indicator_filter")),
                         # 3 x help buttons
                         layout_column_wrap(
                           1/2,
-                          actionButton(ns("charts_help"), label = "Help"),
-                          indicator_definition_btn_ui(ns("simd_ind_def"))
+                          actionButton(ns("charts_help"), label = "Help", class = "act-btn"),
+                          indicator_definition_btn_ui(ns("simd_ind_def"),class = "act-btn")
                         ),
                         actionButton(ns("simd_help"), label = "What is SIMD?"),
-                        
-                        # indicator filter (note this is a module)
-                        indicator_filter_mod_ui(ns("simd_indicator_filter")),
+                        # 
+                        # # indicator filter (note this is a module)
+                        # indicator_filter_mod_ui(ns("simd_indicator_filter")),
                         
                         # filter to include/exclude averages from charts
                         checkboxInput(ns("average_switch"), label = " include averages", TRUE),
@@ -254,7 +256,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
       
       # if data is available display chart title
       tagList(
-        tags$h5(selected_indicator(), " by SIMD quintile", class = "chart-header"),
+        tags$h5(selected_indicator(), " by SIMD quintile - snapshot", class = "chart-header"),
         tags$h6(input$simd_years_filter), # time period
         tags$p(trend_data()$type_definition[1]) # measure type
       )
@@ -271,7 +273,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
       
       # if data is available display chart title
       tagList(
-        tags$h5(selected_indicator(), " by SIMD quintile", class = "chart-header"), # selected indicator
+        tags$h5(selected_indicator(), " by SIMD quintile - trend", class = "chart-header"), # selected indicator
         tags$h6(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)), # time period 
         tags$p(trend_data()$type_definition[1]) # measure type
       )

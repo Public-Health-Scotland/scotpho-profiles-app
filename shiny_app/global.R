@@ -117,7 +117,10 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".geography-header { color: #9B4393; font-weight: 600 !important; }", # geography header light phs purple colour
       ".profile-header { color: #3F3685; font-weight: bold !important; }", # profile header darker phs purple colour
       ".btn-download_btns_menu { padding: 0}", # remove padding from download buttons menu so fits nicely in card footers
-      ".chart-header { font-weight: bold !important;}" # make chart titles bold
+      ".chart-header { font-weight: bold !important;}", # make chart titles bold
+      "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
+      ".btn-hero {color:black; background-color:#def4ff; border:none;}" # make buttons in the hero on landing page light blue
+      
     )
   )
 
