@@ -27,11 +27,7 @@ library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
 
-
-
-
-
-
+library(readr) #im additiona will remove in future
 
 
 # 2. Sourcing modules --------------------------------------------------------------
@@ -43,9 +39,21 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
+
 main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
-techdoc <- read_parquet("data/techdoc") # indicator technical info lookup
-simd_dataset <- read_parquet("data/deprivation_data")
+
+simd_dataset <- read_parquet("data/deprivation_data") # dataset behind simd panel
+
+#temp data upload and simple wrangle
+ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa_im.csv") |>
+  rename(areatype = geography,
+         areaname = location_name) |>
+  mutate(areatype = case_when(areatype == "healthboard" ~ "Health board",
+                              areatype == "scotland" ~ "Scotland",
+                              areatype == "council" ~ "Council area", TRUE ~ areatype)) |>
+  mutate(areaname = case_when(areaname == "scotland" ~ "Scotland", TRUE ~ areaname)) |>
+  mutate(indicator = "Meets recommendations")|>
+  filter(split_name!="simd")
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area
@@ -62,9 +70,6 @@ hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
 scot_bound <- sf::st_as_sf(scot_bound)
-
-
-
 
 
 # 4. lists ----------------------------------------------------------

@@ -77,7 +77,9 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
-                nav_panel(title = "Inequalities", inequality_ui("hwb_inequality")))),
+                nav_panel(title = "Inequalities", inequality_ui("hwb_inequality"))
+                )),
+    
 
     # Children and young people
     nav_panel(value = "CYP",
@@ -95,9 +97,10 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
-                nav_panel(title = "Deprivation", simd_navpanel_ui("cwb_simd")),
-                nav_panel(title = "Population Groups"))),
-
+                nav_panel(title = "Inequalities"),
+                nav_panel(title = "Population Groups", pop_groups_ui("cwb_pop_groups")))
+    ),
+    
     # alcohol
     nav_panel(value = "ALC",
               title = "Alcohol",

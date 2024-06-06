@@ -157,6 +157,16 @@ function(input, output, session) {
   simd_navpanel_server("cwb_simd", simd_data2, geo_selections)
   
   
+  # logic controlling population group dataset
+  # makes dataset reactive so can be used by module - potentially remove when data prep is complete - could be renamed as it supplies data for 
+  # population groups layout
+  ineq_splits_temporary <- reactive({
+    ineq_splits_data })  
+  
+  # logic controlling population groups visualisation
+  # takes profile data and further filters by selected areatype
+  pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections)
+  
   ###############################################
   #
   # Server logic for data tab
@@ -366,6 +376,8 @@ function(input, output, session) {
   download_data_btns_server(id = "datatable_downloads", data = tableData)
   
   
+
+
   
 } # close main server function
 
