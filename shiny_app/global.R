@@ -20,9 +20,13 @@ library(dplyr) # data wrangling
 library(htmlwidgets) # for download buttons
 library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
-library(reactable)
-library(leaflet)
+library(reactable) # for data tables
+library(leaflet) # for map
 library(sf) # note: eventually remove this from here
+library(jsTreeR) # for data tab geography filters
+library(shinyWidgets)
+library(bsicons) # for icons
+
 library(readr) #im additiona will remove in future
 
 
@@ -34,11 +38,13 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
-techdoc <- readRDS("data/techdoc.rds") # indicator technical info lookup
-geo_lookup <- setDT(geo_lookup)
+geo_lookup <- setDT(geo_lookup) 
+
+main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
+
+simd_dataset <- read_parquet("data/deprivation_data") # dataset behind simd panel
 
 #temp data upload and simple wrangle
-
 ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa_im.csv") |>
   rename(areatype = geography,
          areaname = location_name) |>
@@ -77,7 +83,9 @@ profiles_list <- list(
   ALC = "Alcohol",
   POP = "Population",
   TOB = "Tobacco",
-  MEN = "Mental Health")
+  MEN = "Mental Health",
+  ALL = "All Indicators")
+
 
 
 # HSC partnership names - used as the choices for an additional parent area filter 
@@ -113,8 +121,11 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
     list(
       ".geography-header { color: #9B4393; font-weight: 600 !important; }", # geography header light phs purple colour
       ".profile-header { color: #3F3685; font-weight: bold !important; }", # profile header darker phs purple colour
-      ".btn-download_btns_menu { padding: 0}" # remove padding from download buttons menu so fits nicely in card footers
+      ".btn-download_btns_menu { padding: 0}", # remove padding from download buttons menu so fits nicely in card footers
+      ".chart-header { font-weight: bold !important;}", # make chart titles bold
+      "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
+      ".btn-hero {color:black; background-color:#def4ff; border:none;}" # make buttons in the hero on landing page light blue
+      
     )
   )
-
 

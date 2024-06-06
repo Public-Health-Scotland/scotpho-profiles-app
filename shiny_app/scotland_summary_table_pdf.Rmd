@@ -43,6 +43,7 @@ library(stringr)
 
 chosen_area <- gsub("&", "\\\\&", params$chosen_area)
 profile <- gsub("&", "\\\\&", params$chosen_profile)
+  
 
 ```
 
@@ -50,7 +51,7 @@ profile <- gsub("&", "\\\\&", params$chosen_profile)
 
   \begin{minipage}{0.6\textwidth}
     \raggedright
-    \textbf{\large{`r params$chosen_geography_level`: `r chosen_area`}} \\
+    \textbf{\large{`r params$chosen_geography_level` summary}} \\
     ScotPHO Profile: `r profile`
   \end{minipage}
   \hfill
@@ -68,23 +69,19 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ```{r echo=FALSE, message= FALSE}
 
-# 
-# # function to create spine plot for each indicator
-create_indicator_plot <- function(data, chosen_area_colour) {
-  plot <- ggplot(data, aes(x = indicator, y = GraphPoint, fill = quantiles)) +
-    geom_bar(stat = "identity", width = 0.75) +
-    scale_fill_manual(values = c("worst" = "#D3D3D3", "p25" = "#A4A4A4", "p75" = "#D3D3D3", "best" = "white")) +
-    geom_hline(yintercept = 0.5, col = "red") +
-    ylim(0, 1) +
-    geom_point(data = NULL, aes(x = indicator, y = chosen_value), shape = 19, size = 4, col = chosen_area_colour) +
-    coord_flip() +
-    theme_void() +
-    guides(fill = "none") +
-    theme(plot.margin = margin(0, 0, 0, 0, "cm"),
-          plot.background = element_rect(fill = "white", color = "white"),
-          panel.background = element_rect(fill = "white", color = "white")
-          )
 
+# function to create spine plot for each indicator
+create_indicator_trend_line <- function(data) {
+  plot <- ggplot(data, aes(x = years, y = measures)) +
+  geom_line(color = phs_colors(colourname = "phs-blue")) +
+  geom_point(shape = 16, color = phs_colors(colourname = "phs-blue")) + 
+  theme_void() +
+  theme(plot.background = element_rect(fill = "white", color = "white"),
+        panel.background = element_rect(fill = "white", color = "white"),
+        plot.title = element_text(hjust = 0.5))
+
+
+  
   return(plot)
 }
 
@@ -95,9 +92,8 @@ graph_directory <- tempdir()
 
 
 # # pivot reactive dataframe in longer format (required for ggplot)
- df <- params$reactive_df %>%
-   select(domain, indicator, worst, p25, p75, best, scotland_value, measure, chosen_value, marker_colour, def_period, type_definition) %>%
-   pivot_longer(cols = c("worst", "p25", "p75", "best"), values_to = "GraphPoint", names_to = "quantiles")
+ df <- params$reactive_df |>
+   unnest(cols = c(years, measures))
 
 
 # required to ensure special characters displays correctly
@@ -113,23 +109,21 @@ df <- df %>%
   mutate(across('type_definition', str_replace, 'Population', '')) %>%
   mutate(across('type_definition', str_replace, 'population', ''))
 
-# order quantiles so stacked in correct order.
-df$quantiles <- factor(df$quantiles, levels = c("worst", "p25", "p75", "best"))
-
-
 
 # the data to be displayed in table
 table <- df %>%
-  select(domain, indicator, scotland_value, measure, def_period, type_definition) %>%
+  select(domain, indicator, measure, def_period, type_definition) %>%
   distinct() %>%
   mutate(ind = paste0(
     "\\textbf{",indicator, "}\n", "\\textit{\\small", def_period, " . ", type_definition, "}"))%>%
-  select(domain, ind, measure, scotland_value) %>%
-  rename(scotland  = scotland_value) %>%
+  select(domain, ind, measure) %>%
   mutate(id = row_number())
 
 
 table$ind <- linebreak(table$ind)
+
+# escape the '&' symbol from domains 
+ table$domain <- gsub("&", "\\\\&", table$domain)
 
 
 
@@ -146,11 +140,9 @@ for (indicator in unique_indicators) {
   # Filter the data for the current indicator
   indicator_data <- df %>% filter(indicator == !!indicator)
 
-  # get colour for point
-   chosen_area_colour <- unique(indicator_data$marker_colour)
 
  # create the plot
-  plot <- create_indicator_plot(indicator_data, chosen_area_colour)
+  plot <- create_indicator_trend_line(indicator_data)
 
  # create filename
   filename <- sprintf("%s/%s.png", graph_directory, counter)
@@ -159,18 +151,12 @@ for (indicator in unique_indicators) {
    counter <- counter + 1
 
  # Save the plot as a PNG with the filename created
-  ggsave(filename, plot = plot, units="mm", width=60, height=6, dpi=300)
+  ggsave(filename, plot = plot, units="mm", width=50, height=8, dpi=300)
 }
 
 
-# # escape the '&' symbol from chosen geography so displays in column headers
- chosen_area <- gsub("&", "\\\\&", params$chosen_area)
- # escape the '&' symbol from domains 
- table$domain <- gsub("&", "\\\\&", table$domain)
-
 # define column headers for the pdf table
-col_names = c("Domain", "Indicator", chosen_area, "Scotland", "Spine chart"
-              )
+col_names = c("Domain", "Indicator", "Scotland", "Trend")
 
 ```
 
@@ -180,7 +166,7 @@ col_names = c("Domain", "Indicator", chosen_area, "Scotland", "Spine chart"
 
  # the final table to be displayed with charts embedded
 table %>%
-  group_by(domain) %>%
+group_by(domain) %>%
   knitr::kable(
     format = "latex", # must be in latex format for pdf download
     booktabs = TRUE, # generic formatting
@@ -193,13 +179,13 @@ table %>%
   row_spec(0, background = "#032F4F", color = "white") %>%
 
   # set column widths
-  column_spec(1, width = "8em") %>% # domaincolumn
+   column_spec(1, width = "8em") %>% #domain column
    column_spec(2, width = "20em") %>% # indicator column
-   column_spec(3, width = "6em") %>% # chosen area column
-   column_spec(4, width = "3em") %>% # scotland column
+   column_spec(3, width = "6em") %>% # scotland column
+
 
   # embed chart images on each row of final column
-   kableExtra::column_spec(5, image = sprintf("%s/%s.png", graph_directory, table$id), color = "white") %>%
+   kableExtra::column_spec(4, image = sprintf("%s/%s.png", graph_directory, table$id), color = "white") %>%
 
   # repeats column headings when table goes across multiple pages
    kable_styling(latex_options = c("repeat_header")) %>%
@@ -208,8 +194,9 @@ table %>%
   footnote(general="\\\\url{https://scotland.shinyapps.io/ScotPHO_profiles_tool/}",
            general_title = "Source: ", footnote_as_chunk = T, escape=F) %>%
 
+  # add lines under each row
   # prevent domain from appearing on every row of column 
-    kableExtra::collapse_rows(columns = 1, valign = "top", row_group_label_position = "first", custom_latex_hline = 2:5, longtable_clean_cut = F)
+  kableExtra::collapse_rows(columns = 1, valign = "top", row_group_label_position = "first", custom_latex_hline = 2:5, longtable_clean_cut = F)
 
 
 

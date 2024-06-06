@@ -25,7 +25,7 @@ page_navbar(
 
   # header that appears across the top of each profile tab
   # including geography filters and info detailing selected geography and profile
-  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO'",
+  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO' && input.nav !== 'dt'",
                             tagList(
                               uiOutput("profile_header"),
                               uiOutput("areatype_header"),
@@ -35,36 +35,35 @@ page_navbar(
 
 
   # homepage ---------------------------------------------------------------------
-  nav_panel(value = "Home",
+  nav_panel(value = "Home", style = "margin: 0;", # remove margin so no white space at top of landing page
             title = "Home",
             htmlTemplate("landing-page.html", # sits in separate file in app folder
                          # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
-
-                         additional_info_buttons = layout_columns(navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info")),
-                                                                      navigation_button_modUI(button_id = "about_profiles",button_name = "About the profiles", button_icon = icon("circle-info")),
-                                                                      navigation_button_modUI(button_id="explore_indicators", button_name = "Explore indicators", button_icon = icon("magnifying-glass"))
+                         additional_info_buttons = layout_columns(navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info"), class = "btn-hero"),
+                                                                      navigation_button_modUI(button_id = "about_profiles",button_name = "About the profiles", button_icon = icon("circle-info"), class = "btn-hero"),
+                                                                      navigation_button_modUI(button_id="explore_indicators", button_name = "Explore indicators", button_icon = icon("magnifying-glass"), class = "btn-hero")
                          ),
-
 
                          # buttons to navigate to profile tabs
                          profile_buttons = tagList(
-                           layout_column_wrap(
-                             profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", profile_icon = "line-chart")
+                           layout_columns(
+                             profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**.")),
+                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **Population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
+                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco control", description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**")),
+                             
                            ),
-                           layout_column_wrap(
-                             profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", profile_icon = "line-chart"),
-                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco", profile_icon = "line-chart")
+                           layout_columns(
+                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
+                             profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
+                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **adult mental health**, for both males and females."))
+                           ),
+                           
+                           layout_columns(
+                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**.")),
+                             profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", description = markdown("View **population estimates** for different age groups.")),
+                             profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", description = markdown("View **all indicators** in this tool from across every profile."))
                            )
-                         ),
-
-                         indicator_schedule_button = navigation_button_modUI(button_id="indicator_schedule", button_name = "View updates schedule"),
-                         recent_updates_button = navigation_button_modUI(button_id="recent_updates", button_name="View recent updates")
-
+                         )
             )
   ),
   # drop-down menu containing profile tabs
@@ -149,7 +148,14 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("tob_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("tob_rank")),
-                nav_panel(title = "Inequalities")))
+                nav_panel(title = "Inequalities"))),
+    
+    nav_panel(value = "ALL",
+              "All Indicators",
+              navset_tab(
+                nav_panel(title = "Trends"),
+                nav_panel(title = "Rank", rank_mod_ui("all_rank"))
+              ))
     
 
     ), #close nav menu
@@ -157,7 +163,72 @@ page_navbar(
   nav_spacer(),
 
   # data tab -------------------------------------------------------------------
-  nav_panel("Download data"),
+            nav_panel("Download data",
+                      value = "dt",
+                      page_sidebar(fillable = FALSE,
+                                   sidebar = sidebar(width = 300, padding = 20,
+                                                     
+                                                     h2("Filters"),
+                                                     
+                                                     # clear filters button
+                                                     actionButton("clear_table_filters",
+                                                                  label = "Clear all filters",
+                                                                  icon ("eraser"),
+                                                                  class = "down"),
+
+                                                     
+                                                     # Geography filters
+                                                     jstreeOutput("geography_selector"),
+                                                     
+                                                     # profile filters
+                                                     virtualSelectInput(inputId = "profile_selector",
+                                                                        label = "Select profile(s)",
+                                                                        choices = unname(profiles_list),
+                                                                        disableSelectAll = FALSE,
+                                                                        multiple = TRUE,
+                                                                        search = TRUE,
+                                                                        searchByStartsWith = TRUE,
+                                                                        width = '100%',
+                                                                        zIndex = 100),
+                                                     
+                                                     # indicator filters
+                                                     virtualSelectInput(inputId = "indicator_selector",
+                                                                        label = "Select indicator(s)",
+                                                                        noOptionsText = "Select atleast one geography to see what indicators are available",
+                                                                        choices = NULL,
+                                                                        disableSelectAll = TRUE,
+                                                                        multiple = TRUE,
+                                                                        search = TRUE,
+                                                                        searchByStartsWith = TRUE,
+                                                                        dropboxWrapper = "body",
+                                                                        dropboxWidth = '400px',
+                                                                        width = '100%',
+                                                                        zIndex = 100),
+                                                     
+                                                     
+                                                     # time period filter
+                                                     radioGroupButtons(
+                                                       inputId = "time_period_selector",
+                                                       label = "Select time period:",
+                                                       choices = c("Latest available year", "All years"),
+                                                       selected = "Latest available year"
+                                                     )
+                                                     
+                                   ), # close sidebar
+                                   
+                                   h1("Data table"),
+                                   p("Use the filters to build a data table, which can then be downloaded in various
+	                                 formats using the button below. Please note that the table below is a preview. 
+	                                 The downloaded dataset will contain more columns containing metadata than are presented here."),
+                                   
+                                   # download data button
+                                   download_data_btns_ui(id = "datatable_downloads"),
+                                   
+                                   # data table
+                                   reactableOutput("data_tab_table")
+                                   
+                      ) # close layout
+            ), # close data table nav
 
   # source code link -------------------------------------------------------------------
   nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-tool/tree/master/shiny_app", target = "_blank")),
