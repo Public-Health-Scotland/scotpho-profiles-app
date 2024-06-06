@@ -20,8 +20,8 @@ pop_groups_ui <- function(id) {
                         # 2 x help buttons
                         layout_column_wrap(
                           1/2,
-                          actionButton(ns("help"), label = "Help", class = "btn-sm"), # help button
-                          indicator_definition_btn_ui(ns("ind_def")) # indicator definitions button
+                          actionButton(ns("help"), label = "Help", class = "act-btn"), # help button
+                          indicator_definition_btn_ui(ns("ind_def"), class= "act-btn") # indicator definitions button
                         ),
                         
                         # indicator filter (note this is a module)
