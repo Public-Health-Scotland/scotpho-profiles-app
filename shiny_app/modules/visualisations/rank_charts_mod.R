@@ -14,17 +14,17 @@ rank_mod_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    bslib::navset_card_pill(
-      full_screen = FALSE,
-      height = 650,
     
+    layout_sidebar(
+      full_screen = FALSE,
+      #height = 650,
+      
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
                         # help buttons
-                        layout_column_wrap(
-                          1/2,
-                        actionButton(ns("rank_help"), label = "Help", class="act-btn"),
-                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")
+                        layout_columns(
+                          actionButton(ns("rank_help"), label = "Help", class="act-btn"),
+                          indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")
                         ),
                         
                         # indicator filter (note this is a module)
@@ -34,10 +34,10 @@ rank_mod_ui <- function(id) {
                         bslib::input_switch(id = ns("comparator_switch"), 
                                             value = FALSE, 
                                             label = bslib::tooltip(placement = "bottom",trigger = list("Include comparator",icon("info-circle")),
-                                            "Including a comparator will allow you to see whether each area
+                                                                   "Including a comparator will allow you to see whether each area
                                              within your chosen geography level (e.g. health boards) is statistically significantly
                                              better or worse than another area (e.g. Scotland) or another point in time (e.g. 10 years ago).")
-                                            ),
+                        ),
                         # additional hidden filters to display when comparator switch turned on
                         conditionalPanel(
                           ns=NS(id),
@@ -46,7 +46,7 @@ rank_mod_ui <- function(id) {
                                        label = "Compare by: ", 
                                        choices = c("Area", "Time"), 
                                        selected = "Area"
-                                       ),
+                          ),
                           conditionalPanel(
                             ns = NS(id),
                             condition = "input['comparator_type'] === 'Area'",
@@ -65,43 +65,43 @@ rank_mod_ui <- function(id) {
                         ) # close hidden comparator filters panel
       ), # close sidebar
       
-      # dynamic title
-      nav_item(uiOutput(ns("rank_title"))),
-    
-      nav_spacer(),
-    
-      # charts tab -----------------------
-      nav_panel("charts",
       layout_column_wrap(
-        1/2,
-        # bar chart/ dumbbell chart card (depending on what user selects as comparator)
-        card(
-          height = 500,
-          full_screen = TRUE, 
-          card_header(
-            checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
-            ),
-          card_body(highchartOutput(ns("rank_chart"))),
-          card_footer(class = "d-flex justify-content-between",
-                      download_chart_mod_ui(ns("save_rank_chart")),
-                      download_data_btns_ui(ns("rank_download")))
+      # bar chart card ----------------------
+      navset_card_pill(
+        full_screen = TRUE,
+        nav_panel("chart",
+                  uiOutput(ns("rank_title")), # title
+                  highchartOutput(ns("rank_chart")) # chart
         ),
-        # map card
-        card(
-          height = 500,
-          full_screen = TRUE,
-          card_body(class = "p-0", leafletOutput(ns("rank_map")))
+        nav_panel("data",
+                  reactableOutput(ns("rank_table")) # table
+        ),
+        nav_spacer(),
+        nav_item(
+          bslib::popover(
+            title = "Filters",
+            bsicons::bs_icon("gear", size = "1.7em"),
+            checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
           )
+        ),
+        footer = card_footer(class = "d-flex justify-content-between",
+                             download_chart_mod_ui(ns("save_rank_chart")),
+                             download_data_btns_ui(ns("rank_download")))
+      ),
+      
+      # map card -------------------
+      
+      card(
+        full_screen = TRUE,
+        leafletOutput(ns("rank_map")) # map
         )
-      ), # close charts tab 
-    
-    # tab 2: data tab ------------------
-    nav_panel("Data", 
-              reactableOutput(ns("rank_table"))
-              ) # close data tab 
-      ) # close navset card pill 
+
+      ) # close layout column wrap
+  ) # close layout sidebar
   ) # close taglist
 } # close ui function 
+
+
 
 
 
@@ -272,19 +272,20 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
        # whether comparator included (and if so which comparator)
        chart_desc <- if(input$comparator_switch == TRUE){
          if(input$comparator_type == "Area"){
-           tags$h6(paste(area,"comparison against",input$area_comparator, " - ", max_year))
+           tags$p(paste(area,"comparison against",input$area_comparator, " - ", max_year))
          } else if(input$comparator_type == "Time"){
-           tags$h6(area,"- ",max_year,"compared to ",input$year_comparator)
+           tags$p(area,"- ",max_year,"compared to ",input$year_comparator)
          }
        } else {
-         tags$h6(area, " - ", max_year)
+         tags$p(area, " - ", max_year)
        }
        
         # display 3 x titles
         tagList(
-         tags$h4(selected_indicator()), # selected indicator
-         tags$h5(rank_data()$type_definition[1]), # measure type
-         tags$h6(chart_desc) # chart description
+         tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
+         chart_desc, # chart description
+         tags$p(rank_data()$type_definition[1]), # measure type
+         
         )
       
      })
