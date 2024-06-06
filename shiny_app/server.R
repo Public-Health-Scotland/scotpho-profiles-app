@@ -75,8 +75,17 @@ function(input, output, session) {
   
   # dynamic header showing selected areatype
   output$areatype_header <- renderUI({
+    
+    # don't show this section in the header if Scotland is selected
+    # to avoid having both areatype: scotland and areaname: scotland in the header
+    shiny::validate(
+      need(geo_selections()$areatype != "Scotland", "")
+    )
+  
+    # if scotland is not selected then show the areatype in the header
     tags$h2("Area type:", geo_selections()$areatype, class = "geography-header")
   })
+  
   
   # dynamic header showing selected areaname
   output$areaname_header <- renderUI({
