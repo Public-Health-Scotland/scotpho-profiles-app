@@ -10,9 +10,8 @@
 
 
 #module UI function -
-#name is mandatory but icon is optional
-
-navigation_button_modUI <- function(button_id, button_name, button_icon=NULL){
+#name is mandatory but icon and class are optional
+navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, class = NULL){
   ns <- shiny::NS(button_id)
   tagList(
     # custom js function to close the nav menu in the nav bar 1000 millisecs after button is clicked
@@ -20,7 +19,7 @@ navigation_button_modUI <- function(button_id, button_name, button_icon=NULL){
         setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
       shiny::actionButton(inputId= ns("button_nav"), 
                           label = button_name, 
-                          class = "hero-button",
+                          class = class,
                           icon = button_icon))}
 
 

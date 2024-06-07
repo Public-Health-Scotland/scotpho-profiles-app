@@ -5,14 +5,14 @@
  
 ###UI
 
-indicator_definition_btn_ui <- function(id) {
+indicator_definition_btn_ui <- function(id, class= NULL) {
   ns <- NS(id)
   tagList(
-      actionButton(ns("indicator_definition"), label = "Definition",icon= icon('info'), class = "btn-sm")
-    )
-
-}
-
+      shiny::actionButton(ns("indicator_definition"),
+                          label = "Definition",
+                          icon= icon('info'),
+                          class=class))
+  }
 
 ####SERVER
 

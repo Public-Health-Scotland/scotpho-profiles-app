@@ -86,8 +86,17 @@ function(input, output, session) {
   
   # dynamic header showing selected areatype
   output$areatype_header <- renderUI({
+    
+    # don't show this section in the header if Scotland is selected
+    # to avoid having both areatype: scotland and areaname: scotland in the header
+    shiny::validate(
+      need(geo_selections()$areatype != "Scotland", "")
+    )
+  
+    # if scotland is not selected then show the areatype in the header
     tags$h2("Area type:", geo_selections()$areatype, class = "geography-header")
   })
+  
   
   # dynamic header showing selected areaname
   output$areaname_header <- renderUI({
@@ -134,6 +143,11 @@ function(input, output, session) {
   })
 
   
+  # temporarily making simd data reactive 
+  simd_data2 <- reactive({
+    simd_dataset
+  })
+  
   # logic controlling summary tables
   # takes profile data and further filters by selected geography
   # prepares summary data and displays in a table with spinecharts
@@ -172,8 +186,19 @@ function(input, output, session) {
   rank_mod_server("all_rank", all_indicators_data, geo_selections)
   
   
+  # logic controlling simd visualisations
+  simd_navpanel_server("cwb_simd", simd_data2, geo_selections)
   
   
+  # logic controlling population group dataset
+  # makes dataset reactive so can be used by module - potentially remove when data prep is complete - could be renamed as it supplies data for 
+  # population groups layout
+  ineq_splits_temporary <- reactive({
+    ineq_splits_data })  
+  
+  # logic controlling population groups visualisation
+  # takes profile data and further filters by selected areatype
+  pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections)
   
   ###############################################
   #
@@ -359,7 +384,6 @@ function(input, output, session) {
   
   
   # table of results ---------
-  # table of results ---------
   output$data_tab_table <- renderReactable({
     
     reactable(tableData() ,
@@ -385,6 +409,8 @@ function(input, output, session) {
   download_data_btns_server(id = "datatable_downloads", data = tableData)
   
   
+
+
   
 } # close main server function
 
