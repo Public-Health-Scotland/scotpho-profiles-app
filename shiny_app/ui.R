@@ -69,7 +69,7 @@ page_navbar(
   # drop-down menu containing profile tabs
   navbarMenu(
     title = "Change profile",
-
+    
     # Health and wellbeing
     nav_panel(value = "HWB",
               title = "Health & Wellbeing",
@@ -78,10 +78,10 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
-                nav_panel(title = "Inequalities", inequality_ui("hwb_inequality"))
-                )),
+                nav_panel(title = "Deprivation", simd_navpanel_ui("hwb_simd"))
+              )),
     
-
+    
     # Children and young people
     nav_panel(value = "CYP",
               title = "Children & Young people",
@@ -89,8 +89,9 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("cyp_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("cyp_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("cyp_rank")),
-                nav_panel(title = "Inequalities"))),
-
+                nav_panel(title = "Deprivation", simd_navpanel_ui("cyp_simd"))
+              )),
+    
     # care and wellbeing
     nav_panel(value = "CWB",
               title = "Care & Wellbeing",
@@ -99,8 +100,8 @@ page_navbar(
                 nav_panel(title = "Trends", trend_mod_ui("cwb_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("cwb_simd")),
-                nav_panel(title = "Population Groups", pop_groups_ui("cwb_pop_groups")))
-    ),
+                nav_panel(title = "Population Groups", pop_groups_ui("cwb_pop_groups"))
+                )),
     
     # alcohol
     nav_panel(value = "ALC",
@@ -108,26 +109,26 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("alc_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("alc_trends")),
-                nav_panel(title = "Rank", rank_mod_ui("alc_rank")),
-                nav_panel(title = "Inequalities"))),
-
+                nav_panel(title = "Rank", rank_mod_ui("alc_rank"))
+                )),
+    
     # drugs
     nav_panel(value = "DRG",
               title = "Drugs",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("drg_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("drg_trends")),
-                nav_panel(title = "Rank", rank_mod_ui("drg_rank")),
-                nav_panel(title = "Inequalities"))),
-
+                nav_panel(title = "Rank", rank_mod_ui("drg_rank"))
+              )),
+    
     # mental health
     nav_panel(value = "MEN",
               title= "Mental Health",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("men_summary")),
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank", rank_mod_ui("men_rank")),
-                nav_panel(title = "Inequalities"))),
+                nav_panel(title = "Rank", rank_mod_ui("men_rank"))
+                )),
 
     # population
     nav_panel(value = "POP",
@@ -136,7 +137,8 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("pop_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("pop_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
-                nav_panel(title = "Inequalities"))),
+                nav_panel(title = "Deprivation", simd_navpanel_ui("pop_simd"))
+                )),
 
     
     # tobacco
@@ -145,14 +147,15 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("tob_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("tob_trends")),
-                nav_panel(title = "Rank", rank_mod_ui("tob_rank")),
-                nav_panel(title = "Inequalities"))),
+                nav_panel(title = "Rank", rank_mod_ui("tob_rank"))
+                )),
     
     nav_panel(value = "ALL",
               "All Indicators",
               navset_tab(
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank", rank_mod_ui("all_rank"))
+                nav_panel(title = "Rank", rank_mod_ui("all_rank")),
+                nav_panel(title = "Deprivation", simd_navpanel_ui("pop_simd"))
               ))
     
 
