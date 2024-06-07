@@ -50,6 +50,17 @@ function(input, output, session) {
   navigation_button_modSERVER("view_profile_TOB", nav_id="TOB", parent_session = session)
   
   
+  # logic controlling buttons on profile tabs linking to About Profiles tab
+  navigation_button_modSERVER("about_hwb", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_cyp", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_cwb", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_alc", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_men", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_pop", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_tob", nav_id="about_accordion", parent_session = session)
+  navigation_button_modSERVER("about_drg", nav_id="about_accordion", parent_session = session)
+  
+  
   # stores selected 'areaname' and selected 'areatype' which can be used throughout other modules
   # to filter data by geography, like this: geo_selections()$areaname 
   geo_selections <- global_geography_filters_server("geo_filters", geo_lookup)
@@ -148,6 +159,19 @@ function(input, output, session) {
   summary_table_server("men_summary", geo_selections, profile_name, profile_data)
   summary_table_server("pop_summary", geo_selections, profile_name, profile_data)
   summary_table_server("tob_summary", geo_selections, profile_name, profile_data)
+  
+  
+  # logic controlling trends tab
+  # takes profile data and further filters by selected geography
+  # displays trend chart based on selected indicator from drop down list
+  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype

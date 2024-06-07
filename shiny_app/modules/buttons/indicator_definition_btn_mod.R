@@ -14,7 +14,6 @@ indicator_definition_btn_ui <- function(id, class= NULL) {
                           class=class))
   }
 
-
 ####SERVER
 
 indicator_definition_btn_server <- function(id, selected_indicator) {

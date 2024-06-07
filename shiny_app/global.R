@@ -88,9 +88,15 @@ profiles_list <- list(
 
 
 
-# HSC partnership names - used as the choices for an additional parent area filter 
+# Area names by geography type  including HB, CA, HSCP, alcohol and drugs partnership
+# HSC partnership names - also used as the choices for an additional parent area filter 
 # when intermediate zone/localities are selected to reduce the number of IZ/localities
 hscp_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="HSC partnership"]) 
+hb_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Health board"])
+ca_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Council area"])
+adp_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Alcohol & drug partnership"])
+hsc_loc_list <- sort(geo_lookup$areaname[geo_lookup$areatype== "HSC locality"])
+imz_list <- sort(geo_lookup$areaname[geo_lookup$areatype== "Intermediate zone"])
 
 
 # geography areatypes
@@ -128,4 +134,8 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       
     )
   )
+
+# phs colours for charts with dynamic number of lines/bars
+phs_palette <- unname(unlist(phs_colours()))
+
 
