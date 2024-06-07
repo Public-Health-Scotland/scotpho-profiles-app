@@ -77,9 +77,8 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
-                nav_panel(title = "Rank", rank_mod_ui("hwb_rank"))
-                # ,
-                # nav_panel(title = "Deprivation", simd_navpanel_ui("hwb_simd"))
+                nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),  
+                nav_panel(title = "Deprivation", simd_navpanel_ui("hwb_simd"))
               )),
     
     
@@ -155,8 +154,7 @@ page_navbar(
               "All Indicators",
               navset_tab(
                 nav_panel(title = "Trends"),
-                nav_panel(title = "Rank", rank_mod_ui("all_rank")),
-                nav_panel(title = "Deprivation", simd_navpanel_ui("pop_simd"))
+                nav_panel(title = "Rank", rank_mod_ui("all_rank"))
               ))
   ), #close nav menu
 
