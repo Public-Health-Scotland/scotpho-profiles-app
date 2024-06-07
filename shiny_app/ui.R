@@ -77,8 +77,9 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
-                nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
-                nav_panel(title = "Deprivation", simd_navpanel_ui("hwb_simd"))
+                nav_panel(title = "Rank", rank_mod_ui("hwb_rank"))
+                # ,
+                # nav_panel(title = "Deprivation", simd_navpanel_ui("hwb_simd"))
               )),
     
     
@@ -101,7 +102,7 @@ page_navbar(
                 nav_panel(title = "Rank", rank_mod_ui("cwb_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("cwb_simd")),
                 nav_panel(title = "Population Groups", pop_groups_ui("cwb_pop_groups"))
-                )),
+              )),
     
     # alcohol
     nav_panel(value = "ALC",
@@ -110,7 +111,7 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("alc_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("alc_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("alc_rank"))
-                )),
+              )),
     
     # drugs
     nav_panel(value = "DRG",
@@ -128,8 +129,8 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("men_summary")),
                 nav_panel(title = "Trends"),
                 nav_panel(title = "Rank", rank_mod_ui("men_rank"))
-                )),
-
+              )),
+    
     # population
     nav_panel(value = "POP",
               "Population",
@@ -138,8 +139,8 @@ page_navbar(
                 nav_panel(title = "Trends", trend_mod_ui("pop_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("pop_simd"))
-                )),
-
+              )),
+    
     
     # tobacco
     nav_panel(value = "TOB",
@@ -148,7 +149,7 @@ page_navbar(
                 nav_panel(title = "Summary", summary_table_ui("tob_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("tob_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("tob_rank"))
-                )),
+              )),
     
     nav_panel(value = "ALL",
               "All Indicators",
@@ -157,9 +158,7 @@ page_navbar(
                 nav_panel(title = "Rank", rank_mod_ui("all_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("pop_simd"))
               ))
-    
-
-    ), #close nav menu
+  ), #close nav menu
 
   nav_spacer(),
 
