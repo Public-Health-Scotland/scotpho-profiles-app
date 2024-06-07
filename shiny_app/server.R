@@ -188,7 +188,9 @@ function(input, output, session) {
   
   # logic controlling simd visualisations
   simd_navpanel_server("cwb_simd", simd_data2, geo_selections)
-  
+  simd_navpanel_server("hwb_simd", simd_data2, geo_selections)
+  simd_navpanel_server("cyp_simd", simd_data2, geo_selections)
+  simd_navpanel_server("pop_simd", simd_data2, geo_selections)
   
   # logic controlling population group dataset
   # makes dataset reactive so can be used by module - potentially remove when data prep is complete - could be renamed as it supplies data for 

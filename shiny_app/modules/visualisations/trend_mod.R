@@ -15,24 +15,20 @@ trend_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 415,
                         accordion(
-                          open = c("ind_filter_panel"), # have the panel with indicator filter open by default
+                          open = TRUE,
                           multiple = TRUE, # allow multiple panels to be open at once
                           
-                          # accordion panel with 2 x help buttons
+                          # accordion panel with indicator filter and 2 x help buttons
                           accordion_panel(
-                            value = "help_panel",
-                            "Help", icon = bsicons::bs_icon("question-circle"),
+                            value = "indicator_filter_help_panel",
+                            "Indicator filter", icon = bsicons::bs_icon("sliders"),
                             layout_columns(
-                              actionButton(ns("help"), label = "Help", icon = icon("question"), class = "btn-sm"),
-                              indicator_definition_btn_ui(ns("inequalities_ind_def")),
+                              actionButton(ns("help"), label = "Help", icon = icon("question"), class = "btn-sm", style = "height: 100%"),
+                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                            ),
+                            layout_columns(
+                              indicator_filter_mod_ui(ns("trend_indicator_filter"))
                             )
-                          ),
-                          
-                          # accordion panel with indicator filter 
-                          accordion_panel(
-                            value = "ind_filter_panel",
-                            "Indicator filter", icon = bsicons::bs_icon("filter"),
-                            indicator_filter_mod_ui(ns("trend_indicator_filter"))
                           ),
                           
                           # accordion panel with geography filters
@@ -186,7 +182,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         updateSelectInput(session, "ca_filter", choices = ca_list[ca_list!=geo_selections()$areaname])
       }
       else if(geo_selections()$areatype == "HSC partnership"){
-        updateSelectInput(session, "hscp_filter", choices = hscp_list[hscp_list_list!=geo_selections()$areaname])
+        updateSelectInput(session, "hscp_filter", choices = hscp_list[hscp_list!=geo_selections()$areaname])
       }
       else if(geo_selections()$areatype == "Alcohol & drug partnership"){
         updateSelectInput(session, "adp_filter", choices = adp_list[adp_list!=geo_selections()$areaname])
@@ -331,13 +327,29 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # info to display when user clicks help button
     observeEvent(input$help, {
       showModal(modalDialog(
-        title = "How to interpret these trends",
-        tagList(
-          paste0("Text helping user interpret line chart"),
-          br(),)
+        title = "How to use this chart",
+        size = "xl",
+        easyclose = TRUE,
+        p("The trend chart is designed to explore how a single indicator has changed over time for one or more geographical area."),
+        layout_column_wrap(
+          width = 1/2,
+          tags$img(src = "Trend_help_example_final.PNG"),
+          layout_column_wrap(
+            width = 1,
+            heights_equal = "row",
+            p("First select an indicator. The backspace can be used to remove indicators and then indicators can be searched."),
+            p("Then add one or more geographical areas of any area type to the chart using the geography filters. 
+              There may be some indicators where data is not available for the full time series or at a particular geography level.
+              Use the mouse to hover over a data point to see detailed information on its value, time period and area."),
+            p("Confidence intervals (95%) can be added or removed from the chart. These are shown as shaded areas.
+              Confidence intervals give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size."),
+            p("Display controls allow you to switch the graph from a measure (e.g. rate or percentage) to actual numbers (e.g. number of births with a healthy birthweight).")
+          )
+        )
+        
+        
       ))
     })
-    
     
     output$geo_instructions <- renderText({
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
