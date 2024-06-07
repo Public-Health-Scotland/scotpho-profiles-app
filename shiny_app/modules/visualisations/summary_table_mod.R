@@ -77,6 +77,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       chosen_area <- chosen_area[other_areas, on = c("ind_id", "year"),
                                  c("Q0", "Q100", "Q25", "Q75") := .(other_areas$Q0, other_areas$Q100 ,other_areas$Q25, other_areas$Q75)]
       
+      # Arrange by 'domain'
+      chosen_area <- setorder(chosen_area, domain)
+      
       # assign colours to values depending on statistical significance
       final <- chosen_area %>%
         mutate(marker_colour = case_when(lowci <= scotland_value & upci >= scotland_value & interpret %in% c("H", "L") ~'#6A6C6D',
@@ -171,6 +174,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # set domain column as the first in the table
       setcolorder(dt, "domain")
+      
+      # Arrange by 'domain'
+      dt <- setorder(dt, domain)
       
       dt
       
