@@ -176,15 +176,15 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                                      split_value == "55-64"~ phs_colors(colourname = "phs-green"),
                                      split_value == "65-74"~ phs_colors(colourname = "phs-purple-50"),
                                      split_value == "75+"~ phs_colors(colourname = "phs-purple-30"),
-                                     split_value == "Total ages"~ phs_colors(colourname = "phs-purple-80"),
+                                     split_value == "All ages"~ phs_colors(colourname = "phs-purple-80"),
                                      #
-                                     split_value== "All sex"~ phs_colors(colourname = "phs-purple"),
+                                     split_value== "All sexes"~ phs_colors(colourname = "phs-purple"),
                                      split_value == "Female"~ phs_colors(colourname = "phs-magenta"),
                                      split_value == "Male"~ phs_colors(colourname = "phs-teal"),
                                      #
-                                     split_value== "limiting_li"~ phs_colors(colourname = "phs-purple"),
-                                     split_value == "no_li"~ phs_colors(colourname = "phs-magenta"),
-                                     split_value == "non_limiting_li"~ phs_colors(colourname = "phs-teal"),
+                                     split_value== "Limiting LTI"~ phs_colors(colourname = "phs-purple"),
+                                     split_value == "No LTI"~ phs_colors(colourname = "phs-magenta"),
+                                     split_value == "Non-limiting LTI"~ phs_colors(colourname = "phs-teal"),
                                      TRUE ~ phs_colors(colourname = "phs-liberty")        ))|>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
         filter(indicator == selected_indicator() & split_name == input$split_filter) # filter by selected indicator and selected split
