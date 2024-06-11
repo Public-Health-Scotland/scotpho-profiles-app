@@ -254,7 +254,7 @@ page_navbar(
                       navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
                       ),
                 accordion_panel("Care and Wellbeing", icon=icon("line-chart"),
-                      p("Here is some information about the care and wellbeing portfolio"),
+                      about_cwb_text,
                       navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
                       ),
                 accordion_panel("Alcohol", icon=icon("line-chart"),

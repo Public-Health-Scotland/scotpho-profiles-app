@@ -30,8 +30,11 @@ library(bsicons) # for icons
 library(readr) #im additiona will remove in future
 
 
-# 2. Sourcing modules --------------------------------------------------------------
+# 2. Sourcing modules and narrative text -------------------------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
+  map(~ source(.))
+
+list.files("narrative", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
 
