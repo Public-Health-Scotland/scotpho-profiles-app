@@ -66,7 +66,7 @@ trend_mod_ui <- function(id) {
         full_screen = TRUE,
         
         # charts tab -----------------------
-        nav_panel("charts",
+        nav_panel("Charts",
                   uiOutput(ns("trend_title")), # title 
                   highchartOutput(outputId = ns("trend_chart")) # chart
         ), 
@@ -75,6 +75,11 @@ trend_mod_ui <- function(id) {
         nav_panel("Data",
                   reactableOutput(ns("trend_table")) # table
         ), 
+        
+        # help button ----------------
+        nav_panel("Help",
+                  uiOutput(ns("trend_help")), #help
+        ),
         
         # add space
         bslib::nav_spacer(),
@@ -113,7 +118,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # Dynamic filters
     #######################################################
     
-    # enable/ disable geography filters and update thee filters labels, 
+    # enable/ disable geography filters and update the filter labels, 
     # depending on what indicator was selected 
     observe({
       
@@ -197,7 +202,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     })
     
     
-    # Clear what was prevously selected from the filters if a user changes
+    # Clear what was previously selected from the filters if a user changes
     # selection from global geography filter (otherwise they remain selected)
     observeEvent(geo_selections()$areaname, {
       updateSelectInput(session, "hb_filter", selected = character(0))
@@ -225,15 +230,14 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     # disable Scotland checkbox when Scotland already selected in global options
     observe({
-      if(geo_selections()$areaname == "Scotland"){
+      if(geo_selections()$areaname == "Scotland" | !(geo_selections()$areatype %in% unique(filtered_data()$areatype))  ){
         shinyjs::hide("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = FALSE)
-      } else if(geo_selections()$areaname != "Scotland"){
+      } else if(geo_selections()$areaname != "Scotland" | geo_selections()$areatype %in% unique(filtered_data()$areatype)){
         shinyjs::show("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = TRUE)
       }
     })
-    
     
     
     #######################################################
@@ -310,6 +314,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     output$trend_title <- renderUI({
       
+      # create dynamic text if no indicators available for selected profile
+      # and geography
+      shiny::validate(
+        need( nrow(trend_data()) > 0, "No indicators available")
+      )
+      
       # display 3 x titles
       tagList(
         tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
@@ -355,6 +365,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
     })
     
+
     
     ############################################
     # Charts/tables 
