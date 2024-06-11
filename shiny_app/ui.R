@@ -100,7 +100,7 @@ page_navbar(
                    card_header(bs_icon("info-circle-fill", size = "1.2em"),
                                "Indicator set in development",
                                class = "info-box-header"),
-                   p("The Care and Wellbeing indicator will be further developed following user feedback. 
+                   p("The Care and Wellbeing indicator set will be further developed following user feedback. 
                      If you have any feedback please contact us at", 
                      tags$a("phs.scotpho@phs.scot.", href = "mailto:phs.scotpho@phs.scot?subject=Care%20and%20Wellbeing%20Indicator%20Feedback"))),
               
