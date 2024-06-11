@@ -22,7 +22,6 @@ library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable) # for data tables
 library(leaflet) # for map
-library(sf) # note: eventually remove this from here
 library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
@@ -62,14 +61,14 @@ hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
 scot_bound <- readRDS("data/scot_bound.rds") # scotland
-# transform so in right format to join to main dataset 
-# this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
-ca_bound <- sf::st_as_sf(ca_bound)
-hb_bound <- sf::st_as_sf(hb_bound)
-hscp_bound <- sf::st_as_sf(hscp_bound)
-hscloc_bound <- sf::st_as_sf(hscloc_bound)
-iz_bound <- sf::st_as_sf(iz_bound)
-scot_bound <- sf::st_as_sf(scot_bound)
+# # transform so in right format to join to main dataset 
+# # this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
+# ca_bound <- sf::st_as_sf(ca_bound)
+# hb_bound <- sf::st_as_sf(hb_bound)
+# hscp_bound <- sf::st_as_sf(hscp_bound)
+# hscloc_bound <- sf::st_as_sf(hscloc_bound)
+# iz_bound <- sf::st_as_sf(iz_bound)
+# scot_bound <- sf::st_as_sf(scot_bound)
 
 
 # 4. lists ----------------------------------------------------------
