@@ -229,6 +229,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     
     # disable Scotland checkbox when Scotland already selected in global options
+    #or when a geography with no available indicators is selected
     observe({
       if(geo_selections()$areaname == "Scotland" | !(geo_selections()$areatype %in% unique(filtered_data()$areatype))  ){
         shinyjs::hide("scot_switch_trends")
@@ -317,7 +318,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       # create dynamic text if no indicators available for selected profile
       # and geography
       shiny::validate(
-        need( nrow(trend_data()) > 0, "No indicators available")
+        need( nrow(trend_data()) > 0, "No indicators available for this profile and area type. Please select another.")
       )
       
       # display 3 x titles

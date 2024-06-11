@@ -126,7 +126,7 @@ page_navbar(
               title= "Mental Health",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("men_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("men_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("men_rank"))
               )),
     
@@ -153,7 +153,7 @@ page_navbar(
     nav_panel(value = "ALL",
               "All Indicators",
               navset_tab(
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("all_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("all_rank"))
               ))
   ), #close nav menu

@@ -70,12 +70,15 @@ rank_mod_ui <- function(id) {
       navset_card_pill(
         full_screen = TRUE,
         height = 550,
-        nav_panel("chart",
+        nav_panel("Charts",
                   uiOutput(ns("rank_title")), # title
                   highchartOutput(ns("rank_chart")) # chart
         ),
-        nav_panel("data",
+        nav_panel("Data",
                   reactableOutput(ns("rank_table")) # table
+        ),
+        nav_panel("Help", # help
+                  uiOutput(ns("rank_help"))
         ),
         nav_spacer(),
         nav_item(
@@ -140,6 +143,8 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
       } else {
         enable("ci_switch")
       }
+      
+      
     })
     
     
@@ -164,7 +169,13 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
        profile_data <- setDT(profile_data()) # set profile data to data.table format
 
        # filter by selected areatype
-       dt <- profile_data[areatype == geo_selections()$areatype]
+       if(!(geo_selections()$areatype == "Scotland")){
+         dt <- profile_data[areatype == geo_selections()$areatype]
+       } 
+       else {
+         dt <- profile_data[areatype != "Scotland"][areatype == geo_selections()$areatype]
+       }
+    
 
        # additional filtering of parent area if IZ/HSCL selected
        if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")) {
@@ -257,6 +268,12 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
 
      # title ---------
      output$rank_title <- renderUI({
+       
+       # create dynamic text if no indicators available for selected profile
+       # and geography / if Scotland selected
+       shiny::validate(
+         need( nrow(rank_data()) > 0, "No indicators available for this profile and area type. Please note that rank data is unavailable at Scotland-level. Some profiles may also be unavailable for smaller area types such as intermediate zones. Please select another profile or area type.")
+       )
        
        # get definition period
        max_year <- rank_data()$def_period[1]
@@ -376,9 +393,10 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
            hc_legend(enabled = FALSE) |>
            hc_chart(inverted = TRUE)
        }
-
+        
 
        x 
+       
 
      })
 

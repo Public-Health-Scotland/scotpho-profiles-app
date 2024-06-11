@@ -171,7 +171,8 @@ function(input, output, session) {
   trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections)
   trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections)
   trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  
+  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections)
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype
