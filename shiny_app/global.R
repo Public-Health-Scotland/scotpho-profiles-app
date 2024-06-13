@@ -36,7 +36,7 @@ list.files("modules", full.names = TRUE, recursive = TRUE) |>
 
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
-geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
+geo_lookup <- readRDS("data/profiles_geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 
 main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
