@@ -4,14 +4,14 @@
 # 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# 1. Set up ----
+# 1. Set up
 
 ## Load libraries -----
 
 library(dplyr) # data wrangling
 library(openxlsx) # for reading in technical document / converting excel dates
 library(readr) # for reading csv files
-#library(data.table) # for quickly combining multiple files
+library(data.table) # for quickly combining multiple files
 #library(scales) # for re-scaling measures
 library(arrow) # for writing parquet files
 library(janitor) # for cleaning column names
@@ -20,7 +20,8 @@ library(purrr) # for copying multiple files at once
 library(tidyr) # for pivot longer
 
 
-## Set file-paths -----
+# 2. Set file-paths
+
 data_folder <- "/PHI_conf/ScotPHO/Profiles/Data/"
 lookups <- paste0(data_folder, "Lookups/") 
 shape_files <- paste0(data_folder, "Shapefiles/")
@@ -29,28 +30,98 @@ test_shiny_files <- paste0(data_folder, "Test Shiny Data") #folder which contain
 backups <- paste0(data_folder, "Backups/") #area for saving copies of historic files linked to shiny app in case we mess up a file and need to roll back
 
 
-## Source functions called within this script
-source("data_preparation/prepare_techdoc.R")
-source("data_preparation/prepare_shapefiles.R")
+# 3. Source function scripts
+
+source("data_preparation/data_prep_functions.R") # generic functions 
+source("data_preparation/data_validation_tests.R") # validation checks
+
+source("data_preparation/update_techdoc.R")
+source("data_preparation/update_shapefiles.R")
+source("data_preparation/update_deprivation_data.R")
 
 
 
-## Prepare technical document ----
+
+
+
+#########################################################################################.
+## Update technical document ----
+#########################################################################################.
 
 # Generates techdoc parquet file within shiny app data folder
-# Also generates profile_lookup and technical_doc dataframe which are required for processing the indicator data files below.
-# Can also be used to save a backup version of techdoc
-# Optional parameter allows inclusion of test indicator data
+# Also makes profile_lookup and technical_doc dataframes visible in data pane
+# which are required for processing the indicator data files below.
+# Option:  to save a backup version of techdoc (set create_backup to TRUE)
+# Option: to include indicators data labelled as test indicators in techdoc (set load test indicators to TRUE)
 
-prepare_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
+update_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
 
 
 
 
-## Shapefiles (optional - shape files rarely update - you )
-#   Note: this step is only really necessary if you are running this script for the first time
-#   OR if there have been updates to the shape files
+#########################################################################################.
+## Update shape files  ----
+#########################################################################################.
 
-prepare_shapefiles()
+# Shapefiles (used to generate maps presented in rank tab only)
+# Note: this step is only really necessary if you are running this script for the first time
+# OR if there have been updates to the shape files
+update_shapefiles()
+
+
+
+#########################################################################################.
+## Update geography lookups  ----
+#########################################################################################.
+
+## Geography Lookup
+# copy the main geography lookup to your local repo
+file.copy(
+  paste0(lookups, "Geography/opt_geo_lookup.rds"), # old file path - TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
+  paste0("shiny_app/data/profiles_geo_lookup.rds"),  # copy to local shiny app data folder
+  overwrite = TRUE
+)
+
+# open geography look from shiny app data folder (required for matches on areanames, area type and parent geographies to geography codes in indicator datasets)
+geography_lookup <- readRDS(
+  file = paste0(lookups, "Geography/opt_geo_lookup.rds") ##TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
+)
+
+
+## To DO: is there code to create the nodes?
+## Geo nodes - need to add this in somewhere
+#  rename prefix from opt something like 'profiles'geo_lookup its more explict what geo lookup is for. Ok to keep as just geo_lookup once inside the shiny app tho.
+
+
+
+
+
+#########################################################################################.
+## Update deprivation data  ----
+## i.e. indicator data split by SIMD quintiles.
+#########################################################################################.
+
+
+update_deprivation_data()
+
+## TO DO figure out if validation tests # should these sit inside the data prep function? what happens if validation test fails inside a function
+## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
+## 
+
+
+TEST_no_missing_ineq_indicators(data_depr) # compares dataset to techdoc column 'inequality label' is not null 
+
+TEST_no_missing_geography_info(data_depr) # all rows have valid geography code
+
+TEST_no_missing_metadata(data_depr) # checks for dep indicators with no indicator name
+
+TEST_suppression_applied(data_depr) # double checking suppression function wasn't skipped
+#TEST_inequalities_trends(data_depr) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
+
+# Havent split inequalities data by profile yet
+
+
+
+
 
 
