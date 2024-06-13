@@ -5,7 +5,7 @@
 # load_test_data : (default is FALSE) option to set to TRUE which reads indicators where the column called 'active' in techdoc is either (A) active or (T) test 
 # create_backup :  (default is FALSE ) option to set to TRUE when creating a distinct backup version desired e.g. when planning to deploy the app
 
-prepare_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
+update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   
   # read in technical document source of all meta data about individual indicators, located in network directory
   technical_doc_raw <- read.xlsx(

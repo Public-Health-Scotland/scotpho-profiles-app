@@ -1,6 +1,6 @@
 ## FUNCTION: update_shapefiles.R ----
 
-prepare_shapefiles <- function() {
+update_shapefiles <- function() {
   
 
 library(sf) # required for formatting shapefiles
