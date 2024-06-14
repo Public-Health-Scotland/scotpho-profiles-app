@@ -23,7 +23,6 @@ trend_mod_ui <- function(id) {
                             value = "indicator_filter_help_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
                             layout_columns(
-                              actionButton(ns("help"), label = "Help", icon = icon("question"), class = "btn-sm", style = "height: 100%"),
                               indicator_definition_btn_ui(ns("inequalities_ind_def"))
                             ),
                             layout_columns(
@@ -336,31 +335,28 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     
     # info to display when user clicks help button
-    observeEvent(input$help, {
-      showModal(modalDialog(
-        title = "How to use this chart",
-        size = "xl",
-        easyclose = TRUE,
-        p("The trend chart is designed to explore how a single indicator has changed over time for one or more geographical area."),
+    output$trend_help <- renderUI({ 
+      tagList(
+        tags$h5("How to use this chart"),
+        tags$p("The trend chart is designed to explore how a single indicator has changed over time for one or more geographical areas."),
         layout_column_wrap(
           width = 1/2,
           tags$img(src = "Trend_help_example_final.PNG"),
           layout_column_wrap(
             width = 1,
             heights_equal = "row",
-            p("First select an indicator. The backspace can be used to remove indicators and then indicators can be searched."),
-            p("Then add one or more geographical areas of any area type to the chart using the geography filters. 
+            p("First select an indicator. The backspace can be used to remove the default selection and then topics or indicator names can be searched."),
+            p("Next add one or more geographical areas of any area type to the chart using the geography filters. 
               There may be some indicators where data is not available for the full time series or at a particular geography level.
               Use the mouse to hover over a data point to see detailed information on its value, time period and area."),
             p("Confidence intervals (95%) can be added or removed from the chart. These are shown as shaded areas.
               Confidence intervals give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size."),
             p("Display controls allow you to switch the graph from a measure (e.g. rate or percentage) to actual numbers (e.g. number of births with a healthy birthweight).")
-          )
-        )
-        
-        
-      ))
-    })
+      )
+        ))
+      
+      })
+      
     
     output$geo_instructions <- renderText({
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")

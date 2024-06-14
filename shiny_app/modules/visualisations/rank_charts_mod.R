@@ -23,7 +23,6 @@ rank_mod_ui <- function(id) {
       sidebar = sidebar(width = 300,
                         # help buttons
                         layout_columns(
-                          actionButton(ns("rank_help"), label = "Help", class="act-btn"),
                           indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")
                         ),
                         
@@ -258,6 +257,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
         x
       }
       x <- x |> left_join(rank_data(), by = join_by(code))
+      
     })
      
      
@@ -311,23 +311,21 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      
   
      # info to display when user clicks help button (explains how to interpret)
-     observeEvent(input$rank_help, {
-       showModal(modalDialog(
-         title = "How to interpret results",
+    output$rank_help <- renderUI({ 
          tagList(
-           paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), "). You can also
-          choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator.
-          For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
+           tags$h5("How to use this chart"),
+           p(paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), ").")),
+           p("You can also choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator."),
+           p("For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
                  whether there are particular areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)"),
            br(),
            p("If a comparator is selected, the chart and the map will be colour coded using the key below:"),
            fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
            fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
            fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
-           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
+           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
            
          )
-       ))
      })
      
      
