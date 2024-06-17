@@ -271,19 +271,19 @@ page_navbar(
                       navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
                       ),
                 accordion_panel("Drugs", icon=icon("line-chart"),
-                      p("Here is some information about drugs"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
                       ),
                 accordion_panel("Mental Health", icon=icon("line-chart"),
-                      p("Here is some information about mental health"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
                       ),
                 accordion_panel("Population", icon=icon("line-chart"),
-                      p("Here is some information about population"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")
                       ),
                 accordion_panel("Tobacco", icon=icon("line-chart"),
-                      p("Here is some information about tobacco"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile")
                       )
     )),
