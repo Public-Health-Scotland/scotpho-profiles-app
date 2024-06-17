@@ -145,7 +145,31 @@ function(input, output, session) {
   
   # temporarily making simd data reactive 
   simd_data2 <- reactive({
-    simd_dataset
+    #simd_dataset
+    
+    # set to data.table
+    dt <- setDT(simd_dataset)
+    
+    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document 
+    dt <- dt[substr(profile_domain1, 1, 3) == profile() |
+               substr(profile_domain2, 1, 3) == profile() |
+               substr(profile_domain3, 1, 3) == profile()]
+    
+    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+    # is assigned to more than one profile (and therefore more than one domain)
+    dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profile(), 
+                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+                                 fifelse(substr(profile_domain2, 1, 3) == profile(), 
+                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3))))
+    )]
+    
+    # Convert 'domain' to factor
+    dt <- dt[, domain := as.factor(domain)]
+    
+    # Arrange by 'domain'
+    dt <- setorder(dt, domain)
+    
   })
   
   # logic controlling summary tables
