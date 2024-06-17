@@ -255,11 +255,11 @@ page_navbar(
                 h1("About the ScotPHO Profiles"),
                 p("Here is some information about each of the ScotPHO profiles."),
                 accordion_panel("Health and Wellbeing", icon=icon("line-chart"),
-                      p("Here is some information about health and wellbeing"),
+                      about_hwb_text,
                       navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")
                       ),
                 accordion_panel("Children and Young People", icon=icon("line-chart"),
-                      p("Here is some information about children and young people"),
+                      about_cyp_text,
                       navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
                       ),
                 accordion_panel("Care and Wellbeing", icon=icon("line-chart"),

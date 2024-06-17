@@ -1,9 +1,9 @@
-###########################################
+###########################################.
 # Narrative text for 'about profiles' tab 
-###########################################
+###########################################.
 
-
-### Care and Wellbeing
+###########################################.
+### Care and Wellbeing ----
 
 about_cwb_text <- tagList(
     
@@ -53,9 +53,53 @@ about_cwb_text <- tagList(
 
 )
   
+###########################################.
+### Health and Wellbeing ----
+
+about_hwb_text <- tagList(
+
+h5("Overview"),
+p("The ScotPHO Health and Wellbeing profiles are designed to provide a broad picture of health in Scotland, highlight health and social inequalities and aim
+to enable resources to be appropriately targeted to reduce inequalities."),
+br(),
+h5("Target audience"),
+p("We expect that the following professional groups will find the information contained here of particular
+interest: public health and health improvement staff; health promotion officers; public health practitioners;
+planners and other health professionals within NHS Boards. It will also be of interest to those in government,
+local authorities, third sector and academia including planners and policy makers; community planning;
+improvement services; researchers and voluntary sector organisations.
+Additionally, we hope that a range of national and local organisations will find the profiles useful to
+understand local health variations and identify areas in which to target health improvement efforts."),
+br(),
+)
 
 
+###########################################.
+### Health and Wellbeing ----
 
+about_cyp_text <- tagList(
   
-
-
+  h5("Overview"),
+  p("The Scottish Public Health Observatory (ScotPHO) Children and Young People’s Profile presents a wide range of data at national, local authority, Health Board and, where available, intermediate zone level.
+    These data can be used by a variety of partners across the public and third sectors to highlight inequalities, plan services, target resources effectively and monitor outcomes for children and young
+    people at a population level."),
+  br(),
+  p("The Children and Young People’s Profile comprises 52 indicators across a wide range of health outcomes and social determinants.
+    The indicators within the profile are organised by the eight wellbeing domains, as defined in",
+    tags$a("Getting It Right For Every Child (GIRFEC).", href = "https://www.gov.scot/policies/girfec/wellbeing-indicators-shanarri/"),
+    "which is the national approach to improving outcomes for all children and young people.The rights of children and their wellbeing sit at the
+    heart of GIRFEC. In recognition that the wellbeing of children and young people is influenced by all of their experiences and everything
+    around them, a broad definition of wellbeing has been developed."),
+  br(),
+  p("Organisation of the indicators by the SHANARRI domains received overwhelming support during a stakeholder consultation in the
+  summer of 2016. In response to this, the SHANARRI approach has been adopted in the profile. In developing the profile it was
+  recognised that one indicator may fit into more than one domain.Equally, for some domains, it was difficult to find suitable indicators.
+  For presentation within the profile each indicator has been placed into a single wellbeing domain. Users of the profiles may choose
+  to use the indicators differently to how they have been presented.Unfortunately, none of the indicators identified for inclusion in the
+  profile was a good fit for the ‘respected’ domain."),
+  br(),
+  p("For more information on GIRFEC and the wellbeing domains
+  please see:",
+  tags$a(href="https:://www.gov.scot/Topics/People/Young-People/gettingitright/wellbeing")),
+  br()
+)
