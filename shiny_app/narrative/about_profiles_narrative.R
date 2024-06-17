@@ -75,12 +75,12 @@ br(),
 
 
 ###########################################.
-### Health and Wellbeing ----
+### Children and young people ----
 
 about_cyp_text <- tagList(
   
   h5("Overview"),
-  p("The Scottish Public Health Observatory (ScotPHO) Children and Young People’s Profile presents a wide range of data at national, local authority, Health Board and, where available, intermediate zone level.
+  p("The Scottish Public Health Observatory (ScotPHO) Children and Young People’s Profile presents a wide range of data at national, local authority, NHS board, health & social care partnership and, where available, intermediate zone level.
     These data can be used by a variety of partners across the public and third sectors to highlight inequalities, plan services, target resources effectively and monitor outcomes for children and young
     people at a population level."),
   br(),
@@ -98,8 +98,25 @@ about_cyp_text <- tagList(
   to use the indicators differently to how they have been presented.Unfortunately, none of the indicators identified for inclusion in the
   profile was a good fit for the ‘respected’ domain."),
   br(),
-  p("For more information on GIRFEC and the wellbeing domains
-  please see:",
-  tags$a(href="https:://www.gov.scot/Topics/People/Young-People/gettingitright/wellbeing")),
+  p("For more information on GIRFEC and the wellbeing domains please see: ",br(),
+  tags$a("https:://www.gov.scot/Topics/People/Young-People/gettingitright/wellbeing", href = "https:://www.gov.scot/Topics/People/Young-People/gettingitright/wellbeing")),
   br()
 )
+
+
+
+###########################################.
+### alcohol ----
+
+about_alc_text <- tagList(
+  h5("Overview"),
+  p("The Scottish Public Health Observatory (ScotPHO) Alcohol Profile presents a range of data at national, local authority, NHS board, health & social care partnership and, where available, intermediate zone level.
+    These data can be used by a variety of partners across the public and third sectors to highlight inequalities, plan services, target resources effectively and monitor outcomes at a population level."),
+  br(),
+  h5("Futher information"),
+  p("Public Health Scotland (PHS) produce an ",
+  tags$a("Alcohol consumption and harms dashabord ",href="https://scotland.shinyapps.io/phs-health-achd/"),
+  "which provides further information relating to alcohol."),
+  br()
+  )
+

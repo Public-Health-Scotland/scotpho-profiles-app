@@ -267,7 +267,7 @@ page_navbar(
                       navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
                       ),
                 accordion_panel("Alcohol", icon=icon("line-chart"),
-                      p("Here is some information about alcohol"),
+                      about_alc_text,
                       navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
                       ),
                 accordion_panel("Drugs", icon=icon("line-chart"),
