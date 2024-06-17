@@ -95,6 +95,15 @@ page_navbar(
     # care and wellbeing
     nav_panel(value = "CWB",
               title = "Care & Wellbeing",
+              
+              card(max_height = 150,
+                   card_header(bs_icon("info-circle-fill", size = "1.2em"),
+                               "Indicator set in development",
+                               class = "info-box-header"),
+                   p("The Care and Wellbeing indicator set will be further developed following user feedback. 
+                     If you have any feedback please contact us at", 
+                     tags$a("phs.scotpho@phs.scot.", href = "mailto:phs.scotpho@phs.scot?subject=Care%20and%20Wellbeing%20Indicator%20Feedback"))),
+              
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("cwb_trends")),
@@ -236,7 +245,7 @@ page_navbar(
     title = "More information",
 
     # about scotpho tab
-    nav_panel(title = "About ScotPHO"),
+    nav_panel(title = "About ScotPHO",about_scotpho_text),
 
     # about profiles tab (to do: replace placeholder text)
     nav_panel(title = "About Profiles",
@@ -246,35 +255,35 @@ page_navbar(
                 h1("About the ScotPHO Profiles"),
                 p("Here is some information about each of the ScotPHO profiles."),
                 accordion_panel("Health and Wellbeing", icon=icon("line-chart"),
-                      p("Here is some information about health and wellbeing"),
+                      about_hwb_text,
                       navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")
                       ),
                 accordion_panel("Children and Young People", icon=icon("line-chart"),
-                      p("Here is some information about children and young people"),
+                      about_cyp_text,
                       navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
                       ),
                 accordion_panel("Care and Wellbeing", icon=icon("line-chart"),
-                      p("Here is some information about the care and wellbeing portfolio"),
+                      about_cwb_text,
                       navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
                       ),
                 accordion_panel("Alcohol", icon=icon("line-chart"),
-                      p("Here is some information about alcohol"),
+                      about_alc_text,
                       navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
                       ),
                 accordion_panel("Drugs", icon=icon("line-chart"),
-                      p("Here is some information about drugs"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
                       ),
                 accordion_panel("Mental Health", icon=icon("line-chart"),
-                      p("Here is some information about mental health"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
                       ),
                 accordion_panel("Population", icon=icon("line-chart"),
-                      p("Here is some information about population"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")
                       ),
                 accordion_panel("Tobacco", icon=icon("line-chart"),
-                      p("Here is some information about tobacco"),
+                      p(" "),
                       navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile")
                       )
     )),

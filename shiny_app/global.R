@@ -30,8 +30,11 @@ library(bsicons) # for icons
 library(readr) #im additiona will remove in future
 
 
-# 2. Sourcing modules --------------------------------------------------------------
+# 2. Sourcing modules and narrative text -------------------------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
+  map(~ source(.))
+
+list.files("narrative", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
 
@@ -130,8 +133,8 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".btn-download_btns_menu { padding: 0}", # remove padding from download buttons menu so fits nicely in card footers
       ".chart-header { font-weight: bold !important;}", # make chart titles bold
       "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
-      ".btn-hero {color:black; background-color:#def4ff; border:none;}" # make buttons in the hero on landing page light blue
-      
+      ".btn-hero {color:black; background-color:#def4ff; border:none;}", # make buttons in the hero on landing page light blue
+      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
     )
   )
 
