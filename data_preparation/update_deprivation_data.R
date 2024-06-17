@@ -23,8 +23,6 @@ update_deprivation_data <- function() {
     replace_old_geography_codes(col_name = "code") |>
     left_join(geography_lookup, by = "code")
   
-  
-  
   # formatting numbers ----
   data_depr <- data_depr |>
     mutate(quintile = recode(quintile,"1" = "1 - most deprived","5" = "5 - least deprived")) |>
@@ -42,23 +40,22 @@ update_deprivation_data <- function() {
   data_depr <- data_depr |>
     group_by(ind_id, year, quint_type, code) |>
     # label if par, sii or rii  positive or negative (helps with health inequality dynamic summary text)
-    mutate(
-      across(c(sii, rii, par),
+    mutate(across(c(sii, rii, par),
              ~ case_when(. > 0 ~ "positive", . < 0 ~ "negative",  . == 0 ~ "zero"),
-             .names = "{.col}_gradient"
-      )
-    ) |>
+             .names = "{.col}_gradient")) |>
     mutate(
       qmax = quintile[which.max(measure)], # which quintile contains highest rate/value
       qmin = quintile[which.min(measure)] # which quintile contains lowest rate/value
     ) |>
-    ungroup()
+    ungroup() |>
+    rename(indicator = indicator_name)
   
   # deselect columns not required and rename
   data_depr <<- data_depr 
+  
   #|> # pass dataset from function so visible in data panel
     #select(-c("file_name", "parent_area", "areaname_full")) |>
-    #rename(indicator = indicator_name)
+  #  rename(indicator = indicator_name)
   
   
   #write parquet file to shiny app data folder
