@@ -245,7 +245,7 @@ page_navbar(
     title = "More information",
 
     # about scotpho tab
-    nav_panel(title = "About ScotPHO"),
+    nav_panel(title = "About ScotPHO",about_scotpho_text),
 
     # about profiles tab (to do: replace placeholder text)
     nav_panel(title = "About Profiles",
