@@ -133,7 +133,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     observe({
       
       available_splits <- dataset() |>
-        filter(indicator == selected_indicator()) |>
+        filter(indicator == selected_indicator()& areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         pull(unique(split_name))
       
       updateSelectInput(session, inputId = "split_filter", choices = available_splits)
