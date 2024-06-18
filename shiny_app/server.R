@@ -38,6 +38,8 @@ function(input, output, session) {
   navigation_button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
   navigation_button_modSERVER("indicator_schedule", nav_id="Indicator Definitions", parent_session = session)
   
+  # logic controlling about profiles button in profile header
+  navigation_button_modSERVER("about_profiles_header", nav_id = "About Profiles", parent_session = session)
   
   # logic controlling buttons within the "About Profiles" tab linking back to profile pages
   navigation_button_modSERVER("view_profile_HWB", nav_id="HWB", parent_session = session)

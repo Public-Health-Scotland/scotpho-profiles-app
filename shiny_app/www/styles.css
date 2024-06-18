@@ -21,6 +21,15 @@
 }
 
 
+/* hide error messages through whole app*/
+.shiny-output-error {
+    color: white;
+ 
+}
+
+.shiny-output-error-validation {
+    color: #8e8f90;
+}
 
 
 /* HOMEPAGE STYLING ---------------------*/ 
