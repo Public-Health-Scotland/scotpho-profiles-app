@@ -18,16 +18,16 @@ trend_mod_ui <- function(id) {
                           open = TRUE,
                           multiple = TRUE, # allow multiple panels to be open at once
                           
-                          # accordion panel with indicator filter and 2 x help buttons
+                          # accordion panel with indicator filter and help button
                           accordion_panel(
                             value = "indicator_filter_help_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
                             layout_columns(
-                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                              indicator_filter_mod_ui(ns("trend_indicator_filter"))
                             ),
                             layout_columns(
-                              indicator_filter_mod_ui(ns("trend_indicator_filter"))
-                            )
+                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                            ),
                           ),
                           
                           # accordion panel with geography filters
@@ -53,8 +53,8 @@ trend_mod_ui <- function(id) {
                             selectInput(inputId = ns("hscp_filter_2"), label = "To select a locality or intermediate zone, first select a HSC partnership:", choices = hscp_list),
                             
                             layout_columns(
-                              child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones"),
-                              child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities")
+                              child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones:"),
+                              child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities:")
                             )
                           )
                         ) # close accordion
@@ -446,6 +446,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       
       data <- trend_data() |>
         select(areatype, areaname, trend_axis, y)
+      
+      #filters out duplicates when Scotland selected in global options
+      data <- unique(data)
       
       reactable(data,
                 columns = list(
