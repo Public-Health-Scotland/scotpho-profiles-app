@@ -67,6 +67,10 @@ rank_mod_ui <- function(id) {
       
       layout_column_wrap(
       # bar chart card ----------------------
+      # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+      # package maintainers are aware and working on a fix
+      # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+      suppressWarnings(
       navset_card_pill(
         full_screen = TRUE,
         height = 550,
@@ -88,7 +92,7 @@ rank_mod_ui <- function(id) {
         card_footer(class = "d-flex justify-content-between",
                              download_chart_mod_ui(ns("save_rank_chart")),
                              download_data_btns_ui(ns("rank_download")))
-      ),
+      )),
       
       # map card -------------------
       
@@ -114,7 +118,7 @@ rank_mod_ui <- function(id) {
 # id = unique id 
 # profile_data = reactive df in main server
 # geo_selections <- reactive values in main server storing global geography selections
-rank_mod_server <- function(id, profile_data, geo_selections) {
+rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -160,6 +164,8 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      
      # prepares data to be plotted --------------------------------------------
      rank_data <- reactive({
+       
+       req(active_nav() == nav_id)
 
        profile_data <- setDT(profile_data()) # set profile data to data.table format
 

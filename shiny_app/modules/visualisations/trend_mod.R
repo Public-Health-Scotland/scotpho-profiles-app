@@ -62,6 +62,10 @@ trend_mod_ui <- function(id) {
       ), # close sidebar
       
       # create a multi-tab card 
+      # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+      # package maintainers are aware and working on a fix
+      # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+      suppressWarnings(
       navset_card_pill(
         full_screen = TRUE,
         
@@ -97,14 +101,16 @@ trend_mod_ui <- function(id) {
         card_footer(class = "d-flex justify-content-between",
                     download_chart_mod_ui(ns("download_trends_chart")),
                     download_data_btns_ui(ns("download_trends_data")))
+
       ) # close navset card pill
+      ) # close suppress warnings
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 
 
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections) {
+trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_id) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -116,6 +122,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # enable/ disable geography filters and update thee filters labels, 
     # depending on what indicator was selected 
     observe({
+      
+      req(indicator_filtered_data())
       
       # stores available areatypes, depending on what indicator was selected
       available_areatypes <- indicator_filtered_data() |>
@@ -247,6 +255,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({
+      req(active_nav() == nav_id) # only run module if tab is active 
       filtered_data() |>
         filter(indicator == selected_indicator())
     })
@@ -270,6 +279,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
     trend_data <- reactive({
+      req(indicator_filtered_data())
       
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(

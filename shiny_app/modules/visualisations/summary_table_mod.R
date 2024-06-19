@@ -41,13 +41,14 @@ summary_table_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, active_nav, nav_id) {
   
   moduleServer(id, function(input, output, session) {
     
     
     # prepare local summary data 
     local_summary <- reactive({
+      req(active_nav() == nav_id)
       req(selected_geo()$areatype != "Scotland")
       
       # convert to data.table format (using data.table package) to run quicker 
@@ -148,6 +149,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     # prepare scotland summary data 
     scotland_summary <- reactive({
+      req(active_nav() == nav_id)
       req(selected_geo()$areatype == "Scotland")
       
       # set the profile data to data.table format
