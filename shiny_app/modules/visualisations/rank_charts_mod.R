@@ -21,13 +21,12 @@ rank_mod_ui <- function(id) {
       
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
-                        # help buttons
-                        layout_columns(
-                          indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")
-                        ),
-                        
+
                         # indicator filter (note this is a module)
                         indicator_filter_mod_ui(ns("indicator_filter")),
+                        
+                        # indicator definition button
+                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn"),
                         
                         # comparator switch filter 
                         bslib::input_switch(id = ns("comparator_switch"), 
@@ -239,6 +238,16 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      # map data --------------------------------------
      # dynamically selects shapefile and joins with map data
     map_data <- reactive({
+      
+      # create dynamic text to explain map unavailability if ADP selected
+      shiny::validate(
+        need( !(geo_selections()$areatype == "Alcohol & drug partnership"), "Please note that the map is currently unavailable when Alcohol & drug partnership is selected.")
+      )
+      
+      
+      # don't create map data if Alcohol & drug partnership selected in global filters
+      req(geo_selections()$areatype != "Alcohol & drug partnership")
+      
       # get correct shapefile
       x <- switch(geo_selections()$areatype,
                   "Health board" = hb_bound,
@@ -272,7 +281,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
        # create dynamic text if no indicators available for selected profile
        # and geography / if Scotland selected
        shiny::validate(
-         need( nrow(rank_data()) > 0, "No indicators available for this profile and area type. Please note that rank data is unavailable at Scotland-level. Some profiles may also be unavailable for smaller area types such as intermediate zones. Please select another profile or area type.")
+         need( nrow(rank_data()) > 0, "No indicators available for this profile and area type.")
        )
        
        # get definition period
@@ -336,6 +345,15 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      # chart (barchart/dumbell chart)
       output$rank_chart <- renderHighchart({
 
+        
+        # create dynamic text if no indicators available for selected profile
+        # and geography / if Scotland selected
+        shiny::validate(
+          need( nrow(rank_data()) > 0, "Please note that rank data is unavailable at Scotland-level for all profiles.
+          
+Not all profiles have available indicators for all geography types. The drugs profile has no available indicators for intermediate zones and the mental health profile has no available indicators for intermediate zones or HSC localities. Please select another profile or geography type to continue.")
+        )
+        
        # if there' no comparator selected, or the selected comparator is "area" then create a bar chart
        if(input$comparator_switch == FALSE | (input$comparator_switch == TRUE & input$comparator_type == "Area")) {
 
@@ -344,7 +362,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
            hc_yAxis(gridLineWidth = 0) |>
            hc_xAxis(title = list(text = "")) |>
            hc_yAxis(title = list(text = "")) |>
-           hc_chart(margin = c(0, 0, 0, 150),
+           hc_chart(margin = c(10, 0, 0, 150),
                     backgroundColor = 'white') |>
            hc_plotOptions(series = list(animation = FALSE)) |>
            hc_tooltip(
@@ -482,8 +500,12 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      output$rank_table <- renderReactable({
        
        data <- rank_data() |>
-         select(areaname, measure, upci, lowci) |>
-         arrange(measure)
+         mutate(`Area name` = areaname,
+                Measure = measure,
+                `Upper CI` = upci,
+                `Lower CI` = lowci) |>
+         select(`Area name`, Measure, `Upper CI`, `Lower CI`) |>
+         arrange(Measure)
        
        reactable(data,
                  defaultExpanded = T,
