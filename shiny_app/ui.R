@@ -13,6 +13,7 @@ page_navbar(
   lang = "en",
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
   theme = phs_theme, # dashboard theme - defined in global script
+  # place external scripts in footer argument to avoid warning as recommended by package developers
   footer = tags$head(
     # required for spinecharts
     tags$script(src = "https://code.highcharts.com/highcharts.js"),
