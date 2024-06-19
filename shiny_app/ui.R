@@ -13,16 +13,15 @@ page_navbar(
   lang = "en",
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
   theme = phs_theme, # dashboard theme - defined in global script
+  footer = tags$head(
+    # required for spinecharts
+    tags$script(src = "https://code.highcharts.com/highcharts.js"),
+    #required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
+    tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),
+    # required for homepage styling
+    includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
+  ), 
   header =  tagList(
-    tags$head(
-      # required for spinecharts
-      tags$script(src = "https://code.highcharts.com/highcharts.js"),
-      #required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
-      tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),
-      # required for homepage styling
-      includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
-    ), 
-    
     # header that appears across the top of each profile tab
     # including geography filters and info detailing selected geography and profile
     hidden(
