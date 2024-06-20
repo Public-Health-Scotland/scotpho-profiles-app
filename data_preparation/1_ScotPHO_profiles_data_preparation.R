@@ -1,7 +1,20 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 1_ScotPHO_profiles_data_preparation.R
+# This script prepares the data behind the ScotPHO Profiles Tool
 #
-# This script prepares the data behind indicators split by SIMD within the ScotPHO Profiles Tool
-# 
+# There are a number of data files that profile tool app requires.
+# Updating the tool will require updating one or more of the following data files
+#
+# Meta data files
+# 1 - Technical document - excel file located within network directory holding all meta about indicators
+# 2 - Geography lookup - details linking geography codes to geography names plus heirarchy of which areas are within others
+# 3 - Shapefiles - used to generate maps within rank visualisations - updating these is rarely required
+#
+# Files containing indicator data (which parts of profiles tool depend on them)
+# 4 - main data (summary/rank/trend tabs)
+# 5 - SIMD data (SIMD/deprivation tab)
+# 6 - population groups data (population group tab)
+#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 1. Set up
@@ -102,7 +115,7 @@ update_deprivation_data()
 
 ## TO DO figure out if validation tests # should these sit inside the data prep function? what happens if validation test fails inside a function
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
-## 
+
 
 TEST_no_missing_ineq_indicators(data_depr) # compares dataset to techdoc column 'inequality label' is not null 
 
@@ -128,5 +141,7 @@ TEST_inequalities_trends(data_depr) # checks if last deprivation indicator year 
 update_shapefiles()
 
 
+
+##END
 
 
