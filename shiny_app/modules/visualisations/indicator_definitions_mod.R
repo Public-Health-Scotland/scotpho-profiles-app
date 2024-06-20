@@ -28,10 +28,9 @@ definitions_tab_UI <- function(id) {
       # profile filter 
       selectizeInput(ns("profile_search"), 
                      label = "Filter by profile", 
-                     selected = NULL,
                      multiple = TRUE,
                      choices = as.list(c("All", unname(profiles_list))),
-                     #choices = unname(unlist(profiles_list)),
+                     selected = "All",
                      options = list(placeholder = 'Select a profile')
                      ),
       # geography level filter 
@@ -290,27 +289,27 @@ definitions_tab_Server <- function(id) {
 # so that these 2 items become available in your global environment
 ###################################
 
-# # packages
-# library(shiny) 
-# library(shinyjs) 
+# packages
+# library(shiny)
+# library(shinyjs)
 # library(bslib)
 # 
 # # css for table
 # theme <- bs_theme(version = 5) |>
 #   bs_add_rules(list(
-#     ".metadata-header {font-weight: 600;}", # make headers in expandable rows bolder 
+#     ".metadata-header {font-weight: 600;}", # make headers in expandable rows bolder
 #     ".rt-tr-details {padding: 24px; box-shadow: inset 0 1px 3px #dbdbdb; background: #FDFDFC ;}")) # make expanded panel light grey with slight shadow
 # 
-# # ui 
+# # ui
 # ui <- fluidPage(
-#   useShinyjs(), 
+#   useShinyjs(),
 #   theme = theme,
-#   definitions_tab_UI(id = "metadata") # insert module in ui - assigning it a unique id 
+#   definitions_tab_UI(id = "metadata") # insert module in ui - assigning it a unique id
 # )
 # 
 # server <- function(input, output, session) {
 # 
-#   definitions_tab_Server(id = "metadata") # call module in server - using matching id assigned in the ui 
+#   definitions_tab_Server(id = "metadata") # call module in server - using matching id assigned in the ui
 # 
 # }
 # 
