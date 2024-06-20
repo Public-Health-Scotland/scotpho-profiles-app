@@ -172,69 +172,8 @@ page_navbar(
   # data tab -------------------------------------------------------------------
             nav_panel("Download data",
                       value = "dt",
-                      page_sidebar(fillable = FALSE,
-                                   sidebar = sidebar(width = 300, padding = 20,
-                                                     
-                                                     h2("Filters"),
-                                                     
-                                                     # clear filters button
-                                                     actionButton("clear_table_filters",
-                                                                  label = "Clear all filters",
-                                                                  icon ("eraser"),
-                                                                  class = "down"),
+                      data_tab_modUI("data_tab")
 
-                                                     
-                                                     # Geography filters
-                                                     jstreeOutput("geography_selector"),
-                                                     
-                                                     # profile filters
-                                                     virtualSelectInput(inputId = "profile_selector",
-                                                                        label = "Select profile(s)",
-                                                                        choices = unname(profiles_list),
-                                                                        disableSelectAll = FALSE,
-                                                                        multiple = TRUE,
-                                                                        search = TRUE,
-                                                                        searchByStartsWith = TRUE,
-                                                                        width = '100%',
-                                                                        zIndex = 100),
-                                                     
-                                                     # indicator filters
-                                                     virtualSelectInput(inputId = "indicator_selector",
-                                                                        label = "Select indicator(s)",
-                                                                        noOptionsText = "Select atleast one geography to see what indicators are available",
-                                                                        choices = NULL,
-                                                                        disableSelectAll = TRUE,
-                                                                        multiple = TRUE,
-                                                                        search = TRUE,
-                                                                        searchByStartsWith = TRUE,
-                                                                        dropboxWrapper = "body",
-                                                                        dropboxWidth = '400px',
-                                                                        width = '100%',
-                                                                        zIndex = 100),
-                                                     
-                                                     
-                                                     # time period filter
-                                                     radioGroupButtons(
-                                                       inputId = "time_period_selector",
-                                                       label = "Select time period:",
-                                                       choices = c("Latest available year", "All years"),
-                                                       selected = "Latest available year"
-                                                     )
-                                                     
-                                   ), # close sidebar
-                                   
-                                   h1("Data table"),
-                                   p("Use the filters to build a data table, which can then be downloaded in various
-	                                 formats using the button below. Please note that the table below is a preview. 
-	                                 The downloaded dataset will contain more columns containing metadata than are presented here."),
-                                   
-                                   # download data button
-                                   download_data_btns_ui(id = "datatable_downloads"),
-                                   
-                                   # data table
-                                   reactableOutput("data_tab_table")
-                                   
-                      ) # close layout
             ), # close data table nav
 
   # source code link -------------------------------------------------------------------
