@@ -21,7 +21,7 @@ definitions_tab_UI <- function(id) {
     an indicator in the search results table to view metadata."),
     p("To view technical information and updates schedule for all indicators at once, use the download button below."),
     # download button
-    downloadButton("metdata_download", label = "Download as CSV", class = "btn-sm"),
+    downloadButton("techdoc_download", label = "Download as CSV", class = "btn-sm"),
     hr(),
     # filters
     layout_columns(
@@ -114,6 +114,7 @@ definitions_tab_Server <- function(id) {
                                     
           # Technical information to display when row expanded
           # ${rowInfo.values['column name'] returns the value in that column for the particular row of data the user has expanded
+          # Note this can be done in R without using any JS however it runs significantly slower with this amount of metadata.
                     details = JS(" function(rowInfo) {
                      return  `
                      
@@ -255,6 +256,24 @@ definitions_tab_Server <- function(id) {
           ) # close columns list
         ) # close reactable 
       }) # close render reactable
+      
+      
+      ################################
+      # Downloads
+      #################################
+      
+      # Download document when button clicked
+      output$techdoc_download <- downloadHandler(
+        
+        filename ="scotpho_indicator_definitions.csv",
+        content = function(file) {
+          write.csv(techdoc |>
+                      select(-c(analyst_notes,
+                                source_next_updated,
+                                source_last_updated)),
+                    file, row.names=FALSE) }
+      )
+      
       
     })} # close server module function 
 
