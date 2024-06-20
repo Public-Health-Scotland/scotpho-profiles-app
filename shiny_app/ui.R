@@ -289,7 +289,10 @@ page_navbar(
     )),
 
     # indicator definitions tab
-    nav_panel(title = "Indicator Definitions")
+    nav_panel(title = "Indicator Definitions",
+              definitions_tab_UI("metadata")
+    )
+    
     ) # close nav menu
 
 ) #close main server function
@@ -301,111 +304,3 @@ page_navbar(
 
 
 
-# ###################################################################################################
-# 
-# # ALTERNATIVE UI
-# 
-# ##################################################################################################
-# 
-# 
-# page_navbar(
-#   tags$head(
-#     tags$style(HTML("
-# #nav {
-#   position: -webkit-sticky;
-#   position: sticky;
-#   top: 0;
-#   z-index: 100;
-#   height: calc(100vh - 40px);
-#   overflow-y: auto;
-# }")),
-#     tags$script(src = "https://code.highcharts.com/highcharts.js"),
-#     includeCSS("www/styles.css")
-#   ),
-#   # header = tagList(h4("This is a new service - your feedback will help us to improve it.", hr())),
-#   fillable = FALSE,
-#   window_title = "ScotPHO Profiles",
-#   id = "main_nav",
-#   bg = phs_colors("phs-purple"),
-#   collapsible = TRUE,
-#   lang = "en",
-#   theme = phs_theme,
-#   useShinyjs(),
-# 
-# 
-#   nav_panel(value = "Home",
-#             title = "Home",
-#             htmlTemplate("landing-page.html", # sits in separate file in app folder
-# 
-#                          # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
-#                          additional_info_buttons = layout_columns(navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info")),
-#                                                                   navigation_button_modUI(button_id = "about_profiles",button_name = "About the profiles", button_icon = icon("circle-info")),
-#                                                                   navigation_button_modUI(button_id="explore_indicators", button_name = "Explore indicators", button_icon = icon("magnifying-glass"))
-#                          ),
-# 
-#                          # buttons to navigate to profile tabs
-#                          profile_buttons = tagList(
-#                            layout_column_wrap(
-#                              profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", profile_icon = "line-chart"),
-#                              profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", profile_icon = "line-chart"),
-#                              profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", profile_icon = "line-chart"),
-#                              profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", profile_icon = "line-chart")
-#                            ),
-#                            layout_column_wrap(
-#                              profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", profile_icon = "line-chart"),
-#                              profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", profile_icon = "line-chart"),
-#                              profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", profile_icon = "line-chart"),
-#                              profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco", profile_icon = "line-chart")
-#                            )
-#                          ),
-#                          indicator_schedule_button = navigation_button_modUI(button_id="indicator_schedule", button_name = "View updates schedule"),
-#                           recent_updates_button = navigation_button_modUI(button_id="recent_updates", button_name="View recent updates")
-#             )
-#   ),
-# 
-#   nav_panel(title = "Profiles",
-#             navset_pill_list(
-#               header = tagList(
-#                 uiOutput("profile_header"),
-#                 uiOutput("areatype_header"),
-#                 uiOutput("areaname_header"),
-#                 global_geography_filters_ui("geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
-#               ),
-# 
-#               id = "nav",
-#               well = FALSE,
-#               fluid = FALSE,
-#               widths = c(2, 10),
-#               nav_panel(title = "Health & Wellbeing", value = "HWB",
-#                         br(),
-#                         h3("Contents: "),
-#                         layout_columns(a("Summary", href = "#summary_header")),
-#                         layout_columns(a("Rank", href = "#rank_header")),
-#                         layout_columns(a("Trends", href = "#trends_header")),
-#                         h2("Summary", id = "summary_header", class = "sub-section-header"),
-#                         summary_table_ui("hwb_summary"),
-#                         hr(),
-#                         h2("Rank", id = "rank_header", class = "sub-section-header")
-#               ),
-#               nav_panel(title = "Care and Wellbeing", value = "CWB",
-#                         br(),
-#                         navset_tab(
-#                           nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
-#                           nav_panel(title = "Trends"),
-#                           nav_panel(title = "Rank"),
-#                           nav_panel(title = "Inequalities"))
-#               ),
-#               nav_panel(title = "Children and young people", value = "CYP"),
-#               nav_panel(title = "Alcohol", value = "ALC"),
-#               nav_panel(title = "Tobacco", value = "TOB"),
-#               nav_panel(title = "Population", value = "POP"),
-#               nav_panel(title = "Mental Health", value = "MEN"),
-#               nav_panel(title = "Drugs", value = "DRG")
-# 
-# 
-# 
-#             )
-#   )
-# 
-# )
-# 

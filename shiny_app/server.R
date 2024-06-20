@@ -411,7 +411,8 @@ function(input, output, session) {
   download_data_btns_server(id = "datatable_downloads", data = tableData)
   
   
-
+  # server logic for indicator definitions tab
+  definitions_tab_Server("metadata")
 
   
 } # close main server function
