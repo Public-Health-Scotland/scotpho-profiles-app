@@ -30,14 +30,15 @@ definitions_tab_UI <- function(id) {
                      label = "Filter by profile", 
                      selected = NULL,
                      multiple = TRUE,
-                     choices = unname(unlist(profiles_list)),
+                     choices = as.list(c("All", unname(profiles_list))),
+                     #choices = unname(unlist(profiles_list)),
                      options = list(placeholder = 'Select a profile')
                      ),
       # geography level filter 
       selectizeInput(ns("geo_search"), 
                      label = "Filter by geography level",
                      choices = areatype_list,
-                     selected = NULL,
+                     selected = "Scotland",
                      multiple = TRUE,
                      options = list(placeholder = 'Select geography level(s)'))
     ),
@@ -60,17 +61,19 @@ definitions_tab_Server <- function(id) {
       
       # Reactive data to be used in table
       tech_info <- reactive({
-        if(is.null(input$profile_search) | is.null(input$geo_search)){
-          x <- techdoc
-        } else {
+        
+        # filter by selected geography (scotland by default unless user changes)
         x <- techdoc |>
-          # filter by profile
-          filter(substr(profile_domain1, 1, 3) == names(profiles_list[profiles_list == input$profile_search]) |
-                   substr(profile_domain2, 1, 3) == names(profiles_list[profiles_list == input$profile_search]) |
-                   substr(profile_domain3, 1, 3) == names(profiles_list[profiles_list == input$profile_search])) |>
-           # filter by geography level(s)
-           filter(grepl(paste(input$geo_search, collapse="|"), available_geographies))
+          filter(grepl(paste(input$geo_search, collapse="|"), available_geographies))
+        
+        # filter by profile if 'all' not selected (all selected by default)
+        if(input$profile_search != "All"){
+          x <- x |>
+            filter(if_any(contains("profile_domain"),
+                          ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_search, profiles_list)]))
         }
+
+        x
 
       })
 
@@ -118,6 +121,8 @@ definitions_tab_Server <- function(id) {
                     details = JS(" function(rowInfo) {
                      return  `
                      
+
+                     
                      <br>
 
                      <div>
@@ -157,7 +162,7 @@ definitions_tab_Server <- function(id) {
 
                      <h4 class = 'metadata-header'>Methodology</h4>
                      
-                     <table style='width:100%; table-layout: fixed'>
+                     <table class = 'methodology-table' style='width:100%; table-layout: fixed'>
                      <tr>
                      <th>Confidence interval</th>
                      <th>Rounding</th>
@@ -175,7 +180,7 @@ definitions_tab_Server <- function(id) {
                      <br>
                      
                      
-                     <table style='width:100%; table-layout: fixed'>
+                     <table class = 'methodology-table' style='width:100%; table-layout: fixed'>
                      <tr>
                      <th>Age group</th>
                      <th>Sex</th>
