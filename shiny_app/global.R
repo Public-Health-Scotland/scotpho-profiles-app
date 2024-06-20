@@ -61,7 +61,7 @@ hb_bound <- readRDS("data/HB_boundary.rds") # Health board
 hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
-scot_bound <- readRDS("data/scot_bound.rds") # scotland
+scot_bound <- readRDS("data/scot_bound_todelete.rds") # scotland boundary can be deleted once changes to remove map are merged
 # # transform so in right format to join to main dataset 
 # # this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
 # ca_bound <- sf::st_as_sf(ca_bound)

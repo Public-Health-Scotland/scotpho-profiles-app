@@ -29,7 +29,7 @@ write_rds(ca_bound,"shiny_app/data/CA_boundary.rds")
 write_rds(hb_bound,"shiny_app/data/HB_boundary.rds")
 write_rds(hscp_bound,"shiny_app/data/HSCP_boundary.rds")
 write_rds(hscloc_bound,"shiny_app/data/HSC_locality_boundary.rds")
-write_rds(ix_bound,"shiny_app/data/IZ_boundary.rds")
+write_rds(iz_bound,"shiny_app/data/IZ_boundary.rds")
 
 }
 
