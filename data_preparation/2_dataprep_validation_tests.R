@@ -112,7 +112,7 @@ TEST_no_missing_ineq_indicators <- function(data) {
 TEST_inequalities_trends <- function(data) {
   
   # get list of main indicators and they're max year
-  opt_indicators <- main_dataset |> 
+  main_indicators <- main_dataset |> 
     group_by(ind_id) |>
     summarise(year = max(year),
               ind_id = first(ind_id),
@@ -129,7 +129,7 @@ TEST_inequalities_trends <- function(data) {
     ungroup() 
   
   # get indicators where max years don't match
-  data <- left_join(depr_indicators, opt_indicators, by = c("ind_id")) |>
+  data <- left_join(depr_indicators, main_indicators, by = c("ind_id")) |>
     filter(year.x != year.y)
   
   
