@@ -51,6 +51,7 @@ source("data_preparation/2_dataprep_validation_tests.R") # validation checks
 source("data_preparation/update_techdoc.R") # script to read in & format techdoc
 source("data_preparation/update_shapefiles.R") # script to read in & format shapefiles
 source("data_preparation/update_deprivation_data.R") # script to read in & format deprivation data
+source("data_preparation/update_main_data.R") # script to read in and forma main data
 
 
 
@@ -100,9 +101,16 @@ geography_lookup <- readRDS(
 ## information that populates summary/trend/rank tabs
 #########################################################################################.
 
+# switch to TRUE if including test indicators (note that you will also need to load test indicators in the update_techdoc function)
+update_main_data(load_test_indicators = FALSE)
 
-# TO DO:NEED TO WRITE THIS FUNCTION
-#update_main_data()
+
+
+# run validation tests
+TEST_no_missing_indicators(main_dataset) # compares indicators in dataset to active indicators in techdoc  
+TEST_no_missing_geography_info(main_dataset) # all rows have valid geography code
+TEST_no_missing_metadata(main_dataset) # checks for indicators with missing metdata (i.e. if failed to join with techdoc)
+TEST_suppression_applied(main_dataset) # double checking suppression function wasn't skipped
 
 
 
