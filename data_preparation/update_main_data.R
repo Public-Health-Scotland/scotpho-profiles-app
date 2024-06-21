@@ -55,7 +55,6 @@ main_dataset <- bind_rows(main_dataset, old_data)
 main_dataset <- left_join(x = main_dataset, y = technical_doc, by = "ind_id")
 
 
-
 ## Attach geography info from geography lookup--------
 main_dataset <- main_dataset |> 
   # # temporarily removing this indicator at HSC locality level as still uses old codes

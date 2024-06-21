@@ -25,6 +25,7 @@ library(leaflet) # for map
 library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
+library(sf) # package required for maps
 
 
 library(readr) #im additiona will remove in future
