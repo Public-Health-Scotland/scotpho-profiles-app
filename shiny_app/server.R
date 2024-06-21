@@ -153,7 +153,7 @@ function(input, output, session) {
   # prepares summary data and displays in a table with spinecharts
   summary_table_server("hwb_summary", geo_selections, profile_name, profile_data)
   summary_table_server("cyp_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data, domain_order = c("Over-arching indicators", "Early years", "Healthy places", "Impact of ill health prevention"))
   summary_table_server("alc_summary", geo_selections, profile_name, profile_data)
   summary_table_server("drg_summary", geo_selections, profile_name, profile_data)
   summary_table_server("men_summary", geo_selections, profile_name, profile_data)

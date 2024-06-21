@@ -41,7 +41,7 @@ summary_table_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, domain_order = NULL) {
   
   moduleServer(id, function(input, output, session) {
     
@@ -79,6 +79,20 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # Arrange by 'domain'
       chosen_area <- setorder(chosen_area, domain)
+      
+      if(is.null(domain_order)) {
+        
+        # Arrange by 'domain'
+        chosen_area <- setorder(dt, domain)
+        
+      } else {
+        
+        # arrange by 'domain' with custom sort order
+        chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order)]
+        chosen_area <- setorder(dt, domain)
+        
+      }
+      
       
       # assign colours to values depending on statistical significance
       final <- chosen_area %>%
@@ -163,6 +177,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       dt <- dt[,.(measures = list(measure), # for the trend chart 
                   years = list(year), # for the trend chart 
                   domain = first(domain), # for the table 
+                  trend_min = first(trend_axis), # for the trend chart label
+                  trend_max = last(trend_axis),
                   def_period = last(def_period), # for the table
                   type_definition = first(type_definition), # for the table
                   measure = first(measure)),# for the table
@@ -175,8 +191,17 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # set domain column as the first in the table
       setcolorder(dt, "domain")
       
+      if(is.null(domain_order)) {
+      
       # Arrange by 'domain'
       dt <- setorder(dt, domain)
+      
+      } else {
+        
+      dt <- dt[, domain := factor(domain, levels = domain_order)]
+      dt <- setorder(dt, domain)
+        
+      }
       
       dt
       
@@ -359,6 +384,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
             function(rowInfo) {
               var containerId = rowInfo.row.unique_id;
               var chartHTML = '<div id=\"' + containerId + '\" style=\"height: 100px; width: 100%\"></div>';
+              var time_period = rowInfo.row.trend_min + ' - ' + rowInfo.row.trend_max;
               
               setTimeout(function() {
                 Highcharts.chart(containerId, {
@@ -367,15 +393,15 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                     animation: false
                   },
                   title: {
-                    text: ''
+                    text: time_period,
+                     style: {
+                      fontSize: '12px'
+                    }
                   },
                   xAxis: {
                     categories: rowInfo.row.years,
                     labels: {
                       enabled: false
-                    },
-                    title: {
-                      text: null
                     },
                     tickLength: 0,
                     lineWidth: 0
@@ -441,7 +467,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                      years = colDef(show = FALSE),
                      measures = colDef(show = FALSE),
                      type_definition = colDef(show = FALSE),
-                     unique_id = colDef(show = FALSE)
+                     unique_id = colDef(show = FALSE),
+                     trend_min = colDef(show = FALSE),
+                     trend_max = colDef(show = FALSE)
                      )
       } else {
         cols <- list(domain = domain, 
