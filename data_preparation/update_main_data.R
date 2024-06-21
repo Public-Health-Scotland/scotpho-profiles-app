@@ -3,9 +3,9 @@
 
 ## PARAMETERS
 # load_test_indicators : (default is FALSE) option to set to TRUE which reads indicators from the test shiny folder
+# create_backup :  (default is FALSE ) option to set to TRUE when creating a distinct backup version desired e.g. when planning to deploy the app
 
-
-update_main_data <- function(load_test_indicators = FALSE) {
+update_main_data <- function(load_test_indicators = FALSE, create_backup = FALSE) {
   
   
 ## Find all separate indicator data files in the shiny data folder -----
@@ -73,7 +73,6 @@ main_dataset <- main_dataset |>
 
 
 
-
 ## convert some cols to numeric and round digits
 main_dataset <- main_dataset |>
   mutate(
@@ -82,7 +81,6 @@ main_dataset <- main_dataset |>
       ~ round(as.numeric(.), digits = 1)
     )
   )
-
 
 
 # some indicators have years missing from their dataset (e.g. if no data was collected that year due to covid)
@@ -125,23 +123,36 @@ main_dataset <- main_dataset |>
       "20401", # teenage pregnancies
       "21001", # Population prescribed drugs for anxiety/depression/psychosis
       "21002" # mothers smoking during pregnancy
-    ) & substr(code, 1, 3) == "S02")
-  )
+    ) & substr(code, 1, 3) == "S02")) |>
+    rename(indicator = indicator_name)
 
+# make dataset available in global environment for validation tests
+main_dataset_validation <<- main_dataset 
 
-# remove columns no longer required
+# remove columns not required within shiny app
 main_dataset <- main_dataset |>
-  select(-c(supression, supress_less_than, type_id, file_name, label_inequality)) |>
-  rename(indicator = indicator_name)
+  select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
 
 
-# make available in global environemnt for validation tests
+# make available in global environment for viewing what will be sent to shiny app
 main_dataset <<- main_dataset
-
-
 
 ## save final file to local repo
 write_parquet(main_dataset, "shiny_app/data/main_dataset")
+
+## Optional: Create backup of from local repo -----
+## This file will be stored in backups folder and could be used to roll back app to a particular date
+if (file.exists("shiny_app/data/main_dataset")) {
+  
+  file.copy(
+    "shiny_app/data/main_dataset", 
+    paste0(backups, "main_dataset_", Sys.Date()), 
+    overwrite = TRUE
+  )
+} 
+
+
+
 
 }
 

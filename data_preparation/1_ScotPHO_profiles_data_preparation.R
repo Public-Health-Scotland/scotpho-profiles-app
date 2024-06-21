@@ -55,7 +55,6 @@ source("data_preparation/update_main_data.R") # script to read in and forma main
 
 
 
-
 #########################################################################################.
 ## Update technical document ----
 #########################################################################################.
@@ -70,7 +69,6 @@ update_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
 
 # PLANNING ON UPDATING INDICATORS AND DEPLOYING THE APP? consider generating backup of techdoc. 
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
-
 
 
 #########################################################################################.
@@ -102,15 +100,16 @@ geography_lookup <- readRDS(
 #########################################################################################.
 
 # switch to TRUE if including test indicators (note that you will also need to load test indicators in the update_techdoc function)
-update_main_data(load_test_indicators = FALSE)
+# create_backup - switch to true if deploying the live app with updated indicator datasets 
 
-
+update_main_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 # run validation tests
 TEST_no_missing_indicators(main_dataset) # compares indicators in dataset to active indicators in techdoc  
+TEST_no_missing_geography_info(main_dataset_validation) #Ensure there are no indicators with missing geography info
 TEST_no_missing_geography_info(main_dataset) # all rows have valid geography code
 TEST_no_missing_metadata(main_dataset) # checks for indicators with missing metdata (i.e. if failed to join with techdoc)
-TEST_suppression_applied(main_dataset) # double checking suppression function wasn't skipped
+TEST_suppression_applied(main_dataset_validation) # double checking suppression function wasn't skipped
 
 
 
@@ -119,21 +118,17 @@ TEST_suppression_applied(main_dataset) # double checking suppression function wa
 ## i.e. indicator data split by SIMD quintiles.
 #########################################################################################.
 
-update_deprivation_data()
+update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 ## TO DO figure out if validation tests # should these sit inside the data prep function? what happens if validation test fails inside a function
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
 
-
-TEST_no_missing_ineq_indicators(data_depr) # compares dataset to techdoc column 'inequality label' is not null 
-
-TEST_no_missing_geography_info(data_depr) # all rows have valid geography code
-
-TEST_no_missing_metadata(data_depr) # checks for dep indicators with no indicator name
-
-TEST_suppression_applied(data_depr) # double checking suppression function wasn't skipped
-
-TEST_inequalities_trends(data_depr) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
+# run validation tests
+TEST_no_missing_ineq_indicators(deprivation_dataset) # compares dataset to techdoc column 'inequality label' is not null 
+TEST_no_missing_geography_info(deprivation_dataset_validation) # all rows have valid geography code
+TEST_no_missing_metadata(deprivation_dataset) # checks for dep indicators with no indicator name
+TEST_suppression_applied(deprivation_dataset) # double checking suppression function wasn't skipped
+TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
 
 # Haven't split inequalities data by profile yet
 
