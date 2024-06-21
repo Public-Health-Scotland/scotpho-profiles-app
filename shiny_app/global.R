@@ -30,8 +30,11 @@ library(bsicons) # for icons
 library(readr) #im additiona will remove in future
 
 
-# 2. Sourcing modules --------------------------------------------------------------
+# 2. Sourcing modules and narrative text -------------------------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
+  map(~ source(.))
+
+list.files("narrative", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
 
@@ -133,7 +136,7 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # make buttons in the hero on landing page light blue
       ".shiny-output-error {color: white;}", # hiding auto-generated error messages
       ".shiny-output-error-validation {color: #8e8f90;}" # showing custom error messages
-      
+      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
     )
   )
 
