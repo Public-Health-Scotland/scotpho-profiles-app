@@ -135,13 +135,14 @@ apply_suppressions <- function(dataset) {
 # It ensures that when users are looking at trends in the profiles tool, the missing years still appear on the x-axis
 # and instead of dropping to 0, a gap will appear in the trend chart to signify missing data
 
-create_gap_year <- function(indicator_id, # ind_id
+create_gap_year <- function(dataset,
+                            indicator_id, # ind_id
                             gap_year, # the missing year
                             base_year, # year to take a copy of to create data for missing year
                             gap_trend_axis) { # axis label for missing year
   
   # take a copy of a years data for that indicator
-  base_year_data <- main_dataset |> 
+  base_year_data <- dataset |> 
     filter(ind_id == indicator_id & year == base_year)
   
   if(!(gap_year %in% unique(base_year_data$year))){
