@@ -62,7 +62,8 @@ main_dataset <- main_dataset |>
              substr(code, 1, 3) == "S99")
   ) |>
   replace_old_geography_codes(col_name = "code") |>
-  left_join(geography_lookup, by = "code")
+  left_join(geography_lookup, by = "code") |>
+  mutate(path=paste0(areatype,"/",areaname))
 
 
 
