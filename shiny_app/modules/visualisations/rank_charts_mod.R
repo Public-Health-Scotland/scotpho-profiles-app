@@ -146,8 +146,6 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
     })
     
     
-    
-    
     #######################################################
     ## Reactive data / values ----
     #######################################################
@@ -244,6 +242,17 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
         need( !(geo_selections()$areatype == "Alcohol & drug partnership"), "Please note that the map is currently unavailable when Alcohol & drug partnership is selected.")
       )
       
+      # create dynamic text to explain map unavailability if Scotland selected
+      # brief message as accompanied by further detail in chart panel
+      shiny:: validate(
+        need( !(geo_selections()$areatype == "Scotland"), "Please note that map data is unavailable for Scotland.")
+      )
+      
+      # create dynamic text to explain map unavailability if no available indicators for selected geography and profile
+      # brief message as accompanied by further detail in chart panel
+      shiny:: validate(
+        need(nrow(rank_data()) > 0, "Map data unavailable.")
+      )
       
       # don't create map data if Alcohol & drug partnership selected in global filters
       req(geo_selections()$areatype != "Alcohol & drug partnership")
@@ -254,15 +263,15 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
                   "Council area" = ca_bound,
                   "HSC partnership" = hscp_bound,
                   "HSC locality" = hscloc_bound,
-                  "Intermediate zone" = iz_bound,
-                  "Scotland" = scot_bound
+                  "Intermediate zone" = iz_bound
       )
-      # further filter if HSCL or IZ selected
+      
+      # further filter if HSCL or IZ selected, 
       if(geo_selections()$areatype == "HSC locality"){
         x <- x |> filter(hscp2019name == geo_selections()$parent_area)
       } else if(geo_selections()$areatype == "Intermediate zone"){
         x <- x |> filter(council == geo_selections()$parent_area)
-      } else{
+      } else{ 
         x
       }
       x <- x |> left_join(rank_data(), by = join_by(code))

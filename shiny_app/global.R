@@ -135,7 +135,7 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # make buttons in the hero on landing page light blue
       ".shiny-output-error {color: white;}", # hiding auto-generated error messages
-      ".shiny-output-error-validation {color: #8e8f90;}" # showing custom error messages
+      ".shiny-output-error-validation {color: #8e8f90;}", # showing custom error messages
       ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
     )
   )
