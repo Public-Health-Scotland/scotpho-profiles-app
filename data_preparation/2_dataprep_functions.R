@@ -164,5 +164,91 @@ create_gap_year <- function(dataset,
 
 
 
+#########################################################.
+## Create geography path column function ------
+# Purpose: creates a column in the dataset containing full details of a geography, including areatype, parent area (if IZ/HSCL selected) and areaname
+# E.g: 'Intermediate zone/Aberdeen City/Aberdeen North'
+# This column is used to filter data in the data table tab of the app, where users can select multiple geographies, which sometimes share the same name
+# hence why entire details of the geography are required to ensure filtering on the correct selection
+create_geography_path_column <- function(dataset) {
+  dataset <- dataset %>%
+    mutate(
+      # create column called 'path' by 
+      # a. pasting areatype with parent area if IZ/HSC Locality selected (i.e. Intermediate zone/Aberdeen City)
+      # otherwise paste areatype with areaname (i.e. Health board/NHS Lothian)
+      path = paste(
+        areatype,
+        case_when(
+          areatype %in% c("Intermediate zone", "HSC locality") ~ parent_area,
+          TRUE ~ areaname
+        ),
+        # b. further pasting areaname on if IZ /HSC locality was selected, otherwise paste NA (as areaname would already have been pasted in step above)
+        case_when(
+          areatype %in% c("Intermediate zone", "HSC locality") ~ areaname,
+          TRUE ~ NA_character_
+        ),
+        # c. separating pasted values with a "/" symbol
+        sep = "/"
+      ),
+      path = sub("/NA$", "", path)
+    )
+  
+  return(dataset)
+}
+
+
+
+#########################################################.
+## Create geography nodes function ------
+# Purpose: creates geography lists to be used in the heirarchical geography filter for the data table tab of the profiles tool
+# this function is lifted from the documentation for the 'jsTreeR' package (which is the package used to create the geography filter in the data table tab)
+# see examples here: https://www.rdocumentation.org/packages/jsTreeR/versions/1.1.0/topics/jstree-shiny 
+
+create_geography_nodes <- function(leaves){
+  dfs <- lapply(strsplit(leaves, "/"), function(s){
+    item <-
+      Reduce(function(a,b) paste0(a,"/",b), s[-1], s[1], accumulate = TRUE)
+    data.frame(
+      item = item,
+      parent = c("root", item[-length(item)]),
+      stringsAsFactors = FALSE
+    )
+  })
+  
+  #dat <- dfs[[1]]
+  # for(i in 2:length(dfs)){
+  #   dat <- merge(dat, dfs[[i]], all = TRUE)
+  # }
+  
+  # amending function usin 2 lines below to use rbind instead of merge 
+  # This allows parent nodes to be ordered based on how data is arranged before being passed to this function
+  # instead of alphabetically
+  dat <- do.call(rbind, dfs)
+  dat <- dat[!duplicated(dat), ]
+  
+  f <- function(parent){
+    i <- match(parent, dat$item)
+    item <- dat$item[i]
+    children <- dat$item[dat$parent==item]
+    label <- tail(strsplit(item, "/")[[1]], 1)
+    if(length(children)){
+      list(
+        text = label,
+        children = lapply(children, f),
+        icon =FALSE,
+        state = list(selected = FALSE, opened = FALSE )
+      )
+    }else{
+      list(text = label, type = "child",icon = FALSE,
+           state = list(selected = FALSE,opened = FALSE ))
+    }
+  }
+  lapply(dat$item[dat$parent == "root"], f)
+}
+
+
+
+
+
 
 #END

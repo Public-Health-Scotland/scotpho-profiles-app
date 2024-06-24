@@ -62,8 +62,7 @@ main_dataset <- main_dataset |>
              substr(code, 1, 3) == "S99")
   ) |>
   replace_old_geography_codes(col_name = "code") |>
-  left_join(geography_lookup, by = "code") |>
-  mutate(path=paste0(areatype,"/",areaname))
+  left_join(geography_lookup, by = "code")
 
 
 
@@ -132,6 +131,39 @@ main_dataset_validation <<- main_dataset
 # remove columns not required within shiny app
 main_dataset <- main_dataset |>
   select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
+
+
+# create a new column which contains the full geography path
+# most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
+# with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
+main_dataset <- create_geography_path_column(main_dataset)
+
+
+
+# order the geographies
+main_dataset <- main_dataset |>
+  mutate(areatype = factor(areatype, levels = c("Scotland", 
+                                                "Council area", 
+                                                "Health board",
+                                                "Alcohol & drug partnership",
+                                                "HSC partnership",
+                                                "HSC locality",
+                                                "Intermediate zone"))) |>
+  arrange(areatype, parent_area, areaname)
+
+
+
+# get a distinct list of geography paths
+main_dataset_geography_list <- main_dataset |>
+  select(path) |>
+  distinct()
+
+# convert them into lists of parent/child nodes that can be used to create a 
+#hierarchical geography filter in the data tab of the shiny app
+main_dataset_geography_list <- make_geography_nodes(main_dataset_geography_list$path)
+
+# save file to be used in app
+saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_nodes.rds")
 
 
 # make available in global environment for viewing what will be sent to shiny app
