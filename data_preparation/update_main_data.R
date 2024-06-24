@@ -160,7 +160,7 @@ main_dataset_geography_list <- main_dataset |>
 
 # convert them into lists of parent/child nodes that can be used to create a 
 #hierarchical geography filter in the data tab of the shiny app
-main_dataset_geography_list <- make_geography_nodes(main_dataset_geography_list$path)
+main_dataset_geography_list <- create_geography_nodes(main_dataset_geography_list$path)
 
 # save file to be used in app
 saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_nodes.rds")
