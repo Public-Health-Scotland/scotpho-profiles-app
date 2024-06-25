@@ -14,9 +14,6 @@
 navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, class = NULL){
   ns <- shiny::NS(button_id)
   tagList(
-    # custom js function to close the nav menu in the nav bar 1000 millisecs after button is clicked
-    shinyjs::extendShinyjs(text = " shinyjs.closeNavMenu = function() {
-        setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
       shiny::actionButton(inputId= ns("button_nav"), 
                           label = button_name, 
                           class = class,
@@ -33,7 +30,7 @@ navigation_button_modSERVER <- function(id, nav_id, parent_session) {
                  selected = nav_id,
                  session = parent_session)
       
-      shinyjs::js$closeNavMenu()})
+      shinyjs::js$closeNavMenu()}) # closes navmenu after button clicked - function is in main UI script 
   }) #close moduleServer
 } #close server
 

@@ -18,9 +18,6 @@
 profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, description = NULL){
   ns <- NS(id)
   tagList(
-    # custom js function to close the nav menu in the nav bar 1000 millisecs after button is clicked
-    shinyjs::extendShinyjs(text = " shinyjs.closeNavMenu = function() {
-        setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
   bslib::card(
     full_screen = FALSE,
     bslib::card_body(
@@ -45,7 +42,7 @@ profile_homepage_btn_modSERVER <- function(id, nav_id, parent_session) {
                         selected = nav_id, 
                         session = parent_session)
       # close the menu
-      shinyjs::js$closeNavMenu()
+      shinyjs::js$closeNavMenu() # closes navmenu after button clicked - JS function is in main UI script
       
       })
   }) #close moduleServer

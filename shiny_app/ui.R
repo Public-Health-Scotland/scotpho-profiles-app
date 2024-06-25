@@ -22,10 +22,13 @@ page_navbar(
     includeCSS("www/styles.css")), # required to specify formatting (particularly of landing page)
 
   useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package
+  
+  # custom js function to close the nav menu in the nav bar 1000 millisecs after any navigation buttons are clicked
+  shinyjs::extendShinyjs(text = " shinyjs.closeNavMenu = function() {
+        setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
 
   # header that appears across the top of each profile tab
   # including geography filters and info detailing selected geography and profile
-  
   header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO' && input.nav !== 'dt'",
                             tagList(
                               uiOutput("profile_header"),
