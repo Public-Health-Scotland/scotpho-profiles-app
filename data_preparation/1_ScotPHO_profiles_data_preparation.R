@@ -54,7 +54,6 @@ source("data_preparation/update_deprivation_data.R") # script to read in & forma
 source("data_preparation/update_main_data.R") # script to read in and forma main data
 
 
-
 #########################################################################################.
 ## Update technical document ----
 #########################################################################################.
@@ -130,8 +129,16 @@ TEST_no_missing_metadata(deprivation_dataset) # checks for dep indicators with n
 TEST_suppression_applied(deprivation_dataset) # double checking suppression function wasn't skipped
 TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
 
-# Haven't split inequalities data by profile yet
 
+
+#########################################################################################.
+## Update population groups data  ----
+## i.e. indicator data split by various different inequality groups.
+#########################################################################################.
+
+#placeholder for when script ready
+
+#update_pop_groups_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 
 #########################################################################################.

@@ -238,11 +238,11 @@ function(input, output, session) {
   observe({
     
     # return selected geographies
-    paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
+    geo_paths <- sapply(input$geography_selector_checked_paths, `[[`, "geo_path")
     
     # filter selected dataset by selected geographies
     data <- main_dataset |>
-      subset(path %in% paths)
+      subset(geo_path %in% geo_paths)
     
     # create vector of available indicators
     available_indicators <- unique(data$indicator)
@@ -344,8 +344,8 @@ function(input, output, session) {
     data <- main_dataset 
     
     # filter by selected geographies
-    paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
-    data <- data |> subset(path %in% paths)
+    geo_paths <- sapply(input$geography_selector_checked_paths, `[[`, "geo_path")
+    data <- data |> subset(geo_path %in% geo_paths)
     
     
     # filter by time period 

@@ -41,7 +41,7 @@ main_dataset <- read_parquet("data/main_dataset") # main dataset (to do: rename 
 geo_lookup <- readRDS("data/profiles_geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 
-main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
+main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 
 simd_dataset <- read_parquet("data/deprivation_dataset") # dataset behind simd panel
 
@@ -62,7 +62,9 @@ hb_bound <- readRDS("data/HB_boundary.rds") # Health board
 hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
-scot_bound <- readRDS("data/scot_bound_todelete.rds") # scotland boundary can be deleted once changes to remove map are merged
+
+#delete scot bound when pr removing the scotland map is merged
+scot_bound <- readRDS("data/scot_bound.rds") # scotland boundary can be deleted once changes to remove map are merged
 # # transform so in right format to join to main dataset 
 # # this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
 # ca_bound <- sf::st_as_sf(ca_bound)

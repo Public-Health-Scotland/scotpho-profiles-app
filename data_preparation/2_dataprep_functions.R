@@ -1,7 +1,6 @@
 ######################################################################################################################################.
-# Functions called during running of ScotPHO profiles tool data preparation scripts.
-# These functions are saved in distinct script as they are called by more than one part of data prep script
-
+# Functions are called during running of ScotPHO profiles tool data preparation scripts.
+# Functions saved in distinct script as they are called by more than one part of data prep script
 ######################################################################################################################################.
 
 
@@ -101,8 +100,6 @@ replace_old_geography_codes <- function(data, col_name) {
 
 
 
-
-
 #########################################################.
 ## Suppression function ------
 # Purpose: applies statistical disclosure control (SDC) to any indicators where it is required (see technical document)
@@ -163,7 +160,6 @@ create_gap_year <- function(dataset,
 }
 
 
-
 #########################################################.
 ## Create geography path column function ------
 # Purpose: creates a column in the dataset containing full details of a geography, including areatype, parent area (if IZ/HSCL selected) and areaname
@@ -173,10 +169,10 @@ create_gap_year <- function(dataset,
 create_geography_path_column <- function(dataset) {
   dataset <- dataset %>%
     mutate(
-      # create column called 'path' by 
+      # create column called 'geo_path' by 
       # a. pasting areatype with parent area if IZ/HSC Locality selected (i.e. Intermediate zone/Aberdeen City)
       # otherwise paste areatype with areaname (i.e. Health board/NHS Lothian)
-      path = paste(
+      geo_path = paste(
         areatype,
         case_when(
           areatype %in% c("Intermediate zone", "HSC locality") ~ parent_area,
@@ -190,7 +186,7 @@ create_geography_path_column <- function(dataset) {
         # c. separating pasted values with a "/" symbol
         sep = "/"
       ),
-      path = sub("/NA$", "", path)
+      geo_path = sub("/NA$", "", geo_path)
     )
   
   return(dataset)
@@ -200,7 +196,7 @@ create_geography_path_column <- function(dataset) {
 
 #########################################################.
 ## Create geography nodes function ------
-# Purpose: creates geography lists to be used in the heirarchical geography filter for the data table tab of the profiles tool
+# Purpose: creates geography lists to be used in the hierarchical geography filter for the data table tab of the profiles tool
 # this function is lifted from the documentation for the 'jsTreeR' package (which is the package used to create the geography filter in the data table tab)
 # see examples here: https://www.rdocumentation.org/packages/jsTreeR/versions/1.1.0/topics/jstree-shiny 
 
@@ -220,7 +216,7 @@ create_geography_nodes <- function(leaves){
   #   dat <- merge(dat, dfs[[i]], all = TRUE)
   # }
   
-  # amending function usin 2 lines below to use rbind instead of merge 
+  # amending function using 2 lines below to use rbind instead of merge 
   # This allows parent nodes to be ordered based on how data is arranged before being passed to this function
   # instead of alphabetically
   dat <- do.call(rbind, dfs)
