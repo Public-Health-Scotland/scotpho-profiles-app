@@ -21,7 +21,7 @@ definitions_tab_UI <- function(id) {
     an indicator in the search results table to view metadata."),
     p("To view technical information and updates schedule for all indicators at once, use the download button below."),
     # download button
-    downloadButton("techdoc_download", label = "Download as CSV", class = "btn-sm"),
+    downloadButton(ns("techdoc_download"), label = "Download as CSV", class = "btn-sm"),
     hr(),
     # filters
     layout_columns(
@@ -272,11 +272,10 @@ definitions_tab_Server <- function(id) {
         filename ="scotpho_indicator_definitions.csv",
         content = function(file) {
           write.csv(techdoc |>
-                      select(-c(analyst_notes,
-                                source_next_updated,
-                                source_last_updated)),
+                      select(-c(indicator_author, analyst_notes, source_last_updated, source_next_update, covid_impact, active, ind_id, days_since_update)),
                     file, row.names=FALSE) }
       )
+    
       
       
     })} # close server module function 
