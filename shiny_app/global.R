@@ -22,10 +22,11 @@ library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable) # for data tables
 library(leaflet) # for map
-library(sf) # note: eventually remove this from here
 library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
+library(sf) # package required for maps
+
 
 library(readr) #im additiona will remove in future
 
@@ -39,16 +40,16 @@ list.files("narrative", full.names = TRUE, recursive = TRUE) |>
 
 
 # 3. Required datafiles ------------------------------------------------------------
-main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
-geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
+main_dataset <- read_parquet("data/main_dataset") # main dataset (to do: rename optdata file in data prep script)
+geo_lookup <- readRDS("data/profiles_geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 
-main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography nodes for data table tab
+main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 
-simd_dataset <- read_parquet("data/deprivation_data") # dataset behind simd panel
+simd_dataset <- read_parquet("data/deprivation_dataset") # dataset behind simd panel
 
 #temp data upload and simple wrangle
-ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa_im.csv") |>
+ineq_splits_data <- readr::read_csv("data/88007_meeting_mvpa_im.csv") |>
   rename(areatype = geography,
          areaname = location_name) |>
   mutate(areatype = case_when(areatype == "healthboard" ~ "Health board",
@@ -64,15 +65,17 @@ hb_bound <- readRDS("data/HB_boundary.rds") # Health board
 hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
-scot_bound <- readRDS("data/scot_bound.rds") # scotland
-# transform so in right format to join to main dataset 
-# this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
-ca_bound <- sf::st_as_sf(ca_bound)
-hb_bound <- sf::st_as_sf(hb_bound)
-hscp_bound <- sf::st_as_sf(hscp_bound)
-hscloc_bound <- sf::st_as_sf(hscloc_bound)
-iz_bound <- sf::st_as_sf(iz_bound)
-scot_bound <- sf::st_as_sf(scot_bound)
+
+#delete scot bound when pr removing the scotland map is merged
+scot_bound <- readRDS("data/scot_bound.rds") # scotland boundary can be deleted once changes to remove map are merged
+# # transform so in right format to join to main dataset 
+# # this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
+# ca_bound <- sf::st_as_sf(ca_bound)
+# hb_bound <- sf::st_as_sf(hb_bound)
+# hscp_bound <- sf::st_as_sf(hscp_bound)
+# hscloc_bound <- sf::st_as_sf(hscloc_bound)
+# iz_bound <- sf::st_as_sf(iz_bound)
+# scot_bound <- sf::st_as_sf(scot_bound)
 
 
 # 4. lists ----------------------------------------------------------
