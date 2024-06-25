@@ -155,12 +155,12 @@ main_dataset <- main_dataset |>
 
 # get a distinct list of geography paths
 main_dataset_geography_list <- main_dataset |>
-  select(path) |>
+  select(geo_path) |>
   distinct()
 
 # convert them into lists of parent/child nodes that can be used to create a 
 #hierarchical geography filter in the data tab of the shiny app
-main_dataset_geography_list <- create_geography_nodes(main_dataset_geography_list$path)
+main_dataset_geography_list <- create_geography_nodes(main_dataset_geography_list$geo_path)
 
 # save file to be used in app
 saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_nodes.rds")
@@ -173,8 +173,9 @@ main_dataset <<- main_dataset
 write_parquet(main_dataset, "shiny_app/data/main_dataset")
 
 ## Optional: Create backup of from local repo -----
+## Usually would only want to create a backup if you intend to update live tool
 ## This file will be stored in backups folder and could be used to roll back app to a particular date
-if (file.exists("shiny_app/data/main_dataset")) {
+if (create_backup == TRUE) {
   
   file.copy(
     "shiny_app/data/main_dataset", 

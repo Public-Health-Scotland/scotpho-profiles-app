@@ -83,8 +83,10 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   
   
   ## Optional: Create backup of from local repo -----
+  ## Usually would only want to create a backup if you intend to update live tool
   ## This file will be stored in backups folder and could be used to roll back app to a particular date
-  if (file.exists("shiny_app/data/deprivation_data")) {
+  
+  if (create_backup == TRUE) {
     
     file.copy(
       "shiny_app/data/deprivation_dataset", 
