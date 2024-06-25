@@ -134,9 +134,15 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".chart-header { font-weight: bold !important;}", # make chart titles bold
       "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # make buttons in the hero on landing page light blue
+      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }", # info box header lighter phs purple colour with white text
+      ".metadata-header {font-weight: 600;}", # for indicator definitions tab - make headers in expandable rows bolder 
+      ".rt-tr-details {padding: 24px; box-shadow: inset 0 1px 3px #dbdbdb; background: #FDFDFC ;}", # for indificator definitions tab - make expandable panel grey
+      ".methodology-table th{border:thin solid black; background-color:purple; color:white; padding:3px; word-break: break-all;}", # for indicator def tab - make nested table headers purple
+      ".methodology-table td{ border:thin solid black; padding:3px;}" # for indicator def tab - make nested table cells have black border
       ".shiny-output-error {color: white;}", # hiding auto-generated error messages
       ".shiny-output-error-validation {color: #8e8f90;}", # showing custom error messages
       ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
+
     )
   )
 
