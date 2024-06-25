@@ -25,14 +25,18 @@ page_navbar(
 
   # header that appears across the top of each profile tab
   # including geography filters and info detailing selected geography and profile
+  
   header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO' && input.nav !== 'dt'",
                             tagList(
                               uiOutput("profile_header"),
                               uiOutput("areatype_header"),
-                              uiOutput("areaname_header"),
-                            global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
+                              layout_columns(
+                                col_widths = c(8,-1,2,-1),
+                                uiOutput("areaname_header"),
+                                navigation_button_modUI(button_id="about_profiles_header", button_name = "About this profile", button_icon = icon("circle-info"))), 
+                              global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
                             )),
-
+  
 
   # homepage ---------------------------------------------------------------------
   nav_panel(value = "Home", style = "margin: 0;", # remove margin so no white space at top of landing page
@@ -73,7 +77,6 @@ page_navbar(
     # Health and wellbeing
     nav_panel(value = "HWB",
               title = "Health & Wellbeing",
-              navigation_button_modUI(button_id="about_hwb", button_name = "About this profile", button_icon = icon("circle-info")),
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
@@ -135,7 +138,7 @@ page_navbar(
               title= "Mental Health",
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("men_summary")),
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("men_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("men_rank"))
               )),
     
@@ -162,7 +165,7 @@ page_navbar(
     nav_panel(value = "ALL",
               "All Indicators",
               navset_tab(
-                nav_panel(title = "Trends"),
+                nav_panel(title = "Trends", trend_mod_ui("all_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("all_rank"))
               ))
   ), #close nav menu
@@ -193,35 +196,35 @@ page_navbar(
                 multiple = TRUE, #allows multiple profile accordion panels to be open at once
                 h1("About the ScotPHO Profiles"),
                 p("Here is some information about each of the ScotPHO profiles."),
-                accordion_panel("Health and Wellbeing", icon=icon("line-chart"),
+                accordion_panel("Health and Wellbeing",
                       about_hwb_text,
                       navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")
                       ),
-                accordion_panel("Children and Young People", icon=icon("line-chart"),
+                accordion_panel("Children and Young People",
                       about_cyp_text,
                       navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
                       ),
-                accordion_panel("Care and Wellbeing", icon=icon("line-chart"),
+                accordion_panel("Care and Wellbeing",
                       about_cwb_text,
                       navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
                       ),
-                accordion_panel("Alcohol", icon=icon("line-chart"),
+                accordion_panel("Alcohol",
                       about_alc_text,
                       navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
                       ),
-                accordion_panel("Drugs", icon=icon("line-chart"),
+                accordion_panel("Drugs",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
                       ),
-                accordion_panel("Mental Health", icon=icon("line-chart"),
+                accordion_panel("Mental Health",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
                       ),
-                accordion_panel("Population", icon=icon("line-chart"),
+                accordion_panel("Population",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")
                       ),
-                accordion_panel("Tobacco", icon=icon("line-chart"),
+                accordion_panel("Tobacco",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile")
                       )

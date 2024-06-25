@@ -62,7 +62,7 @@ global_geography_filters_server <- function(id, geo_lookup) {
         shinyjs::hide("parent_area")
       }
 
-      updateSelectInput(session, "areaname", choices = area_choices)
+      updateSelectInput(session, "areaname", choices = sort(area_choices))
     }, ignoreInit = TRUE)
 
 

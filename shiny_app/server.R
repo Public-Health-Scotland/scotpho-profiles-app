@@ -38,6 +38,8 @@ function(input, output, session) {
   navigation_button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
   navigation_button_modSERVER("indicator_schedule", nav_id="Indicator Definitions", parent_session = session)
   
+  # logic controlling about profiles button in profile header
+  navigation_button_modSERVER("about_profiles_header", nav_id = "About Profiles", parent_session = session)
   
   # logic controlling buttons within the "About Profiles" tab linking back to profile pages
   navigation_button_modSERVER("view_profile_HWB", nav_id="HWB", parent_session = session)
@@ -171,7 +173,8 @@ function(input, output, session) {
   trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections)
   trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections)
   trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  
+  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections)
+  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections)
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype
