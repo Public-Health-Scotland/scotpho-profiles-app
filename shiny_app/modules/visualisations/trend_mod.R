@@ -18,17 +18,16 @@ trend_mod_ui <- function(id) {
                           open = TRUE,
                           multiple = TRUE, # allow multiple panels to be open at once
                           
-                          # accordion panel with indicator filter and 2 x help buttons
+                          # accordion panel with indicator filter and help button
                           accordion_panel(
                             value = "indicator_filter_help_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
                             layout_columns(
-                              actionButton(ns("help"), label = "Help", icon = icon("question"), class = "btn-sm", style = "height: 100%"),
-                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                              indicator_filter_mod_ui(ns("trend_indicator_filter"))
                             ),
                             layout_columns(
-                              indicator_filter_mod_ui(ns("trend_indicator_filter"))
-                            )
+                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                            ),
                           ),
                           
                           # accordion panel with geography filters
@@ -54,8 +53,8 @@ trend_mod_ui <- function(id) {
                             selectInput(inputId = ns("hscp_filter_2"), label = "To select a locality or intermediate zone, first select a HSC partnership:", choices = hscp_list),
                             
                             layout_columns(
-                              child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones"),
-                              child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities")
+                              child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones:"),
+                              child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities:")
                             )
                           )
                         ) # close accordion
@@ -70,8 +69,9 @@ trend_mod_ui <- function(id) {
         full_screen = TRUE,
         
         # charts tab -----------------------
-        nav_panel("charts",
+        nav_panel("Charts",
                   uiOutput(ns("trend_title")), # title 
+                  uiOutput(ns("trend_caveats")), # caveats
                   highchartOutput(outputId = ns("trend_chart")) # chart
         ), 
         
@@ -79,6 +79,11 @@ trend_mod_ui <- function(id) {
         nav_panel("Data",
                   reactableOutput(ns("trend_table")) # table
         ), 
+        
+        # help button ----------------
+        nav_panel("Help",
+                  uiOutput(ns("trend_help")), #help
+        ),
         
         # add space
         bslib::nav_spacer(),
@@ -119,7 +124,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     # Dynamic filters
     #######################################################
     
-    # enable/ disable geography filters and update thee filters labels, 
+    # enable/ disable geography filters and update the filter labels, 
     # depending on what indicator was selected 
     observe({
       
@@ -205,7 +210,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     })
     
     
-    # Clear what was prevously selected from the filters if a user changes
+    # Clear what was previously selected from the filters if a user changes
     # selection from global geography filter (otherwise they remain selected)
     observeEvent(geo_selections()$areaname, {
       updateSelectInput(session, "hb_filter", selected = character(0))
@@ -232,16 +237,16 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     
     
     # disable Scotland checkbox when Scotland already selected in global options
+    #or when a geography with no available indicators is selected
     observe({
-      if(geo_selections()$areaname == "Scotland"){
+      if(geo_selections()$areaname == "Scotland" | !(geo_selections()$areatype %in% unique(filtered_data()$areatype))  ){
         shinyjs::hide("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = FALSE)
-      } else if(geo_selections()$areaname != "Scotland"){
+      } else if(geo_selections()$areaname != "Scotland" | geo_selections()$areatype %in% unique(filtered_data()$areatype)){
         shinyjs::show("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = TRUE)
       }
     })
-    
     
     
     #######################################################
@@ -320,6 +325,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     
     output$trend_title <- renderUI({
       
+      # create dynamic text if no indicators available for selected profile
+      # and geography
+      shiny::validate(
+        need( nrow(trend_data()) > 0, "No indicators available for this profile and area type. Please select another.")
+      )
+      
       # display 3 x titles
       tagList(
         tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
@@ -334,37 +345,57 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator) 
     
     
+    # caveats to display between chart heading and chart if any NA values for numerator/measure 
+    output$trend_caveats <- renderUI({
+      
+      #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
+      covid_caveats <- trend_data() |> 
+        filter(year == 2019:2022) |> 
+        select(numerator, measure) 
+      
+      # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
+      # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
+      #ℹ In argument: `year == 2019:2022`.
+      #Caused by warning in `year == 2019:2022`:
+      #  ! longer object length is not a multiple of shorter object length
+      
+      if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
+        tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
+      }
+      
+      
+    })
+    
+    
     # info to display when user clicks help button
-    observeEvent(input$help, {
-      showModal(modalDialog(
-        title = "How to use this chart",
-        size = "xl",
-        easyclose = TRUE,
-        p("The trend chart is designed to explore how a single indicator has changed over time for one or more geographical area."),
+    output$trend_help <- renderUI({ 
+      tagList(
+        tags$h5("How to use this chart"),
+        tags$p("The trend chart is designed to explore how a single indicator has changed over time for one or more geographical areas."),
         layout_column_wrap(
           width = 1/2,
           tags$img(src = "Trend_help_example_final.PNG"),
           layout_column_wrap(
             width = 1,
             heights_equal = "row",
-            p("First select an indicator. The backspace can be used to remove indicators and then indicators can be searched."),
-            p("Then add one or more geographical areas of any area type to the chart using the geography filters. 
+            p("First select an indicator. The backspace can be used to remove the default selection and then topics or indicator names can be searched."),
+            p("Next add one or more geographical areas of any area type to the chart using the geography filters. 
               There may be some indicators where data is not available for the full time series or at a particular geography level.
               Use the mouse to hover over a data point to see detailed information on its value, time period and area."),
             p("Confidence intervals (95%) can be added or removed from the chart. These are shown as shaded areas.
               Confidence intervals give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size."),
             p("Display controls allow you to switch the graph from a measure (e.g. rate or percentage) to actual numbers (e.g. number of births with a healthy birthweight).")
-          )
-        )
-        
-        
-      ))
-    })
+      )
+        ))
+      
+      })
+      
     
     output$geo_instructions <- renderText({
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
     })
     
+
     
     ############################################
     # Charts/tables 
@@ -448,6 +479,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
       
       data <- trend_data() |>
         select(areatype, areaname, trend_axis, y)
+      
+      #filters out duplicates when Scotland selected in global options
+      data <- unique(data)
       
       reactable(data,
                 columns = list(

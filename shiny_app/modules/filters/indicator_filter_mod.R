@@ -25,7 +25,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
     
     # update indicator choices
     observe({
-      updateSelectInput(session, "indicator_filter", choices = available_indicators())
+      updateSelectInput(session, "indicator_filter", choices = sort(available_indicators()))
     })
     
     

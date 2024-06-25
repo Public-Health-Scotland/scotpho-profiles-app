@@ -47,6 +47,8 @@ main_data_geo_nodes <- readRDS("data/optdata_geography_nodes.rds") # geography n
 
 simd_dataset <- read_parquet("data/deprivation_data") # dataset behind simd panel
 
+techdoc <- read_parquet("data/techdoc") # technical document
+
 #temp data upload and simple wrangle
 ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa_im.csv") |>
   rename(areatype = geography,
@@ -64,7 +66,6 @@ hb_bound <- readRDS("data/HB_boundary.rds") # Health board
 hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
-scot_bound <- readRDS("data/scot_bound.rds") # scotland
 # transform so in right format to join to main dataset 
 # this should maybe  be done in data prep instead so don't need to load sf package into the app - just leaflet?)
 ca_bound <- sf::st_as_sf(ca_bound)
@@ -72,7 +73,6 @@ hb_bound <- sf::st_as_sf(hb_bound)
 hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
-scot_bound <- sf::st_as_sf(scot_bound)
 
 
 # 4. lists ----------------------------------------------------------
@@ -134,7 +134,15 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".chart-header { font-weight: bold !important;}", # make chart titles bold
       "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # make buttons in the hero on landing page light blue
+      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }", # info box header lighter phs purple colour with white text
+      ".metadata-header {font-weight: 600;}", # for indicator definitions tab - make headers in expandable rows bolder 
+      ".rt-tr-details {padding: 24px; box-shadow: inset 0 1px 3px #dbdbdb; background: #FDFDFC ;}", # for indificator definitions tab - make expandable panel grey
+      ".methodology-table th{border:thin solid black; background-color:purple; color:white; padding:3px; word-break: break-all;}", # for indicator def tab - make nested table headers purple
+      ".methodology-table td{ border:thin solid black; padding:3px;}", # for indicator def tab - make nested table cells have black border
+      ".shiny-output-error {color: white;}", # hiding auto-generated error messages
+      ".shiny-output-error-validation {color: #8e8f90;}", # showing custom error messages
       ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
+
     )
   )
 

@@ -22,6 +22,13 @@ page_navbar(
     # required for homepage styling
     includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
   ), 
+ 
+    useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package
+
+    # custom js function to close the nav menu in the nav bar 1000 millisecs after any navigation buttons are clicked
+  shinyjs::extendShinyjs(text = " shinyjs.closeNavMenu = function() {
+        setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
+  
   header =  tagList(
     # header that appears across the top of each profile tab
     # including geography filters and info detailing selected geography and profile
@@ -38,17 +45,16 @@ page_navbar(
             conditionalPanel(condition = "input.nav == 'MEN'", h1("Profile: Mental Health", class = "profile-header")),
             conditionalPanel(condition = "input.nav == 'ALL'", h1("Profile: All indicators", class = "profile-header")),
             uiOutput("areatype_header"),
-            uiOutput("areaname_header"),
-            global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
-          )
-      )
-    )
-  ),
+             layout_columns(col_widths = c(8,-1,2,-1),
+                uiOutput("areaname_header"),
+                navigation_button_modUI(button_id="about_profiles_header", button_name = "About this profile", button_icon = icon("circle-info"))
+                           ), # close layout columns 
+                global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
+          ) # close tagList
+         ) # close div
+    ) # close hidden
+  ), # close tagList
   
-  useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package
-  
-
-
   # homepage ---------------------------------------------------------------------
   nav_panel(value = "Home", style = "margin: 0;", # remove margin so no white space at top of landing page
             title = "Home",
@@ -88,7 +94,6 @@ page_navbar(
     # Health and wellbeing
     nav_panel(value = "HWB",
               title = "Health & Wellbeing",
-              navigation_button_modUI(button_id="about_hwb", button_name = "About this profile", button_icon = icon("circle-info")),
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
@@ -187,69 +192,7 @@ page_navbar(
   # data tab -------------------------------------------------------------------
             nav_panel("Download data",
                       value = "dt",
-                      page_sidebar(fillable = FALSE,
-                                   sidebar = sidebar(width = 300, padding = 20,
-
-                                                     h2("Filters"),
-
-                                                     # clear filters button
-                                                     actionButton("clear_table_filters",
-                                                                  label = "Clear all filters",
-                                                                  icon ("eraser"),
-                                                                  class = "down"),
-
-
-                                                     # Geography filters
-                                                     jstreeOutput("geography_selector"),
-
-                                                     # profile filters
-                                                     virtualSelectInput(inputId = "profile_selector",
-                                                                        label = "Select profile(s)",
-                                                                        choices = unname(profiles_list),
-                                                                        disableSelectAll = FALSE,
-                                                                        multiple = TRUE,
-                                                                        search = TRUE,
-                                                                        searchByStartsWith = TRUE,
-                                                                        width = '100%',
-                                                                        zIndex = 100),
-
-                                                     # indicator filters
-                                                     virtualSelectInput(inputId = "indicator_selector",
-                                                                        label = "Select indicator(s)",
-                                                                        noOptionsText = "Select atleast one geography to see what indicators are available",
-                                                                        choices = NULL,
-                                                                        disableSelectAll = TRUE,
-                                                                        multiple = TRUE,
-                                                                        search = TRUE,
-                                                                        searchByStartsWith = TRUE,
-                                                                        dropboxWrapper = "body",
-                                                                        dropboxWidth = '400px',
-                                                                        width = '100%',
-                                                                        zIndex = 100),
-
-
-                                                     # time period filter
-                                                     radioGroupButtons(
-                                                       inputId = "time_period_selector",
-                                                       label = "Select time period:",
-                                                       choices = c("Latest available year", "All years"),
-                                                       selected = "Latest available year"
-                                                     )
-
-                                   ), # close sidebar
-
-                                   h1("Data table"),
-                                   p("Use the filters to build a data table, which can then be downloaded in various
-	                                 formats using the button below. Please note that the table below is a preview.
-	                                 The downloaded dataset will contain more columns containing metadata than are presented here."),
-
-                                   # download data button
-                                   download_data_btns_ui(id = "datatable_downloads"),
-
-                                   # data table
-                                   reactableOutput("data_tab_table")
-
-                      ) # close layout
+                      data_tab_modUI("data_tab")
             ), # close data table nav
 
   # source code link -------------------------------------------------------------------
@@ -269,44 +212,47 @@ page_navbar(
                 multiple = TRUE, #allows multiple profile accordion panels to be open at once
                 h1("About the ScotPHO Profiles"),
                 p("Here is some information about each of the ScotPHO profiles."),
-                accordion_panel("Health and Wellbeing", icon=icon("line-chart"),
+                accordion_panel("Health and Wellbeing",
                       about_hwb_text,
                       navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")
                       ),
-                accordion_panel("Children and Young People", icon=icon("line-chart"),
+                accordion_panel("Children and Young People",
                       about_cyp_text,
                       navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
                       ),
-                accordion_panel("Care and Wellbeing", icon=icon("line-chart"),
+                accordion_panel("Care and Wellbeing",
                       about_cwb_text,
                       navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
                       ),
-                accordion_panel("Alcohol", icon=icon("line-chart"),
+                accordion_panel("Alcohol",
                       about_alc_text,
                       navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
                       ),
-                accordion_panel("Drugs", icon=icon("line-chart"),
+                accordion_panel("Drugs",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
                       ),
-                accordion_panel("Mental Health", icon=icon("line-chart"),
+                accordion_panel("Mental Health",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
                       ),
-                accordion_panel("Population", icon=icon("line-chart"),
+                accordion_panel("Population",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")
                       ),
-                accordion_panel("Tobacco", icon=icon("line-chart"),
+                accordion_panel("Tobacco",
                       p(" "),
                       navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile")
                       )
     )),
 
     # indicator definitions tab
-    nav_panel(title = "Indicator Definitions", value = "ind_def")
+    nav_panel(title = "Indicator Definitions",
+              definitions_tab_UI("metadata")
+    )
     ) # close nav menu
 
-) #close main server function
+) #close main ui function
 
 ### END
+

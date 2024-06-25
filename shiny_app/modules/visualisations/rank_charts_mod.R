@@ -21,14 +21,12 @@ rank_mod_ui <- function(id) {
       
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
-                        # help buttons
-                        layout_columns(
-                          actionButton(ns("rank_help"), label = "Help", class="act-btn"),
-                          indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")
-                        ),
-                        
+
                         # indicator filter (note this is a module)
                         indicator_filter_mod_ui(ns("indicator_filter")),
+                        
+                        # indicator definition button
+                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn"),
                         
                         # comparator switch filter 
                         bslib::input_switch(id = ns("comparator_switch"), 
@@ -74,12 +72,15 @@ rank_mod_ui <- function(id) {
       navset_card_pill(
         full_screen = TRUE,
         height = 550,
-        nav_panel("chart",
+        nav_panel("Charts",
                   uiOutput(ns("rank_title")), # title
                   highchartOutput(ns("rank_chart")) # chart
         ),
-        nav_panel("data",
+        nav_panel("Data",
                   reactableOutput(ns("rank_table")) # table
+        ),
+        nav_panel("Help", # help
+                  uiOutput(ns("rank_help"))
         ),
         nav_spacer(),
         nav_item(
@@ -144,9 +145,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
       } else {
         enable("ci_switch")
       }
+      
+      
     })
-    
-    
     
     
     #######################################################
@@ -170,7 +171,13 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
        profile_data <- setDT(profile_data()) # set profile data to data.table format
 
        # filter by selected areatype
-       dt <- profile_data[areatype == geo_selections()$areatype]
+       if(!(geo_selections()$areatype == "Scotland")){
+         dt <- profile_data[areatype == geo_selections()$areatype]
+       } 
+       else {
+         dt <- profile_data[areatype != "Scotland"][areatype == geo_selections()$areatype]
+       }
+    
 
        # additional filtering of parent area if IZ/HSCL selected
        if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")) {
@@ -235,24 +242,46 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
      # map data --------------------------------------
      # dynamically selects shapefile and joins with map data
     map_data <- reactive({
+      
+      # create dynamic text to explain map unavailability if ADP selected
+      shiny::validate(
+        need( !(geo_selections()$areatype == "Alcohol & drug partnership"), "Please note that the map is currently unavailable when Alcohol & drug partnership is selected.")
+      )
+      
+      # create dynamic text to explain map unavailability if Scotland selected
+      # brief message as accompanied by further detail in chart panel
+      shiny:: validate(
+        need( !(geo_selections()$areatype == "Scotland"), "Please note that map data is unavailable for Scotland.")
+      )
+      
+      # create dynamic text to explain map unavailability if no available indicators for selected geography and profile
+      # brief message as accompanied by further detail in chart panel
+      shiny:: validate(
+        need(nrow(rank_data()) > 0, "Map data unavailable.")
+      )
+      
+      # don't create map data if Alcohol & drug partnership selected in global filters
+      req(geo_selections()$areatype != "Alcohol & drug partnership")
+      
       # get correct shapefile
       x <- switch(geo_selections()$areatype,
                   "Health board" = hb_bound,
                   "Council area" = ca_bound,
                   "HSC partnership" = hscp_bound,
                   "HSC locality" = hscloc_bound,
-                  "Intermediate zone" = iz_bound,
-                  "Scotland" = scot_bound
+                  "Intermediate zone" = iz_bound
       )
-      # further filter if HSCL or IZ selected
+      
+      # further filter if HSCL or IZ selected, 
       if(geo_selections()$areatype == "HSC locality"){
         x <- x |> filter(hscp2019name == geo_selections()$parent_area)
       } else if(geo_selections()$areatype == "Intermediate zone"){
         x <- x |> filter(council == geo_selections()$parent_area)
-      } else{
+      } else{ 
         x
       }
       x <- x |> left_join(rank_data(), by = join_by(code))
+      
     })
      
      
@@ -263,6 +292,12 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
 
      # title ---------
      output$rank_title <- renderUI({
+       
+       # create dynamic text if no indicators available for selected profile
+       # and geography / if Scotland selected
+       shiny::validate(
+         need( nrow(rank_data()) > 0, "No indicators available for this profile and area type.")
+       )
        
        # get definition period
        max_year <- rank_data()$def_period[1]
@@ -300,23 +335,21 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
      
   
      # info to display when user clicks help button (explains how to interpret)
-     observeEvent(input$rank_help, {
-       showModal(modalDialog(
-         title = "How to interpret results",
+    output$rank_help <- renderUI({ 
          tagList(
-           paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), "). You can also
-          choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator.
-          For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
+           tags$h5("How to use this chart"),
+           p(paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), ").")),
+           p("You can also choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator."),
+           p("For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
                  whether there are particular areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)"),
            br(),
            p("If a comparator is selected, the chart and the map will be colour coded using the key below:"),
            fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
            fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
            fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
-           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
+           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
            
          )
-       ))
      })
      
      
@@ -327,6 +360,15 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
      # chart (barchart/dumbell chart)
       output$rank_chart <- renderHighchart({
 
+        
+        # create dynamic text if no indicators available for selected profile
+        # and geography / if Scotland selected
+        shiny::validate(
+          need( nrow(rank_data()) > 0, "Please note that rank data is unavailable at Scotland-level for all profiles.
+          
+Not all profiles have available indicators for all geography types. The drugs profile has no available indicators for intermediate zones and the mental health profile has no available indicators for intermediate zones or HSC localities. Please select another profile or geography type to continue.")
+        )
+        
        # if there' no comparator selected, or the selected comparator is "area" then create a bar chart
        if(input$comparator_switch == FALSE | (input$comparator_switch == TRUE & input$comparator_type == "Area")) {
 
@@ -335,7 +377,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
            hc_yAxis(gridLineWidth = 0) |>
            hc_xAxis(title = list(text = "")) |>
            hc_yAxis(title = list(text = "")) |>
-           hc_chart(margin = c(0, 0, 0, 150),
+           hc_chart(margin = c(10, 0, 0, 150),
                     backgroundColor = 'white') |>
            hc_plotOptions(series = list(animation = FALSE)) |>
            hc_tooltip(
@@ -382,9 +424,10 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
            hc_legend(enabled = FALSE) |>
            hc_chart(inverted = TRUE)
        }
-
+        
 
        x 
+       
 
      })
 
@@ -472,8 +515,12 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
      output$rank_table <- renderReactable({
        
        data <- rank_data() |>
-         select(areaname, measure, upci, lowci) |>
-         arrange(measure)
+         mutate(`Area name` = areaname,
+                Measure = measure,
+                `Upper CI` = upci,
+                `Lower CI` = lowci) |>
+         select(`Area name`, Measure, `Upper CI`, `Lower CI`) |>
+         arrange(Measure)
        
        reactable(data,
                  defaultExpanded = T,
