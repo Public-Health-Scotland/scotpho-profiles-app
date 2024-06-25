@@ -83,13 +83,13 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       if(is.null(domain_order)) {
         
         # Arrange by 'domain'
-        chosen_area <- setorder(dt, domain)
+        chosen_area <- setorder(chosen_area, domain)
         
       } else {
         
         # arrange by 'domain' with custom sort order
         chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order)]
-        chosen_area <- setorder(dt, domain)
+        chosen_area <- setorder(chosen_area, domain)
         
       }
       
