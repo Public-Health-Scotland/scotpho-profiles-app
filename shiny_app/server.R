@@ -166,15 +166,15 @@ function(input, output, session) {
   # logic controlling trends tab
   # takes profile data and further filters by selected geography
   # displays trend chart based on selected indicator from drop down list
-  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections)
+  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections, techdoc = techdoc)
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype

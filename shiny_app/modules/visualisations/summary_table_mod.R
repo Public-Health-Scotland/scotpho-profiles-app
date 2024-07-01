@@ -567,6 +567,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     # info to display when user clicks help button (explains how to interpret the spine chart)
     observeEvent(input$help, {
+      if(selected_geo()$areaname != "Scotland"){
       showModal(modalDialog(
         title = "How to interpret table results",
         tagList(
@@ -580,15 +581,23 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
-          
         )
       ))
+      }else{
+        showModal(modalDialog(
+          title = "How to interpret table results",
+          tagList(
+            p("The results below provide a snapshot of the latest data for the ", selected_profile() , " profile in ", "Scotland."),
+            p("The sparklines show how each indicator has changed over time."),
+            p("The figures can be more closely interrogated and compared to other geographical areas in the Trends tab."))))
+          
+        
+        }
     })
  
        
   }) # close module server
 } # close module
-
 
 
 

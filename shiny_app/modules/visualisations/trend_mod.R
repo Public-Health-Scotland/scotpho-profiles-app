@@ -10,10 +10,10 @@ trend_mod_ui <- function(id) {
   tagList(
     bslib::layout_sidebar(
       full_screen = FALSE,
-      height = 600,
+      height = "80%",
       
       # sidebar for filters ------------------
-      sidebar = sidebar(width = 415,
+      sidebar = sidebar(width = 500,
                         accordion(
                           open = TRUE,
                           multiple = TRUE, # allow multiple panels to be open at once
@@ -76,9 +76,14 @@ trend_mod_ui <- function(id) {
                   reactableOutput(ns("trend_table")) # table
         ), 
         
-        # help button ----------------
+        # help tab ----------------
         nav_panel("Help",
-                  uiOutput(ns("trend_help")), #help
+                  uiOutput(ns("trend_help")) #help
+        ),
+        
+        # caveats/methodological info tab ----------------
+        nav_panel("Notes & Caveats",
+                  uiOutput(ns("trend_notes_caveats"))
         ),
         
         # add space
@@ -109,7 +114,7 @@ trend_mod_ui <- function(id) {
 
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections) {
+trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -160,7 +165,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         updateSelectInput(session, "adp_filter", label = "Alcohol and Drug Partnerships:")
       } else {
         shinyjs::disable("adp_filter")
-        updateSelectInput(session, "adp_filter", label = "Alcohol and Drug Partnerships: (not available)")
+        updateSelectInput(session, "adp_filter", label ="Alcohol and Drug Partnerships: (not available)")
       }
       
       # If 'HSC Locality' or 'Intermediate zone' is available, enable parent area filter (hscp_filter_2), otherwise disable it
@@ -176,8 +181,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       
     })
     
-    
-    
+
     # remove globally selected areaname from available areas in dropdowns
     observe({
       if(geo_selections()$areatype == "Health board"){
@@ -267,8 +271,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     
     # server logic for dynamic filters for child geographies based on HSCP selected
-    IMZ_selection <- child_geography_filters_mod_server(id = "child_imz", filtered_data = indicator_filtered_data, HSCP_selection = HSCP_selection, child_areatype = "Intermediate zone", geo_selections = geo_selections)
-    Locality_selection <- child_geography_filters_mod_server(id = "child_locality", filtered_data = indicator_filtered_data, HSCP_selection = HSCP_selection, child_areatype = "HSC locality", geo_selections = geo_selections)
+    IMZ_selection <- child_geography_filters_mod_server(id = "child_imz", filtered_data = indicator_filtered_data, HSCP_selection = HSCP_selection, child_areatype = "Intermediate zone", geo_selections = geo_selections, label =  "Intermediate Zones:")
+    Locality_selection <- child_geography_filters_mod_server(id = "child_locality", filtered_data = indicator_filtered_data, HSCP_selection = HSCP_selection, child_areatype = "HSC locality", geo_selections = geo_selections, label = "HSC Localities:")
     
     
     
@@ -335,29 +339,29 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator) 
     
     
-    # caveats to display between chart heading and chart if any NA values for numerator/measure 
-    output$trend_caveats <- renderUI({
-      
-      #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
-      covid_caveats <- trend_data() |> 
-        filter(year == 2019:2022) |> 
-        select(numerator, measure) 
-      
-      # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
-      # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
-      #ℹ In argument: `year == 2019:2022`.
-      #Caused by warning in `year == 2019:2022`:
-      #  ! longer object length is not a multiple of shorter object length
-      
-      if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
-        tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
-      }
-      
-      
-    })
+    # # caveats to display between chart heading and chart if any NA values for numerator/measure 
+    # output$trend_caveats <- renderUI({
+    #   
+    #   #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
+    #   covid_caveats <- trend_data() |> 
+    #     filter(year == 2019:2022) |> 
+    #     select(numerator, measure) 
+    #   
+    #   # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
+    #   # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
+    #   #ℹ In argument: `year == 2019:2022`.
+    #   #Caused by warning in `year == 2019:2022`:
+    #   #  ! longer object length is not a multiple of shorter object length
+    #   
+    #   if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
+    #     tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
+    #   }
+    #   
+    #   
+    # })
     
     
-    # info to display when user clicks help button
+    # info to display when user clicks help tab
     output$trend_help <- renderUI({ 
       tagList(
         tags$h5("How to use this chart"),
@@ -367,7 +371,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
           tags$img(src = "Trend_help_example_final.PNG"),
           layout_column_wrap(
             width = 1,
-            heights_equal = "row",
             p("First select an indicator. The backspace can be used to remove the default selection and then topics or indicator names can be searched."),
             p("Next add one or more geographical areas of any area type to the chart using the geography filters. 
               There may be some indicators where data is not available for the full time series or at a particular geography level.
@@ -380,6 +383,20 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       
       })
       
+    
+    # info to display when user clicks supporting information tab
+    output$trend_notes_caveats <- renderUI({
+      
+      #create dataframe containing only notes_caveats column for selected indicator from techdoc
+      indicator_caveats <- techdoc |> 
+        filter(indicator_name == selected_indicator()) |> 
+        select(notes_caveats)
+      
+      #print notes and caveats for selected indicator
+      tags$p(indicator_caveats)
+    })
+    
+    
     
     output$geo_instructions <- renderText({
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
