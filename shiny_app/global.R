@@ -148,3 +148,20 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
 phs_palette <- unname(unlist(phs_colours()))
 
 
+# archived indicators to remove from summary tab onlyag
+archived_indicators <- c(
+  20501, # adults claiming incapacity benefit/sever disability allowance
+  20706, # people claiming pension credits, aged >60 years
+  20703, # Working age population claiming out-of-work benefits
+  4106, # Alcohol weekly drinkers, pupils age 15
+  1532, # Attempts to purchase cigarettes
+  21101, # Breast screening uptake
+  4134, # Children being offered drugs, pupils age 15 years
+  4126, # Drug use last month, pupils age 15 years
+  4127, # Drug use last year, pupils age 15 years
+  13044, # Mean mental wellbeing score for S4 pupils
+  13045) # Mean total difficulties score for S4 pupils
+
+  
+
+
