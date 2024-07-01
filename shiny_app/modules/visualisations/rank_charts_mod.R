@@ -74,7 +74,10 @@ rank_mod_ui <- function(id) {
         height = 550,
         nav_panel("Charts",
                   uiOutput(ns("rank_title")), # title
-                  highchartOutput(ns("rank_chart")) # chart
+                  highchartOutput(ns("rank_chart")) |> # chart
+                    withSpinner() |> (\(x) {
+                      x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                      x})()
         ),
         nav_panel("Data",
                   reactableOutput(ns("rank_table")) # table
@@ -100,7 +103,10 @@ rank_mod_ui <- function(id) {
       card(
         height = 550,
         full_screen = TRUE,
-        leafletOutput(ns("rank_map")) # map
+        leafletOutput(ns("rank_map")) |> # map
+          withSpinner() |> (\(x) {
+            x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+            x})()
         )
 
       ) # close layout column wrap
@@ -121,6 +127,8 @@ rank_mod_ui <- function(id) {
 # geo_selections <- reactive values in main server storing global geography selections
 rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id) {
   moduleServer(id, function(input, output, session) {
+    
+    req(active_nav() == nav_id)
     
     
     #######################################################
@@ -166,7 +174,6 @@ rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id
      # prepares data to be plotted --------------------------------------------
      rank_data <- reactive({
        
-       req(active_nav() == nav_id)
 
        profile_data <- setDT(profile_data()) # set profile data to data.table format
 

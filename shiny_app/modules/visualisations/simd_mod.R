@@ -67,7 +67,10 @@ simd_navpanel_ui <- function(id) {
           # tab 1: bar chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("barchart_title")), # title 
-                           highchartOutput(ns("simd_barchart")) # chart 
+                           highchartOutput(ns("simd_barchart")) |> # chart 
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           
           # tab 2: data table
@@ -99,7 +102,10 @@ simd_navpanel_ui <- function(id) {
           # tab 1: trend chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("trendchart_title")), # title
-                           highchartOutput(ns("simd_trendchart")) # chart
+                           highchartOutput(ns("simd_trendchart")) |># chart
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           
           # tab 2: data table
@@ -200,19 +206,20 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, active_nav, nav_
     # calls definition button module server script and passes the actual indicator selected)
     indicator_definition_btn_server("simd_ind_def", selected_indicator = selected_indicator)  
     
+    
+    geography_data <- reactive({
+      dt <- setDT(simd_data())
+      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
+      
+    })
+    
     # creates trend data
     trend_data <- reactive({
       
-      req(active_nav() == nav_id)
       
-      # generate reactive data
-      dt <- setDT(simd_data()) # set deprivation data to data.table format
-      
-      # filter by selected areatype
-      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
       # filter by selected indicator
-      dt <- dt[indicator == selected_indicator()]
+      dt <- geography_data()[indicator == selected_indicator()]
       
       # filter by quint type 
       if(input$quint_type == "Scotland"){

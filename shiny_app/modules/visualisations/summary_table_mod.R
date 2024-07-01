@@ -42,7 +42,7 @@ summary_table_ui <- function(id) {
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, active_nav, nav_id, domain_order) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, active_nav, nav_id, domain_order = NULL) {
 
   
   moduleServer(id, function(input, output, session) {

@@ -248,6 +248,7 @@ page_navbar(
 
     # indicator definitions tab
     nav_panel(title = "Indicator Definitions",
+              value = "definitions",
               definitions_tab_UI("metadata")
     )
     ) # close nav menu

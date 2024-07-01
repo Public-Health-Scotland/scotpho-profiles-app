@@ -71,8 +71,8 @@ trend_mod_ui <- function(id) {
         # charts tab -----------------------
         nav_panel("Charts",
                   uiOutput(ns("trend_title")), # title 
-                  uiOutput(ns("trend_caveats")), # caveats
-                  highchartOutput(outputId = ns("trend_chart")) # chart
+                  #uiOutput(ns("trend_caveats")), # caveats
+                  highchartOutput(outputId = ns("trend_chart")) 
         ), 
         
         # data tab ------------------
@@ -299,7 +299,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
       # also filter by scotland
-      if(geo_selections()$areatype == "Scotland" | input$scot_switch_trends == TRUE){
+      if(geo_selections()$areatype != "Scotland" & input$scot_switch_trends == TRUE){
         scotland <- indicator_filtered_data() |>
           filter(areaname == "Scotland")
         
@@ -314,7 +314,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(year)
+        arrange(year, areatype)
     })
     
     
@@ -345,26 +345,26 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator) 
     
     
-    # caveats to display between chart heading and chart if any NA values for numerator/measure 
-    output$trend_caveats <- renderUI({
-      
-      #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
-      covid_caveats <- trend_data() |> 
-        filter(year == 2019:2022) |> 
-        select(numerator, measure) 
-      
-      # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
-      # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
-      #ℹ In argument: `year == 2019:2022`.
-      #Caused by warning in `year == 2019:2022`:
-      #  ! longer object length is not a multiple of shorter object length
-      
-      if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
-        tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
-      }
-      
-      
-    })
+    # # caveats to display between chart heading and chart if any NA values for numerator/measure 
+    # output$trend_caveats <- renderUI({
+    #   
+    #   #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
+    #   covid_caveats <- trend_data() |> 
+    #     filter(year == 2019:2022) |> 
+    #     select(numerator, measure) 
+    #   
+    #   # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
+    #   # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
+    #   #ℹ In argument: `year == 2019:2022`.
+    #   #Caused by warning in `year == 2019:2022`:
+    #   #  ! longer object length is not a multiple of shorter object length
+    #   
+    #   if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
+    #     tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
+    #   }
+    #   
+    #   
+    # })
     
     
     # info to display when user clicks help button
@@ -481,7 +481,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
         select(areatype, areaname, trend_axis, y)
       
       #filters out duplicates when Scotland selected in global options
-      data <- unique(data)
+      #data <- unique(data)
       
       reactable(data,
                 columns = list(

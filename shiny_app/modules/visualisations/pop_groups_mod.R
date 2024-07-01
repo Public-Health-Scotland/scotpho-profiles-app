@@ -54,7 +54,10 @@ pop_groups_ui <- function(id) {
           # tab 1: bar chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("pop_rank_title")), # title 
-                           highchartOutput(ns("pop_rank_chart")) # chart 
+                           highchartOutput(ns("pop_rank_chart"))|> # chart 
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           
           # tab 2: data table
@@ -91,7 +94,12 @@ pop_groups_ui <- function(id) {
           # tab 1: trend chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("pop_trend_title")), # title
-                           highchartOutput(ns("pop_trend_chart")) # chart
+                           highchartOutput(ns("pop_trend_chart")) |> # chart
+                             # issue described here: https://github.com/daattali/shinycssloaders/issues/76 
+                             # solution posted here: https://stackoverflow.com/questions/77184183/how-to-use-shinycssloaders-withspinner-with-a-plot-output-in-a-bslib-card 
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           # tab 2: data table # still need to creat this
           bslib::nav_panel("Table",
