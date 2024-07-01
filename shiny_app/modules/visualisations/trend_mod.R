@@ -88,7 +88,7 @@ trend_mod_ui <- function(id) {
         bslib::nav_item(
           bslib::popover(
             title = "Decide how to present data in the chart",
-            bsicons::bs_icon("gear", size = "1.7em"),
+            chart_controls_icon(), 
             # rate/numerator toggle
             radioButtons(inputId = ns("numerator_button_trends"), label = NULL, 
                          choices = c("Rate", "Numerator"),
