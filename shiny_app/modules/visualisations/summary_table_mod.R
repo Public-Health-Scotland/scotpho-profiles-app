@@ -19,6 +19,7 @@ summary_table_ui <- function(id) {
   ns <- NS(id)
   tagList(
     bslib::card(
+      min_height = 300,
       bslib::card_header(
               class = "d-flex flex-row-reverse",
               layout_columns(
@@ -50,6 +51,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     local_summary <- reactive({
       req(selected_geo()$areatype != "Scotland")
       
+      shiny::validate(
+        need(selected_geo()$areatype %in% unique(filtered_data()$areatype), paste0("Currently, there are no indicators in this profile available at", selected_geo()$areatype, "level. Please select another geography level to view indicators in this profile."))
+      )
+
       # convert to data.table format (using data.table package) to run quicker 
       dt <- setDT(filtered_data())
       
@@ -219,6 +224,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       } else {
         local_summary()
       }
+      
+      shiny::validate(
+        need( nrow(data) > 0, "No indicators available")
+      )
       
       
       # domain column 
