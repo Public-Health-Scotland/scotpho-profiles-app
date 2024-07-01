@@ -13,34 +13,48 @@ page_navbar(
   lang = "en",
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
   theme = phs_theme, # dashboard theme - defined in global script
-  tags$head(
+  # place external scripts in footer argument to avoid warning as recommended by package developers
+  footer = tags$head(
     # required for spinecharts
     tags$script(src = "https://code.highcharts.com/highcharts.js"),
     #required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
     tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),
     # required for homepage styling
-    includeCSS("www/styles.css")), # required to specify formatting (particularly of landing page)
+    includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
+  ), 
+ 
+    useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package
 
-  useShinyjs(), # need to declare this to enable geography filter to call on functions within shinyjs package
-  
-  # custom js function to close the nav menu in the nav bar 1000 millisecs after any navigation buttons are clicked
+    # custom js function to close the nav menu in the nav bar 1000 millisecs after any navigation buttons are clicked
   shinyjs::extendShinyjs(text = " shinyjs.closeNavMenu = function() {
         setTimeout(function() {$('.dropdown-menu').removeClass('show');}, 1000);}", functions = c("closeNavMenu")),
-
-  # header that appears across the top of each profile tab
-  # including geography filters and info detailing selected geography and profile
-  header = conditionalPanel(condition = "input.nav !== 'Home' && input.nav !== 'About Profiles' && input.nav !== 'Indicator Definitions' && input.nav !== 'About ScotPHO' && input.nav !== 'dt'",
-                            tagList(
-                              uiOutput("profile_header"),
-                              uiOutput("areatype_header"),
-                              layout_columns(
-                                col_widths = c(8,-1,2,-1),
-                                uiOutput("areaname_header"),
-                                navigation_button_modUI(button_id="about_profiles_header", button_name = "About this profile", button_icon = icon("circle-info"))), 
-                              global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
-                            )),
   
-
+  header =  tagList(
+    # header that appears across the top of each profile tab
+    # including geography filters and info detailing selected geography and profile
+    hidden(
+      div(id = "header",
+          tagList(
+            conditionalPanel(condition = "input.nav == 'HWB'", h1("Profile: Health and Wellbeing", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'CWB'", h1("Profile: Care and Wellbeing", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'CYP'", h1("Profile: Children and young people", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'ALC'", h1("Profile: Alcohol", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'TOB'", h1("Profile: Tobacco", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'DRG'", h1("Profile: Drugs", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'POP'", h1("Profile: Population", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'MEN'", h1("Profile: Mental Health", class = "profile-header")),
+            conditionalPanel(condition = "input.nav == 'ALL'", h1("Profile: All indicators", class = "profile-header")),
+            uiOutput("areatype_header"),
+             layout_columns(col_widths = c(8,-1,2,-1),
+                uiOutput("areaname_header"),
+                navigation_button_modUI(button_id="about_profiles_header", button_name = "About this profile", button_icon = icon("circle-info"))
+                           ), # close layout columns 
+                global_geography_filters_ui(id = "geo_filters", areatype_choices = areatype_list, parent_area_choices = hscp_list)
+          ) # close tagList
+         ) # close div
+    ) # close hidden
+  ), # close tagList
+  
   # homepage ---------------------------------------------------------------------
   nav_panel(value = "Home", style = "margin: 0;", # remove margin so no white space at top of landing page
             title = "Home",
@@ -83,7 +97,7 @@ page_navbar(
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("hwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("hwb_trends")),
-                nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),  
+                nav_panel(title = "Rank", rank_mod_ui("hwb_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("hwb_simd"))
               )),
     
@@ -97,19 +111,19 @@ page_navbar(
                 nav_panel(title = "Rank", rank_mod_ui("cyp_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("cyp_simd"))
               )),
-    
+
     # care and wellbeing
     nav_panel(value = "CWB",
               title = "Care & Wellbeing",
-              
+
               card(max_height = 150,
                    card_header(bs_icon("info-circle-fill", size = "1.2em"),
                                "Indicator set in development",
                                class = "info-box-header"),
-                   p("The Care and Wellbeing indicator set will be further developed following user feedback. 
-                     If you have any feedback please contact us at", 
+                   p("The Care and Wellbeing indicator set will be further developed following user feedback.
+                     If you have any feedback please contact us at",
                      tags$a("phs.scotpho@phs.scot.", href = "mailto:phs.scotpho@phs.scot?subject=Care%20and%20Wellbeing%20Indicator%20Feedback"))),
-              
+
               navset_tab(
                 nav_panel(title = "Summary", summary_table_ui("cwb_summary")),
                 nav_panel(title = "Trends", trend_mod_ui("cwb_trends")),
@@ -117,7 +131,7 @@ page_navbar(
                 nav_panel(title = "Deprivation", simd_navpanel_ui("cwb_simd")),
                 nav_panel(title = "Population Groups", pop_groups_ui("cwb_pop_groups"))
               )),
-    
+
     # alcohol
     nav_panel(value = "ALC",
               title = "Alcohol",
@@ -126,7 +140,7 @@ page_navbar(
                 nav_panel(title = "Trends", trend_mod_ui("alc_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("alc_rank"))
               )),
-    
+
     # drugs
     nav_panel(value = "DRG",
               title = "Drugs",
@@ -135,7 +149,7 @@ page_navbar(
                 nav_panel(title = "Trends", trend_mod_ui("drg_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("drg_rank"))
               )),
-    
+
     # mental health
     nav_panel(value = "MEN",
               title= "Mental Health",
@@ -144,7 +158,7 @@ page_navbar(
                 nav_panel(title = "Trends", trend_mod_ui("men_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("men_rank"))
               )),
-    
+
     # population
     nav_panel(value = "POP",
               "Population",
@@ -154,8 +168,8 @@ page_navbar(
                 nav_panel(title = "Rank", rank_mod_ui("pop_rank")),
                 nav_panel(title = "Deprivation", simd_navpanel_ui("pop_simd"))
               )),
-    
-    
+
+
     # tobacco
     nav_panel(value = "TOB",
               "Tobacco",
@@ -164,7 +178,7 @@ page_navbar(
                 nav_panel(title = "Trends", trend_mod_ui("tob_trends")),
                 nav_panel(title = "Rank", rank_mod_ui("tob_rank"))
               )),
-    
+
     nav_panel(value = "ALL",
               "All Indicators",
               navset_tab(
@@ -179,7 +193,6 @@ page_navbar(
             nav_panel("Download data",
                       value = "dt",
                       data_tab_modUI("data_tab")
-
             ), # close data table nav
 
   # source code link -------------------------------------------------------------------
@@ -190,10 +203,10 @@ page_navbar(
     title = "More information",
 
     # about scotpho tab
-    nav_panel(title = "About ScotPHO",about_scotpho_text),
+    nav_panel(title = "About ScotPHO", value = "about_scotpho", about_scotpho_text),
 
     # about profiles tab (to do: replace placeholder text)
-    nav_panel(title = "About Profiles",
+    nav_panel(title = "About Profiles", value = "about_profiles",
               accordion(
                 open= FALSE, #no accordion panels open on loading
                 multiple = TRUE, #allows multiple profile accordion panels to be open at once
@@ -235,17 +248,12 @@ page_navbar(
 
     # indicator definitions tab
     nav_panel(title = "Indicator Definitions",
+              value = "definitions",
               definitions_tab_UI("metadata")
     )
-    
     ) # close nav menu
 
-) #close main server function
+) #close main ui function
 
 ### END
-
-
-
-
-
 

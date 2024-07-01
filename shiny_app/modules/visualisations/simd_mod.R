@@ -55,6 +55,11 @@ simd_navpanel_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
+        # footer with download buttons
+        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+        # package maintainers are aware and working on a fix
+        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+        suppressWarnings(
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
@@ -62,7 +67,10 @@ simd_navpanel_ui <- function(id) {
           # tab 1: bar chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("barchart_title")), # title 
-                           highchartOutput(ns("simd_barchart")) # chart 
+                           highchartOutput(ns("simd_barchart")) |> # chart 
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           
           # tab 2: data table
@@ -84,9 +92,9 @@ simd_navpanel_ui <- function(id) {
           card_footer(class = "d-flex justify-content-between",
                       download_chart_mod_ui(ns("save_simd_barchart")),
                       download_data_btns_ui(ns("simd_barchart_download")))
-        ), # close bar chart card
+        )), # close bar chart card
         
-        
+        suppressWarnings(
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
@@ -94,7 +102,10 @@ simd_navpanel_ui <- function(id) {
           # tab 1: trend chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("trendchart_title")), # title
-                           highchartOutput(ns("simd_trendchart")) # chart
+                           highchartOutput(ns("simd_trendchart")) |># chart
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           
           # tab 2: data table
@@ -116,6 +127,7 @@ simd_navpanel_ui <- function(id) {
           card_footer(class = "d-flex justify-content-between",
                       download_chart_mod_ui(ns("save_simd_trendchart")),
                       download_data_btns_ui(ns("simd_trendchart_download")))
+        )
         ) # close trend card
       ) # close layout column wrap
       
@@ -133,7 +145,7 @@ simd_navpanel_ui <- function(id) {
 #######################################################
 
 
-simd_navpanel_server <- function(id, simd_data, geo_selections) {
+simd_navpanel_server <- function(id, simd_data, geo_selections, active_nav, nav_id) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -143,6 +155,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     
     # update years choices for bar chart filter, depending on indicator selected
     observe({
+      
+      req(active_nav() == nav_id)
       
       available_years <- simd_data() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
@@ -192,17 +206,20 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     # calls definition button module server script and passes the actual indicator selected)
     indicator_definition_btn_server("simd_ind_def", selected_indicator = selected_indicator)  
     
+    
+    geography_data <- reactive({
+      dt <- setDT(simd_data())
+      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
+      
+    })
+    
     # creates trend data
     trend_data <- reactive({
       
-      # generate reactive data
-      dt <- setDT(simd_data()) # set deprivation data to data.table format
       
-      # filter by selected areatype
-      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
       # filter by selected indicator
-      dt <- dt[indicator == selected_indicator()]
+      dt <- geography_data()[indicator == selected_indicator()]
       
       # filter by quint type 
       if(input$quint_type == "Scotland"){
@@ -237,6 +254,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     
     
     bar_data <- reactive({
+      req(trend_data())
       trend_data()[def_period == input$simd_years_filter]
     })
     

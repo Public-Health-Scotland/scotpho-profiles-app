@@ -42,6 +42,11 @@ pop_groups_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
+        # footer with download buttons
+        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+        # package maintainers are aware and working on a fix
+        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+        suppressWarnings(
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
@@ -49,7 +54,10 @@ pop_groups_ui <- function(id) {
           # tab 1: bar chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("pop_rank_title")), # title 
-                           highchartOutput(ns("pop_rank_chart")) # chart 
+                           highchartOutput(ns("pop_rank_chart"))|> # chart 
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           
           # tab 2: data table
@@ -74,10 +82,11 @@ pop_groups_ui <- function(id) {
           card_footer(class = "d-flex justify-content-between",
                       download_chart_mod_ui(ns("save_pop_rankchart")),
                       download_data_btns_ui(ns("pop_rank_download")))
-        ), # close bar chart card
+        )), # close bar chart card
         
 
         ######  based on deprivation trend card addeded "pop_" to distinguish the two
+        suppressWarnings(
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
@@ -85,7 +94,12 @@ pop_groups_ui <- function(id) {
           # tab 1: trend chart 
           bslib::nav_panel("Chart",
                            uiOutput(ns("pop_trend_title")), # title
-                           highchartOutput(ns("pop_trend_chart")) # chart
+                           highchartOutput(ns("pop_trend_chart")) |> # chart
+                             # issue described here: https://github.com/daattali/shinycssloaders/issues/76 
+                             # solution posted here: https://stackoverflow.com/questions/77184183/how-to-use-shinycssloaders-withspinner-with-a-plot-output-in-a-bslib-card 
+                             withSpinner() |> (\(x) {
+                               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                               x})()
           ),
           # tab 2: data table # still need to creat this
           bslib::nav_panel("Table",
@@ -107,6 +121,7 @@ pop_groups_ui <- function(id) {
           card_footer(class = "d-flex justify-content-between",
                       download_chart_mod_ui(ns("save_pop_trendchart")),
                       download_data_btns_ui(ns("pop_trend_download")))
+        )
         ) # close trend card
               ) # close layout column wrap
       

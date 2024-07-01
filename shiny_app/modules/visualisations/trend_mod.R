@@ -61,14 +61,18 @@ trend_mod_ui <- function(id) {
       ), # close sidebar
       
       # create a multi-tab card 
+      # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+      # package maintainers are aware and working on a fix
+      # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+      suppressWarnings(
       navset_card_pill(
         full_screen = TRUE,
         
         # charts tab -----------------------
         nav_panel("Charts",
                   uiOutput(ns("trend_title")), # title 
-                  uiOutput(ns("trend_caveats")), # caveats
-                  highchartOutput(outputId = ns("trend_chart")) # chart
+                  #uiOutput(ns("trend_caveats")), # caveats
+                  highchartOutput(outputId = ns("trend_chart")) 
         ), 
         
         # data tab ------------------
@@ -102,14 +106,16 @@ trend_mod_ui <- function(id) {
         card_footer(class = "d-flex justify-content-between",
                     download_chart_mod_ui(ns("download_trends_chart")),
                     download_data_btns_ui(ns("download_trends_data")))
+
       ) # close navset card pill
+      ) # close suppress warnings
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 
 
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections) {
+trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_id) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -121,6 +127,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # enable/ disable geography filters and update the filter labels, 
     # depending on what indicator was selected 
     observe({
+      
+      req(indicator_filtered_data())
       
       # stores available areatypes, depending on what indicator was selected
       available_areatypes <- indicator_filtered_data() |>
@@ -252,6 +260,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({
+      req(active_nav() == nav_id) # only run module if tab is active 
       filtered_data() |>
         filter(indicator == selected_indicator())
     })
@@ -275,6 +284,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
     trend_data <- reactive({
+      req(indicator_filtered_data())
       
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(
@@ -289,7 +299,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
       # also filter by scotland
-      if(geo_selections()$areatype == "Scotland" | input$scot_switch_trends == TRUE){
+      if(geo_selections()$areatype != "Scotland" & input$scot_switch_trends == TRUE){
         scotland <- indicator_filtered_data() |>
           filter(areaname == "Scotland")
         
@@ -304,7 +314,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(year)
+        arrange(year, areatype)
     })
     
     
@@ -335,26 +345,26 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator) 
     
     
-    # caveats to display between chart heading and chart if any NA values for numerator/measure 
-    output$trend_caveats <- renderUI({
-      
-      #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
-      covid_caveats <- trend_data() |> 
-        filter(year == 2019:2022) |> 
-        select(numerator, measure) 
-      
-      # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
-      # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
-      #ℹ In argument: `year == 2019:2022`.
-      #Caused by warning in `year == 2019:2022`:
-      #  ! longer object length is not a multiple of shorter object length
-      
-      if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
-        tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
-      }
-      
-      
-    })
+    # # caveats to display between chart heading and chart if any NA values for numerator/measure 
+    # output$trend_caveats <- renderUI({
+    #   
+    #   #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
+    #   covid_caveats <- trend_data() |> 
+    #     filter(year == 2019:2022) |> 
+    #     select(numerator, measure) 
+    #   
+    #   # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
+    #   # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
+    #   #ℹ In argument: `year == 2019:2022`.
+    #   #Caused by warning in `year == 2019:2022`:
+    #   #  ! longer object length is not a multiple of shorter object length
+    #   
+    #   if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
+    #     tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
+    #   }
+    #   
+    #   
+    # })
     
     
     # info to display when user clicks help button
@@ -471,7 +481,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         select(areatype, areaname, trend_axis, y)
       
       #filters out duplicates when Scotland selected in global options
-      data <- unique(data)
+      #data <- unique(data)
       
       reactable(data,
                 columns = list(

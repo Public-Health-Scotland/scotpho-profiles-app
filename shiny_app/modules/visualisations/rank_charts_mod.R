@@ -65,12 +65,19 @@ rank_mod_ui <- function(id) {
       
       layout_column_wrap(
       # bar chart card ----------------------
+      # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+      # package maintainers are aware and working on a fix
+      # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+      suppressWarnings(
       navset_card_pill(
         full_screen = TRUE,
         height = 550,
         nav_panel("Charts",
                   uiOutput(ns("rank_title")), # title
-                  highchartOutput(ns("rank_chart")) # chart
+                  highchartOutput(ns("rank_chart")) |> # chart
+                    withSpinner() |> (\(x) {
+                      x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                      x})()
         ),
         nav_panel("Data",
                   reactableOutput(ns("rank_table")) # table
@@ -89,14 +96,17 @@ rank_mod_ui <- function(id) {
         card_footer(class = "d-flex justify-content-between",
                              download_chart_mod_ui(ns("save_rank_chart")),
                              download_data_btns_ui(ns("rank_download")))
-      ),
+      )),
       
       # map card -------------------
       
       card(
         height = 550,
         full_screen = TRUE,
-        leafletOutput(ns("rank_map")) # map
+        leafletOutput(ns("rank_map")) |> # map
+          withSpinner() |> (\(x) {
+            x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+            x})()
         )
 
       ) # close layout column wrap
@@ -115,8 +125,10 @@ rank_mod_ui <- function(id) {
 # id = unique id 
 # profile_data = reactive df in main server
 # geo_selections <- reactive values in main server storing global geography selections
-rank_mod_server <- function(id, profile_data, geo_selections) {
+rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id) {
   moduleServer(id, function(input, output, session) {
+    
+    req(active_nav() == nav_id)
     
     
     #######################################################
@@ -161,6 +173,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      
      # prepares data to be plotted --------------------------------------------
      rank_data <- reactive({
+       
 
        profile_data <- setDT(profile_data()) # set profile data to data.table format
 
