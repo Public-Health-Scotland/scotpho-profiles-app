@@ -472,8 +472,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
     download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
     
-    download_data_btns_server(id = "simd_barchart_download", data = bar_data())
-    download_data_btns_server(id = "simd_trendchart_download", data = trend_data())
+    download_data_btns_server(id = "simd_barchart_download", data = bar_data, selected_columns = c("code", "areatype", "areaname", "indicator", "type_definition", "def_period", "quintile", "numerator", "measure", "upci", "lowci"))
+    download_data_btns_server(id = "simd_trendchart_download", data = trend_data, selected_columns = c("code", "areatype", "areaname", "indicator", "type_definition", "def_period", "quintile", "numerator", "measure", "upci", "lowci"))
     
     
   }

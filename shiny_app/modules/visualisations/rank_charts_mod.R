@@ -530,7 +530,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
      
      # note these are both modules 
      download_chart_mod_server(id = "save_rank_chart", chart_id = session$ns("rank_chart")) # save chart as png
-     download_data_btns_server(id = "rank_download", data = rank_data()) # download data in selected format
+     download_data_btns_server(id = "rank_download", data = rank_data, selected_columns = c("code", "areatype", "areaname", "indicator", "type_definition", "def_period", "numerator", "measure", "upci", "lowci")) # download data in selected format
      
      
      }

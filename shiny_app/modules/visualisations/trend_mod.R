@@ -492,7 +492,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     # server for chart and data downloads
     download_chart_mod_server(id = "download_trends_chart", chart_id = session$ns("trend_chart"))
-    download_data_btns_server(id = "download_trends_data", data = trend_data)
+    download_data_btns_server(id = "download_trends_data", data = trend_data, selected_columns = c("code", "areatype", "areaname", "indicator", "type_definition", "def_period", "numerator", "measure", "upci", "lowci"))
     
     
   }
