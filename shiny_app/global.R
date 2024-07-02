@@ -50,7 +50,7 @@ simd_dataset <- read_parquet("data/deprivation_data") # dataset behind simd pane
 techdoc <- read_parquet("data/techdoc") # technical document
 
 #temp data upload and simple wrangle
-ineq_splits_data <- readr::read_csv("/PHI_conf/ScotPHO/Profiles/Data/Test Shiny Data/88007_meeting_mvpa_im.csv") |>
+ineq_splits_data <- readr::read_csv("data/88007_meeting_mvpa_im.csv") |>
   rename(areatype = geography,
          areaname = location_name) |>
   mutate(areatype = case_when(areatype == "healthboard" ~ "Health board",
