@@ -52,7 +52,13 @@ page_navbar(
                          ),
 
                          # buttons to navigate to profile tabs
-                         profile_buttons = tagList(
+                         profile_buttons = layout_columns(
+                           col_widths = breakpoints(
+                             xs = c(12), # make cards full width on extra small screens
+                             sm = c(12), # make cards full width on small screens
+                             md = c(-1, 10, -1), # add space around cards on medium screens
+                             lg = c(-2, 8, -2) # add space around cards large screens
+                           ),
                            layout_columns(
                              profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **behaviours**, **crime**, **economy**, **life expectancy** and **mortality, ill health and injury**.")),
                              profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),

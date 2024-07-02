@@ -20,6 +20,7 @@ profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, de
   tagList(
   bslib::card(
     full_screen = FALSE,
+    min_height = 150,
     bslib::card_body(
       actionLink(inputId = ns("profile_nav"), style = "text-decoration: none; color: black;",
                  div(class = "d-flex flex-column align-items-center", 
