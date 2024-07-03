@@ -26,7 +26,7 @@ trend_mod_ui <- function(id) {
                               indicator_filter_mod_ui(ns("trend_indicator_filter"))
                             ),
                             layout_columns(
-                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
+                              indicator_definition_btn_ui(ns("trend_ind_def"))
                             ),
                           ),
                           
@@ -352,7 +352,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     #server logic for indicator definition button - shows indidcator definition when definition button clicked 
     # (note this is a module)
-    indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator) 
+    indicator_definition_btn_server("trend_ind_def", selected_indicator = selected_indicator) 
     
     
     # # caveats to display between chart heading and chart if any NA values for numerator/measure 
