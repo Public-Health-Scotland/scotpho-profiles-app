@@ -17,10 +17,12 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# 1. Set up
+
+######################################
+# Set up
+######################################
 
 ## Load libraries -----
-
 library(dplyr) # data wrangling
 library(openxlsx) # for reading in technical document / converting excel dates
 library(readr) # for reading csv files
@@ -31,10 +33,10 @@ library(janitor) # for cleaning column names
 library(assertthat) # for data validation tests
 library(purrr) # for copying multiple files at once
 library(tidyr) # for pivot longer
+library(sf)
 
 
-# 2. Set file-paths
-
+## Set file-paths
 data_folder <- "/PHI_conf/ScotPHO/Profiles/Data/"
 lookups <- paste0(data_folder, "Lookups/") 
 shape_files <- paste0(data_folder, "Shapefiles/")
@@ -43,8 +45,7 @@ test_shiny_files <- paste0(data_folder, "Test Shiny Data") #folder which contain
 backups <- paste0(data_folder, "Backups/") #area for saving copies of historic files linked to shiny app in case we mess up a file and need to roll back
 
 
-# 3. Source function scripts
-
+## Source function scripts
 source("data_preparation/2_dataprep_functions.R") # generic functions 
 source("data_preparation/2_dataprep_validation_tests.R") # validation checks
 
@@ -54,12 +55,14 @@ source("data_preparation/update_deprivation_data.R") # script to read in & forma
 source("data_preparation/update_main_data.R") # script to read in and forma main data
 
 
-#########################################################################################.
+
+
+###################################################
 ## Update technical document ----
-#########################################################################################.
+##################################################
 
 # Generates techdoc parquet file within shiny app data folder
-# Also makes profile_lookup and technical_doc dataframes visible in data pane
+# Also makes technical_doc visible in data pane
 # which are required for processing the indicator data files below.
 # Option:  to save a backup version of techdoc (set create_backup to TRUE)
 # Option: to include indicators data labelled as test indicators in techdoc (set load test indicators to TRUE)
@@ -70,9 +73,10 @@ update_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
 
 
-#########################################################################################.
+
+###################################################
 ## Update geography lookups  ----
-#########################################################################################.
+###################################################
 
 ## Geography Lookup
 # copy the main geography lookup to your local repo
@@ -82,15 +86,13 @@ file.copy(
   overwrite = TRUE
 )
 
-# open geography look from shiny app data folder (required for matches on areanames, area type and parent geographies to geography codes in indicator datasets)
+# open geography look from shiny app data folder 
+# (required for matches on areanames, area type and parent geographies to geography codes in indicator datasets)
 geography_lookup <- readRDS(
   file = paste0(lookups, "Geography/opt_geo_lookup.rds") ##TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
 )
 
 
-## To DO: is there code to create the nodes?
-## Geo nodes - need to add this in somewhere
-#  rename prefix from opt something like 'profiles'geo_lookup its more explict what geo lookup is for. Ok to keep as just geo_lookup once inside the shiny app tho.
 
 
 #########################################################################################.
@@ -103,47 +105,67 @@ geography_lookup <- readRDS(
 
 update_main_data(load_test_indicators = FALSE, create_backup = FALSE)
 
-# run validation tests
+# run validation tests one by one 
+# when a test is finished running, if it's passed 'TRUE' will print in the console
+# otherwise pay attention to the message in the console detailing why the test has failed
 TEST_no_missing_indicators(main_dataset) # compares indicators in dataset to active indicators in techdoc  
-TEST_no_missing_geography_info(main_dataset_validation) #Ensure there are no indicators with missing geography info
 TEST_no_missing_geography_info(main_dataset) # all rows have valid geography code
 TEST_no_missing_metadata(main_dataset) # checks for indicators with missing metdata (i.e. if failed to join with techdoc)
-TEST_suppression_applied(main_dataset_validation) # double checking suppression function wasn't skipped
+TEST_suppression_applied(main_dataset) # double checking suppression function wasn't skipped
 
 
 
-#########################################################################################.
+#######################################################################################
+## Create geography nodes file 
+#######################################################################################
+
+# get a distinct list of geography paths in the main dataset
+main_dataset_geography_list <- main_dataset |>
+  select(geo_path) |>
+  distinct()
+
+# convert them into lists of parent/child nodes that can be used to create a 
+# hierarchical geography filter in the data tab of the shiny app
+main_dataset_geography_list <- create_geography_nodes(main_dataset_geography_list$geo_path)
+
+# save file to be used in app
+saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_nodes.rds")
+
+
+
+###############################################################
 ## Update deprivation data  ----
 ## i.e. indicator data split by SIMD quintiles.
-#########################################################################################.
+##############################################################
 
 update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
 
-## TO DO figure out if validation tests # should these sit inside the data prep function? what happens if validation test fails inside a function
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
 
 # run validation tests
 TEST_no_missing_ineq_indicators(deprivation_dataset) # compares dataset to techdoc column 'inequality label' is not null 
-TEST_no_missing_geography_info(deprivation_dataset_validation) # all rows have valid geography code
+TEST_no_missing_geography_info(deprivation_dataset) # all rows have valid geography code
 TEST_no_missing_metadata(deprivation_dataset) # checks for dep indicators with no indicator name
 TEST_suppression_applied(deprivation_dataset) # double checking suppression function wasn't skipped
 TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
 
 
 
-#########################################################################################.
+########################################################################
 ## Update population groups data  ----
 ## i.e. indicator data split by various different inequality groups.
-#########################################################################################.
+########################################################################
 
 #placeholder for when script ready
 
 #update_pop_groups_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 
-#########################################################################################.
+
+
+############################################################
 ## Update shape files  ----
-#########################################################################################.
+############################################################
 
 # Shapefiles (used to generate maps presented in rank tab only)
 # Note: this step is only really necessary if you are running this script for the first time
@@ -151,6 +173,12 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 update_shapefiles()
 
 
+###############################################################
+## Remove objects  ----
+###############################################################
+
+# remove objects from global environment before running shiny app 
+rm(list = ls())
 
 ##END
 

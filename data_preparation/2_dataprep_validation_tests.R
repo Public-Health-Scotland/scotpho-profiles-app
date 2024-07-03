@@ -70,9 +70,18 @@ TEST_no_missing_geography_info <- function(data) {
 ## Test 5: Ensure suppression has been applied
 TEST_suppression_applied <- function(data) {
   
+  # find indicators in tech doc requiring suppression and they're suppression threshhold
+  techdoc <- technical_doc |>
+    select(indicator_name, supression, supress_less_than)
+  
+  # join information onto dataset, filter on indicator requiring suppression
+  # and check if there are any rows where the numerator is less than the suppression threshold
+  # i.e. if threshold is 10, should be no numerator figures less than 10.
   data <- data |>
+    left_join(technical_doc, by = c("indicator" = "indicator_name")) |>
     filter(supression == "Y") |>
     subset(numerator < supress_less_than)
+  
   
   assert_that(nrow(data) == 0, 
               msg = paste0("SUPPRESSION NOT APPLIED! Please run the suppression function before saving this data.\n",
