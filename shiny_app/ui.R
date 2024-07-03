@@ -56,9 +56,14 @@ page_navbar(
                            col_widths = breakpoints(
                              xs = c(12), # make cards full width on extra small screens
                              sm = c(12), # make cards full width on small screens
-                             md = c(-1, 10, -1), # add space around cards on medium screens
-                             lg = c(-2, 8, -2) # add space around cards large screens
+                             md = c(12), # add space around cards on medium screens
+                             lg = c(12), # add space around cards large screens
+                             xl = c(-2, 8, -2), # add space around cards large screens
+                             xxl = c(-3, 6, -3)
                            ),
+                           
+                           br(),
+                           
                            layout_columns(
                              profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **behaviours**, **crime**, **economy**, **life expectancy** and **mortality, ill health and injury**.")),
                              profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
@@ -75,7 +80,8 @@ page_navbar(
                              profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to the **active**, **healthy**, **achieving**, **safe** and **nurtured** domains.")),
                              profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", description = markdown("View **population estimates** for different age groups.")),
                              profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", description = markdown("View **all indicators** in this tool from across every profile."))
-                           )
+                           ),
+                           br()
                          )
             )
   ),
