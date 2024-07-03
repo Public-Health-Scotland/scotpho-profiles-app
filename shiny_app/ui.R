@@ -53,37 +53,43 @@ page_navbar(
 
                          # buttons to navigate to profile tabs
                          profile_buttons = layout_columns(
+                           style = "background-color: #F4F4F4;",
                            col_widths = breakpoints(
                              xs = c(12), # make cards full width on extra small screens
                              sm = c(12), # make cards full width on small screens
-                             md = c(12), # add space around cards on medium screens
-                             lg = c(12), # add space around cards large screens
-                             xl = c(-2, 8, -2), # add space around cards large screens
-                             xxl = c(-3, 6, -3)
+                             md = c(12), # make cards full width on small screens
+                             lg = c(12), # make cards full width on small screens
+                             xl = c(-1, 10, -1), # add space around cards x large screens
+                             xxl = c(-2, 8, -2) # # add space around cards xx large screens
                            ),
-                           
+   
                            br(),
-                           
                            layout_columns(
                              profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **behaviours**, **crime**, **economy**, **life expectancy** and **mortality, ill health and injury**.")),
                              profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
                              profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Smoking", description = markdown("View indicators relating to **adult prevalence**, **smoking during and post pregnancy**, **smoking attributable deaths and diseases** and **smoking cessation and services.**")),
+                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **community safety**, **environment**, **health**, **prevalence** and **services**."))
                              
                            ),
                            layout_columns(
-                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **community safety**, **environment**, **health**, **prevalence** and **services**.")),
                              profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **community safety**, **environment**, **health**, **prevalence** and **services**.")),
-                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **adult mental health**, for both males and females."))
+                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **adult mental health**, for both males and females.")),
+                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to the **active**, **healthy**, **achieving**, **safe** and **nurtured** domains.")),
+                             profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", description = markdown("View **population estimates** for different age groups."))
+                             
                            ),
                            
                            layout_columns(
-                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to the **active**, **healthy**, **achieving**, **safe** and **nurtured** domains.")),
-                             profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", description = markdown("View **population estimates** for different age groups.")),
-                             profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", description = markdown("View **all indicators** in this tool from across every profile."))
+                             profile_homepage_btn_modUI(id = "cli_nav", profile_name = "Climate change", description = markdown("(under development - not yet available)")),
+                             profile_homepage_btn_modUI(id = "phy_nav", profile_name = "Physical Activity ", description = markdown("(under development - not yet available)")),
+                             profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", description = markdown("View **all indicators** in this tool from across every profile.")),
+                             ""
                            ),
                            br()
                          )
-            )
+                         
+
+  )
   ),
   # drop-down menu containing profile tabs
   navbarMenu(
