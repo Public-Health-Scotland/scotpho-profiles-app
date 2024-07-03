@@ -32,6 +32,7 @@
  /* Set a specific height/add padding */
   height: 50%;
   display: flex;
+  justify-content: center;
   padding-left:45px;
   padding-right:45px;
   padding-top:20px;
