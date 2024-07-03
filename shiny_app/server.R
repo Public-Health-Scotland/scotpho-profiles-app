@@ -38,6 +38,8 @@ function(input, output, session) {
   navigation_button_modSERVER("explore_indicators", nav_id="Indicator Definitions", parent_session = session)
   navigation_button_modSERVER("indicator_schedule", nav_id="Indicator Definitions", parent_session = session)
   
+  # logic controlling about profiles button in profile header
+  navigation_button_modSERVER("about_profiles_header", nav_id = "About Profiles", parent_session = session)
   
   # logic controlling buttons within the "About Profiles" tab linking back to profile pages
   navigation_button_modSERVER("view_profile_HWB", nav_id="HWB", parent_session = session)
@@ -177,7 +179,7 @@ function(input, output, session) {
   # prepares summary data and displays in a table with spinecharts
   summary_table_server("hwb_summary", geo_selections, profile_name, profile_data)
   summary_table_server("cyp_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data)
+  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data, domain_order = c("Over-arching indicators", "Early years", "Healthy places", "Impact of ill health prevention"))
   summary_table_server("alc_summary", geo_selections, profile_name, profile_data)
   summary_table_server("drg_summary", geo_selections, profile_name, profile_data)
   summary_table_server("men_summary", geo_selections, profile_name, profile_data)
@@ -188,14 +190,15 @@ function(input, output, session) {
   # logic controlling trends tab
   # takes profile data and further filters by selected geography
   # displays trend chart based on selected indicator from drop down list
-  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  
+  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections, techdoc = techdoc)
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype
@@ -226,216 +229,11 @@ function(input, output, session) {
   # takes profile data and further filters by selected areatype
   pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections)
   
-  ###############################################
-  #
-  # Server logic for data tab
-  #
-  ###############################################
 
-  # Update indicator filter choices ----
-  # based on geography selected
-  # (and further updating if profile also selected)
-  observe({
-    
-    # return selected geographies
-    geo_paths <- sapply(input$geography_selector_checked_paths, `[[`, "geo_path")
-    
-    # filter selected dataset by selected geographies
-    data <- main_dataset |>
-      subset(geo_path %in% geo_paths)
-    
-    # create vector of available indicators
-    available_indicators <- unique(data$indicator)
-    
-    # Store the current selection of indicators (if there were any)
-    # i.e. if you've switched dataset but had previously selected some indicators
-    current_selected_indicators <- input$indicator_selector
-    
-    
-    # Further filter indicators if a profile is selected
-    if (!is.null(input$profile_selector) && input$profile_selector != "") {
-      
-      profile_filtered_data <- data |>
-        filter(if_any(contains("profile_domain"),
-                      ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_selector, profiles_list)]))
-      
-      
-      
-      
-      
-      available_indicators <- unique(profile_filtered_data$indicator)
-      
-    }
-    
-    
-    # Update the filter choices
-    updateVirtualSelect(session = session,
-                        inputId = "indicator_selector",
-                        choices = available_indicators)
-    
-    # Reapply the previous selection if they are still valid
-    valid_selections <- intersect(current_selected_indicators, available_indicators)
-    
-    if (!is.null(valid_selections) && length(valid_selections) > 0) {
-      updateVirtualSelect(session = session,
-                          inputId = "indicator_selector",
-                          selected = valid_selections)
-      
-    }
-    
-  })
-  
-  
-  
-  ## reset all filters -----
-  # when 'clear filters' button is clicked 
-  observeEvent(input$clear_table_filters, {
-    
-    # reset the dataset selector to "Main Dataset"
-    updateRadioGroupButtons(session, 
-                            inputId = "dataset_selector", 
-                            selected = "Main Dataset")
-    
-    # reset the geographies to those available for the main dataset
-    jstreeUpdate(session, "geography_selector", main_data_geo_nodes)
-    
-    
-    # reset the time period filter to max year per indicator
-    updateRadioGroupButtons(session = session,
-                            inputId = "time_period",
-                            selected = "Latest available year")
-    
-    # reset the indicator list to those present in main dataset
-    updateVirtualSelect(session = session,
-                        inputId = "indicator",
-                        selected = NULL,
-                        choices = NULL)
-    
-    # reset the profile filter
-    updateVirtualSelect(session = session,
-                        inputId = "profile_selector",
-                        selected = NULL,
-                        choices = profiles_list)
-    
-  })
-  
-  
 
-  
-  
-  # render the geography filter ----
-  #using the dynamic choices from step above
-  output$geography_selector <- renderJstree({
-    jstree(
-      main_data_geo_nodes,
-      checkboxes = TRUE,
-      selectLeavesOnly = TRUE,
-      theme = "proton"
-    )
-  })
-  
-
-  
-  
-  # data to display/download ----
-  tableData <- reactive({
-    
-    # selected dataset
-    data <- main_dataset 
-    
-    # filter by selected geographies
-    geo_paths <- sapply(input$geography_selector_checked_paths, `[[`, "geo_path")
-    data <- data |> subset(geo_path %in% geo_paths)
-    
-    
-    # filter by time period 
-    if(input$time_period_selector == "Latest available year") {
-      setDT(data) # switch to data.table format here as quicker than grouping using dplyr
-      data <- data[, .SD[year == max(year)], by = indicator]
-    } else data
-    
-
-    
-    
-    # if profile selected (but indicators have not been)
-    # then filter by selected profiles only 
-    if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
-      data <- data |>
-        filter(if_any(contains("profile_domain"),
-                      ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_selector, profiles_list)]))
-      
-      
-      # if a profile has been selected (and some indicators too)
-      # then filter by profile and indicator
-    } else if(isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
-      
-      data <- data |>
-        filter(if_any(contains("profile_domain"),
-                      ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_selector, profiles_list)])) |>
-        filter(indicator %in% input$indicator_selector)
-      
-      
-      
-      # if no profile has been selected but some indicators have
-      # then filter by indicators only 
-    } else if(!isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
-      
-      data <- data |>
-        filter(indicator %in% input$indicator_selector)
-      
-    } else {
-      
-      # if nothings been selected from profile or indicator filter then return all available indicators
-      # for chosen dataset/geography/time period
-      data <- data
-    }
-    
-    # rename some columns 
-    data <- data |>
-      rename(area_code = code, 
-             area_type = areatype, 
-             area_name = areaname, 
-             period = def_period, 
-             upper_confidence_interval = upci, 
-             lower_confidence_interval = lowci)
-    
-    # columns to return
-      data <- data |>
-        select(area_code, area_type, area_name, year, period, type_definition,
-               indicator, numerator, measure, 
-               upper_confidence_interval, lower_confidence_interval) 
-               
-    
-  })
-  
-  
-  # table of results ---------
-  output$data_tab_table <- renderReactable({
-    
-    reactable(tableData() ,
-              compact = TRUE,
-              columns = list(
-                area_code = colDef(show = FALSE),
-                year = colDef(show = FALSE),
-                upper_confidence_interval = colDef(show = FALSE),
-                lower_confidence_interval = colDef(show = FALSE),
-                indicator = colDef(minWidth = 200),
-                area_type = colDef(name = "Area type"),
-                area_name = colDef(name = "Area name"),
-                type_definition = colDef(name = "Type definition")
-              )
-    )
-    
-  })
-  
-  
-  
-  
-  # data table bulk download  -------
-  download_data_btns_server(id = "datatable_downloads", data = tableData)
-  
-  
-
+  # server logic for the 'more information' tabs
+  definitions_tab_Server("metadata") # indicator definition tab
+  data_tab_mod_Server("data_tab") # data tab
 
   
 } # close main server function

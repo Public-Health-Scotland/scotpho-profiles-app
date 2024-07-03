@@ -41,7 +41,7 @@ summary_table_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, domain_order = NULL) {
   
   moduleServer(id, function(input, output, session) {
     
@@ -79,6 +79,20 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # Arrange by 'domain'
       chosen_area <- setorder(chosen_area, domain)
+      
+      if(is.null(domain_order)) {
+        
+        # Arrange by 'domain'
+        chosen_area <- setorder(chosen_area, domain)
+        
+      } else {
+        
+        # arrange by 'domain' with custom sort order
+        chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order)]
+        chosen_area <- setorder(chosen_area, domain)
+        
+      }
+      
       
       # assign colours to values depending on statistical significance
       final <- chosen_area %>%
@@ -163,6 +177,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       dt <- dt[,.(measures = list(measure), # for the trend chart 
                   years = list(year), # for the trend chart 
                   domain = first(domain), # for the table 
+                  trend_min = first(trend_axis), # for the trend chart label
+                  trend_max = last(trend_axis),
                   def_period = last(def_period), # for the table
                   type_definition = first(type_definition), # for the table
                   measure = first(measure)),# for the table
@@ -175,8 +191,17 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # set domain column as the first in the table
       setcolorder(dt, "domain")
       
+      if(is.null(domain_order)) {
+      
       # Arrange by 'domain'
       dt <- setorder(dt, domain)
+      
+      } else {
+        
+      dt <- dt[, domain := factor(domain, levels = domain_order)]
+      dt <- setorder(dt, domain)
+        
+      }
       
       dt
       
@@ -198,7 +223,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # domain column 
       domain =  colDef(
-        name = "domain",
+        name = "Domain",
         maxWidth = 120,
         # this JS function hides domain name from appearing on every row
         # i.e. gives appearance of 'merged' cells
@@ -213,7 +238,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # indicator column --------
       indicator = colDef(
-        name = "indicator",
+        name = "Indicator",
         minWidth = 320,
         html = TRUE,
         
@@ -256,7 +281,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
       # spine chart column
-      chart = colDef(html = T,
+      chart = colDef(name = "Chart",
+                     html = T,
                      minWidth = 200,
                      cell = JS("
               function(rowInfo) {
@@ -269,6 +295,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                   Highcharts.chart(containerId, {
                     chart: {
                       type: 'bar',
+                      backgroundColor:'transparent',
                       animation: false
                     },
                     title: {
@@ -354,28 +381,31 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
       trend = colDef(
+        name = "Trend",
         html = TRUE,
         cell = JS("
             function(rowInfo) {
               var containerId = rowInfo.row.unique_id;
               var chartHTML = '<div id=\"' + containerId + '\" style=\"height: 100px; width: 100%\"></div>';
+              var time_period = rowInfo.row.trend_min + ' - ' + rowInfo.row.trend_max;
               
               setTimeout(function() {
                 Highcharts.chart(containerId, {
                   chart: {
                     type: 'line',
+                    backgroundColor:'transparent',
                     animation: false
                   },
                   title: {
-                    text: ''
+                    text: time_period,
+                     style: {
+                      fontSize: '12px'
+                    }
                   },
                   xAxis: {
                     categories: rowInfo.row.years,
                     labels: {
                       enabled: false
-                    },
-                    title: {
-                      text: null
                     },
                     tickLength: 0,
                     lineWidth: 0
@@ -441,7 +471,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                      years = colDef(show = FALSE),
                      measures = colDef(show = FALSE),
                      type_definition = colDef(show = FALSE),
-                     unique_id = colDef(show = FALSE)
+                     unique_id = colDef(show = FALSE),
+                     trend_min = colDef(show = FALSE),
+                     trend_max = colDef(show = FALSE)
                      )
       } else {
         cols <- list(domain = domain, 
@@ -535,6 +567,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     # info to display when user clicks help button (explains how to interpret the spine chart)
     observeEvent(input$help, {
+      if(selected_geo()$areaname != "Scotland"){
       showModal(modalDialog(
         title = "How to interpret table results",
         tagList(
@@ -547,16 +580,24 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
-          fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
-          
+          fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
         )
       ))
+      }else{
+        showModal(modalDialog(
+          title = "How to interpret table results",
+          tagList(
+            p("The results below provide a snapshot of the latest data for the ", selected_profile() , " profile in ", "Scotland."),
+            p("The sparklines show how each indicator has changed over time."),
+            p("The figures can be more closely interrogated and compared to other geographical areas in the Trends tab."))))
+          
+        
+        }
     })
  
        
   }) # close module server
 } # close module
-
 
 
 
