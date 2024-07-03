@@ -12,16 +12,25 @@ trend_mod_ui <- function(id) {
       full_screen = FALSE,
       height = "80%",
       
+      use_cicerone(),
+      
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         accordion(
                           open = TRUE,
                           multiple = TRUE, # allow multiple panels to be open at once
                           
+                          #guided tour button
+                          actionButton(inputId = ns("trend_tour_button"),
+                                       label = "Click here for a guided tour of this page",
+                                       width = "100%"),
+                          
                           # accordion panel with indicator filter and help button
                           accordion_panel(
                             value = "indicator_filter_help_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
+
+                            
                             layout_columns(
                               indicator_filter_mod_ui(ns("trend_indicator_filter"))
                             ),
@@ -397,7 +406,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
     })
     
-
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #initiate the guide
+    guide_trend$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$trend_tour_button, {
+      guide_trend$start()
+    })
+    
     
     ############################################
     # Charts/tables 

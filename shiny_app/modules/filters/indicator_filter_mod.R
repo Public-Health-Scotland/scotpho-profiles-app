@@ -7,7 +7,7 @@
 # id = unique id 
 indicator_filter_mod_ui <- function(id) {
   ns <- NS(id) # namespace
-  selectInput(ns("indicator_filter"), label = "Select indicator", choices = NULL)
+  div(id = "indicator_filter_wrapper", selectInput(ns("indicator_filter"), label = "Select indicator", choices = NULL))
 }
 
 

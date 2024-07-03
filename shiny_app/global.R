@@ -26,6 +26,7 @@ library(sf) # note: eventually remove this from here
 library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
+library(cicerone) #for guided tours of tabs
 
 library(readr) #im additiona will remove in future
 
@@ -152,18 +153,18 @@ phs_palette <- unname(unlist(phs_colours()))
 
 # 6. Tab tours -----------------------------------------------------------------
 
-# guide_trend <- Cicerone$
-#   new()$
-#   step(
-#     "trend_indicator_filter", # the id of the div you want to include for that step of the guide
-#     "Indicator Filter",
-#     "First select an indicator from the list of available indicators for the selected area type and profile. The backspace can be used to remove the default selection and then indicators can be searched by topic or name.",
-#     position = "bottom"
-#   )$
-#   step(
-#     "trend_ind_def", # the id of the div you want to include for that step of the guide
-#     "Indicator Definition Button",
-#     "Click here to see the definition of the selected indicator.",
-#     position = "bottom"
-#   )
-# 
+guide_trend <- Cicerone$
+  new()$
+  step(
+    "trend_indicator_filter", # the id of the div you want to include for that step of the guide
+    "Indicator Filter",
+    "First select an indicator from the list of available indicators for the selected area type and profile. The backspace can be used to remove the default selection and then indicators can be searched by topic or name.",
+    position = "bottom"
+  )$
+  step(
+    "trend_ind_def", # the id of the div you want to include for that step of the guide
+    "Indicator Definition Button",
+    "Click here to see the definition of the selected indicator.",
+    position = "bottom"
+  )
+

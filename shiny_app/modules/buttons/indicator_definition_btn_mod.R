@@ -8,10 +8,10 @@
 indicator_definition_btn_ui <- function(id, class= NULL) {
   ns <- NS(id)
   tagList(
-      shiny::actionButton(ns("indicator_definition"),
+      div(id = "indicator_definition_wrapper", shiny::actionButton(ns("indicator_definition"),
                           label = "Definition",
                           icon= icon('info'),
-                          class=class))
+                          class=class)))
   }
 
 ####SERVER
