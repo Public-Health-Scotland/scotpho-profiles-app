@@ -141,8 +141,8 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".methodology-table td{ border:thin solid black; padding:3px;}", # for indicator def tab - make nested table cells have black border
       ".shiny-output-error {color: white;}", # hiding auto-generated error messages
       ".shiny-output-error-validation {color: #8e8f90;}", # showing custom error messages
-      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
-
+      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }", # info box header lighter phs purple colour with white text
+      ".profile-card {border-radius: 0; box-shadow: none; border-top: 5px solid #0078d4;}"
     )
   )
 
