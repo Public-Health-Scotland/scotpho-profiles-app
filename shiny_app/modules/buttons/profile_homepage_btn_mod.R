@@ -19,8 +19,9 @@ profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, de
   ns <- NS(id)
   tagList(
   bslib::card(
+    class = "profile-card",
     full_screen = FALSE,
-    min_height = 150,
+    min_height = 300,
     bslib::card_body(
       actionLink(inputId = ns("profile_nav"), style = "text-decoration: none; color: black;",
                  div(class = "d-flex flex-column align-items-center", 
