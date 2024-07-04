@@ -139,7 +139,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # selecting columns required for table
       final <- final %>%
-        select(domain, # required for domain column 
+        select(code,
+               areaname,
+               areatype,
+               domain, # required for domain column 
                indicator, # required for indicator column 
                measure, # required for for selected area column 
                scotland_value, # required for scotland column 
@@ -481,6 +484,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                      scotland_value = scotland_value, 
                      measure = measure, 
                      chart = chart,
+                     code = colDef(show = FALSE),
+                     areaname = colDef(show = FALSE),
+                     areatype = colDef(show = FALSE),
                      worst = colDef(show = FALSE),
                      p25 = colDef(show = FALSE),
                      p75 = colDef(show = FALSE),
@@ -509,12 +515,37 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
     })
     
+
     
     
     # download data module 
-    download_data_btns_server("download_summary_data", local_summary())
+    download_data_btns_server("download_summary_data", 
+                              data = if(selected_geo()$areatype == "Scotland"){
+                                scotland_summary
+                              } else {
+                                local_summary
+                              },
+                              selected_columns = if(selected_geo()$areatype == "Scotland"){
+                                c("domain", "indicator", "def_period", "type_definition", "measure")
+                              } else {
+                                selected_columns = c("code", "areatype", "areaname", "domain", "indicator", "type_definition", "def_period", "measure", "scotland_value")
+                                
+                              }
+                              )
     
     
+ 
+    
+    
+    # if(selected_geo()$areatype == "Scotland"){
+    #   data = scotland_summary,
+    #   selected_columns = c("domain", "indicator", "def_period", "type_definition", "measure")
+    # } else {
+    #   data = local_summary,
+    #   selected_columns = c("code", "areatype", "areaname", "domain", "indicator", "type_definition", "def_period", "measure", "scotland_value")
+    # }
+    # 
+    # 
     
     
     # download PDF logic
