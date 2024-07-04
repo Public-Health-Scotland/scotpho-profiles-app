@@ -532,19 +532,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                                 
                               }
                               )
-    
-    
- 
-    
-    
-    # if(selected_geo()$areatype == "Scotland"){
-    #   data = scotland_summary,
-    #   selected_columns = c("domain", "indicator", "def_period", "type_definition", "measure")
-    # } else {
-    #   data = local_summary,
-    #   selected_columns = c("code", "areatype", "areaname", "domain", "indicator", "type_definition", "def_period", "measure", "scotland_value")
-    # }
-    # 
+
     # 
     
     
