@@ -145,7 +145,7 @@ simd_navpanel_ui <- function(id) {
 #######################################################
 
 
-simd_navpanel_server <- function(id, simd_data, geo_selections, active_nav, nav_id) {
+simd_navpanel_server <- function(id, simd_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -156,8 +156,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, active_nav, nav_
     # update years choices for bar chart filter, depending on indicator selected
     observe({
       
-      req(active_nav() == nav_id)
-      
+
       available_years <- simd_data() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         arrange(desc(year)) |>

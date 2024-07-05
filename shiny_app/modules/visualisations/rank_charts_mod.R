@@ -125,11 +125,10 @@ rank_mod_ui <- function(id) {
 # id = unique id 
 # profile_data = reactive df in main server
 # geo_selections <- reactive values in main server storing global geography selections
-rank_mod_server <- function(id, profile_data, geo_selections, active_nav, nav_id) {
+rank_mod_server <- function(id, profile_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
-    req(active_nav() == nav_id)
-    
+
     
     #######################################################
     # Dynamic filters

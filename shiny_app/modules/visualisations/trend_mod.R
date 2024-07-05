@@ -115,7 +115,7 @@ trend_mod_ui <- function(id) {
 
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_id) {
+trend_mod_server <- function(id, filtered_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -260,7 +260,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, active_nav, nav_
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({
-      req(active_nav() == nav_id) # only run module if tab is active 
       filtered_data() |>
         filter(indicator == selected_indicator())
     })

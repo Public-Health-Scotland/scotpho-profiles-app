@@ -42,7 +42,7 @@ summary_table_ui <- function(id) {
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, active_nav, nav_id, domain_order = NULL) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, domain_order = NULL) {
 
   
   moduleServer(id, function(input, output, session) {
@@ -50,7 +50,6 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     # prepare local summary data 
     local_summary <- reactive({
-      req(active_nav() == nav_id)
       req(selected_geo()$areatype != "Scotland")
       
       # convert to data.table format (using data.table package) to run quicker 
@@ -64,12 +63,12 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                         .SD[!is.na(measure) & year == max(year)], by = indicator]
 
       # include scotland figures for comparison
-      scotland <- main_dataset[areaname == "Scotland"]
+      scotland <- filtered_data()[areaname == "Scotland"]
       chosen_area <- chosen_area[scotland, on = c("ind_id", "year"), scotland_value := scotland$measure]
       
       # calculate quantiles for each indicator within chosen geography level for spine chart
       chosen_areatype <- unique(chosen_area$areatype)
-      other_areas <- main_dataset[areatype == chosen_areatype][chosen_area, on = .(ind_id, year), nomatch = 0][,
+      other_areas <- filtered_data()[areatype == chosen_areatype][chosen_area, on = .(ind_id, year), nomatch = 0][,
                                                                                                                .(Q0 = quantile(measure, probs = 0, na.rm = TRUE),
                                                                                                                  Q100 = quantile(measure, probs = 1, na.rm = TRUE),
                                                                                                                  Q25 = quantile(measure, probs = 0.25, na.rm = TRUE),
@@ -165,7 +164,6 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     # prepare scotland summary data 
     scotland_summary <- reactive({
-      req(active_nav() == nav_id)
       req(selected_geo()$areatype == "Scotland")
       
       # set the profile data to data.table format
