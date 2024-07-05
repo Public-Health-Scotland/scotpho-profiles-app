@@ -166,23 +166,9 @@ function(input, output, session) {
 
   })
   
+
   
-  
-  # deprivation data filtered by profile (input$nav stores info on the tab the user is on)
-  # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
-  # this dataframe is passed to modules that create the visuals for the 'Deprivation' subtab
-  simd_data <- reactive({
-    
-    req(input$nav %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected 
-    
-    dt <- setDT(simd_dataset)
-    
-    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-    dt <- dt[substr(profile_domain1, 1, 3) == input$nav |
-               substr(profile_domain2, 1, 3) == input$nav |
-               substr(profile_domain3, 1, 3) == input$nav]
-    
-  })
+ 
   
   
   # logic controlling population group dataset
@@ -211,14 +197,14 @@ function(input, output, session) {
     if(input$nav == "HWB") {
     summary_table_server("hwb_summary", geo_selections, profile_name, profile_data) # summary sub-tab
     rank_mod_server("hwb_rank", profile_data, geo_selections) # rank sub-tab
-    trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+    trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
     simd_navpanel_server("hwb_simd", simd_data, geo_selections) # deprivation sub-tab
 
     # Care and wellbeing 
     } else if(input$nav == "CWB") {
-      summary_table_server("cwb_summary", geo_selections, profile_name, profile_data) # summary sub-tab
+      summary_table_server("cwb_summary", geo_selections, profile_name, profile_data, domain_order = c("Over-arching indicators", "Early years", "Healthy places", "Impact of ill health prevention")) # summary sub-tab
       rank_mod_server("cwb_rank", profile_data, geo_selections) # rank sub-tab
-      trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+      trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
       simd_navpanel_server("cwb_simd", simd_data, geo_selections) # deprivation sub-tab
       pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections) # population groups sub-tab
       
@@ -227,49 +213,50 @@ function(input, output, session) {
     } else if(input$nav == "CYP"){
       summary_table_server("cyp_summary", geo_selections, profile_name, profile_data) # summary sub-tab
       rank_mod_server("cyp_rank", profile_data, geo_selections) # rank sub-tab
-      trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+      trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
       
     
     # Tobacco
     } else if(input$nav == "TOB"){
       summary_table_server("tob_summary", geo_selections, profile_name, profile_data) # summary sub-tab
       rank_mod_server("tob_rank", profile_data, geo_selections) # rank sub-tab
-      trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+      trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
     
     
     # Alcohol
     } else if(input$nav == "ALC") {
       summary_table_server("alc_summary", geo_selections, profile_name, profile_data) # summary sub-tab
       rank_mod_server("alc_rank", profile_data, geo_selections) # rank sub tab 
-      trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub tab 
+      trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub tab 
     
     # Drugs 
     } else if(input$nav == "DRG"){
       summary_table_server("drg_summary", geo_selections, profile_name, profile_data) # summary subtab
       rank_mod_server("drg_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+      trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
      
     # Mental Health 
     } else if(input$nav == "MEN"){
       summary_table_server("men_summary", geo_selections, profile_name, profile_data) # summary subtab
       rank_mod_server("men_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends subtab
+      trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends subtab
       
     # Population
     } else if(input$nav == "POP"){
       summary_table_server("pop_summary", geo_selections, profile_name, profile_data) # summary subtab
       rank_mod_server("pop_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends subtab
+      trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends subtab
       simd_navpanel_server("pop_simd", simd_data, geo_selections) # deprivation subtab
       
     # All indicators
     } else if(input$nav == "ALL"){
       rank_mod_server("all_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("all_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends subtab
+      trend_mod_server("all_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends subtab
     }
 
   })
   
+
 
   # server logic for the 'more information' tabs
   definitions_tab_Server("metadata") # indicator definition tab

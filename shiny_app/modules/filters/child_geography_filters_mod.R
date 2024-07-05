@@ -21,7 +21,7 @@ child_geography_filters_mod_ui <- function(id, label) {
 # geo_selections = reactive df containing selected areatype, areaname and parent area from global filters
 
 
-child_geography_filters_mod_server <- function(id, filtered_data, HSCP_selection, child_areatype, geo_selections) {
+child_geography_filters_mod_server <- function(id, filtered_data, HSCP_selection, child_areatype, geo_selections, label) {
   moduleServer(id, function(input, output, session) {
     
     #create reactive object storing all available child geography areanames 
@@ -42,6 +42,9 @@ child_geography_filters_mod_server <- function(id, filtered_data, HSCP_selection
         pull(areatype)
     })
     
+    #create
+    label_unavailable <- paste(label, " (not available)")
+    
     # update child geography choices
     observe({
       updateSelectizeInput(session, "child_geog_filter", choices = available_child_geography_names())
@@ -51,10 +54,13 @@ child_geography_filters_mod_server <- function(id, filtered_data, HSCP_selection
     observe({
       if(child_areatype %in% available_areatype()) {
         shinyjs::enable("child_geog_filter")
+        updateSelectizeInput(session, "child_geog_filter", label = label)
       } else {
         shinyjs::disable("child_geog_filter")
+        updateSelectizeInput(session, "child_geog_filter", label = label_unavailable)
       }
     })
+    
     
     #remove areaname selected in global options to prevent duplication of lines
     observe({

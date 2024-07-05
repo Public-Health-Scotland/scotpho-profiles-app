@@ -60,19 +60,19 @@ page_navbar(
                          # buttons to navigate to profile tabs
                          profile_buttons = tagList(
                            layout_columns(
-                             profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**.")),
-                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **Population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
-                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco control", description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**")),
+                             profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **behaviours**, **crime**, **economy**, **life expectancy** and **mortality, ill health and injury**.")),
+                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
+                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Smoking", description = markdown("View indicators relating to **adult prevalence**, **smoking during and post pregnancy**, **smoking attributable deaths and diseases** and **smoking cessation and services.**")),
                              
                            ),
                            layout_columns(
-                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
-                             profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
+                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **community safety**, **environment**, **health**, **prevalence** and **services**.")),
+                             profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **community safety**, **environment**, **health**, **prevalence** and **services**.")),
                              profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **adult mental health**, for both males and females."))
                            ),
                            
                            layout_columns(
-                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**.")),
+                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to the **active**, **healthy**, **achieving**, **safe** and **nurtured** domains.")),
                              profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", description = markdown("View **population estimates** for different age groups.")),
                              profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", description = markdown("View **all indicators** in this tool from across every profile."))
                            )
@@ -196,6 +196,7 @@ page_navbar(
 
     # about scotpho tab
     nav_panel(title = "About ScotPHO", value = "about_scotpho", about_scotpho_text),
+
 
     # about profiles tab (to do: replace placeholder text)
     nav_panel(title = "About Profiles", value = "about_profiles",
