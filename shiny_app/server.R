@@ -87,13 +87,9 @@ function(input, output, session) {
   geo_selections <- global_geography_filters_server("geo_filters", geo_lookup)
   
 
-  # stores selected profile (abbreviated version)
-  # i.e. if Health and wellbeing tab clicked, this object stores "HWB" (eee profiles_list in global script)
-  profile <- eventReactive(input$nav, {
-    input$nav
-  })
-  
-  # stores selected profile (full name )
+  # stores selected profile name
+  # this object is passed to the summary module
+  # to create the header for the PDF download
   profile_name <- eventReactive(input$nav, {
     profiles_list[[input$nav]]
   })
