@@ -26,6 +26,10 @@ function(input, output, session) {
   })
   
   
+  ##############################################################################
+  # NAVIGATION TO DIFFERENT TABS
+  #############################################################################
+  
   
   # logic controlling which tabs are opened when buttons on homepage are selected -------------------
   # each line calls a module that will create a button with a unique ID and nav_id corresponding to a single profile
@@ -73,27 +77,40 @@ function(input, output, session) {
   navigation_button_modSERVER("about_drg", nav_id="about_accordion", parent_session = session)
   
   
-  # stores selected 'areaname' and selected 'areatype' which can be used throughout other modules
-  # to filter data by geography, like this: geo_selections()$areaname 
+  
+  ##########################################
+  # REACTIVE VALUES
+  ##########################################
+  
+  # stores selected 'areaname', selected 'areatype' and 'parent area' (if applicable)
+  # this object is passed to other modules to display indicators specific to the selected geography
   geo_selections <- global_geography_filters_server("geo_filters", geo_lookup)
   
 
-  
+  # stores selected profile (abbreviated version)
+  # i.e. if Health and wellbeing tab clicked, this object stores "HWB" (eee profiles_list in global script)
   profile <- eventReactive(input$nav, {
     input$nav
   })
   
+  # stores selected profile (full name )
   profile_name <- eventReactive(input$nav, {
-    profile_name(profiles_list[[input$nav]])
+    profiles_list[[input$nav]]
   })
   
-  # dynamic header showing selected profile 
+  
+  
+  #########################################
+  # DYNAMIC TEXT 
+  #########################################
+  
+  # header showing selected profile 
   output$profile_header <- renderUI({
-    tags$h1("Profile:", profile_name(), class = "profile-header")
+    tags$h1("Profile:", profiles_list[[input$nav]], class = "profile-header")
   })
   
   
-  # dynamic header showing selected areatype
+  # header showing selected areatype
   output$areatype_header <- renderUI({
     
     # don't show this section in the header if Scotland is selected
@@ -107,7 +124,7 @@ function(input, output, session) {
   })
   
   
-  # dynamic header showing selected areaname
+  # header showing selected areaname
   output$areaname_header <- renderUI({
     tags$h2("Area name:", geo_selections()$areaname, class = "geography-header")
   })
@@ -115,15 +132,25 @@ function(input, output, session) {
   
   
   
+  ###################################################
+  # REACTIVE DATA 
+  ###################################################
+  
   
   # data filtered by profile (input$nav stores info on the tab the user is on)
   # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
-  # note: since not yet filtered by geography here, this can be used to pass to other modules to create
+  # this dataframe is passed to modules that create the visuals for 'Summary', 'Rank' and 'Trend' subtabs
   profile_data <- reactive({
 
-    req(input$nav %in% c("HWB", "CWB", "POP", "MEN", "ALC", "DRG", "CYP", "TOB"))
-
-    dt <- setDT(main_dataset)
+    req(input$nav %in% c("HWB", "CWB", "POP", "MEN", "ALC", "DRG", "CYP", "TOB", "ALL")) # only run when a profile has been selected
+    
+    if(input$nav == "ALL") {
+      main_dataset
+      
+    } else {
+      
+      dt <- setDT(main_dataset)
+      
 
     # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
     dt <- dt[substr(profile_domain1, 1, 3) == input$nav |
@@ -138,128 +165,30 @@ function(input, output, session) {
                                          substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
                                          substr(profile_domain3, 5, nchar(as.vector(profile_domain3))))
     )]
-
-  })
-
-
-  
-  
-  
-  
-  # create reactive dataset for all indicators to pass to module
-  # note: this will need modified when we move to individual profile datasets
-  #will need to combine the profile datasets and then remove any duplicates
-  all_indicators_data <- reactive({
-    req(input$nav %in% c("dt", "ALL"))
-    main_dataset
-  })
-
-
-  # temporarily making simd data reactive
-  simd_data2 <- reactive({
-   simd_dataset
-  })
-  
-  
-  
-  summary_table_server("hwb_summary", geo_selections, profile_name, profile_data, profile, "HWB")
-  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data, profile, "CWB")
-  summary_table_server("cyp_summary", geo_selections, profile_name, profile_data, profile, "CYP")
-  summary_table_server("tob_summary", geo_selections, profile_name, profile_data, profile, "TOB")
-  summary_table_server("alc_summary", geo_selections, profile_name, profile_data, profile, "ALC")
-  summary_table_server("drg_summary", geo_selections, profile_name, profile_data, profile, "DRG")
-  summary_table_server("men_summary", geo_selections, profile_name, profile_data, profile, "MEN")
-  summary_table_server("pop_summary", geo_selections, profile_name, profile_data, profile, "POP")
-  
-  
-  
-  
-  
-  
-  
-  
-
-  observe({
-    req(profile_data())
-    # Health and wellbeing 
-    if(input$nav == "HWB") {
-    rank_mod_server("hwb_rank", profile_data, geo_selections, profile, "HWB")
-    trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "HWB")
-    simd_navpanel_server("hwb_simd", simd_data2, geo_selections, profile, "HWB")
-    simd_navpanel_server("hwb_simd", simd_data2, geo_selections, profile, "HWB")
     
-    # Care and wellbeing 
-    } else if(input$nav == "CWB") {
-      rank_mod_server("cwb_rank", profile_data, geo_selections, profile, "CWB")
-      trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "CWB")
-      simd_navpanel_server("cwb_simd", simd_data2, geo_selections, profile, "CWB")
-      pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections)
-      
-      
-    # Children and young people
-    } else if(input$nav == "CYP"){
-      rank_mod_server("cyp_rank", profile_data, geo_selections, profile, "CYP")
-      trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "CYP")
-      
-    
-    # Tobacco
-    } else if(input$nav == "TOB"){
-      rank_mod_server("tob_rank", profile_data, geo_selections, profile, "TOB")
-      trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "TOB")
-    
-    
-    # Alcohol
-    } else if(input$nav == "ALC") {
-      rank_mod_server("alc_rank", profile_data, geo_selections, profile, "ALC")
-      trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "ALC")
-    
-    # Drugs 
-    } else if(input$nav == "DRG"){
-      rank_mod_server("drg_rank", profile_data, geo_selections, profile, "DRG")
-      trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "DRG")
-     
-    # Mental Health 
-    } else if(input$nav == "MEN"){
-      rank_mod_server("men_rank", profile_data, geo_selections, profile, "MEN")
-      trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "MEN")
-      
-    # Population
-    } else if(input$nav == "POP"){
-      rank_mod_server("pop_rank", profile_data, geo_selections, profile, "POP")
-      trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, profile, "POP")
-      simd_navpanel_server("pop_simd", simd_data2, geo_selections, profile, "POP")
-      
-    # All indicators
-    } else if(input$nav == "ALL"){
-      rank_mod_server("all_rank", all_indicators_data, geo_selections, profile, "ALL")
-      trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections, profile, "ALL")
     }
 
   })
   
-
-
-
-
-  # logic controlling rank visualisations
-  # # takes profile data and further filters by selected areatype
- # rank_mod_server("hwb_rank", profile_data, geo_selections, profile, "HWB")
- # rank_mod_server("cyp_rank", profile_data, geo_selections, profile, "CYP")
- # rank_mod_server("cwb_rank", profile_data, geo_selections, profile, "CWB")
- # rank_mod_server("alc_rank", profile_data, geo_selections, profile, "ALC")
- # rank_mod_server("drg_rank", profile_data, geo_selections, profile, "DRG")
- # rank_mod_server("men_rank", profile_data, geo_selections, profile, "MEN")
- # rank_mod_server("pop_rank", profile_data, geo_selections, profile, "POP")
- # rank_mod_server("tob_rank", profile_data, geo_selections, profile, "TOB")
- # rank_mod_server("all_rank", all_indicators_data, geo_selections, profile, "ALL")
-
-
-  # logic controlling simd visualisations
-#  simd_navpanel_server("cwb_simd", simd_data2, geo_selections, profile, "CWB")
-#  simd_navpanel_server("hwb_simd", simd_data2, geo_selections, profile, "HWB")
-# simd_navpanel_server("cyp_simd", simd_data2, geo_selections, profile, "CYP")
-# simd_navpanel_server("pop_simd", simd_data2, geo_selections, profile, "POP")
-
+  
+  
+  # deprivation data filtered by profile (input$nav stores info on the tab the user is on)
+  # i.e. the alcohol tab has been assigned an id/value called 'ALC' (see ui script) so when a user selects the alcohol tab, the results of input$nav is 'ALC'
+  # this dataframe is passed to modules that create the visuals for the 'Deprivation' subtab
+  simd_data <- reactive({
+    
+    req(input$nav %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected 
+    
+    dt <- setDT(simd_dataset)
+    
+    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
+    dt <- dt[substr(profile_domain1, 1, 3) == input$nav |
+               substr(profile_domain2, 1, 3) == input$nav |
+               substr(profile_domain3, 1, 3) == input$nav]
+    
+  })
+  
+  
   # logic controlling population group dataset
   # makes dataset reactive so can be used by module - potentially remove when data prep is complete - could be renamed as it supplies data for
   # population groups layout
@@ -267,9 +196,88 @@ function(input, output, session) {
     ineq_splits_data })
 
 
+
+
+
+########################################################
+# SERVER LOGIC FOR DIFFERENT TABS
+# i.e Summary, rank, trends, deprivation, population groups, indicator definitions, data table
+########################################################
+  
+
+  # run modules for sub-tabs on each profile tab
+  # ensuring each profiles sub-tab modules are only run when the user is on that profiles tab
+  observe({
+    
+    req(profile_data()) # don't run until profile data is ready 
+
+    # Health and wellbeing 
+    if(input$nav == "HWB") {
+    summary_table_server("hwb_summary", geo_selections, profile_name, profile_data) # summary sub-tab
+    rank_mod_server("hwb_rank", profile_data, geo_selections) # rank sub-tab
+    trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+    simd_navpanel_server("hwb_simd", simd_data, geo_selections) # deprivation sub-tab
+
+    # Care and wellbeing 
+    } else if(input$nav == "CWB") {
+      summary_table_server("cwb_summary", geo_selections, profile_name, profile_data) # summary sub-tab
+      rank_mod_server("cwb_rank", profile_data, geo_selections) # rank sub-tab
+      trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+      simd_navpanel_server("cwb_simd", simd_data, geo_selections) # deprivation sub-tab
+      pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections) # population groups sub-tab
+      
+      
+    # Children and young people
+    } else if(input$nav == "CYP"){
+      summary_table_server("cyp_summary", geo_selections, profile_name, profile_data) # summary sub-tab
+      rank_mod_server("cyp_rank", profile_data, geo_selections) # rank sub-tab
+      trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+      
+    
+    # Tobacco
+    } else if(input$nav == "TOB"){
+      summary_table_server("tob_summary", geo_selections, profile_name, profile_data) # summary sub-tab
+      rank_mod_server("tob_rank", profile_data, geo_selections) # rank sub-tab
+      trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+    
+    
+    # Alcohol
+    } else if(input$nav == "ALC") {
+      summary_table_server("alc_summary", geo_selections, profile_name, profile_data) # summary sub-tab
+      rank_mod_server("alc_rank", profile_data, geo_selections) # rank sub tab 
+      trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub tab 
+    
+    # Drugs 
+    } else if(input$nav == "DRG"){
+      summary_table_server("drg_summary", geo_selections, profile_name, profile_data) # summary subtab
+      rank_mod_server("drg_rank", profile_data, geo_selections) # rank subtab
+      trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends sub-tab
+     
+    # Mental Health 
+    } else if(input$nav == "MEN"){
+      summary_table_server("men_summary", geo_selections, profile_name, profile_data) # summary subtab
+      rank_mod_server("men_rank", profile_data, geo_selections) # rank subtab
+      trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends subtab
+      
+    # Population
+    } else if(input$nav == "POP"){
+      summary_table_server("pop_summary", geo_selections, profile_name, profile_data) # summary subtab
+      rank_mod_server("pop_rank", profile_data, geo_selections) # rank subtab
+      trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends subtab
+      simd_navpanel_server("pop_simd", simd_data, geo_selections) # deprivation subtab
+      
+    # All indicators
+    } else if(input$nav == "ALL"){
+      rank_mod_server("all_rank", profile_data, geo_selections) # rank subtab
+      trend_mod_server("all_trends", filtered_data = profile_data, geo_selections = geo_selections) # trends subtab
+    }
+
+  })
+  
+
   # server logic for the 'more information' tabs
   definitions_tab_Server("metadata") # indicator definition tab
-  #data_tab_mod_Server("data_tab") # data tab
+  data_tab_mod_Server("data_tab") # data tab
 
   
 } # close main server function
