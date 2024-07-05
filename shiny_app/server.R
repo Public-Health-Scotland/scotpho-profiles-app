@@ -166,6 +166,25 @@ function(input, output, session) {
 
   })
   
+  
+  
+  
+  # data filtered by profile (input$nav stores info on the tab the user is on)
+  # this dataframe is passed to modules that create the visuals for 'Deprivation' subtabs
+  simd_data <- reactive({
+    
+    req(input$nav %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected
+  
+      dt <- setDT(simd_dataset)
+    
+      # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
+      dt <- dt[substr(profile_domain1, 1, 3) == input$nav |
+                 substr(profile_domain2, 1, 3) == input$nav |
+                 substr(profile_domain3, 1, 3) == input$nav]
+
+    
+  })
+  
 
   
  
