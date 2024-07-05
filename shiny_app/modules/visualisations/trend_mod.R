@@ -18,28 +18,30 @@ trend_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         accordion(
-                          open = TRUE,
+                          open = c("indicator_filter_panel", "geo_filter_panel"), #guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
-                          
-                          # guided tour button
-                          layout_columns(
-                          actionButton(inputId = ns("trend_tour_button"),
-                                       label = "Click here for a guided tour of this page")),
-                          
-                          # accordion panel with indicator filter and help button
+                        
+                          # accordion panel with guided tour button (closed by default)
                           accordion_panel(
-                            value = "indicator_filter_help_panel",
+                            value = "trend_tour_panel",
+                            "Guided Tour", icon = bsicons::bs_icon("info"),
+                            actionButton(inputId = ns("trend_tour_button"),
+                                         label = "Click here for a guided tour of this page")
+                            
+                          ),
+                          
+                          # accordion panel with indicator filter and definitions button
+                          accordion_panel(
+                            value = "indicator_filter_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
-
-                              div(id = "trend_indicator_filter_wrapper", indicator_filter_mod_ui(ns("trend_indicator_filter")), width = "90%", style = "display:center-align"),
-                              layout_columns(
-                                div(id = "trend_indicator_definition_wrapper", indicator_definition_btn_ui(ns("trend_ind_def")))),
+                            div(id = "trend_indicator_filter_wrapper", indicator_filter_mod_ui(ns("trend_indicator_filter"))),
+                            div(id = "trend_indicator_definition_wrapper", indicator_definition_btn_ui(ns("trend_ind_def")))
                           ),
                           
                           # accordion panel with geography filters
                           accordion_panel(
                             value = "geo_filter_panel",
-                            "Geography comparator filters (optional)", icon = bsicons::bs_icon("sliders"),
+                            "Geography comparator filters (optional)", icon = bsicons::bs_icon("map"),
                             
                             div(id = "trend_geography_wrapper",
                             textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
@@ -82,7 +84,7 @@ trend_mod_ui <- function(id) {
         ), 
         
         # data tab ------------------
-       nav_panel("Data", 
+        nav_panel("Data", 
                   reactableOutput(ns("trend_table")) # table
         ), 
         
@@ -492,8 +494,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                   areaname = colDef(name = "Area name"),
                   trend_axis = colDef(name = "Period"),
                   y = colDef(name = input$numerator_button_trends)
-                ))
-      
+                )
+                )
       
     })
     

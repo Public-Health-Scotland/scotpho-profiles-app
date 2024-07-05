@@ -154,7 +154,9 @@ phs_palette <- unname(unlist(phs_colours()))
 # 6. Tab tours -----------------------------------------------------------------
 
 guide_trend <- Cicerone$
-  new()$
+  new(
+    padding = 8
+  )$
   step(
     "trend_indicator_filter_wrapper", # id of div wrapper - specified in trend module rather than indicator filter module
     "Indicator Filter",
