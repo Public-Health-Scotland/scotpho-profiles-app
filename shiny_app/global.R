@@ -39,7 +39,7 @@ list.files("narrative", full.names = TRUE, recursive = TRUE) |>
 
 
 # 3. Required datafiles ------------------------------------------------------------
-main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
+main_dataset <- read_parquet("data/main_dataset") # main dataset (to do: rename optdata file in data prep script)
 geo_lookup <- readRDS("data/geo_lookup.rds") # geography lookup
 geo_lookup <- setDT(geo_lookup) 
 
