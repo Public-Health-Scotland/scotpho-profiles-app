@@ -7,25 +7,18 @@
 # id = unique id 
 indicator_filter_mod_ui <- function(id) {
   ns <- NS(id) # namespace
-  selectInput(ns("indicator_filter"), label = "Select indicator", choices = NULL)
+  selectizeInput(ns("indicator_filter"), label = "Select indicator", choices = NULL)
 }
-
 
 # server function
 # id = unique id
 # filtered_data = reactive df which determines available choices for the filter 
-indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
+indicator_filter_mod_server <- function(id, indicator_choices) {
   moduleServer(id, function(input, output, session) {
-    
-    available_indicators <- reactive({
-      req(geo_selections())
-      dt <- setDT(filtered_data())
-      dt <- unique(dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]$indicator)
-    })
     
     # update indicator choices
     observe({
-      updateSelectInput(session, "indicator_filter", choices = sort(available_indicators()))
+      updateSelectizeInput(session, "indicator_filter", choices = indicator_choices(), server = TRUE)
     })
     
     

@@ -145,7 +145,7 @@ simd_navpanel_ui <- function(id) {
 #######################################################
 
 
-simd_navpanel_server <- function(id, simd_data, geo_selections) {
+simd_navpanel_server <- function(id, simd_data, geo_selections, indicator_choices) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -200,7 +200,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     #######################################################
     
     # generate list of indicators (from the simd indicators dataset) available 
-    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
+    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", indicator_choices)
     
     # calls definition button module server script and passes the actual indicator selected)
     indicator_definition_btn_server("simd_ind_def", selected_indicator = selected_indicator)  

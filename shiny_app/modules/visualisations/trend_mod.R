@@ -136,7 +136,7 @@ trend_mod_ui <- function(id) {
 
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
+trend_mod_server <- function(id, filtered_data, geo_selections, techdoc, indicator_choices) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -274,9 +274,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     #######################################################
     
     # store selected indicator (note this is a module)
-    selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
-                                                      filtered_data = filtered_data,
-                                                      geo_selections = geo_selections)
+    selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",indicator_choices)
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({

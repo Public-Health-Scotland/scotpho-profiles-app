@@ -195,6 +195,34 @@ function(input, output, session) {
   # population groups layout
   ineq_splits_temporary <- reactive({
     ineq_splits_data })
+  
+
+  
+# main indicator choices for filter 
+main_data_indicators <- reactive({
+  req(profile_data())
+  profile_data() |>
+    filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+    pull(unique(indicator))
+})
+
+# simd indicator choices for filter 
+simd_data_indicators <- reactive({
+  req(profile_data())
+  simd_data() |>
+    filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+    pull(unique(indicator))
+  
+})
+
+
+# pop groups indicator choices for filter 
+pop_groups_indicators <- reactive({
+  req(profile_data())
+  ineq_splits_temporary() |>
+    filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+    pull(unique(indicator))
+})
 
 
 
@@ -215,62 +243,62 @@ function(input, output, session) {
     # Health and wellbeing 
     if(input$nav == "HWB") {
     summary_table_server("hwb_summary", geo_selections, profile_name, profile_data) # summary sub-tab
-    rank_mod_server("hwb_rank", profile_data, geo_selections) # rank sub-tab
-    trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
-    simd_navpanel_server("hwb_simd", simd_data, geo_selections) # deprivation sub-tab
+    rank_mod_server("hwb_rank", profile_data, geo_selections, main_data_indicators) # rank sub-tab
+    trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends sub-tab
+    simd_navpanel_server("hwb_simd", simd_data, geo_selections, simd_data_indicators) # deprivation sub-tab
 
     # Care and wellbeing 
     } else if(input$nav == "CWB") {
       summary_table_server("cwb_summary", geo_selections, profile_name, profile_data, domain_order = c("Over-arching indicators", "Early years", "Healthy places", "Impact of ill health prevention")) # summary sub-tab
-      rank_mod_server("cwb_rank", profile_data, geo_selections) # rank sub-tab
-      trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
-      simd_navpanel_server("cwb_simd", simd_data, geo_selections) # deprivation sub-tab
-      pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections) # population groups sub-tab
+      rank_mod_server("cwb_rank", profile_data, geo_selections, main_data_indicators) # rank sub-tab
+      trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends sub-tab
+      simd_navpanel_server("cwb_simd", simd_data, geo_selections, simd_data_indicators) # deprivation sub-tab
+      pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections, pop_groups_indicators) # population groups sub-tab
       
       
     # Children and young people
     } else if(input$nav == "CYP"){
       summary_table_server("cyp_summary", geo_selections, profile_name, profile_data) # summary sub-tab
-      rank_mod_server("cyp_rank", profile_data, geo_selections) # rank sub-tab
-      trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
+      rank_mod_server("cyp_rank", profile_data, geo_selections, main_data_indicators) # rank sub-tab
+      trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends sub-tab
       
     
     # Tobacco
     } else if(input$nav == "TOB"){
       summary_table_server("tob_summary", geo_selections, profile_name, profile_data) # summary sub-tab
-      rank_mod_server("tob_rank", profile_data, geo_selections) # rank sub-tab
-      trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
+      rank_mod_server("tob_rank", profile_data, geo_selections, main_data_indicators) # rank sub-tab
+      trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends sub-tab
     
     
     # Alcohol
     } else if(input$nav == "ALC") {
       summary_table_server("alc_summary", geo_selections, profile_name, profile_data) # summary sub-tab
-      rank_mod_server("alc_rank", profile_data, geo_selections) # rank sub tab 
-      trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub tab 
+      rank_mod_server("alc_rank", profile_data, geo_selections, main_data_indicators) # rank sub tab 
+      trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends sub tab 
     
     # Drugs 
     } else if(input$nav == "DRG"){
       summary_table_server("drg_summary", geo_selections, profile_name, profile_data) # summary subtab
-      rank_mod_server("drg_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends sub-tab
+      rank_mod_server("drg_rank", profile_data, geo_selections, main_data_indicators) # rank subtab
+      trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends sub-tab
      
     # Mental Health 
     } else if(input$nav == "MEN"){
       summary_table_server("men_summary", geo_selections, profile_name, profile_data) # summary subtab
-      rank_mod_server("men_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends subtab
+      rank_mod_server("men_rank", profile_data, geo_selections, main_data_indicators) # rank subtab
+      trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends subtab
       
     # Population
     } else if(input$nav == "POP"){
       summary_table_server("pop_summary", geo_selections, profile_name, profile_data) # summary subtab
-      rank_mod_server("pop_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends subtab
-      simd_navpanel_server("pop_simd", simd_data, geo_selections) # deprivation subtab
+      rank_mod_server("pop_rank", profile_data, geo_selections, main_data_indicators) # rank subtab
+      trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends subtab
+      simd_navpanel_server("pop_simd", simd_data, geo_selections, simd_data_indicators) # deprivation subtab
       
     # All indicators
     } else if(input$nav == "ALL"){
-      rank_mod_server("all_rank", profile_data, geo_selections) # rank subtab
-      trend_mod_server("all_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc) # trends subtab
+      rank_mod_server("all_rank", profile_data, geo_selections, main_data_indicators) # rank subtab
+      trend_mod_server("all_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc, main_data_indicators) # trends subtab
     }
 
   })
