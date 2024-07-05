@@ -35,15 +35,7 @@ page_navbar(
     hidden(
       div(id = "header",
           tagList(
-            conditionalPanel(condition = "input.nav == 'HWB'", h1("Profile: Health and Wellbeing", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'CWB'", h1("Profile: Care and Wellbeing", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'CYP'", h1("Profile: Children and young people", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'ALC'", h1("Profile: Alcohol", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'TOB'", h1("Profile: Tobacco", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'DRG'", h1("Profile: Drugs", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'POP'", h1("Profile: Population", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'MEN'", h1("Profile: Mental Health", class = "profile-header")),
-            conditionalPanel(condition = "input.nav == 'ALL'", h1("Profile: All indicators", class = "profile-header")),
+            uiOutput("profile_header"),
             uiOutput("areatype_header"),
              layout_columns(col_widths = c(8,-1,2,-1),
                 uiOutput("areaname_header"),
