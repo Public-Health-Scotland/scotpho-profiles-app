@@ -12,34 +12,45 @@ trend_mod_ui <- function(id) {
       full_screen = FALSE,
       height = "80%",
       
+      # enable guided tour
+      use_cicerone(),
+      
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         accordion(
-                          open = TRUE,
+                          open = c("indicator_filter_panel", "geo_filter_panel"), #guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
-                          
-                          # accordion panel with indicator filter and help button
+                        
+                          # accordion panel with guided tour button (closed by default)
                           accordion_panel(
-                            value = "indicator_filter_help_panel",
+                            value = "trend_tour_panel",
+                            "Guided Tour", icon = bsicons::bs_icon("info"),
+                            actionButton(inputId = ns("trend_tour_button"),
+                                         label = "Click here for a guided tour of this page")
+                            
+                          ),
+                          
+                          # accordion panel with indicator filter and definitions button
+                          accordion_panel(
+                            value = "indicator_filter_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
-                            layout_columns(
-                              indicator_filter_mod_ui(ns("trend_indicator_filter"))
-                            ),
-                            layout_columns(
-                              indicator_definition_btn_ui(ns("inequalities_ind_def"))
-                            ),
+                            div(id = "trend_indicator_filter_wrapper", indicator_filter_mod_ui(ns("trend_indicator_filter"))),
+                            div(id = "trend_indicator_definition_wrapper", indicator_definition_btn_ui(ns("trend_ind_def")))
                           ),
                           
                           # accordion panel with geography filters
                           accordion_panel(
                             value = "geo_filter_panel",
-                            "Geography comparator filters (optional)", icon = bsicons::bs_icon("sliders"),
+                            "Geography comparator filters (optional)", icon = bsicons::bs_icon("map"),
+                            
+                            div(id = "trend_geography_wrapper",
                             textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
                             br(),
                             checkboxInput(ns("scot_switch_trends"), label = "Scotland", FALSE), # scotland checkbox filter
                             
                             # all other geography filters
                             # note these filters are enabled/disabled in the server function based on selected indicator
+                            
                             layout_columns(
                               selectInput(inputId = ns("hb_filter"), label = "Health Boards:", choices = hb_list, multiple = TRUE),
                               selectInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
@@ -55,13 +66,14 @@ trend_mod_ui <- function(id) {
                             layout_columns(
                               child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones:"),
                               child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities:")
-                            )
+                            ))
                           )
                         ) # close accordion
       ), # close sidebar
       
       # create a multi-tab card 
-      navset_card_pill(
+      div(id = "trend_card_wrapper",
+            navset_card_pill(
         full_screen = TRUE,
         
         # charts tab -----------------------
@@ -72,33 +84,12 @@ trend_mod_ui <- function(id) {
         ), 
         
         # data tab ------------------
-        nav_panel("Data",
+        nav_panel("Data", 
                   reactableOutput(ns("trend_table")) # table
         ), 
         
-        # help tab ----------------
-        nav_panel("Help",
-                  tagList(
-                    tags$h5("How to use this chart"),
-                    tags$p("The trend chart is designed to explore how a single indicator has changed over time for one or more geographical areas."),
-                    layout_column_wrap(
-                      width = 1/2,
-                      tags$img(src = "Trend_help_example_final.PNG"),
-                      layout_column_wrap(
-                        width = 1,
-                        p("First select an indicator. The backspace can be used to remove the default selection and then topics or indicator names can be searched."),
-                        p("Next add one or more geographical areas of any area type to the chart using the geography filters. 
-              There may be some indicators where data is not available for the full time series or at a particular geography level.
-              Use the mouse to hover over a data point to see detailed information on its value, time period and area."),
-                        p("Confidence intervals (95%) can be added or removed from the chart. These are shown as shaded areas.
-              Confidence intervals give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size."),
-                        p("Display controls allow you to switch the graph from a measure (e.g. rate or percentage) to actual numbers (e.g. number of births with a healthy birthweight).")
-                      )
-                    ))
-        ),
-        
         # caveats/methodological info tab ----------------
-        nav_panel("Notes & Caveats",
+        nav_panel("Metadata",
                   uiOutput(ns("trend_notes_caveats"))
         ),
         
@@ -107,7 +98,7 @@ trend_mod_ui <- function(id) {
         
         # popover with extra controls for trend chart
         bslib::nav_item(
-          bslib::popover(
+          div(id = "trend_popover", bslib::popover(
             title = "Decide how to present data in the chart",
             bsicons::bs_icon("gear", size = "1.7em"),
             # rate/numerator toggle
@@ -116,14 +107,14 @@ trend_mod_ui <- function(id) {
                          selected = "Rate"),
             # ci switch
             checkboxInput(ns("ci_switch_trends"), label = "95% confidence intervals", FALSE),
-          )
+          ))
         ),
         
         # footer with download buttons
         card_footer(class = "d-flex justify-content-between",
-                    download_chart_mod_ui(ns("download_trends_chart")),
-                    download_data_btns_ui(ns("download_trends_data")))
-      ) # close navset card pill
+                    div(id = "trend_download_chart", download_chart_mod_ui(ns("download_trends_chart"))),
+                    div(id = "trend_download_data", download_data_btns_ui(ns("download_trends_data"))))
+      )) # close navset card pill
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 
@@ -352,7 +343,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     #server logic for indicator definition button - shows indidcator definition when definition button clicked 
     # (note this is a module)
-    indicator_definition_btn_server("inequalities_ind_def", selected_indicator = selected_indicator) 
+    indicator_definition_btn_server("trend_ind_def", selected_indicator = selected_indicator) 
     
     
     # # caveats to display between chart heading and chart if any NA values for numerator/measure 
@@ -397,7 +388,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
     })
     
-
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #initiate the guide
+    guide_trend$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$trend_tour_button, {
+      guide_trend$start()
+    })
+    
     
     ############################################
     # Charts/tables 
@@ -491,8 +494,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                   areaname = colDef(name = "Area name"),
                   trend_axis = colDef(name = "Period"),
                   y = colDef(name = input$numerator_button_trends)
-                ))
-      
+                )
+                )
       
     })
     
