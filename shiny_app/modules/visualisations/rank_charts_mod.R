@@ -19,22 +19,30 @@ rank_mod_ui <- function(id) {
       full_screen = FALSE,
       #height = 650,
       
+      # enable guided tour
+      use_cicerone(),
+      
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
+                        
+                        # guided tour button
+                        actionButton(inputId = ns("rank_tour_button"),
+                                     label = "Click here for a guided tour of this page"),
 
                         # indicator filter (note this is a module)
-                        indicator_filter_mod_ui(ns("indicator_filter")),
+                        div(id = "rank_indicator_filter_wrapper", indicator_filter_mod_ui(ns("indicator_filter"))),
                         
                         # indicator definition button
-                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn"),
+                        div(id = "rank_indicator_definition_wrapper", indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")),
                         
                         # comparator switch filter 
-                        bslib::input_switch(id = ns("comparator_switch"), 
+                        div(id = "rank_comparator_wrapper",
+                            bslib::input_switch(id = ns("comparator_switch"), 
                                             value = FALSE, 
                                             label = bslib::tooltip(placement = "bottom",trigger = list("Include comparator",icon("info-circle")),
                                                                    "Including a comparator will allow you to see whether each area
                                              within your chosen geography level (e.g. health boards) is statistically significantly
-                                             better or worse than another area (e.g. Scotland) or another point in time (e.g. 10 years ago).")
+                                             better or worse than another area (e.g. Scotland) or another point in time (e.g. 10 years ago)."))
                         ),
                         # additional hidden filters to display when comparator switch turned on
                         conditionalPanel(
@@ -65,7 +73,8 @@ rank_mod_ui <- function(id) {
       
       layout_column_wrap(
       # bar chart card ----------------------
-      navset_card_pill(
+      div(id = "rank_card_wrapper",
+          navset_card_pill(
         full_screen = TRUE,
         height = 550,
         nav_panel("Charts",
@@ -87,17 +96,20 @@ rank_mod_ui <- function(id) {
           )
         ),
         card_footer(class = "d-flex justify-content-between",
-                             download_chart_mod_ui(ns("save_rank_chart")),
-                             download_data_btns_ui(ns("rank_download")))
-      ),
+                             div(id = "rank_download_chart", download_chart_mod_ui(ns("save_rank_chart"))),
+                             div(id = "rank_download_data", download_data_btns_ui(ns("rank_download"))))
+        
+      )),
+       # close div
       
       # map card -------------------
       
-      card(
+      div(id = "rank_map_wrapper",
+          card(
         height = 550,
         full_screen = TRUE,
         leafletOutput(ns("rank_map")) # map
-        )
+        ))
 
       ) # close layout column wrap
   ) # close layout sidebar
@@ -345,6 +357,19 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
            
          )
      })
+    
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #initiate the guide
+    guide_rank$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$rank_tour_button, {
+      guide_rank$start()
+    })
      
      
      ############################################

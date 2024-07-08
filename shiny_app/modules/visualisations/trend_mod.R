@@ -74,7 +74,8 @@ trend_mod_ui <- function(id) {
       # create a multi-tab card 
       div(id = "trend_card_wrapper",
             navset_card_pill(
-        full_screen = TRUE,
+              id = "trend_navset_card_pill",
+              full_screen = TRUE,
         
         # charts tab -----------------------
         nav_panel("Charts",
@@ -85,6 +86,7 @@ trend_mod_ui <- function(id) {
         
         # data tab ------------------
         nav_panel("Data", 
+                  id = "trend_table_panel",
                   reactableOutput(ns("trend_table")) # table
         ), 
         
