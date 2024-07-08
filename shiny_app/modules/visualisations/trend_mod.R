@@ -89,7 +89,7 @@ trend_mod_ui <- function(id) {
         ), 
         
         # caveats/methodological info tab ----------------
-        nav_panel("Notes & Caveats",
+        nav_panel("Metadata",
                   uiOutput(ns("trend_notes_caveats"))
         ),
         
