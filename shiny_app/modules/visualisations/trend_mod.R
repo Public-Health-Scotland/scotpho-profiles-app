@@ -41,16 +41,16 @@ trend_mod_ui <- function(id) {
                             # all other geography filters
                             # note these filters are enabled/disabled in the server function based on selected indicator
                             layout_columns(
-                              selectInput(inputId = ns("hb_filter"), label = "Health Boards:", choices = hb_list, multiple = TRUE),
-                              selectInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
+                              selectizeInput(inputId = ns("hb_filter"), label = "Health Boards:", choices = hb_list, multiple = TRUE),
+                              selectizeInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
                             ),
                             
                             layout_columns(
-                              selectInput(inputId = ns("hscp_filter"), label = "Health and Social Care Partnerships:", choices = hscp_list, multiple = TRUE),
-                              selectInput(inputId = ns("adp_filter"), label = "Alcohol and Drugs Partnerships:", choices = adp_list, multiple = TRUE)
+                              selectizeInput(inputId = ns("hscp_filter"), label = "Health and Social Care Partnerships:", choices = hscp_list, multiple = TRUE),
+                              selectizeInput(inputId = ns("adp_filter"), label = "Alcohol and Drugs Partnerships:", choices = adp_list, multiple = TRUE)
                             ),
                             
-                            selectInput(inputId = ns("hscp_filter_2"), label = "To select a locality or intermediate zone, first select a HSC partnership:", choices = hscp_list),
+                            selectizeInput(inputId = ns("hscp_filter_2"), label = "To select a locality or intermediate zone, first select a HSC partnership:", choices = hscp_list),
                             
                             layout_columns(
                               child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones:"),
@@ -142,56 +142,57 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # enable/ disable geography filters and update the filter labels, 
     # depending on what indicator was selected 
     observe({
+      req(indicator_filtered_data())
       
       # stores available areatypes, depending on what indicator was selected
       available_areatypes <- indicator_filtered_data() |>
         pull(unique(areatype))
       
-      
+
       # If 'Health board' is available, enable hb_filter, otherwise disable it
       if("Health board" %in% available_areatypes) {
         shinyjs::enable("hb_filter")
-        updateSelectInput(session, "hb_filter", label = "Health Boards:")
+        updateSelectizeInput(session, "hb_filter", label = "Health Boards:")
       } else {
         shinyjs::disable("hb_filter")
-        updateSelectInput(session, "hb_filter", label = "Health Boards (not available)")
+        updateSelectizeInput(session, "hb_filter", label = "Health Boards (not available)")
       }
       
       # If 'Council area' is available, enable ca_filter, otherwise disable it
       if("Council area" %in% available_areatypes) {
         shinyjs::enable("ca_filter")
-        updateSelectInput(session, "ca_filter", label = "Council Areas:")        
+        updateSelectizeInput(session, "ca_filter", label = "Council Areas:")        
       } else {
         shinyjs::disable("ca_filter")
-        updateSelectInput(session, "ca_filter", label = "Council Areas: (not available)")
+        updateSelectizeInput(session, "ca_filter", label = "Council Areas: (not available)")
       }
       
       # If 'HSC partnership' is available, enable hscp_filter, otherwise disable it
       if("HSC partnership" %in% available_areatypes) {
         shinyjs::enable("hscp_filter")
-        updateSelectInput(session, "hscp_filter", label = "Health and Social Care Partnerships:")
+        updateSelectizeInput(session, "hscp_filter", label = "Health and Social Care Partnerships:")
       } else {
-        updateSelectInput(session, "hscp_filter", label = "Health and Social Care Partnerships: (not available)")
+        updateSelectizeInput(session, "hscp_filter", label = "Health and Social Care Partnerships: (not available)")
         shinyjs::disable("hscp_filter")
       }
       
       # If 'Alcohol & drug partnership' is available, enable adp_filter, otherwise disable it
       if("Alcohol & drug partnership" %in% available_areatypes) {
         shinyjs::enable("adp_filter")
-        updateSelectInput(session, "adp_filter", label = "Alcohol and Drug Partnerships:")
+        updateSelectizeInput(session, "adp_filter", label = "Alcohol and Drug Partnerships:")
       } else {
         shinyjs::disable("adp_filter")
-        updateSelectInput(session, "adp_filter", label ="Alcohol and Drug Partnerships: (not available)")
+        updateSelectizeInput(session, "adp_filter", label ="Alcohol and Drug Partnerships: (not available)")
       }
       
       # If 'HSC Locality' or 'Intermediate zone' is available, enable parent area filter (hscp_filter_2), otherwise disable it
       if("HSC locality" %in% available_areatypes | "Intermediate zone" %in% available_areatypes) {
         shinyjs::enable("hscp_filter_2")
-        updateSelectInput(session, "hscp_filter_2", label = "To select a locality or intermediate zone, first select an HSC partnership:")
+        updateSelectizeInput(session, "hscp_filter_2", label = "To select a locality or intermediate zone, first select an HSC partnership:")
         
       } else{
         shinyjs::disable("hscp_filter_2")
-        updateSelectInput(session, "hscp_filter_2", label = "To select a locality or intermediate zone, first select an HSC partnership: (not available)")
+        updateSelectizeInput(session, "hscp_filter_2", label = "To select a locality or intermediate zone, first select an HSC partnership: (not available)")
         
       }
       
@@ -201,22 +202,22 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # remove globally selected areaname from available areas in dropdowns
     observe({
       if(geo_selections()$areatype == "Health board"){
-        updateSelectInput(session, "hb_filter", choices = hb_list[hb_list!=geo_selections()$areaname])
+        updateSelectizeInput(session, "hb_filter", choices = hb_list[hb_list!=geo_selections()$areaname])
       }
       else if(geo_selections()$areatype == "Council area"){
-        updateSelectInput(session, "ca_filter", choices = ca_list[ca_list!=geo_selections()$areaname])
+        updateSelectizeInput(session, "ca_filter", choices = ca_list[ca_list!=geo_selections()$areaname])
       }
       else if(geo_selections()$areatype == "HSC partnership"){
-        updateSelectInput(session, "hscp_filter", choices = hscp_list[hscp_list!=geo_selections()$areaname])
+        updateSelectizeInput(session, "hscp_filter", choices = hscp_list[hscp_list!=geo_selections()$areaname])
       }
       else if(geo_selections()$areatype == "Alcohol & drug partnership"){
-        updateSelectInput(session, "adp_filter", choices = adp_list[adp_list!=geo_selections()$areaname])
+        updateSelectizeInput(session, "adp_filter", choices = adp_list[adp_list!=geo_selections()$areaname])
       }
       else if(geo_selections()$areatype == "Intermediate zone"){
-        updateSelectInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
+        updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
       }
       else if(geo_selections()$areatype == "HSC locality"){
-        updateSelectInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
+        updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
       }
       
     })
@@ -225,13 +226,13 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # Clear what was previously selected from the filters if a user changes
     # selection from global geography filter (otherwise they remain selected)
     observeEvent(geo_selections()$areaname, {
-      updateSelectInput(session, "hb_filter", selected = character(0))
-      updateSelectInput(session, "ca_filter", selected = character(0))
-      updateSelectInput(session, "hscp_filter", selected = character(0))
-      updateSelectInput(session, "hscp_filter_2", selected = character(0))
-      updateSelectInput(session, "adp_filter", selected = character(0))
-      updateSelectInput(session, "child_imz", selected = character(0))
-      updateSelectInput(session, "child_locality", selected = character(0))
+      updateSelectizeInput(session, "hb_filter", selected = character(0))
+      updateSelectizeInput(session, "ca_filter", selected = character(0))
+      updateSelectizeInput(session, "hscp_filter", selected = character(0))
+      updateSelectizeInput(session, "hscp_filter_2", selected = character(0))
+      updateSelectizeInput(session, "adp_filter", selected = character(0))
+      updateSelectizeInput(session, "child_imz", selected = character(0))
+      updateSelectizeInput(session, "child_locality", selected = character(0))
     })
     
     
@@ -251,6 +252,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # disable Scotland checkbox when Scotland already selected in global options
     #or when a geography with no available indicators is selected
     observe({
+     req(filtered_data())
       if(geo_selections()$areaname == "Scotland" | !(geo_selections()$areatype %in% unique(filtered_data()$areatype))  ){
         shinyjs::hide("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = FALSE)
@@ -264,14 +266,15 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     #######################################################
     ## Reactive data / values ----
     #######################################################
+
     
-    # store selected indicator (note this is a module)
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
-                                                      filtered_data = filtered_data,
-                                                      geo_selections = geo_selections)
+                                                      filtered_data,
+                                                      geo_selections)
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({
+      req(filtered_data())
       filtered_data() |>
         filter(indicator == selected_indicator())
     })
@@ -295,6 +298,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
     trend_data <- reactive({
+      req(indicator_filtered_data())
       
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(
@@ -334,6 +338,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     #######################################################
     
     output$trend_title <- renderUI({
+      req(trend_data())
       
       # create dynamic text if no indicators available for selected profile
       # and geography
@@ -381,6 +386,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     # info to display when user clicks supporting information tab
     output$trend_notes_caveats <- renderUI({
+      req(selected_indicator())
       
       #create dataframe containing only notes_caveats column for selected indicator from techdoc
       indicator_caveats <- techdoc |> 
@@ -405,7 +411,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     # trend chart
     output$trend_chart <- renderHighchart({
-      
+      req(trend_data())
       
       type_definition <- case_when(
         input$numerator_button_trends == "Numerator" ~ "Number",
@@ -478,6 +484,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     # data table
     output$trend_table <- renderReactable({
+      req(trend_data())
       
       data <- trend_data() |>
         select(areatype, areaname, trend_axis, y)
