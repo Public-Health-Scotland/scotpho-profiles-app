@@ -102,7 +102,7 @@ page_navbar(
                     selectizeInput("areatype", "Area type:", choices = areatype_list, selected = "Scotland"),
                     layout_column_wrap(width = 1,
                       # areaname filter 
-                      selectizeInput("areaname", "Areaname", choices = c("Option 1", "Option 2", "Option 3")),
+                      selectizeInput("areaname", "Areaname", choices = c("Scotland"), selected = "Scotland"),
                       # parent area filter (only appear when HSC locality or Intermediate zone selected)
                       conditionalPanel(condition = "input.areatype == 'HSC locality' || input.areatype == 'Intermediate zone'",
                                        selectizeInput("parent_area", label = "First select a region for localities or intermediate zones", choices = hscp_list, width = "100%"))
