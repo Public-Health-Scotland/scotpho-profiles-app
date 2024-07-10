@@ -181,10 +181,14 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                   years = list(year), # for the trend chart 
                   domain = first(domain), # for the table 
                   trend_min = first(trend_axis), # for the trend chart label
-                  trend_max = last(trend_axis),
+                  trend_max = last(trend_axis), # for the trend
                   def_period = last(def_period), # for the table
                   type_definition = first(type_definition), # for the table
-                  measure = first(measure)),# for the table
+                  measure = first(measure), # for the table
+                  code = first(code), # for data download
+                  areatype = first(areatype), # for data download
+                  areaname = first(areaname) # for data download
+                  ),
                by = indicator]
       
       # create some additional cols
@@ -476,7 +480,11 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                      type_definition = colDef(show = FALSE),
                      unique_id = colDef(show = FALSE),
                      trend_min = colDef(show = FALSE),
-                     trend_max = colDef(show = FALSE)
+                     trend_max = colDef(show = FALSE),
+                     code = colDef(show = FALSE),
+                     areatype = colDef(show = FALSE),
+                     areaname = colDef(show = FALSE)
+                     
                      )
       } else {
         cols <- list(domain = domain, 
@@ -519,16 +527,33 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     
     # download data module 
-    download_data_btns_server("download_summary_data", 
+    download_data_btns_server(id = "download_summary_data", 
+                              file_name = "ScotPHO_summary_data_extract",
                               data = if(selected_geo()$areatype == "Scotland"){
                                 scotland_summary
                               } else {
                                 local_summary
                               },
                               selected_columns = if(selected_geo()$areatype == "Scotland"){
-                                c("domain", "indicator", "def_period", "type_definition", "measure")
+                                c("code",
+                                  "areaname",
+                                  "areatype",
+                                  "domain", 
+                                  "indicator", 
+                                  "definition_period" = "def_period", 
+                                  "type_definition", 
+                                  "measure")
+                                
                               } else {
-                                selected_columns = c("code", "areatype", "areaname", "domain", "indicator", "type_definition", "def_period", "measure", "scotland_value")
+                                selected_columns = c("code",
+                                                     "areaname",
+                                                     "areatype",
+                                                     "domain", 
+                                                     "indicator", 
+                                                     "type_definition", 
+                                                     "definition_period" = "def_period", 
+                                                     "measure", 
+                                                     "scotland_value")
                                 
                               }
                               )
