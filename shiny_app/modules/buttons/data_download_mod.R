@@ -26,25 +26,28 @@ download_data_btns_ui <- function(id) {
 # id = unique id 
 # data = name of data to download
 # selectedColumns = vector of column names to include in data download (if required)
-download_data_btns_server <- function(id, data, selected_columns = NULL) {
+# file_name = name of downloaded file
+
+download_data_btns_server <- function(id, data, selected_columns = NULL, file_name) {
   moduleServer(id, function(input, output, session) {
     
     dataset <- reactive({
       
-      # select columns if selected_columns arg in use
+      # Convert data to data.frame if not already
+      df <- as.data.frame(data())
+      
+      # Select (and rename columns) if selected_columns arg is in use
       if(!is.null(selected_columns)){
-        if (is.data.table(data())) {
-          data()[, ..selected_columns] # syntax to select columns if data is class data.table
-        } else {
-          data()[, selected_columns, drop = FALSE] # syntax to select columns if data is class data.frame
-        }
-      } else data()
+        df <- df |>
+          select(!!!selected_columns) 
+      }
+      
+      df
     })
-    
     
     # download as csv
     output$downloadCSV <- downloadHandler(
-      filename = paste0("scotpho_data_extract_", Sys.Date(), ".csv"),
+      filename = paste0(file_name, "_", Sys.Date(), ".csv"),
       content = function(file) {
         write.csv(dataset(), file, row.names = FALSE)
       }
@@ -52,23 +55,23 @@ download_data_btns_server <- function(id, data, selected_columns = NULL) {
     
     # download as rds
     output$downloadRDS <- downloadHandler(
-      filename = paste0("scotpho_data_extract_", Sys.Date(), ".rds"),
+      filename = paste0(file_name, "_", Sys.Date(), ".rds"),
       content = function(file) {
         saveRDS(dataset(), file)
       }
     )
     
-    #download as json
+    # download as json
     output$downloadJSON <- downloadHandler(
-      filename = paste0("scotpho_data_extract_", Sys.Date(), ".json"),
+      filename = paste0(file_name, "_", Sys.Date(), ".json"),
       content = function(file) {
         jsonlite::write_json(as.list(dataset()), file)
       }
-      
     )
     
   })
 }
+
 
 
 ##############################################################################
