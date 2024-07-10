@@ -84,6 +84,10 @@ profiles_list <- list(
   MEN = "Mental Health",
   ALL = "All Indicators")
 
+# archived indicators - for removing from the summary tab and separating indicators 
+# into 'active' and 'archived' in the indicator filters across the other tabs
+archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
+
 
 
 # Area names by geography type  including HB, CA, HSCP, alcohol and drugs partnership
