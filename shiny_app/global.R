@@ -31,13 +31,15 @@ library(cicerone) #for guided tours of tabs
 library(readr) #im additiona will remove in future
 
 
-# 2. Sourcing modules and narrative text -------------------------------------------
+# 2. Sourcing modules, narrative text and guided tours  ------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
 list.files("narrative", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
+list.files("guided tours", full.names = TRUE, recursive = TRUE) |> 
+  map(~ source(.))
 
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/optdata") # main dataset (to do: rename optdata file in data prep script)
@@ -151,120 +153,7 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
 phs_palette <- unname(unlist(phs_colours()))
 
 
-# 6. Tab tours -----------------------------------------------------------------
 
-
-#trend tab
-guide_trend <- Cicerone$
-  new(
-    padding = 8
-  )$
-  step(
-    "trend_indicator_filter_wrapper", # id of div wrapper - specified in trend module rather than indicator filter module
-    "Indicator Filter",
-    "First select an indicator. The list has been filtered based on profile and area type selected. The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
-    position = "bottom"
-  )$
-  step(
-    "trend_indicator_definition_wrapper",
-    "Indicator Definition Button",
-    "Click here to see the definition of the selected indicator.",
-    position = "bottom"
-  )$
-  step(
-    "trend_geography_wrapper",
-    "Geography Filters",
-    "Next add one or more geographical areas of any type to the chart to compare with your selected geography. There may be some indicators for which data is not available for the full time series or at a particular geography level.
-     If an area type other than Scotland is selected in the global options, the Scotland checkbox can be clicked to add or remove the trend line.",
-    position = "right"
-  )$
-  step(
-    "trend_card_wrapper",
-    "Chart Tab",
-    "The trend chart is designed to explore how a single indicator has changed over time for one or more geograpical area. Use the mouse to hover over a data point to see detailed information on its value, time period and area.
-     The tabs at the top can be used to navigate between different views of the data and further information to aid interpretation. The data tab shows the figures underlying the chart and the notes and caveats tab contains further information about methodology and any data quality issues.",
-    position = "left"
-  )$
-  step(
-    "trend_table_wrapper",
-    "Data Tab",
-    "Insert text here",
-    position = "left",
-    tab = "trend_table_panel",
-    tab_id = "trend_navset_card_pill"
-  )$
-  step(
-    "trend_download_chart",
-    "Download Chart Button",
-    "Click here to download the chart with all selected geographies as a PNG.",
-    position = "bottom"
-  )$
-  step(
-    "trend_download_data",
-    "Download Data Button",
-    "Click here to download the selected data as a CSV, RDS or JSON file.",
-    position = "left"
-  )$
-  step(
-    "trend_popovers",
-    "Adjust Chart Settings",
-    "Click here to see chart settings. Confidence intervals (95%) can be added to the chart. They are shown as shaded areas and give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size.
-    The chart can also be switched from a measure (e.g. rate or percentage) to actual numbers (e.g. the number of births with a healthy birthweight)."
-  )
-  
-
-#rank tab
-guide_rank<- Cicerone$
-  new()$
-  step(
-    "rank_indicator_filter_wrapper", 
-    "Indicator Filter",
-    "First select an indicator. The list has been filtered based on profile and area type selected. The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
-    position = "bottom"
-  )$
-  step(
-    "rank_indicator_definition_wrapper",
-    "Indicator Definition Button",
-    "Click here to see the definition of the selected indicator.",
-    position = "bottom"
-  )$
-  step(
-    "rank_comparator_wrapper",
-    "Select a Comparator",
-    "Select a comparator which will allow you to see whether each area
-    within your chosen geography level (e.g. health boards) is statistically significantly
-    better or worse than another area (e.g. Scotland) or another point in time (e.g. 10 years ago).",
-    position = "bottom"
-  )$
-  step(
-    "rank_card_wrapper",
-    "Chart Tab",
-    "These charts allow ranking of each area for your selected indicator against other areas of the same type. You can also choose to add a baseline comparator, 
-    to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator. For example, you may want to 
-    assess whether each  is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular 
-    areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)",
-    position = "right"
-  )$
-  step(
-    "rank_download_chart",
-    "Download Chart Button",
-    "Click here to download the chart with all selected geographies as a PNG.",
-    position = "bottom"
-  )$
-  step(
-    "rank_download_data",
-    "Download Data Button",
-    "Click here to download the selected data as a CSV, RDS or JSON file.",
-    position = "left"
-  )$
-  step(
-    "rank_map_wrapper",
-    "Compare Areas Spatially",
-    "This map allows for spatial comparison of areas across Scotland for a selected indicator. Darker shading of an area represents higher values for the selected indicator with lighter shading representing lower values. 
-     Hover over an area of the map to view the name of the area and its value.
-     Please note that the shading of an area is relative to other areas of the same type; therefore two areas of different shades may have similar absolute values for the indicator in the event that variability between areas is small.",
-    position = "left"
-  )
 
 
 
