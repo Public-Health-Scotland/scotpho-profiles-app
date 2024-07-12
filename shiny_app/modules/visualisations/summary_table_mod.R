@@ -156,7 +156,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                chosen_value, # required for building spine chart 
                marker_colour, # required for building spine chart 
                unique_id) # required for building spine chart )
-
+       
+      final
       
     })
     
@@ -184,10 +185,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                   trend_max = last(trend_axis), # for the trend
                   def_period = last(def_period), # for the table
                   type_definition = first(type_definition), # for the table
-                  measure = first(measure), # for the table
-                  code = first(code), # for data download
-                  areatype = first(areatype), # for data download
-                  areaname = first(areaname) # for data download
+                  measure = last(measure), # for the table
+                  code = "S00000001", # for data download
+                  areatype = "Scotland", # for data download
+                  areaname = "Scotland" # for data download
                   ),
                by = indicator]
       
@@ -213,6 +214,35 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       dt
       
       
+    })
+    
+    
+    # prepare data for download extract
+    data_download <- reactive({
+      if(selected_geo()$areatype == "Scotland"){
+        df <- scotland_summary() |>
+          select("code",
+                   "areaname",
+                   "areatype",
+                   "domain", 
+                   "indicator", 
+                   "definition_period" = "def_period", 
+                   "type_definition", 
+                   "measure")
+      } else {
+        df <- local_summary() |>
+          select("code",
+               "areaname",
+                "areatype",
+                "domain",
+                "indicator",
+                "type_definition",
+                "definition_period" = "def_period",
+                "measure",
+                "scotland_value")
+      }
+      
+      df
     })
     
 
@@ -529,33 +559,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     # download data module 
     download_data_btns_server(id = "download_summary_data", 
                               file_name = "ScotPHO_summary_data_extract",
-                              data = if(selected_geo()$areatype == "Scotland"){
-                                scotland_summary
-                              } else {
-                                local_summary
-                              },
-                              selected_columns = if(selected_geo()$areatype == "Scotland"){
-                                c("code",
-                                  "areaname",
-                                  "areatype",
-                                  "domain", 
-                                  "indicator", 
-                                  "definition_period" = "def_period", 
-                                  "type_definition", 
-                                  "measure")
-                                
-                              } else {
-                                selected_columns = c("code",
-                                                     "areaname",
-                                                     "areatype",
-                                                     "domain", 
-                                                     "indicator", 
-                                                     "type_definition", 
-                                                     "definition_period" = "def_period", 
-                                                     "measure", 
-                                                     "scotland_value")
-                                
-                              }
+                              data = data_download
                               )
 
     # 
