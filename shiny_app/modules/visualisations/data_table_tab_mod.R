@@ -94,7 +94,7 @@ data_tab_mod_Server <- function(id) {
         
         # filter selected dataset by selected geographies
         data <- main_dataset |>
-          subset(path %in% paths)
+          subset(geo_path %in% paths)
         
         # create vector of available indicators
         available_indicators <- unique(data$indicator)
@@ -194,7 +194,7 @@ data_tab_mod_Server <- function(id) {
         
         # filter by selected geographies
         paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
-        data <- data |> subset(path %in% paths)
+        data <- data |> subset(geo_path %in% paths)
         
         
         # filter by time period 

@@ -147,7 +147,31 @@ function(input, output, session) {
   
   # temporarily making simd data reactive 
   simd_data2 <- reactive({
-    simd_dataset
+    #simd_dataset
+    
+    # set to data.table
+    dt <- setDT(simd_dataset)
+    
+    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document 
+    dt <- dt[substr(profile_domain1, 1, 3) == profile() |
+               substr(profile_domain2, 1, 3) == profile() |
+               substr(profile_domain3, 1, 3) == profile()]
+    
+    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+    # is assigned to more than one profile (and therefore more than one domain)
+    dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profile(), 
+                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+                                 fifelse(substr(profile_domain2, 1, 3) == profile(), 
+                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3))))
+    )]
+    
+    # Convert 'domain' to factor
+    dt <- dt[, domain := as.factor(domain)]
+    
+    # Arrange by 'domain'
+    dt <- setorder(dt, domain)
+    
   })
   
   # logic controlling summary tables
@@ -166,15 +190,15 @@ function(input, output, session) {
   # logic controlling trends tab
   # takes profile data and further filters by selected geography
   # displays trend chart based on selected indicator from drop down list
-  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections)
-  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections)
+  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
+  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections, techdoc = techdoc)
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype
@@ -205,6 +229,7 @@ function(input, output, session) {
   # takes profile data and further filters by selected areatype
   pop_groups_server("cwb_pop_groups", dataset = ineq_splits_temporary, geo_selections = geo_selections)
   
+
 
   # server logic for the 'more information' tabs
   definitions_tab_Server("metadata") # indicator definition tab
