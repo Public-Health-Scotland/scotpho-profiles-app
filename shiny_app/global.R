@@ -136,14 +136,22 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".methodology-table td{ border:thin solid black; padding:3px;}", # for indicator def tab - make nested table cells have black border
       ".shiny-output-error {color: white;}", # hiding auto-generated error messages
       ".shiny-output-error-validation {color: #8e8f90;}", # showing custom error messages
-      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }" # info box header lighter phs purple colour with white text
-
+      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }", # info box header lighter phs purple colour with white text
+      ".chart-controls-icon {background-color:#0078D4; color:white; border-radius:5em; padding:5px;}" # styling of the chart controls icon
     )
   )
 
 # phs colours for charts with dynamic number of lines/bars
 phs_palette <- unname(unlist(phs_colours()))
 
+
+# cog icon that goes on the top right-hand side of each chart with additional chart controls (icon links to bslib popover controls)
+chart_controls_icon <- function(size = "2em") {
+  bsicons::bs_icon(name = "gear-fill", 
+                   size = size, 
+                   title = "Click here to view customise chart options", # tooltip/for screenreaders
+                   class = "chart-controls-icon")
+}
 
 # 6. Tab tours -----------------------------------------------------------------
 
@@ -201,4 +209,5 @@ guide_trend <- Cicerone$
   #   The chart can also be switched from a measure (e.g. rate or percentage) to actual numbers (e.g. the number of births with a healthy birthweight)."
   )
   
+
 
