@@ -20,10 +20,19 @@ simd_navpanel_ui <- function(id) {
   
   tagList(
     layout_sidebar(
+      
+      # enable guided tour
+      use_cicerone(),
+      
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
+                        
+                        #guided tour button
+                        actionButton(inputId = ns("deprivation_tour_button"),
+                                     label = "Click here for a guided tour of this page"),
+                        
                         # indicator filter (note this is a module)
-                        indicator_filter_mod_ui(ns("simd_indicator_filter")),
+                        div(id = "deprivation_indicator_filter_wrapper", indicator_filter_mod_ui(ns("simd_indicator_filter"))),
                         # 3 x help buttons
                         layout_column_wrap(
                           1/2,
@@ -55,12 +64,14 @@ simd_navpanel_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
+        div(id = "deprivation_barchart_wrapper", 
         bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
           
           # tab 1: bar chart 
-          bslib::nav_panel("Chart",
+         
+              bslib::nav_panel("Chart",
                            uiOutput(ns("barchart_title")), # title 
                            highchartOutput(ns("simd_barchart")) # chart 
           ),
@@ -82,16 +93,18 @@ simd_navpanel_ui <- function(id) {
           ),
           # card footer - download buttons
           card_footer(class = "d-flex justify-content-between",
-                      download_chart_mod_ui(ns("save_simd_barchart")),
-                      download_data_btns_ui(ns("simd_barchart_download")))
-        ), # close bar chart card
+                      div(id = "deprivation_download_chart", download_chart_mod_ui(ns("save_simd_barchart"))),
+                      div(id = "deprivation_download_data", download_data_btns_ui(ns("simd_barchart_download"))))
+        )), # close bar chart card
         
         
-        bslib::navset_card_pill(
+        div(id = "deprivation_trendchart_wrapper",
+          bslib::navset_card_pill(
           height = 550,
           full_screen = TRUE,
           
-          # tab 1: trend chart 
+          # tab 1: trend chart
+          
           bslib::nav_panel("Chart",
                            uiOutput(ns("trendchart_title")), # title
                            highchartOutput(ns("simd_trendchart")) # chart
@@ -114,9 +127,10 @@ simd_navpanel_ui <- function(id) {
           ),
           # card footer - download buttons
           card_footer(class = "d-flex justify-content-between",
-                      download_chart_mod_ui(ns("save_simd_trendchart")),
-                      download_data_btns_ui(ns("simd_trendchart_download")))
+                      div(id = "deprivation_download_chart", download_chart_mod_ui(ns("save_simd_trendchart"))),
+                      div(id = "deprivation_download_data", download_data_btns_ui(ns("simd_trendchart_download"))))
         ) # close trend card
+        ) # close div
       ) # close layout column wrap
       
     ) # close sidebar layout
@@ -292,6 +306,20 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
         ) #close taglist
       ))
     })
+    
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #initiate the guide
+    guide_deprivation$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$deprivation_tour_button, {
+      guide_deprivation$start()
+    })
+    
     
     
     ############################################

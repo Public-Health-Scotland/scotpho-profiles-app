@@ -41,7 +41,7 @@ guide_rank<- Cicerone$
   step(
     "rank_download_chart",
     "Download Chart Button",
-    "Click here to download the chart with all selected geographies as a PNG.",
+    "Click here to download this chart as a PNG.",
     position = "bottom"
   )$
   step(

@@ -21,7 +21,6 @@ guide_trend <- Cicerone$
     tab = "Data",
     tab_id = "trend_navset_card_pill",
   )$
-  
   step(
     "trend_indicator_filter_wrapper", 
     "Indicator Filter",
