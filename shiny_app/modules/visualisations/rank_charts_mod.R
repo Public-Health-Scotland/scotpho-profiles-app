@@ -33,7 +33,7 @@ rank_mod_ui <- function(id) {
                         div(id = "rank_indicator_filter_wrapper", indicator_filter_mod_ui(ns("indicator_filter"))),
                         
                         # indicator definition button
-                        div(id = "rank_indicator_definition_wrapper", indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn")),
+                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn"),
                         
                         # comparator switch filter 
                         div(id = "rank_comparator_wrapper",

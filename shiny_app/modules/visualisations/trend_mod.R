@@ -35,7 +35,7 @@ trend_mod_ui <- function(id) {
                             value = "indicator_filter_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
                             div(id = "trend_indicator_filter_wrapper", indicator_filter_mod_ui(ns("trend_indicator_filter"))),
-                            div(id = "trend_indicator_definition_wrapper", indicator_definition_btn_ui(ns("trend_ind_def")))
+                            indicator_definition_btn_ui(ns("trend_ind_def"))
                           ),
                           
                           # accordion panel with geography filters
@@ -86,13 +86,12 @@ trend_mod_ui <- function(id) {
         
         # data tab ------------------
         nav_panel("Data", 
-                  id = "trend_table_panel",
                   reactableOutput(ns("trend_table")) # table
         ), 
         
         # caveats/methodological info tab ----------------
-        nav_panel("Notes & Caveats",
-                  uiOutput(ns("trend_notes_caveats"))
+        nav_panel("Metadata",
+                  uiOutput(ns("trend_metadata"))
         ),
         
         # add space
@@ -373,7 +372,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
 
     
     # info to display when user clicks supporting information tab
-    output$trend_notes_caveats <- renderUI({
+    output$trend_metadata <- renderUI({
       
       #create dataframe containing only notes_caveats column for selected indicator from techdoc
       indicator_caveats <- techdoc |> 
