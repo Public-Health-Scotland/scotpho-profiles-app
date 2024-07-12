@@ -150,11 +150,11 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
 phs_palette <- unname(unlist(phs_colours()))
 
 
-# icon that goes on the top right-hand side of each chart with additional controls
+# cog icon that goes on the top right-hand side of each chart with additional chart controls (icon links to bslib popover controls)
 chart_controls_icon <- function(size = "2em") {
   bsicons::bs_icon(name = "gear-fill", 
                    size = size, 
-                   title = "Click here to view more options to customise this chart", # tooltip/for screenreaders
+                   title = "Click here to view customise chart options", # tooltip/for screenreaders
                    class = "chart-controls-icon")
 }
 
