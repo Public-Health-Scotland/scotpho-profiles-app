@@ -18,13 +18,21 @@
 summary_table_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    
+    # enable guided tour
+    use_cicerone(),
+    
     bslib::card(
       bslib::card_header(
               class = "d-flex flex-row-reverse",
+              
               layout_columns(
+                width = NULL,
+                actionButton(inputId = ns("summary_tour_button"),
+                             label = "Click here for a guided tour of this page"),
                 actionButton(ns("help"), label = "Help", class = "btn-sm"),
-              actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
-              download_data_btns_ui(ns("download_summary_data")),
+              div(id = "summary_download_pdf_wrapper", actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm")),
+              div(id = "summary_download_data_wrapper", download_data_btns_ui(ns("download_summary_data"))),
               )
               ),
       card_body(
@@ -508,6 +516,20 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
     })
+    
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #initiate the guide
+    guide_summary$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$summary_tour_button, {
+      guide_summary$start()
+    })
+    
     
     
     
