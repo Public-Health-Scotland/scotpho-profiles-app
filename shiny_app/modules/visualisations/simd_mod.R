@@ -35,8 +35,6 @@ simd_navpanel_ui <- function(id) {
                         div(id = "deprivation_indicator_filter_wrapper", indicator_filter_mod_ui(ns("simd_indicator_filter"))),
                         # 3 x help buttons
                         layout_column_wrap(
-                          1/2,
-                          actionButton(ns("charts_help"), label = "Help", class = "act-btn"),
                           indicator_definition_btn_ui(ns("simd_ind_def"),class = "act-btn")
                         ),
                         actionButton(ns("simd_help"), label = "What is SIMD?"),
@@ -45,15 +43,15 @@ simd_navpanel_ui <- function(id) {
                         # indicator_filter_mod_ui(ns("simd_indicator_filter")),
                         
                         # filter to include/exclude averages from charts
-                        checkboxInput(ns("average_switch"), label = " include averages", TRUE),
+                        div(id = "deprivation_avg_switch_wrapper", checkboxInput(ns("average_switch"), label = " include averages", TRUE)),
                         
                         
                         # quint type filter 
-                        radioButtons(inputId = ns("quint_type"), 
-                                     label = bslib::tooltip(placement = "bottom",
-                                                            trigger = list("Quintile type",icon("info-circle")),
-                                                            "Add explanation here of what these options mean?"),
-                                     choices = c("Scotland", "Local"), selected = "Scotland")
+                        div(id = "deprivation_quintile_type_wrapper", 
+                            radioButtons(inputId = ns("quint_type"), 
+                                     label = "Quintile Type",
+                                     choices = c("Scotland", "Local"), 
+                                     selected = "Scotland"))
       ), # close sidebar
       
       

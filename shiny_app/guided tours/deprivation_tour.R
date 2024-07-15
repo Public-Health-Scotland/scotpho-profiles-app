@@ -7,16 +7,16 @@ guide_deprivation <- Cicerone$
   step(
     "deprivation_barchart_wrapper",
     "Bar Chart",
-    "This chart shoes how the selected measure varies according to the relative deprivation of an area of residence. 
-     It shows how the most and least deprived areas compare.",
-    position = "below"
+    "This chart shows how the selected measure varies according to the relative deprivation of an area of residence, 
+     It allows comparison of the most and least deprived areas.",
+    position = "left"
   )$
   step(
     "deprivation_trendchart_wrapper",
     "Line Chart",
     "This chart shows the value of a measure by deprivation quintile over time. 
-    It shows how the most and least deprived areas compare over time.",
-    position = "below"
+     It allows comparison of the most and least deprived areas over time.",
+    position = "left"
   )$
   step(
     "deprivation_indicator_filter_wrapper", 
@@ -24,19 +24,29 @@ guide_deprivation <- Cicerone$
     "First select an indicator.<br>
     The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
     The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
-    position = "bottom"
+    position = "right"
   )$
- #Add sidebar tickbox averages step here
- #Add quintile type step here
+  step(
+    "deprivation_avg_switch_wrapper",
+    "Average Line",
+    "Click to add or remove a trend line showing the average for the measure across all quintiles.",
+    position = "right"
+  )$
+  step(
+    "deprivation_quintile_type_wrapper",
+    "Quintile Type",
+    "When an area other than Scotland is selected, click here to toggle between local and Scottish quintiles.",
+    position = "right"
+  )$
   step(
     "deprivation_download_chart",
     "Download Chart Button",
     "Click here to download this chart as a PNG.",
-    position = "bottom"
+    position = "above"
   )$
   step(
     "deprivation_download_data",
     "Download Data Button",
     "Click here to download the selected data as a CSV, RDS or JSON file.",
-    position = "left")
+    position = "above")
 #decide what to do for duplicate trend and chart download buttons
