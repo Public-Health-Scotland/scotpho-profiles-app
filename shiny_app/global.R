@@ -26,7 +26,7 @@ library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
 library(cicerone) #for guided tours of tabs
-
+library(sf)
 
 library(readr) #im additiona will remove in future
 
@@ -68,7 +68,11 @@ hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
 
-
+ca_bound <- sf::st_as_sf(ca_bound)
+hb_bound <- sf::st_as_sf(hb_bound)
+hscp_bound <- sf::st_as_sf(hscp_bound)
+hscloc_bound <- sf::st_as_sf(hscloc_bound)
+iz_bound <- sf::st_as_sf(iz_bound)
 
 # 4. lists ----------------------------------------------------------
 
