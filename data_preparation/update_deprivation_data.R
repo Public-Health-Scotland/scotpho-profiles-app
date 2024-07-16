@@ -70,6 +70,11 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     ungroup() |>
     rename(indicator = indicator_name)
   
+  
+  # create a new column which contains the full geography path
+  # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
+  deprivation_dataset <- create_geography_path_column(deprivation_dataset)
+  
   # make dataset available in global environment for validation tests
    deprivation_dataset_validation <<- deprivation_dataset 
 
