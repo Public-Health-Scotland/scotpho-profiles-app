@@ -24,7 +24,7 @@ trend_mod_ui <- function(id) {
                           # accordion panel with guided tour button (closed by default)
                           accordion_panel(
                             value = "trend_tour_panel",
-                            "Guided Tour", icon = bsicons::bs_icon("info"),
+                            "Guided Tour", icon = bsicons::bs_icon("info-circle"),
                             actionButton(inputId = ns("trend_tour_button"),
                                          label = "Click here for a guided tour of this page")
                             
@@ -34,7 +34,7 @@ trend_mod_ui <- function(id) {
                           accordion_panel(
                             value = "indicator_filter_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
-                            div(id = "trend_indicator_filter_wrapper", indicator_filter_mod_ui(ns("trend_indicator_filter"))),
+                            div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"))),
                             indicator_definition_btn_ui(ns("trend_ind_def"))
                           ),
                           
@@ -43,7 +43,7 @@ trend_mod_ui <- function(id) {
                             value = "geo_filter_panel",
                             "Geography comparator filters (optional)", icon = bsicons::bs_icon("map"),
                             
-                            div(id = "trend_geography_wrapper",
+                            div(id = ns("trend_geography_wrapper"),
                             textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
                             br(),
                             checkboxInput(ns("scot_switch_trends"), label = "Scotland", FALSE), # scotland checkbox filter
@@ -74,11 +74,12 @@ trend_mod_ui <- function(id) {
       # create a multi-tab card 
       div(id = "trend_card_wrapper",
             navset_card_pill(
-              id = "trend_navset_card_pill",
+              id = ns("trend_navset_card_pill"),
               full_screen = TRUE,
         
         # charts tab -----------------------
         nav_panel("Charts",
+                  value = ns("trend_chart_tab"), #id for guided tour
                   uiOutput(ns("trend_title")), # title 
                   uiOutput(ns("trend_caveats")), # caveats
                   highchartOutput(outputId = ns("trend_chart")) # chart
@@ -86,11 +87,13 @@ trend_mod_ui <- function(id) {
         
         # data tab ------------------
         nav_panel("Data", 
+                  value = ns("trend_data_tab"), #id for guided tour
                   reactableOutput(ns("trend_table")) # table
         ), 
         
         # caveats/methodological info tab ----------------
         nav_panel("Metadata",
+                  value = ns("trend_metadata_tab"), #id for guided tour
                   uiOutput(ns("trend_metadata"))
         ),
         
@@ -113,8 +116,8 @@ trend_mod_ui <- function(id) {
         
         # footer with download buttons
         card_footer(class = "d-flex justify-content-between",
-                    div(id = "trend_download_chart", download_chart_mod_ui(ns("download_trends_chart"))),
-                    div(id = "trend_download_data", download_data_btns_ui(ns("download_trends_data"))))
+                    div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
+                    div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
       )) # close navset card pill
     ) # close layout sidebar
   ) # close taglist
@@ -125,7 +128,8 @@ trend_mod_ui <- function(id) {
 trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
   moduleServer(id, function(input, output, session) {
     
-    
+    # permits compatibility between shiny and cicerone tours
+    ns <- session$ns
     
     #######################################################
     # Dynamic filters
@@ -390,19 +394,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     })
     
     
-    ############################################
-    # Guided tour
-    ###########################################
-    
-    #initiate the guide
-    guide_trend$init()
-    
-    #when guided tour button is clicked, start the guide
-    observeEvent(input$trend_tour_button, {
-      guide_trend$start()
-    })
-    
-    
+
     ############################################
     # Charts/tables 
     #############################################
@@ -509,6 +501,85 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # server for chart and data downloads
     download_chart_mod_server(id = "download_trends_chart", chart_id = session$ns("trend_chart"))
     download_data_btns_server(id = "download_trends_data", data = trend_data)
+    
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #Set up trend steps
+    guide_trend <- Cicerone$
+      new(
+        padding = 8
+      )$
+      step(
+        ns("trend_chart"), #chart tab
+        "Chart Tab",
+        "The trend chart is designed to explore how a single indicator has changed over time for one or more geographical areas. <br>
+        Use the mouse to hover over a data point and see detailed information on its value, time period and area.",
+        position = "left",
+        tab_id = ns("trend_navset_card_pill"),
+        tab = ns("trend_chart_tab")
+      )$
+      step(
+        ns("trend_table"), #table tab
+        "Data Tab",
+        "The data tab shows the figures underpinning the chart for the selected indicator and areas.",
+        position = "left",
+        tab_id = ns("trend_navset_card_pill"),
+        tab = ns("trend_data_tab")
+      )$
+      step(
+        ns("trend_metadata"), #metadata tab
+        "Metadata Tab",
+        "The metadata tab shows information about the data source, methodological information, advice on interpretation, and any known data quality issues.",
+        position = "left",
+        tab_id = ns("trend_navset_card_pill"),
+        tab = ns("trend_metadata_tab")
+      )$
+      step(
+        ns("trend_indicator_filter_wrapper"), #indicator filter
+        "Indicator Filter",
+        "First select an indicator.<br>
+        The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
+        The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
+        position = "bottom"
+      )$
+      step(
+        ns("trend_geography_wrapper"), #all geography filters
+        "Geography Filters",
+        "Add one or more geographical areas of any type to the chart to compare with your selected geography.<br>
+        There may be some indicators for which data is not available for the full time series or at a particular geography level.<br>
+        If an area type other than Scotland is selected in the global options, the Scotland checkbox can be clicked to add or remove the trend line.",
+        position = "right"
+      )$
+      step(
+        ns("trend_download_chart"), #downlaod chart button
+        "Download Chart Button",
+        "Click here to download the chart with all selected geographies as a PNG.",
+        position = "bottom"
+      )$
+      step(
+        ns("trend_download_data"), #download data button
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "left"
+        #popovers help not working just yet - revist after merging of changes to popover design
+        # )$
+        # step(
+        #   "trend_popovers",
+        #   "Adjust Chart Settings",
+        #   "Click here to see chart settings. Confidence intervals (95%) can be added to the chart. They are shown as shaded areas and give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size.
+        #   The chart can also be switched from a measure (e.g. rate or percentage) to actual numbers (e.g. the number of births with a healthy birthweight)."
+      )
+    
+    #initiate the guide
+    guide_trend$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$trend_tour_button, {
+      guide_trend$start()
+    })
     
     
   }
