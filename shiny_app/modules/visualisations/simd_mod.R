@@ -472,8 +472,41 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
     download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
     
-    download_data_btns_server(id = "simd_barchart_download", data = bar_data())
-    download_data_btns_server(id = "simd_trendchart_download", data = trend_data())
+    download_data_btns_server(id = "simd_barchart_download", 
+                              data = bar_data, 
+                              file_name = "SIMD_ScotPHO_data_extract",
+                              selected_columns = c("code", 
+                                                   "areatype", 
+                                                   "areaname", 
+                                                   "indicator", 
+                                                   "type_definition", 
+                                                   "definition_period" = "def_period",
+                                                   "quintile_type" = "quint_type",
+                                                   "quintile", 
+                                                   "numerator", 
+                                                   "measure", 
+                                                   "upper_confidence_interval" = "upci", 
+                                                   "lower_confidence_interval" = "lowci"))
+    
+    
+    
+    
+    download_data_btns_server(id = "simd_trendchart_download", 
+                              data = trend_data, 
+                              file_name = "SIMD_Trend_ScotPHO_data_extract",
+                              selected_columns = c("code", 
+                                                   "areatype", 
+                                                   "areaname", 
+                                                   "indicator", 
+                                                   "type_definition", 
+                                                   "definition_period" = "def_period",
+                                                   "trend_axis",
+                                                   "quintile_type" = "quint_type",
+                                                   "quintile", 
+                                                   "numerator", 
+                                                   "measure", 
+                                                   "upper_confidence_interval" = "upci", 
+                                                   "lower_confidence_interval" = "lowci"))
     
     
   }

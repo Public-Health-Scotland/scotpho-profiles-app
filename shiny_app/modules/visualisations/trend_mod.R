@@ -507,9 +507,20 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     # server for chart and data downloads
     download_chart_mod_server(id = "download_trends_chart", chart_id = session$ns("trend_chart"))
-    download_data_btns_server(id = "download_trends_data", data = trend_data)
     
-    
-  }
-  )
+    download_data_btns_server(id = "download_trends_data", 
+                              data = trend_data, 
+                              file_name = "Trends_ScotPHO_data_extract", 
+                              selected_columns = c("code", 
+                                                   "areatype", 
+                                                   "areaname", 
+                                                   "indicator", 
+                                                   "type_definition", 
+                                                   "definition_period" = "def_period",
+                                                   "trend_axis",
+                                                   "numerator", 
+                                                   "measure", 
+                                                  "upper_confidence_interval" = "upci", # rename column 
+                                                  "lower_confidence_interval" = "lowci")) # rename column 
+    })
 }
