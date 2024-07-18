@@ -42,73 +42,90 @@ pop_groups_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
-        bslib::navset_card_pill(
-          height = 550,
-          full_screen = TRUE,
-          
-          # tab 1: bar chart 
-          bslib::nav_panel("Chart",
-                           uiOutput(ns("pop_rank_title")), # title 
-                           highchartOutput(ns("pop_rank_chart")) # chart 
-          ),
-          
-          # tab 2: data table
-          bslib::nav_panel("Table",
-                           reactableOutput(ns("pop_rank_table")) # table
-          ),
-          
-          
-          bslib::nav_spacer(),
-          
-          # extra controls for bar chart 
-          bslib::nav_item(
-            bslib::popover(
-              title = "Filters",
-              chart_controls_icon(),
-              checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
-              selectInput(ns("pop_years_filter"), label = "select year", choices = NULL)
-            )
-          ),
-          
-          # card footer - download buttons
-          card_footer(class = "d-flex justify-content-between",
-                      download_chart_mod_ui(ns("save_pop_rankchart")),
-                      download_data_btns_ui(ns("pop_rank_download")))
-        ), # close bar chart card
-        
 
+        # footer with download buttons
+        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+        # package maintainers are aware and working on a fix
+        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+        suppressWarnings(
+          bslib::navset_card_pill(
+            height = 550,
+            full_screen = TRUE,
+            
+            # tab 1: bar chart 
+            bslib::nav_panel("Chart",
+                             uiOutput(ns("pop_rank_title")), # title 
+                             highchartOutput(ns("pop_rank_chart"))|> # chart 
+                               withSpinner() |> (\(x) {
+                                 x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                                 x})()
+            ),
+            
+            # tab 2: data table
+            bslib::nav_panel("Table",
+                             reactableOutput(ns("pop_rank_table")) # table
+            ),
+            
+            
+            bslib::nav_spacer(),
+            
+            # extra controls for bar chart 
+            bslib::nav_item(
+              bslib::popover(
+                title = "Filters",
+                bsicons::bs_icon("gear", size = "1.7em"),
+                checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
+                selectInput(ns("pop_years_filter"), label = "select year", choices = NULL)
+              )
+            ),
+            
+            # card footer - download buttons
+            card_footer(class = "d-flex justify-content-between",
+                        download_chart_mod_ui(ns("save_pop_rankchart")),
+                        download_data_btns_ui(ns("pop_rank_download")))
+          )), # close bar chart card
+        
+        
         ######  based on deprivation trend card addeded "pop_" to distinguish the two
-        bslib::navset_card_pill(
-          height = 550,
-          full_screen = TRUE,
-          
-          # tab 1: trend chart 
-          bslib::nav_panel("Chart",
-                           uiOutput(ns("pop_trend_title")), # title
-                           highchartOutput(ns("pop_trend_chart")) # chart
-          ),
-          # tab 2: data table # still need to creat this
-          bslib::nav_panel("Table",
-                           reactableOutput(ns("pop_trend_table"))
-          ),
-          
-          bslib::nav_spacer(),
-          
-          # extra controls for filters
-          bslib::nav_item(
-            bslib::popover(
-              title = "Filters",
-              chart_controls_icon(),
-              # too many CI for age split, removed at this stage
-              checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE) 
-            )
-          ),
-          # card footer - download buttons
-          card_footer(class = "d-flex justify-content-between",
-                      download_chart_mod_ui(ns("save_pop_trendchart")),
-                      download_data_btns_ui(ns("pop_trend_download")))
+
+        suppressWarnings(
+          bslib::navset_card_pill(
+            height = 550,
+            full_screen = TRUE,
+            
+            # tab 1: trend chart 
+            bslib::nav_panel("Chart",
+                             uiOutput(ns("pop_trend_title")), # title
+                             highchartOutput(ns("pop_trend_chart")) |> # chart
+                               # issue described here: https://github.com/daattali/shinycssloaders/issues/76 
+                               # solution posted here: https://stackoverflow.com/questions/77184183/how-to-use-shinycssloaders-withspinner-with-a-plot-output-in-a-bslib-card 
+                               withSpinner() |> (\(x) {
+                                 x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                                 x})()
+            ),
+            # tab 2: data table # still need to creat this
+            bslib::nav_panel("Table",
+                             reactableOutput(ns("pop_trend_table"))
+            ),
+            
+            bslib::nav_spacer(),
+            
+            # extra controls for filters
+            bslib::nav_item(
+              bslib::popover(
+                title = "Filters",
+                bsicons::bs_icon("gear",size = "1.7em"),
+                # too many CI for age split, removed at this stage
+                checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE) 
+              )
+            ),
+            # card footer - download buttons
+            card_footer(class = "d-flex justify-content-between",
+                        download_chart_mod_ui(ns("save_pop_trendchart")),
+                        download_data_btns_ui(ns("pop_trend_download")))
+          )
         ) # close trend card
-              ) # close layout column wrap
+      ) # close layout column wrap
       
     ) # close sidebar layout
   ) # close taglist
@@ -152,7 +169,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       updateSelectInput(session, inputId = "pop_years_filter",
                         choices = available_years, selected = available_years[1])
     })
-
+    
     
     #######################################################
     ## Reactive data / values ----
@@ -188,7 +205,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                                      TRUE ~ phs_colors(colourname = "phs-liberty")        ))|>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
         filter(indicator == selected_indicator() & split_name == input$split_filter) # filter by selected indicator and selected split
-   
+      
       # dt <- setDT(dataset())
       # 
       # dt <- dt[, colour_pal := fcasesplit_value == "16-24", phs_colors(colourname = "phs-purple"),
@@ -209,19 +226,19 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       #                             split_value == "limiting_li", phs_colors(colourname = "phs-purple"),
       #                             split_value == "no_li", phs_colors(colourname = "phs-teal"),
       #                             split_value == "non_limiting_li", phs_colors(colourname = "phs-blue")]
-       })
+    })
     
     pop_rank_data <- reactive({
       pop_trend_data() |>
         filter(def_period == input$pop_years_filter)
     })
-
+    
     #######################################################
     ## dynamic text  ----
     #######################################################
     
     output$pop_rank_title <- renderUI({
-            # ensure there is data available, otherwise show message instead
+      # ensure there is data available, otherwise show message instead
       shiny::validate(
         need( nrow(pop_trend_data()) > 0, "No indicators available")
       )
@@ -249,7 +266,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         #tags$h6(pop_trend_data()$year[1]), # time period
         tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
         tags$p(pop_trend_data()$rate_type[1]) # measure type
-              )
+      )
     })
     
     ############################################
@@ -299,10 +316,10 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       # )
       
       
-          x <- hchart(pop_trend_data(), 
-                               "line",
-                               hcaes(x = trend_axis, y = rate, group = split_value),
-                               color = unique(pop_trend_data()$colour_pal)) |>
+      x <- hchart(pop_trend_data(), 
+                  "line",
+                  hcaes(x = trend_axis, y = rate, group = split_value),
+                  color = unique(pop_trend_data()$colour_pal)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
         hc_yAxis(title = list(text = "")) |>
@@ -389,7 +406,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                   def_period = colDef(name = "Time Period"),
                   split_value = colDef(name = "Population Group"),
                   rate = colDef(name = "Measure")
-      )
+                )
       )
     })
     
@@ -399,7 +416,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       data <- pop_trend_data() |>
         select(def_period, split_value, rate)
       
-         reactable(data = data,
+      reactable(data = data,
                 defaultExpanded = TRUE,
                 defaultPageSize = nrow(data),
                 # rename some columns 
