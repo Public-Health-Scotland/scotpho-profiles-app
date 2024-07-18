@@ -65,6 +65,7 @@ rank_mod_ui <- function(id) {
       ), # close sidebar
       
       layout_column_wrap(
+
         # bar chart card ----------------------
         # NOTE: the 'footer' argument for navset_card_pill() is currently not working
         # package maintainers are aware and working on a fix
@@ -114,9 +115,6 @@ rank_mod_ui <- function(id) {
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 
-
-
-
 
 
 
@@ -545,19 +543,32 @@ Not all profiles have available indicators for all geography types. The drugs pr
     })
     
     
-    
-    
-    ######################################
-    # downloads -------
-    ######################################
-    
-    # note these are both modules 
-    download_chart_mod_server(id = "save_rank_chart", chart_id = session$ns("rank_chart")) # save chart as png
-    download_data_btns_server(id = "rank_download", data = rank_data()) # download data in selected format
-    
-    
-  }
-  )
+     
+     ######################################
+     # downloads -------
+     ######################################
+     
+     # note these are both modules 
+     download_chart_mod_server(id = "save_rank_chart", chart_id = session$ns("rank_chart")) # save chart as png
+     
+     download_data_btns_server(id = "rank_download", 
+                               data = rank_data, 
+                               file_name = "Rank_ScotPHO_data_extract",
+                               selected_columns = c("code", 
+                                                    "areatype", 
+                                                    "areaname", 
+                                                    "indicator", 
+                                                    "type_definition", 
+                                                    "definition_period" = "def_period",
+                                                    "numerator", 
+                                                    "measure", 
+                                                    "upper_confidence_interval" = "upci", 
+                                                    "lower_confidence_interval" = "lowci"))
+     
+     
+     }
+    )
+
 } # close server function
 
 

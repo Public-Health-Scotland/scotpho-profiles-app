@@ -139,7 +139,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # selecting columns required for table
       final <- final %>%
-        select(domain, # required for domain column 
+        select(code,
+               areaname,
+               areatype,
+               domain, # required for domain column 
                indicator, # required for indicator column 
                measure, # required for for selected area column 
                scotland_value, # required for scotland column 
@@ -153,7 +156,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                chosen_value, # required for building spine chart 
                marker_colour, # required for building spine chart 
                unique_id) # required for building spine chart )
-
+       
+      final
       
     })
     
@@ -178,10 +182,14 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                   years = list(year), # for the trend chart 
                   domain = first(domain), # for the table 
                   trend_min = first(trend_axis), # for the trend chart label
-                  trend_max = last(trend_axis),
+                  trend_max = last(trend_axis), # for the trend
                   def_period = last(def_period), # for the table
                   type_definition = first(type_definition), # for the table
-                  measure = first(measure)),# for the table
+                  measure = last(measure), # for the table
+                  code = "S00000001", # for data download
+                  areatype = "Scotland", # for data download
+                  areaname = "Scotland" # for data download
+                  ),
                by = indicator]
       
       # create some additional cols
@@ -206,6 +214,35 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       dt
       
       
+    })
+    
+    
+    # prepare data for download extract
+    data_download <- reactive({
+      if(selected_geo()$areatype == "Scotland"){
+        df <- scotland_summary() |>
+          select("code",
+                   "areaname",
+                   "areatype",
+                   "domain", 
+                   "indicator", 
+                   "definition_period" = "def_period", 
+                   "type_definition", 
+                   "measure")
+      } else {
+        df <- local_summary() |>
+          select("code",
+               "areaname",
+                "areatype",
+                "domain",
+                "indicator",
+                "type_definition",
+                "definition_period" = "def_period",
+                "measure",
+                "scotland_value")
+      }
+      
+      df
     })
     
 
@@ -473,7 +510,11 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                      type_definition = colDef(show = FALSE),
                      unique_id = colDef(show = FALSE),
                      trend_min = colDef(show = FALSE),
-                     trend_max = colDef(show = FALSE)
+                     trend_max = colDef(show = FALSE),
+                     code = colDef(show = FALSE),
+                     areatype = colDef(show = FALSE),
+                     areaname = colDef(show = FALSE)
+                     
                      )
       } else {
         cols <- list(domain = domain, 
@@ -481,6 +522,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                      scotland_value = scotland_value, 
                      measure = measure, 
                      chart = chart,
+                     code = colDef(show = FALSE),
+                     areaname = colDef(show = FALSE),
+                     areatype = colDef(show = FALSE),
                      worst = colDef(show = FALSE),
                      p25 = colDef(show = FALSE),
                      p75 = colDef(show = FALSE),
@@ -509,12 +553,16 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
     })
     
+
     
     
     # download data module 
-    download_data_btns_server("download_summary_data", local_summary())
-    
-    
+    download_data_btns_server(id = "download_summary_data", 
+                              file_name = "ScotPHO_summary_data_extract",
+                              data = data_download
+                              )
+
+    # 
     
     
     # download PDF logic

@@ -42,6 +42,7 @@ pop_groups_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
+
         # footer with download buttons
         # NOTE: the 'footer' argument for navset_card_pill() is currently not working
         # package maintainers are aware and working on a fix
@@ -86,6 +87,7 @@ pop_groups_ui <- function(id) {
         
         
         ######  based on deprivation trend card addeded "pop_" to distinguish the two
+
         suppressWarnings(
           bslib::navset_card_pill(
             height = 550,
