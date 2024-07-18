@@ -150,7 +150,7 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # make profile buttons on landing page change colour when user hovers over it
       ".header-elements {display: flex; align-items: center;}", # make profile and geography headers side-by-side with buttons to open global filters
       ".global-filter {background-color: #ECECEC; color: black; padding: 5px;}", # make global filter buttons grey
-      ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}" 
+      ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}",
       ".chart-controls-icon {background-color:#0078D4; color:white; border-radius:5em; padding:5px;}" # styling of the chart controls icon
 
     )
