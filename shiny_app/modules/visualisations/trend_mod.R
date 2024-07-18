@@ -34,7 +34,11 @@ trend_mod_ui <- function(id) {
                           accordion_panel(
                             value = "indicator_filter_panel",
                             "Indicator filter", icon = bsicons::bs_icon("sliders"),
+                            
+                            #indicator filter (note this is a module)
                             div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"))),
+                            
+                            #indicator definition button
                             indicator_definition_btn_ui(ns("trend_ind_def"))
                           ),
                           
@@ -43,7 +47,7 @@ trend_mod_ui <- function(id) {
                             value = "geo_filter_panel",
                             "Geography comparator filters (optional)", icon = bsicons::bs_icon("map"),
                             
-                            div(id = ns("trend_geography_wrapper"),
+                            div(id = ns("trend_geography_wrapper"), #wrapping for tour guide
                             textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
                             br(),
                             checkboxInput(ns("scot_switch_trends"), label = "Scotland", FALSE), # scotland checkbox filter
@@ -72,7 +76,7 @@ trend_mod_ui <- function(id) {
       ), # close sidebar
       
       # create a multi-tab card 
-      div(id = "trend_card_wrapper",
+      div(id = ns("trend_card_wrapper"),
             navset_card_pill(
               id = ns("trend_navset_card_pill"),
               full_screen = TRUE,
@@ -326,7 +330,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     
     #######################################################
-    ## dynamic text  ----
+    ## Dynamic text  ----
     #######################################################
     
     output$trend_title <- renderUI({
@@ -582,6 +586,5 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     })
     
     
-  }
-  )
-}
+  }) # close moduleServer
+} # close server function

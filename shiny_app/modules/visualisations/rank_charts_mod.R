@@ -30,13 +30,13 @@ rank_mod_ui <- function(id) {
                                      label = "Click here for a guided tour of this page"),
 
                         # indicator filter (note this is a module)
-                        div(id = "rank_indicator_filter_wrapper", indicator_filter_mod_ui(ns("indicator_filter"))),
+                        div(id = ns("rank_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
                         
                         # indicator definition button
                         indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn"),
                         
                         # comparator switch filter 
-                        div(id = "rank_comparator_wrapper",
+                        div(id = ns("rank_comparator_wrapper"),
                             bslib::input_switch(id = ns("comparator_switch"), 
                                             value = FALSE, 
                                             label = bslib::tooltip(placement = "bottom",trigger = list("Include comparator",icon("info-circle")),
@@ -75,36 +75,46 @@ rank_mod_ui <- function(id) {
       # bar chart card ----------------------
       div(id = "rank_card_wrapper",
           navset_card_pill(
-        full_screen = TRUE,
-        height = 550,
-        nav_panel("Charts",
-                  uiOutput(ns("rank_title")), # title
-                  highchartOutput(ns("rank_chart")) # chart
-        ),
-        nav_panel("Data",
-                  reactableOutput(ns("rank_table")) # table
-        ),
-        nav_panel("Help", # help
-                  uiOutput(ns("rank_help"))
-        ),
-        nav_spacer(),
-        nav_item(
-          bslib::popover(
-            title = "Filters",
-            bsicons::bs_icon("gear", size = "1.7em"),
-            checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
+            id = ns("rank_navset_card_pill"),
+          full_screen = TRUE,
+          height = 550,
+          
+          # charts tab
+          nav_panel("Charts",
+                    value = ns("rank_chart_tab"), #id for guided tour
+                    uiOutput(ns("rank_title")), # title
+                    highchartOutput(ns("rank_chart")) # chart
+          ),
+          
+          # data tab
+          nav_panel("Data",
+                    value = ns("rank_data_tab"), #id for guided tour
+                    reactableOutput(ns("rank_table")) # table
+          ),
+          
+          # metadata tab
+          nav_panel("Metadata",
+                    value = ns("rank_metadata_tab"), #id for guided tour
+                    uiOutput(ns("rank_help"))
+          ),
+          nav_spacer(),
+          nav_item(
+            bslib::popover(
+              title = "Filters",
+              bsicons::bs_icon("gear", size = "1.7em"),
+              checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
           )
         ),
         card_footer(class = "d-flex justify-content-between",
-                             div(id = "rank_download_chart", download_chart_mod_ui(ns("save_rank_chart"))),
-                             div(id = "rank_download_data", download_data_btns_ui(ns("rank_download"))))
+                             div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
+                             div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
         
       )),
        # close div
       
       # map card -------------------
       
-      div(id = "rank_map_wrapper",
+      div(id = ns("rank_map_wrapper"),
           card(
         height = 550,
         full_screen = TRUE,
@@ -130,6 +140,8 @@ rank_mod_ui <- function(id) {
 rank_mod_server <- function(id, profile_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
+    # permits compatibility between shiny and cicerone tours
+    ns <- session$ns
     
     #######################################################
     # Dynamic filters
@@ -293,7 +305,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
      
      
      #######################################################
-     ## dynamic text  ----
+     ## Dynamic text  ----
      #######################################################
 
      # title ---------
@@ -357,19 +369,6 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
            
          )
      })
-    
-    
-    ############################################
-    # Guided tour
-    ###########################################
-    
-    #initiate the guide
-    guide_rank$init()
-    
-    #when guided tour button is clicked, start the guide
-    observeEvent(input$rank_tour_button, {
-      guide_rank$start()
-    })
      
      
      ############################################
@@ -550,7 +549,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
  
      
      ######################################
-     # downloads -------
+     # Downloads -------
      ######################################
      
      # note these are both modules 
@@ -558,8 +557,87 @@ Not all profiles have available indicators for all geography types. The drugs pr
      download_data_btns_server(id = "rank_download", data = rank_data()) # download data in selected format
      
      
-     }
-    )
+     ############################################
+     # Guided tour
+     ###########################################
+     
+     guide_rank<- Cicerone$
+       new()$
+       step(
+         ns("rank_chart"), #chart tab
+         "Chart Tab",
+         "These charts allow areas to be ranked against others of the same type.<br>
+     You can also add a baseline comparator to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator.<br>
+     For example, you may want to assess whether each  is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular 
+     areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)",
+         position = "right",
+         tab_id = ns("rank_navset_card_pill"),
+         tab = ns("rank_chart_tab")
+       )$
+       step(
+         ns("rank_table"), #table tab
+         "Data Tab",
+         "The data tab shows the figures underpinning the chart for the selected indicator.",
+         position = "right",
+         tab_id = ns("rank_navset_card_pill"),
+         tab = ns("rank_data_tab")
+       )$
+       step(
+         ns("rank_metadata"), #metadata tab
+         "Metadata Tab",
+         "The metadata tab shows information about the data source, methodological information, advice on interpretation, and any known data quality issues.",
+         position = "right",
+         tab_id = ns("rank_navset_card_pill"),
+         tab = ns("rank_metadata_tab")
+       )$
+       step(
+         ns("rank_map_wrapper"),
+         "Compare Areas Spatially",
+         "This map allows spatial comparison of areas. Darker shading represents higher values for the selected indicator with lighter shading representing lower values.<br> 
+     Hover over an area of the map to view the name of the area and its value.<br>
+     Please note that the shading is relative to other areas of the same type; therefore two areas of different shades may have similar absolute values for the indicator if variability between areas is low.",
+         position = "left"
+       )$
+       step(
+         ns("rank_indicator_filter_wrapper"), 
+         "Indicator Filter",
+         "First select an indicator.<br>
+     The list has been filtered based on profile and area type selected at the top of the page.<br>
+     The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
+         position = "bottom"
+       )$
+       step(
+         ns("rank_comparator_wrapper"),
+         "Select a Comparator",
+         "Select a comparator to see whether each area
+    within your chosen geography level (e.g. health boards) is statistically significantly
+    better or worse than another area (e.g. Scotland) or another point in time (e.g. 10 years ago).",
+         position = "bottom"
+       )$
+       step(
+         ns("rank_download_chart"),
+         "Download Chart Button",
+         "Click here to download this chart as a PNG.",
+         position = "bottom"
+       )$
+       step(
+         ns("rank_download_data"),
+         "Download Data Button",
+         "Click here to download the selected data as a CSV, RDS or JSON file.",
+         position = "left"
+       )
+     
+     
+     #initiate the guide
+     guide_rank$init()
+     
+     #when guided tour button is clicked, start the guide
+     observeEvent(input$rank_tour_button, {
+       guide_rank$start()
+     })
+     
+     
+     }) # close moduleServer
 } # close server function
 
 
