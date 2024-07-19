@@ -91,7 +91,7 @@ rank_mod_ui <- function(id) {
             nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear", size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
               )
             ),

@@ -73,7 +73,7 @@ pop_groups_ui <- function(id) {
             bslib::nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear", size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
                 selectInput(ns("pop_years_filter"), label = "select year", choices = NULL)
               )
@@ -114,7 +114,7 @@ pop_groups_ui <- function(id) {
             bslib::nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear",size = "1.7em"),
+                chart_controls_icon(),
                 # too many CI for age split, removed at this stage
                 checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE) 
               )

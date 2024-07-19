@@ -82,7 +82,7 @@ simd_navpanel_ui <- function(id) {
             bslib::nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear", size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("bar_ci_switch"), label = " include confidence intervals", FALSE),
                 selectInput(ns("simd_years_filter"), label = "select year", choices = NULL)
               )
@@ -118,7 +118,7 @@ simd_navpanel_ui <- function(id) {
             bslib::nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear",size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
               )
             ),
