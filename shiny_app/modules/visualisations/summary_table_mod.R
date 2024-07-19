@@ -19,7 +19,9 @@ summary_table_ui <- function(id) {
   ns <- NS(id)
   tagList(
     br(),
+    hidden(
     card(
+      id = ns("spine_chart_explanation"),
       card_header("How to interpret table results"),
       card_body(
         p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have seleced a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
@@ -37,7 +39,8 @@ summary_table_ui <- function(id) {
             span(tags$div(style = "width:20px; height:20px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - worse than national average"),
             span(tags$div(style = "width:20px; height:20px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland"),
             span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
-          )))),
+          ))))
+    ),
     bslib::card(
       bslib::card_header(
               class = "d-flex flex-row-reverse",
@@ -63,6 +66,19 @@ summary_table_ui <- function(id) {
 summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, domain_order = NULL) {
   
   moduleServer(id, function(input, output, session) {
+    
+    
+    
+    # show spine chart explanation when any areatype other
+    # than Scotland has been selected, otherwise hide it
+    observe({
+      if (selected_geo()$areatype != "Scotland") {
+        shinyjs::show("spine_chart_explanation")
+      } else {
+        shinyjs::hide("spine_chart_explanation")
+      }
+    })
+    
     
     
     # prepare local summary data 
