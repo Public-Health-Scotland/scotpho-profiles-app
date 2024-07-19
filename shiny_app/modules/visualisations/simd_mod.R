@@ -32,8 +32,8 @@ simd_navpanel_ui <- function(id) {
                                      label = "Click here for a guided tour of this page"),
                         
                         # indicator filter (note this is a module)
-                        div(id = "deprivation_indicator_filter_wrapper", indicator_filter_mod_ui(ns("simd_indicator_filter"))),
-                        # 3 x help buttons
+                        div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
+                        # Indicator definition and what is SIMD button
                         layout_column_wrap(
                           indicator_definition_btn_ui(ns("simd_ind_def"),class = "act-btn")
                         ),
@@ -43,11 +43,11 @@ simd_navpanel_ui <- function(id) {
                         # indicator_filter_mod_ui(ns("simd_indicator_filter")),
                         
                         # filter to include/exclude averages from charts
-                        div(id = "deprivation_avg_switch_wrapper", checkboxInput(ns("average_switch"), label = " include averages", TRUE)),
+                        div(id = ns("deprivation_avg_switch_wrapper"), checkboxInput(ns("average_switch"), label = " include averages", TRUE)),
                         
                         
                         # quint type filter 
-                        div(id = "deprivation_quintile_type_wrapper", 
+                        div(id = ns("deprivation_quintile_type_wrapper"), 
                             radioButtons(inputId = ns("quint_type"), 
                                      label = "Quintile Type",
                                      choices = c("Scotland", "Local"), 
@@ -62,23 +62,35 @@ simd_navpanel_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
-        div(id = "deprivation_barchart_wrapper", 
+        
         bslib::navset_card_pill(
+          id = ns("deprivation_navset_card_pill_barchart"),
           height = 550,
           full_screen = TRUE,
           
           # tab 1: bar chart 
-         
               bslib::nav_panel("Chart",
+                           value = ns("deprivation_barchart_tab"), #id for guided tour
                            uiOutput(ns("barchart_title")), # title 
                            highchartOutput(ns("simd_barchart")) # chart 
           ),
           
           # tab 2: data table
           bslib::nav_panel("Table",
+                           value = ns("deprivation_data_tab"), #id for guided tour
                            reactableOutput(ns("bar_table")) # table
           ),
+          
+          
+          # tab 3: metadata
+          bslib::nav_panel("Metadata",
+                           value = ns("deprivation_metadata_tab"), #id for guided tour
+                           uiOutput(ns("deprivation_metadata"))
+          ),
+          
+          
           bslib::nav_spacer(),
+
           
           # extra controls for bar chart 
           bslib::nav_item(
@@ -87,29 +99,31 @@ simd_navpanel_ui <- function(id) {
               bsicons::bs_icon("gear", size = "1.7em"),
               checkboxInput(ns("bar_ci_switch"), label = " include confidence intervals", FALSE),
               selectInput(ns("simd_years_filter"), label = "select year", choices = NULL)
-            )
-          ),
+            ) #close popover
+          ), #close popover panel
           # card footer - download buttons
           card_footer(class = "d-flex justify-content-between",
-                      div(id = "deprivation_download_chart", download_chart_mod_ui(ns("save_simd_barchart"))),
-                      div(id = "deprivation_download_data", download_data_btns_ui(ns("simd_barchart_download"))))
-        )), # close bar chart card
+                      div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_barchart"))),
+                      div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_barchart_download"))))
+        ), # close bar chart card
         
         
-        div(id = "deprivation_trendchart_wrapper",
           bslib::navset_card_pill(
+            id = ns("deprivation_navset_card_pill_linechart"),
           height = 550,
           full_screen = TRUE,
           
           # tab 1: trend chart
           
           bslib::nav_panel("Chart",
+                           value = ns("deprivation_linechart_tab"), #id for guided tour
                            uiOutput(ns("trendchart_title")), # title
                            highchartOutput(ns("simd_trendchart")) # chart
           ),
           
           # tab 2: data table
           bslib::nav_panel("Table",
+                           value = ns("deprivation_table_linechart_tab"), #id for guided tour
                            reactableOutput(ns("trend_table"))
           ),
           
@@ -125,10 +139,9 @@ simd_navpanel_ui <- function(id) {
           ),
           # card footer - download buttons
           card_footer(class = "d-flex justify-content-between",
-                      div(id = "deprivation_download_chart", download_chart_mod_ui(ns("save_simd_trendchart"))),
-                      div(id = "deprivation_download_data", download_data_btns_ui(ns("simd_trendchart_download"))))
+                      div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_trendchart"))),
+                      div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_trendchart_download"))))
         ) # close trend card
-        ) # close div
       ) # close layout column wrap
       
     ) # close sidebar layout
@@ -144,10 +157,11 @@ simd_navpanel_ui <- function(id) {
 ## MODULE SERVER
 #######################################################
 
-
-simd_navpanel_server <- function(id, simd_data, geo_selections) {
+simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
   moduleServer(id, function(input, output, session) {
     
+    # permits compatibility between shiny and cicerone tours
+    ns <- session$ns
     
     #######################################################
     ## Dynamic filters -----
@@ -254,7 +268,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     
     
     #######################################################
-    ## dynamic text  ----
+    ## Dynamic text  ----
     #######################################################
     
     
@@ -305,23 +319,21 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
       ))
     })
     
-    
-    ############################################
-    # Guided tour
-    ###########################################
-    
-    #initiate the guide
-    guide_deprivation$init()
-    
-    #when guided tour button is clicked, start the guide
-    observeEvent(input$deprivation_tour_button, {
-      guide_deprivation$start()
+    # populate metadata tab ------------
+    output$deprivation_metadata <- renderUI({
+      
+      #create dataframe containing only notes_caveats column for selected indicator from techdoc
+      indicator_caveats <- techdoc |> 
+        filter(indicator_name == selected_indicator()) |> 
+        select(notes_caveats)
+      
+      #print notes and caveats for selected indicator
+      tags$p(indicator_caveats)
     })
     
-    
-    
+
     ############################################
-    # charts -----
+    # Charts -----
     #############################################
     
     # trend chart ---------------
@@ -502,6 +514,103 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     download_data_btns_server(id = "simd_trendchart_download", data = trend_data())
     
     
-  }
-  )
-}
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    guide_deprivation <- Cicerone$
+      new()$
+      step(
+        ns("simd_barchart"),
+        "Bar Chart",
+        "This chart shows how the selected measure varies according to the relative deprivation of an area of residence, 
+        It allows comparison of the most and least deprived areas.",
+        position = "right",
+        tab_id = ns("deprivation_navset_card_pill_barchart"),
+        tab = ns("deprivation_barchart_tab")
+      )$
+      step(
+        ns("bar_table"),
+        "Data Tab",
+        "The data tab shows the figures underpinning the chart for the selected indicator.",
+        position = "right",
+        tab_id = ns("deprivation_navset_card_pill_barchart"),
+        tab = ns("deprivation_data_tab")
+      )$
+      step(
+        ns("deprivation_metadata"),
+        "Metadata Tab",
+        "The metadata tab shows information about the data source, methodological information, advice on interpretation, and any known data quality issues.",
+        position = "right",
+        tab_id = ns("deprivation_navset_card_pill_barchart"),
+        tab = ns("deprivation_metadata_tab")
+      )$
+      step(
+        ns("simd_trendchart"),
+        "Linechart Tab",
+        "This chart shows the value of a measure by deprivation quintile over time. 
+        It allows comparison of the most and least deprived areas over time.",
+        position = "left",
+        tab_id = ns("deprivation_navset_card_pill_linechart"),
+        tab = ns("deprivation_linechart_tab")
+      )$
+      step(
+        ns("trend_table"),
+        "Data Tab",
+        "The data tab shows the figures underpinning the chart for the selected indicator.",
+        position = "left",
+        tab_id = ns("deprivation_navset_card_pill_linechart"),
+        tab = ns("deprivation_table_linechart_tab")
+      )$
+      step(
+        ns("deprivation_indicator_filter_wrapper"), 
+        "Indicator Filter",
+        "First select an indicator.<br>
+        The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
+        The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
+        position = "right"
+      )$
+      step(
+        ns("simd_help"),
+        "Information on SIMD",
+        "Click here for more information on SIMD",
+        position = "right"
+      )$
+      step(
+        ns("deprivation_avg_switch_wrapper"),
+        "Average Line",
+        "Click to add or remove a trend line showing the average for the measure across all quintiles.",
+        position = "right"
+      )$
+      step(
+        ns("deprivation_quintile_type_wrapper"),
+        "Quintile Type",
+        "When an area other than Scotland is selected, click here to toggle between local and Scottish quintiles.",
+        position = "right"
+      )$
+      step(
+        ns("deprivation_download_chart"),
+        "Download Chart Button",
+        "Click here to download this chart as a PNG.",
+        position = "above"
+      )$
+      step(
+        ns("deprivation_download_data"),
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "above")
+    #add step for tooltips
+    
+    
+    #initiate the guide
+    guide_deprivation$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$deprivation_tour_button, {
+      guide_deprivation$start()
+    })
+    
+    
+    
+  }) #close moduleServer
+ } # close server function

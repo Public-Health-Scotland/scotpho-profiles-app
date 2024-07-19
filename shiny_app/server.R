@@ -178,22 +178,22 @@ function(input, output, session) {
   
   # logic controlling rank visualisations
   # # takes profile data and further filters by selected areatype
-  rank_mod_server("hwb_rank", profile_data, geo_selections)
-  rank_mod_server("cyp_rank", profile_data, geo_selections)
-  rank_mod_server("cwb_rank", profile_data, geo_selections)
-  rank_mod_server("alc_rank", profile_data, geo_selections)
-  rank_mod_server("drg_rank", profile_data, geo_selections)
-  rank_mod_server("men_rank", profile_data, geo_selections)
-  rank_mod_server("pop_rank", profile_data, geo_selections)
-  rank_mod_server("tob_rank", profile_data, geo_selections)
-  rank_mod_server("all_rank", all_indicators_data, geo_selections)
+  rank_mod_server("hwb_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("cyp_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("cwb_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("alc_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("drg_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("men_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("pop_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("tob_rank", profile_data, geo_selections, techdoc = techdoc)
+  rank_mod_server("all_rank", all_indicators_data, geo_selections, techdoc = techdoc)
   
   
   # logic controlling simd visualisations
-  simd_navpanel_server("cwb_simd", simd_data2, geo_selections)
-  simd_navpanel_server("hwb_simd", simd_data2, geo_selections)
-  simd_navpanel_server("cyp_simd", simd_data2, geo_selections)
-  simd_navpanel_server("pop_simd", simd_data2, geo_selections)
+  simd_navpanel_server("cwb_simd", simd_data2, geo_selections, techdoc = techdoc)
+  simd_navpanel_server("hwb_simd", simd_data2, geo_selections, techdoc = techdoc)
+  simd_navpanel_server("cyp_simd", simd_data2, geo_selections, techdoc = techdoc)
+  simd_navpanel_server("pop_simd", simd_data2, geo_selections, techdoc = techdoc)
   
   # logic controlling population group dataset
   # makes dataset reactive so can be used by module - potentially remove when data prep is complete - could be renamed as it supplies data for 

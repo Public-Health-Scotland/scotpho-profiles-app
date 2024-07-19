@@ -95,7 +95,7 @@ rank_mod_ui <- function(id) {
           # metadata tab
           nav_panel("Metadata",
                     value = ns("rank_metadata_tab"), #id for guided tour
-                    uiOutput(ns("rank_help"))
+                    uiOutput(ns("rank_metadata"))
           ),
           nav_spacer(),
           nav_item(
@@ -137,7 +137,7 @@ rank_mod_ui <- function(id) {
 # id = unique id 
 # profile_data = reactive df in main server
 # geo_selections <- reactive values in main server storing global geography selections
-rank_mod_server <- function(id, profile_data, geo_selections) {
+rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -369,6 +369,18 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
            
          )
      })
+    
+    # info to display when user clicks metadata tab
+    output$rank_metadata <- renderUI({
+      
+      #create dataframe containing only notes_caveats column for selected indicator from techdoc
+      indicator_caveats <- techdoc |> 
+        filter(indicator_name == selected_indicator()) |> 
+        select(notes_caveats)
+      
+      #print notes and caveats for selected indicator
+      tags$p(indicator_caveats)
+    })
      
      
      ############################################

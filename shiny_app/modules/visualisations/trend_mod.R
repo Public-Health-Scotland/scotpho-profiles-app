@@ -129,6 +129,10 @@ trend_mod_ui <- function(id) {
 
 
 
+#######################################################
+## MODULE SERVER
+#######################################################
+
 trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
   moduleServer(id, function(input, output, session) {
     
@@ -379,7 +383,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
 
     
-    # info to display when user clicks supporting information tab
+    # info to display when user clicks metadata tab
     output$trend_metadata <- renderUI({
       
       #create dataframe containing only notes_caveats column for selected indicator from techdoc
