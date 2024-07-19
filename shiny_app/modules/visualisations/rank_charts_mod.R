@@ -283,7 +283,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
       
       # further filter if HSCL or IZ selected, 
       if(geo_selections()$areatype == "HSC locality"){
-        x <- x |> filter(hscp2019name == geo_selections()$parent_area)
+        x <- x |> filter(parent_area == geo_selections()$parent_area)
       } else if(geo_selections()$areatype == "Intermediate zone"){
         x <- x |> filter(council == geo_selections()$parent_area)
       } else{ 
