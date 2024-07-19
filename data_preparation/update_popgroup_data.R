@@ -63,6 +63,11 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   rename(indicator = indicator_name) |>
     select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
   
+  # create a new column which contains the full geography path
+  # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
+  # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
+  popgroup_dataset <- create_geography_path_column(popgroup_dataset)
+  
   
   # make available in global environment for viewing what will be sent to shiny app
   popgroup_dataset <<- popgroup_dataset

@@ -187,18 +187,18 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     pop_trend_data <- reactive({
       dataset() |>
         mutate(colour_pal= case_when(split_value== "16-24"~ phs_colors(colourname = "phs-purple"),
-                                     split_value == "25-34"~ phs_colors(colourname = "phs-magenta"),
-                                     split_value == "35-44"~ phs_colors(colourname = "phs-teal"),
+                                     split_value == "25-49"~ phs_colors(colourname = "phs-magenta"),
+                                     split_value == "50-64"~ phs_colors(colourname = "phs-teal"),
                                      split_value == "45-54"~ phs_colors(colourname = "phs-blue"),
                                      split_value == "55-64"~ phs_colors(colourname = "phs-green"),
-                                     split_value == "65-74"~ phs_colors(colourname = "phs-purple-50"),
-                                     split_value == "75+"~ phs_colors(colourname = "phs-purple-30"),
-                                     split_value == "Total ages"~ phs_colors(colourname = "phs-purple-80"),
+                                    # split_value == "65-74"~ phs_colors(colourname = "phs-purple-50"),
+                                    # split_value == "75+"~ phs_colors(colourname = "phs-purple-30"),
+                                   #  split_value == "Total ages"~ phs_colors(colourname = "phs-purple-80"),
                                      #
                                      split_value== "All sex"~ phs_colors(colourname = "phs-purple"),
-                                     split_value == "Female"~ phs_colors(colourname = "phs-magenta"),
-                                     split_value == "Male"~ phs_colors(colourname = "phs-teal"),
-                                     #
+                                     split_value == "Females"~ phs_colors(colourname = "phs-magenta"),
+                                     split_value == "Males"~ phs_colors(colourname = "phs-teal"),
+
                                      split_value== "limiting_li"~ phs_colors(colourname = "phs-purple"),
                                      split_value == "no_li"~ phs_colors(colourname = "phs-magenta"),
                                      split_value == "non_limiting_li"~ phs_colors(colourname = "phs-teal"),
@@ -282,7 +282,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       )
       
       x <- hchart(pop_rank_data(), 
-                  type = "column", hcaes(x = sub_code, y = rate, color = colour_pal)) %>%
+                  type = "column", hcaes(x = split_value, y = measure, color = colour_pal)) %>%
         hc_yAxis(gridLineWidth = 0) %>%
         hc_chart(backgroundColor = 'white') %>%
         hc_xAxis(title = list(text = "")) %>%
@@ -301,7 +301,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       
       if(input$ci_switch) {
         x <- x |>
-          hc_add_series(pop_rank_data(), "errorbar", hcaes(x = sub_code, low = lowci, high = upci), zIndex = 10)
+          hc_add_series(pop_rank_data(), "errorbar", hcaes(x = split_value, low = lowci, high = upci), zIndex = 10)
       }
       
       x
@@ -318,7 +318,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       
       x <- hchart(pop_trend_data(), 
                   "line",
-                  hcaes(x = trend_axis, y = rate, group = split_value),
+                  hcaes(x = trend_axis, y = measure, group = split_value),
                   color = unique(pop_trend_data()$colour_pal)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
@@ -396,7 +396,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     output$pop_rank_table <- renderReactable({
       
       data <- pop_rank_data() |>
-        select(def_period, split_value, rate)
+        select(def_period, split_value, measure)
       
       reactable(data = data,
                 defaultExpanded = TRUE,
@@ -405,7 +405,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                 columns = list(
                   def_period = colDef(name = "Time Period"),
                   split_value = colDef(name = "Population Group"),
-                  rate = colDef(name = "Measure")
+                  measure = colDef(name = "Measure")
                 )
       )
     })
@@ -414,7 +414,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     output$pop_trend_table <- renderReactable({
       
       data <- pop_trend_data() |>
-        select(def_period, split_value, rate)
+        select(def_period, split_value, measure)
       
       reactable(data = data,
                 defaultExpanded = TRUE,
@@ -423,7 +423,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                 columns = list(
                   def_period = colDef(name = "Time Period"),
                   split_value = colDef(name = "Population Group"),
-                  rate = colDef(name = "Measure")
+                  measure = colDef(name = "Measure")
                 )
       )
       
