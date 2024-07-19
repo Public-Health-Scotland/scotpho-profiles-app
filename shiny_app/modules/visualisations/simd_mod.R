@@ -1,6 +1,5 @@
 #to-do
 
-# split deprivation dataset into mini datasets to pass to this module (otherwise the deprivation section will be identical across all profiles as same indicator choices?)
 # add in help text to explain charts for help button - we need simd button and help button?
 
 
@@ -62,7 +61,7 @@ simd_navpanel_ui <- function(id) {
         1/2,
         
         # Bar chart card ------------------------------------------
-        
+
         bslib::navset_card_pill(
           id = ns("deprivation_navset_card_pill_barchart"),
           height = 550,
@@ -91,66 +90,66 @@ simd_navpanel_ui <- function(id) {
           
           bslib::nav_spacer(),
 
-          
-          # extra controls for bar chart 
-          bslib::nav_item(
-            bslib::popover(
-              title = "Filters",
-              bsicons::bs_icon("gear", size = "1.7em"),
-              checkboxInput(ns("bar_ci_switch"), label = " include confidence intervals", FALSE),
-              selectInput(ns("simd_years_filter"), label = "select year", choices = NULL)
-            ) #close popover
-          ), #close popover panel
-          # card footer - download buttons
-          card_footer(class = "d-flex justify-content-between",
-                      div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_barchart"))),
-                      div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_barchart_download"))))
-        ), # close bar chart card
+        # extra controls for bar chart 
+            bslib::nav_item(
+              bslib::popover(
+                title = "Filters",
+                chart_controls_icon(),
+                checkboxInput(ns("bar_ci_switch"), label = " include confidence intervals", FALSE),
+                selectInput(ns("simd_years_filter"), label = "select year", choices = NULL)
+              ) #close popover
+            ), #close popover panel
+            # card footer - download buttons
+            card_footer(class = "d-flex justify-content-between",
+                        div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_barchart"))),
+                        div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_barchart_download"))))
+          )), # close bar chart card
         
-        
+   
+               suppressWarnings(
           bslib::navset_card_pill(
             id = ns("deprivation_navset_card_pill_linechart"),
-          height = 550,
-          full_screen = TRUE,
-          
-          # tab 1: trend chart
-          
-          bslib::nav_panel("Chart",
-                           value = ns("deprivation_linechart_tab"), #id for guided tour
-                           uiOutput(ns("trendchart_title")), # title
-                           highchartOutput(ns("simd_trendchart")) # chart
-          ),
-          
-          # tab 2: data table
-          bslib::nav_panel("Table",
-                           value = ns("deprivation_table_linechart_tab"), #id for guided tour
-                           reactableOutput(ns("trend_table"))
-          ),
-          
-          bslib::nav_spacer(),
-          
-          # extra controls for filters
-          bslib::nav_item(
-            bslib::popover(
-              title = "Filters",
-              bsicons::bs_icon("gear",size = "1.7em"),
-              checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
-            )
-          ),
-          # card footer - download buttons
-          card_footer(class = "d-flex justify-content-between",
-                      div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_trendchart"))),
-                      div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_trendchart_download"))))
+            height = 550,
+            full_screen = TRUE,
+            
+            # tab 1: trend chart 
+            bslib::nav_panel("Chart",
+                             value = ns("deprivation_linechart_tab"), #id for guided tour
+                             uiOutput(ns("trendchart_title")), # title
+                             highchartOutput(ns("simd_trendchart")) |># chart
+                               withSpinner() |> (\(x) {
+                                 x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                                 x})()
+            ),
+            
+            # tab 2: data table
+            bslib::nav_panel("Table",
+                             value = ns("deprivation_table_linechart_tab"), #id for guided tour
+                             reactableOutput(ns("trend_table"))
+            ),
+            
+            bslib::nav_spacer(),
+
+            # extra controls for filters
+            bslib::nav_item(
+              bslib::popover(
+                title = "Filters",
+                chart_controls_icon(),
+                checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
+              )
+            ),
+            # card footer - download buttons
+            card_footer(class = "d-flex justify-content-between",
+                        div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_trendchart"))),
+                        div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_trendchart_download"))))
+          )
+
         ) # close trend card
       ) # close layout column wrap
       
     ) # close sidebar layout
   ) # close taglist
 } # close ui function 
-
-
-
-
 
 
 #######################################################
@@ -169,6 +168,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     
     # update years choices for bar chart filter, depending on indicator selected
     observe({
+      
+      #req(active_nav() == nav_id)
       
       available_years <- simd_data() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
@@ -215,20 +216,24 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     # generate list of indicators (from the simd indicators dataset) available 
     selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
     
+    
     # calls definition button module server script and passes the actual indicator selected)
     indicator_definition_btn_server("simd_ind_def", selected_indicator = selected_indicator)  
+    
+    
+    geography_data <- reactive({
+      dt <- setDT(simd_data())
+      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
+      
+    })
     
     # creates trend data
     trend_data <- reactive({
       
-      # generate reactive data
-      dt <- setDT(simd_data()) # set deprivation data to data.table format
       
-      # filter by selected areatype
-      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
       # filter by selected indicator
-      dt <- dt[indicator == selected_indicator()]
+      dt <- geography_data()[indicator == selected_indicator()]
       
       # filter by quint type 
       if(input$quint_type == "Scotland"){
@@ -263,6 +268,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     
     
     bar_data <- reactive({
+      req(trend_data())
       trend_data()[def_period == input$simd_years_filter]
     })
     
@@ -510,8 +516,41 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
     download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
     
-    download_data_btns_server(id = "simd_barchart_download", data = bar_data())
-    download_data_btns_server(id = "simd_trendchart_download", data = trend_data())
+    download_data_btns_server(id = "simd_barchart_download", 
+                              data = bar_data, 
+                              file_name = "SIMD_ScotPHO_data_extract",
+                              selected_columns = c("code", 
+                                                   "areatype", 
+                                                   "areaname", 
+                                                   "indicator", 
+                                                   "type_definition", 
+                                                   "definition_period" = "def_period",
+                                                   "quintile_type" = "quint_type",
+                                                   "quintile", 
+                                                   "numerator", 
+                                                   "measure", 
+                                                   "upper_confidence_interval" = "upci", 
+                                                   "lower_confidence_interval" = "lowci"))
+    
+    
+    
+    
+    download_data_btns_server(id = "simd_trendchart_download", 
+                              data = trend_data, 
+                              file_name = "SIMD_Trend_ScotPHO_data_extract",
+                              selected_columns = c("code", 
+                                                   "areatype", 
+                                                   "areaname", 
+                                                   "indicator", 
+                                                   "type_definition", 
+                                                   "definition_period" = "def_period",
+                                                   "trend_axis",
+                                                   "quintile_type" = "quint_type",
+                                                   "quintile", 
+                                                   "numerator", 
+                                                   "measure", 
+                                                   "upper_confidence_interval" = "upci", 
+                                                   "lower_confidence_interval" = "lowci"))
     
     
     ############################################

@@ -44,6 +44,7 @@ rank_mod_ui <- function(id) {
                                              within your chosen geography level (e.g. health boards) is statistically significantly
                                              better or worse than another area (e.g. Scotland) or another point in time (e.g. 10 years ago)."))
                         ),
+                        
                         # additional hidden filters to display when comparator switch turned on
                         conditionalPanel(
                           ns=NS(id),
@@ -56,7 +57,7 @@ rank_mod_ui <- function(id) {
                           conditionalPanel(
                             ns = NS(id),
                             condition = "input['comparator_type'] === 'Area'",
-                            selectInput(inputId = ns("area_comparator"),
+                            selectizeInput(inputId = ns("area_comparator"),
                                         label = "Select comparator area",
                                         choices = rank_area_comparators_list,
                                         selected = "Scotland")
@@ -64,7 +65,7 @@ rank_mod_ui <- function(id) {
                           conditionalPanel(
                             ns = NS(id),
                             condition = "input['comparator_type'] === 'Time'",
-                            selectInput(inputId = ns("year_comparator"),
+                            selectizeInput(inputId = ns("year_comparator"),
                                         label = "Select comparator year",
                                         choices = NULL)
                           )
@@ -72,62 +73,67 @@ rank_mod_ui <- function(id) {
       ), # close sidebar
       
       layout_column_wrap(
-      # bar chart card ----------------------
-      div(id = "rank_card_wrapper",
+        # bar chart card ----------------------
+        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
+        # package maintainers are aware and working on a fix
+        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
+        suppressWarnings(
           navset_card_pill(
             id = ns("rank_navset_card_pill"),
-          full_screen = TRUE,
-          height = 550,
-          
-          # charts tab
-          nav_panel("Charts",
-                    value = ns("rank_chart_tab"), #id for guided tour
-                    uiOutput(ns("rank_title")), # title
-                    highchartOutput(ns("rank_chart")) # chart
-          ),
-          
-          # data tab
-          nav_panel("Data",
-                    value = ns("rank_data_tab"), #id for guided tour
-                    reactableOutput(ns("rank_table")) # table
-          ),
-          
-          # metadata tab
-          nav_panel("Metadata",
+            full_screen = TRUE,
+            height = 550,
+            
+            # charts tab
+            nav_panel("Charts",
+                      value = ns("rank_chart_tab"), #id for guided tour
+                      uiOutput(ns("rank_title")), # title
+                      highchartOutput(ns("rank_chart")) |> # chart
+                        withSpinner() |> (\(x) {
+                          x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                          x})()
+            ),
+            
+            # data tab
+            nav_panel("Data",
+                      value = ns("rank_data_tab"), #id for guided tour
+                      reactableOutput(ns("rank_table")) # table
+            ),
+            
+            # metadata tab
+            nav_panel("Metadata",
                     value = ns("rank_metadata_tab"), #id for guided tour
                     uiOutput(ns("rank_metadata"))
           ),
-          nav_spacer(),
-          nav_item(
-            bslib::popover(
-              title = "Filters",
-              bsicons::bs_icon("gear", size = "1.7em"),
-              checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
-          )
-        ),
-        card_footer(class = "d-flex justify-content-between",
-                             div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
-                             div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
+     
+            nav_spacer(),
+            nav_item(
+              bslib::popover(
+                title = "Filters",
+                chart_controls_icon(),
+                checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
+              )
+            ),
+            card_footer(class = "d-flex justify-content-between",
+                        div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
+                        div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
+          )),
+       
+        # map card -------------------
         
-      )),
-       # close div
-      
-      # map card -------------------
-      
-      div(id = ns("rank_map_wrapper"),
-          card(
-        height = 550,
-        full_screen = TRUE,
-        leafletOutput(ns("rank_map")) # map
-        ))
-
+        div(id = ns("rank_map_wrapper"),
+        card(
+          height = 550,
+          full_screen = TRUE,
+          leafletOutput(ns("rank_map")) |> # map
+            withSpinner() |> (\(x) {
+              x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+              x})()
+        )
+        
       ) # close layout column wrap
-  ) # close layout sidebar
+    ) # close layout sidebar
   ) # close taglist
 } # close ui function 
-
-
-
 
 
 
@@ -140,7 +146,10 @@ rank_mod_ui <- function(id) {
 rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
   moduleServer(id, function(input, output, session) {
     
+
     # permits compatibility between shiny and cicerone tours
+    # req(active_nav() == nav_id)
+
     ns <- session$ns
     
     #######################################################
@@ -149,15 +158,17 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
     
     # update choices in years filter if "time" selected as comparator
     observe({
+      req(profile_data())
+      req(selected_indicator())
       
       x <- profile_data() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype)
       
-      updateSelectInput(session, inputId = "year_comparator",
+      updateSelectizeInput(session, inputId = "year_comparator",
                         choices = unique(x$def_period))
     })
     
-    
+
     # disable confidence interval checkbox when time selected as comparator
     observe({
       if (input$comparator_switch == TRUE & input$comparator_type == "Time") {
@@ -176,90 +187,92 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
     
     # stores selected indicator ----------------------------------------------
     # (note this is a module )
-     selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", 
-                                                       filtered_data = profile_data, 
-                                                       geo_selections = geo_selections)
-     
+    selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", 
+                                                      profile_data, geo_selections)
+    
     # calls definition button module server script and passes the actual indicator selected)
     indicator_definition_btn_server("rank_ind_def", selected_indicator = selected_indicator)  
-     
-     # prepares data to be plotted --------------------------------------------
-     rank_data <- reactive({
-
-       profile_data <- setDT(profile_data()) # set profile data to data.table format
-
-       # filter by selected areatype
-       if(!(geo_selections()$areatype == "Scotland")){
-         dt <- profile_data[areatype == geo_selections()$areatype]
-       } 
-       else {
-         dt <- profile_data[areatype != "Scotland"][areatype == geo_selections()$areatype]
-       }
     
-
-       # additional filtering of parent area if IZ/HSCL selected
-       if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")) {
-         dt <- dt[parent_area == geo_selections()$parent_area]
-       }
-
-       # filter by selected indicator
-       dt <- dt[indicator == selected_indicator()]
-
-       # get comparator values (if required)
-       comp_vals <- NULL
-       if(input$comparator_switch == TRUE){
-         #if comparator is area then return one single value (the value of the chosen comparator area for the latest year)
-         if(input$comparator_type == "Area"){
-           comp_vals <- profile_data[indicator == selected_indicator() & areaname == input$area_comparator,
-                      .SD[year == max(year)], by = indicator]$measure
-         } else if(input$comparator_type == "Time"){
-           # if comparator is time then return a column with values (one for each area for selected time period)
-           comp_vals <- profile_data[indicator == selected_indicator() & areatype == geo_selections()$areatype & def_period == input$year_comparator]
-           comp_vals <- comp_vals[,c("code", "measure")]
-           comp_vals <- setnames(comp_vals, "measure", "comp_vals")
-         }
-       }
-
-       # filter by latest year
-       dt <- dt[year == max(year)]
-
-
-       # attach comparator values as a column
-       if(input$comparator_switch == TRUE){
-         if(input$comparator_type == "Time") {
-         dt <- dt[comp_vals, on = "code"]
-         dt <- dt[, high := fifelse(measure < comp_vals, measure, comp_vals)]
-         dt <- dt[, low := fifelse(measure > comp_vals, measure, comp_vals)]
-         } else if(input$comparator_type == "Area"){
-         dt <- dt[, comp_vals := comp_vals]
-         dt <- dt[, diff := measure - comp_vals]
-         }
-       }
-
-       # prepare colour palette if comparator is selected (i.e. orange, blue, grey, green)
-       if(input$comparator_switch == TRUE) {
-
-         dt <- dt[, colour_pal := fcase(interpret == "O", '#999966',
-                                        is.na(lowci) | is.na(upci) | is.na(comp_vals) | is.na(measure) | measure == 0, '#999966',
-                                        lowci <= comp_vals & upci >= comp_vals, '#cccccc',
-                                        (lowci > comp_vals & interpret == "H") |  (upci < comp_vals & interpret == "L"),'#4da6ff',
-                                        (lowci > comp_vals & interpret == "L") | (upci < comp_vals & interpret == "H"), '#ffa64d',
-                                        default = '#ccccff')]
-       } else {
-         dt <- dt[, colour_pal := fifelse(areaname == geo_selections()$areaname, phs_colors("phs-purple"), phs_colors("phs-blue"))]
-       }
-
-       # order by measure
-       dt <- setorder(dt, measure)
-
-     })
-     
-     
-     
-     
-     # map data --------------------------------------
-     # dynamically selects shapefile and joins with map data
+    # prepares data to be plotted --------------------------------------------
+    rank_data <- reactive({
+      req(profile_data())
+      req(selected_indicator())
+      
+      profile_data <- setDT(profile_data()) # set profile data to data.table format
+      
+      # filter by selected areatype
+      if(!(geo_selections()$areatype == "Scotland")){
+        dt <- profile_data[areatype == geo_selections()$areatype]
+      } 
+      else {
+        dt <- profile_data[areatype != "Scotland"][areatype == geo_selections()$areatype]
+      }
+      
+      
+      # additional filtering of parent area if IZ/HSCL selected
+      if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")) {
+        dt <- dt[parent_area == geo_selections()$parent_area]
+      }
+      
+      # filter by selected indicator
+      dt <- dt[indicator == selected_indicator()]
+      
+      # get comparator values (if required)
+      comp_vals <- NULL
+      if(input$comparator_switch == TRUE){
+        #if comparator is area then return one single value (the value of the chosen comparator area for the latest year)
+        if(input$comparator_type == "Area"){
+          comp_vals <- profile_data[indicator == selected_indicator() & areaname == input$area_comparator,
+                                    .SD[year == max(year)], by = indicator]$measure
+        } else if(input$comparator_type == "Time"){
+          # if comparator is time then return a column with values (one for each area for selected time period)
+          comp_vals <- profile_data[indicator == selected_indicator() & areatype == geo_selections()$areatype & def_period == input$year_comparator]
+          comp_vals <- comp_vals[,c("code", "measure")]
+          comp_vals <- setnames(comp_vals, "measure", "comp_vals")
+        }
+      }
+      
+      # filter by latest year
+      dt <- dt[year == max(year)]
+      
+      
+      # attach comparator values as a column
+      if(input$comparator_switch == TRUE){
+        if(input$comparator_type == "Time") {
+          dt <- dt[comp_vals, on = "code"]
+          dt <- dt[, high := fifelse(measure < comp_vals, measure, comp_vals)]
+          dt <- dt[, low := fifelse(measure > comp_vals, measure, comp_vals)]
+        } else if(input$comparator_type == "Area"){
+          dt <- dt[, comp_vals := comp_vals]
+          dt <- dt[, diff := measure - comp_vals]
+        }
+      }
+      
+      # prepare colour palette if comparator is selected (i.e. orange, blue, grey, green)
+      if(input$comparator_switch == TRUE) {
+        
+        dt <- dt[, colour_pal := fcase(interpret == "O", '#999966',
+                                       is.na(lowci) | is.na(upci) | is.na(comp_vals) | is.na(measure) | measure == 0, '#999966',
+                                       lowci <= comp_vals & upci >= comp_vals, '#cccccc',
+                                       (lowci > comp_vals & interpret == "H") |  (upci < comp_vals & interpret == "L"),'#4da6ff',
+                                       (lowci > comp_vals & interpret == "L") | (upci < comp_vals & interpret == "H"), '#ffa64d',
+                                       default = '#ccccff')]
+      } else {
+        dt <- dt[, colour_pal := fifelse(areaname == geo_selections()$areaname, phs_colors("phs-purple"), phs_colors("phs-blue"))]
+      }
+      
+      # order by measure
+      dt <- setorder(dt, measure)
+      
+    })
+    
+    
+    
+    
+    # map data --------------------------------------
+    # dynamically selects shapefile and joins with map data
     map_data <- reactive({
+      req(rank_data())
       
       # create dynamic text to explain map unavailability if ADP selected
       shiny::validate(
@@ -292,7 +305,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
       
       # further filter if HSCL or IZ selected, 
       if(geo_selections()$areatype == "HSC locality"){
-        x <- x |> filter(hscp2019name == geo_selections()$parent_area)
+        x <- x |> filter(parent_area == geo_selections()$parent_area)
       } else if(geo_selections()$areatype == "Intermediate zone"){
         x <- x |> filter(council == geo_selections()$parent_area)
       } else{ 
@@ -301,8 +314,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
       x <- x |> left_join(rank_data(), by = join_by(code))
       
     })
-     
-     
+
      
      #######################################################
      ## Dynamic text  ----
@@ -310,6 +322,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
 
      # title ---------
      output$rank_title <- renderUI({
+       req(rank_data())
        
        # create dynamic text if no indicators available for selected profile
        # and geography / if Scotland selected
@@ -320,27 +333,27 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
        # get definition period
        max_year <- rank_data()$def_period[1]
        
-       # prepare areaname (including parent area if IZ/HSCL selected)
-       area <- if(geo_selections()$areatype == "HSC locality") {
-         paste("HSC Localities in ",geo_selections()$parent_area)
-       } else if(geo_selections()$areatype == "Intermediate zone"){
-         paste("Intermediate zones in ",geo_selections()$parent_area)
-       } else {
-         geo_selections()$areatype
-       }
-       
-       # prepare description of what map/chart show depending on
-       # whether comparator included (and if so which comparator)
-       chart_desc <- if(input$comparator_switch == TRUE){
-         if(input$comparator_type == "Area"){
-           tags$p(paste(area,"comparison against",input$area_comparator, " - ", max_year))
-         } else if(input$comparator_type == "Time"){
-           tags$p(area,"- ",max_year,"compared to ",input$year_comparator)
-         }
-       } else {
-         tags$p(area, " - ", max_year)
-       }
-       
+   # prepare areaname (including parent area if IZ/HSCL selected)
+      area <- if(geo_selections()$areatype == "HSC locality") {
+        paste("HSC Localities in ",geo_selections()$parent_area)
+      } else if(geo_selections()$areatype == "Intermediate zone"){
+        paste("Intermediate zones in ",geo_selections()$parent_area)
+      } else {
+        geo_selections()$areatype
+      }
+      
+      # prepare description of what map/chart show depending on
+      # whether comparator included (and if so which comparator)
+      chart_desc <- if(input$comparator_switch == TRUE){
+        if(input$comparator_type == "Area"){
+          tags$p(paste(area,"comparison against",input$area_comparator, " - ", max_year))
+        } else if(input$comparator_type == "Time"){
+          tags$p(area,"- ",max_year,"compared to ",input$year_comparator)
+        }
+      } else {
+        tags$p(area, " - ", max_year)
+      }
+     
         # display 3 x titles
         tagList(
          tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
@@ -349,25 +362,6 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
          
         )
       
-     })
-     
-  
-     # info to display when user clicks help button (explains how to interpret)
-    output$rank_help <- renderUI({ 
-         tagList(
-           tags$h5("How to use this chart"),
-           p(paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), ").")),
-           p("You can also choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator."),
-           p("For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
-                 whether there are particular areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)"),
-           br(),
-           p("If a comparator is selected, the chart and the map will be colour coded using the key below:"),
-           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
-           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
-           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
-           fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
-           
-         )
      })
     
     # info to display when user clicks metadata tab
@@ -381,125 +375,146 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
       #print notes and caveats for selected indicator
       tags$p(indicator_caveats)
     })
-     
-     
-     ############################################
-     # Visualisations / data table  ----
-     #############################################
-     
-     # chart (barchart/dumbell chart)
-      output$rank_chart <- renderHighchart({
 
-        
-        # create dynamic text if no indicators available for selected profile
-        # and geography / if Scotland selected
-        shiny::validate(
-          need( nrow(rank_data()) > 0, "Please note that rank data is unavailable at Scotland-level for all profiles.
+    # # info to display when user clicks help button (explains how to interpret)
+    # output$rank_help <- renderUI({ 
+    #   req(selected_indicator())
+    #   tagList(
+    #     tags$h5("How to use this chart"),
+    #     p(paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), ").")),
+    #     p("You can also choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator."),
+    #     p("For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
+    #              whether there are particular areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)"),
+    #     br(),
+    #     p("If a comparator is selected, the chart and the map will be colour coded using the key below:"),
+    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
+    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
+    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
+    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
+    #     
+    #   )
+    # })
+    
+    
+    ############################################
+    # Visualisations / data table  ----
+    #############################################
+    
+    # chart (barchart/dumbell chart)
+    output$rank_chart <- renderHighchart({
+      req(rank_data())
+      
+      
+      # create dynamic text if no indicators available for selected profile
+      # and geography / if Scotland selected
+      shiny::validate(
+        need( nrow(rank_data()) > 0, "Please note that rank data is unavailable at Scotland-level for all profiles.
           
 Not all profiles have available indicators for all geography types. The drugs profile has no available indicators for intermediate zones and the mental health profile has no available indicators for intermediate zones or HSC localities. Please select another profile or geography type to continue.")
-        )
+      )
+      
+      # if there' no comparator selected, or the selected comparator is "area" then create a bar chart
+      if(input$comparator_switch == FALSE | (input$comparator_switch == TRUE & input$comparator_type == "Area")) {
         
-       # if there' no comparator selected, or the selected comparator is "area" then create a bar chart
-       if(input$comparator_switch == FALSE | (input$comparator_switch == TRUE & input$comparator_type == "Area")) {
-
-         x <-  hchart(object = rank_data(), 
-                      type = "bar", hcaes(x = areaname, y = measure, color = colour_pal)) |>
-           hc_yAxis(gridLineWidth = 0) |>
-           hc_xAxis(title = list(text = "")) |>
-           hc_yAxis(title = list(text = "")) |>
-           hc_chart(margin = c(10, 0, 0, 150),
-                    backgroundColor = 'white') |>
-           hc_plotOptions(series = list(animation = FALSE)) |>
-           hc_tooltip(
-             headerFormat = "<table>",
-             pointFormat = paste(
-               '<tr><th colspan="2"><p>{point.areaname}</p></th></tr>',
-               "<tr><th>{point.type_definition}</th><td>{point.measure}</td></tr>",
-               "<tr><th>upper ci:</th><td>{point.upci}</td></tr>",
-               "<tr><th>lower ci:</th><td>{point.lowci}</td></tr>"
-             ),
-             footerFormat = "</table>",
-             useHTML = TRUE
-           ) |>
-           # title for downloaded version
-           hc_exporting(
-             chartOptions = list(
-               title = list(text = selected_indicator())
-             )
-           )
-           
-
-
-         # add red comparator line if "area" selected as comparator
-         if(input$comparator_switch == TRUE & input$comparator_type == "Area"){
-             x <- x |>
-               hc_yAxis(plotLines = list(list(color = "red", width = 3, value = rank_data()$comp_vals[1], zIndex = 10)))
-           }
-
-
-
-         # include confidence intervals when ci switch is turned on on
-         if(input$ci_switch == TRUE) {
-           x <- x |>
-             hc_add_series(rank_data(), "errorbar", hcaes(x = areaname, low = lowci, high = upci), zIndex = 10)
-         }
-
-
-         # if the selected comparator is "Time" then build a dumbbell chart instead
-       } else if (input$comparator_switch == TRUE & input$comparator_type == "Time") {
-
-         x <- hchart(object = rank_data(), type = "dumbbell", hcaes(low = low, high = high, name = areaname)) |>
-           hc_xAxis(type = "category") |>
-           hc_tooltip(shared = TRUE) |>
-           hc_legend(enabled = FALSE) |>
-           hc_chart(inverted = TRUE)
-       }
+        x <-  hchart(object = rank_data(), 
+                     type = "bar", hcaes(x = areaname, y = measure, color = colour_pal)) |>
+          hc_yAxis(gridLineWidth = 0) |>
+          hc_xAxis(title = list(text = "")) |>
+          hc_yAxis(title = list(text = "")) |>
+          hc_chart( backgroundColor = 'white') |>
+          hc_plotOptions(series = list(animation = FALSE)) |>
+          hc_tooltip(
+            headerFormat = "<table>",
+            pointFormat = paste(
+              '<tr><th colspan="2"><p>{point.areaname}</p></th></tr>',
+              "<tr><th>{point.type_definition}</th><td>{point.measure}</td></tr>",
+              "<tr><th>upper ci:</th><td>{point.upci}</td></tr>",
+              "<tr><th>lower ci:</th><td>{point.lowci}</td></tr>"
+            ),
+            footerFormat = "</table>",
+            useHTML = TRUE
+          ) |>
+          # title for downloaded version
+          hc_exporting(
+            chartOptions = list(
+              title = list(text = paste0(selected_indicator()))
+            )
+          )
         
-
-       x 
-       
-
-     })
-
-     
-     # leaflet map -------
-
-     # Global definition of value_palette
-     value_palette <- reactive({
-       if(length(unique(map_data()$measure)) > 1) {
-         colorNumeric(palette = "Blues", domain = map_data()$measure)
-       } else {
-         function(x) { phs_colors(colourname = "phs-purple") }
-       }
-     })
-
-
-     
-     output$rank_map <- renderLeaflet({
-       leaflet(map_data()) |>
-         addProviderTiles(provider = providers[["OpenStreetMap"]]) |>
-         addPolygons(weight = 1, 
-                     color = "black",
-                     fillColor = ~value_palette()(measure),
-                     fillOpacity = 0.5, 
-                     smoothFactor = 0.5, 
-                     opacity = 1, 
-                     label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
-                     labelOptions = labelOptions(
-                       style = list("font-weight" = "normal", padding = "3px 8px"),
-                       textsize = "13px",
-                       direction = "auto"
-                     ),
-                     highlightOptions = highlightOptions(
-                       color = "white", 
-                       weight = 2, 
-                       bringToFront = TRUE
-                       )
-                     ) |>
-
-         # add option to save chart as png
-         onRender(
-           "function(el, x) {
+        
+        
+        # add red comparator line if "area" selected as comparator
+        if(input$comparator_switch == TRUE & input$comparator_type == "Area"){
+          x <- x |>
+            hc_yAxis(plotLines = list(list(color = "red", width = 3, value = rank_data()$comp_vals[1], zIndex = 10)))
+        }
+        
+        
+        
+        # include confidence intervals when ci switch is turned on on
+        if(input$ci_switch == TRUE) {
+          x <- x |>
+            hc_add_series(rank_data(), "errorbar", hcaes(x = areaname, low = lowci, high = upci), zIndex = 10)
+        }
+        
+        
+        # if the selected comparator is "Time" then build a dumbbell chart instead
+      } else if (input$comparator_switch == TRUE & input$comparator_type == "Time") {
+        
+        x <- hchart(object = rank_data(), type = "dumbbell", hcaes(low = low, high = high, name = areaname)) |>
+          hc_xAxis(type = "category") |>
+          hc_tooltip(shared = TRUE) |>
+          hc_legend(enabled = FALSE) |>
+          hc_chart(inverted = TRUE)
+      }
+      
+      
+      x 
+      
+      
+    })
+    
+    
+    # leaflet map -------
+    
+    # Global definition of value_palette
+    value_palette <- reactive({
+      req(map_data())
+      if(length(unique(map_data()$measure)) > 1) {
+        colorNumeric(palette = "Blues", domain = map_data()$measure)
+      } else {
+        function(x) { phs_colors(colourname = "phs-purple") }
+      }
+    })
+    
+    
+    
+    output$rank_map <- renderLeaflet({
+      req(map_data())
+      leaflet(map_data()) |>
+        addProviderTiles(provider = providers[["OpenStreetMap"]]) |>
+        addPolygons(weight = 1, 
+                    color = "black",
+                    fillColor = ~value_palette()(measure),
+                    fillOpacity = 0.5, 
+                    smoothFactor = 0.5, 
+                    opacity = 1, 
+                    label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
+                    labelOptions = labelOptions(
+                      style = list("font-weight" = "normal", padding = "3px 8px"),
+                      textsize = "13px",
+                      direction = "auto"
+                    ),
+                    highlightOptions = highlightOptions(
+                      color = "white", 
+                      weight = 2, 
+                      bringToFront = TRUE
+                    )
+        ) |>
+        
+        # add option to save chart as png
+        onRender(
+          "function(el, x) {
             L.easyPrint({
               sizeModes: ['Current'],
               filename: 'scotpho-map',
@@ -507,58 +522,58 @@ Not all profiles have available indicators for all geography types. The drugs pr
               hideControlContainer: false
             }).addTo(this);
             }"
-         )
-     })
-
-     # update map when comparator toggled on/off
-     observe({
-       if(input$comparator_switch == TRUE) {
-         leafletProxy("rank_map", session) |>
-           clearShapes() |>
-           clearControls() |>
-           addPolygons(data = map_data(), 
-                       weight = 1, 
-                       color = "black", fill = TRUE, fillColor = ~colour_pal,
-                       fillOpacity = 0.5, smoothFactor = 0.5, opacity = 0.8,
-                       highlightOptions = highlightOptions(color = "white", weight = 2, opacity = 1, bringToFront = FALSE)) |>
-           addLegend(colors = c("#4da6ff",  "#ffa64d", "#ccccff", "#999966"),
-                     labels = c("better than comparator", "worse than comparator", "no difference", "N/A"),
-                     position = "bottomright")
-
-       } else {
-         leafletProxy("rank_map", session) |>
-           clearShapes() |>
-           clearControls() |>
-           addPolygons(data = map_data(), weight = 1, color = "black",
-                       fillColor = ~value_palette()(measure),
-                       fillOpacity = 0.5, 
-                       smoothFactor = 0.5, 
-                       opacity = 1, 
-                       label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
-                       highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE))
-       }
-     })
-     
-     
-     
-     # data table ----
-     output$rank_table <- renderReactable({
-       
-       data <- rank_data() |>
-         mutate(`Area name` = areaname,
-                Measure = measure,
-                `Upper CI` = upci,
-                `Lower CI` = lowci) |>
-         select(`Area name`, Measure, `Upper CI`, `Lower CI`) |>
-         arrange(Measure)
-       
-       reactable(data,
-                 defaultExpanded = T,
-                 defaultPageSize = nrow(data))
-     })
-
-     
- 
+        )
+    })
+    
+    # update map when comparator toggled on/off
+    observe({
+      if(input$comparator_switch == TRUE) {
+        leafletProxy("rank_map", session) |>
+          clearShapes() |>
+          clearControls() |>
+          addPolygons(data = map_data(), 
+                      weight = 1, 
+                      color = "black", fill = TRUE, fillColor = ~colour_pal,
+                      fillOpacity = 0.5, smoothFactor = 0.5, opacity = 0.8,
+                      highlightOptions = highlightOptions(color = "white", weight = 2, opacity = 1, bringToFront = FALSE)) |>
+          addLegend(colors = c("#4da6ff",  "#ffa64d", "#ccccff", "#999966"),
+                    labels = c("better than comparator", "worse than comparator", "no difference", "N/A"),
+                    position = "bottomright")
+        
+      } else {
+        leafletProxy("rank_map", session) |>
+          clearShapes() |>
+          clearControls() |>
+          addPolygons(data = map_data(), weight = 1, color = "black",
+                      fillColor = ~value_palette()(measure),
+                      fillOpacity = 0.5, 
+                      smoothFactor = 0.5, 
+                      opacity = 1, 
+                      label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
+                      highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE))
+      }
+    })
+    
+    
+    
+    # data table ----
+    output$rank_table <- renderReactable({
+      req(rank_data())
+      
+      data <- rank_data() |>
+        mutate(`Area name` = areaname,
+               Measure = measure,
+               `Upper CI` = upci,
+               `Lower CI` = lowci) |>
+        select(`Area name`, Measure, `Upper CI`, `Lower CI`) |>
+        arrange(Measure)
+      
+      reactable(data,
+                defaultExpanded = T,
+                defaultPageSize = nrow(data))
+    })
+    
+    
      
      ######################################
      # Downloads -------
@@ -566,7 +581,20 @@ Not all profiles have available indicators for all geography types. The drugs pr
      
      # note these are both modules 
      download_chart_mod_server(id = "save_rank_chart", chart_id = session$ns("rank_chart")) # save chart as png
-     download_data_btns_server(id = "rank_download", data = rank_data()) # download data in selected format
+     
+     download_data_btns_server(id = "rank_download", 
+                               data = rank_data, 
+                               file_name = "Rank_ScotPHO_data_extract",
+                               selected_columns = c("code", 
+                                                    "areatype", 
+                                                    "areaname", 
+                                                    "indicator", 
+                                                    "type_definition", 
+                                                    "definition_period" = "def_period",
+                                                    "numerator", 
+                                                    "measure", 
+                                                    "upper_confidence_interval" = "upci", 
+                                                    "lower_confidence_interval" = "lowci"))
      
      
      ############################################
@@ -639,7 +667,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
          position = "left"
        )
      
-     
+
      #initiate the guide
      guide_rank$init()
      
@@ -650,6 +678,8 @@ Not all profiles have available indicators for all geography types. The drugs pr
      
      
      }) # close moduleServer
+
 } # close server function
+
 
 

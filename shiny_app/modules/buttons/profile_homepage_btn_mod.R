@@ -18,33 +18,38 @@
 profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, description = NULL){
   ns <- NS(id)
   tagList(
-  bslib::card(
-    full_screen = FALSE,
-    bslib::card_body(
-      actionLink(inputId = ns("profile_nav"), style = "text-decoration: none; color: black;",
-                 div(class = "d-flex flex-column align-items-center", 
-                     div(icon(profile_icon, class = "fa-3x")),
-                     br(),
-                     h3(profile_name, style = "color: #3F3685; font-weight: 700;"),
-                     p(description)))))
+    bslib::card(class = "profile-btn",
+      full_screen = FALSE,
+      bslib::card_body(
+        actionLink(inputId = ns("profile_nav"), style = "text-decoration: none; color: black;",
+                   div(class = "d-flex flex-column align-items-center", 
+                       div(icon(profile_icon, class = "fa-3x")),
+                       br(),
+                       h3(profile_name, style = "color: #3F3685; font-weight: 700;"),
+                       p(description)))))
   )
 }
 
 
 
 # module server function
-profile_homepage_btn_modSERVER <- function(id, nav_id, parent_session) {
+profile_homepage_btn_modSERVER <- function(id, profile_name, parent_session) {
   moduleServer(id, function(input, output, session) {
     
-    # switch to tab
+    ns <- session$ns
+    
+    # when user clicks button: - 
     observeEvent(input$profile_nav, {
-      bslib::nav_select(id = "nav", 
-                        selected = nav_id, 
-                        session = parent_session)
-      # close the menu
-      shinyjs::js$closeNavMenu() # closes navmenu after button clicked - JS function is in main UI script
       
-      })
+      # a. navigate to the profiles tab 
+      bslib::nav_select(id = "nav", 
+                        selected = "Profiles", 
+                        session = parent_session)
+      
+      # b. update the profile filter
+      updateSelectizeInput(inputId = "profile_choices", selected = profile_name, session = parent_session)
+
+    })
   }) #close moduleServer
 } # close server
 

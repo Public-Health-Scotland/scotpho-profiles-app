@@ -29,7 +29,7 @@ definitions_tab_UI <- function(id) {
       selectizeInput(ns("profile_search"), 
                      label = "Filter by profile", 
                      multiple = TRUE,
-                     choices = as.list(c("All", unname(profiles_list))),
+                     choices = as.list(c("All", names(profiles_list))),
                      selected = "All",
                      options = list(placeholder = 'Select a profile')
                      ),
@@ -69,7 +69,7 @@ definitions_tab_Server <- function(id) {
         if(input$profile_search != "All"){
           x <- x |>
             filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% names(profiles_list)[match(input$profile_search, profiles_list)]))
+                          ~ substr(.x, 1, 3) %in% profiles_list[[input$profile_choices]]))
         }
 
         x
