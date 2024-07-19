@@ -389,8 +389,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
           hc_yAxis(gridLineWidth = 0) |>
           hc_xAxis(title = list(text = "")) |>
           hc_yAxis(title = list(text = "")) |>
-          hc_chart(margin = c(10, 0, 0, 150),
-                   backgroundColor = 'white') |>
+          hc_chart( backgroundColor = 'white') |>
           hc_plotOptions(series = list(animation = FALSE)) |>
           hc_tooltip(
             headerFormat = "<table>",
@@ -406,7 +405,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
           # title for downloaded version
           hc_exporting(
             chartOptions = list(
-              title = list(text = selected_indicator())
+              title = list(text = paste0(selected_indicator()))
             )
           )
         
