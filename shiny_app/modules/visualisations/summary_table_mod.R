@@ -31,8 +31,8 @@ summary_table_ui <- function(id) {
                 actionButton(inputId = ns("summary_tour_button"),
                              label = "Click here for a guided tour of this page"),
                 actionButton(ns("help"), label = "Help", class = "btn-sm"),
-              div(id = "summary_download_pdf_wrapper", actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm")),
-              div(id = "summary_download_data_wrapper", download_data_btns_ui(ns("download_summary_data"))),
+              div(id = ns("summary_download_pdf_wrapper"), actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm")),
+              div(id = ns("summary_download_data_wrapper"), download_data_btns_ui(ns("download_summary_data"))),
               )
               ),
       card_body(
@@ -53,6 +53,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
   
   moduleServer(id, function(input, output, session) {
     
+    # permits compatibility between shiny and cicerone tours
+    ns <- session$ns
     
     # prepare local summary data 
     local_summary <- reactive({
@@ -516,21 +518,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
     })
-    
-    
-    ############################################
-    # Guided tour
-    ###########################################
-    
-    #initiate the guide
-    guide_summary$init()
-    
-    #when guided tour button is clicked, start the guide
-    observeEvent(input$summary_tour_button, {
-      guide_summary$start()
-    })
-    
-    
+  
     
     
     # download data module 
@@ -616,6 +604,36 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         
         }
     })
+    
+    
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    guide_summary <- Cicerone$
+      new()$
+      step(
+        ns("summary_download_pdf_wrapper"),
+        "Download PDF",
+        "Click here to download a PDF containing all available indicators for the selected area.",
+        position = "below"
+      )$
+      step(
+        ns("summary_download_data_wrapper"),
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "below"
+      )
+    
+    #initiate the guide
+    guide_summary$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$summary_tour_button, {
+      guide_summary$start()
+    })
+    
  
        
   }) # close module server
