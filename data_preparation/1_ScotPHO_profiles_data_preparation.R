@@ -18,9 +18,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-######################################
+######################################.
 # Set up
-######################################
+######################################.
 
 ## Load libraries -----
 library(dplyr) # data wrangling
@@ -56,9 +56,9 @@ source("data_preparation/update_main_data.R") # script to read in and forma main
 source("data_preparation/update_popgroup_data.R") # script to read in and forma main data
 
 
-###################################################
+###################################################.
 ## Update technical document ----
-##################################################
+##################################################.
 
 # Generates techdoc parquet file within shiny app data folder
 # Also makes technical_doc visible in data pane
@@ -73,9 +73,9 @@ update_techdoc(load_test_indicators = TRUE, create_backup = FALSE)
 
 
 
-###################################################
+###################################################.
 ## Update geography lookups  ----
-###################################################
+###################################################.
 
 ## Geography Lookup
 # copy the main geography lookup to your local repo
@@ -114,9 +114,9 @@ TEST_suppression_applied(main_dataset) # double checking suppression function wa
 
 
 
-#######################################################################################
+#######################################################################################.
 ## Create geography nodes file 
-#######################################################################################
+#######################################################################################.
 
 # get a distinct list of geography paths in the main dataset
 main_dataset_geography_list <- main_dataset |>
@@ -132,10 +132,10 @@ saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_node
 
 
 
-###############################################################
+###############################################################.
 ## Update deprivation data  ----
 ## i.e. indicator data split by SIMD quintiles.
-##############################################################
+##############################################################.
 
 update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
 
@@ -150,10 +150,10 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 
 
 
-########################################################################
+########################################################################.
 ## Update population groups data  ----
 ## i.e. indicator data split by various different inequality groups.
-########################################################################
+########################################################################.
 
 #placeholder for when script ready
 
@@ -162,9 +162,9 @@ update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
 
 
 
-############################################################
+############################################################.
 ## Update shape files  ----
-############################################################
+############################################################.
 
 # Shapefiles (used to generate maps presented in rank tab only)
 # Note: this step is only really necessary if you are running this script for the first time
@@ -172,9 +172,9 @@ update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
 update_shapefiles()
 
 
-###############################################################
+###############################################################.
 ## Remove objects  ----
-###############################################################
+###############################################################.
 
 # remove objects from global environment before running shiny app 
 rm(list = ls())
