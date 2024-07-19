@@ -103,7 +103,7 @@ simd_navpanel_ui <- function(id) {
             card_footer(class = "d-flex justify-content-between",
                         div(id = ns("deprivation_download_chart"), download_chart_mod_ui(ns("save_simd_barchart"))),
                         div(id = ns("deprivation_download_data"), download_data_btns_ui(ns("simd_barchart_download"))))
-          )), # close bar chart card
+          ), # close bar chart card
         
    
                suppressWarnings(

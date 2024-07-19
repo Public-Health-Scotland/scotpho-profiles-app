@@ -311,52 +311,7 @@ function(input, output, session) {
   })
   
 
-  # logic controlling summary tables
-  # takes profile data and further filters by selected geography
-  # prepares summary data and displays in a table with spinecharts
-  summary_table_server("hwb_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("cyp_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("cwb_summary", geo_selections, profile_name, profile_data, domain_order = c("Over-arching indicators", "Early years", "Healthy places", "Impact of ill health prevention"))
-  summary_table_server("alc_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("drg_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("men_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("pop_summary", geo_selections, profile_name, profile_data)
-  summary_table_server("tob_summary", geo_selections, profile_name, profile_data)
-  
-  
-  # logic controlling trends tab
-  # takes profile data and further filters by selected geography
-  # displays trend chart based on selected indicator from drop down list
-  trend_mod_server("hwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("cyp_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("cwb_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("alc_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("drg_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("men_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("pop_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("tob_trends", filtered_data = profile_data, geo_selections = geo_selections, techdoc = techdoc)
-  trend_mod_server("all_trends", filtered_data = all_indicators_data, geo_selections = geo_selections, techdoc = techdoc)
-  
-  # logic controlling rank visualisations
-  # # takes profile data and further filters by selected areatype
-  rank_mod_server("hwb_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("cyp_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("cwb_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("alc_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("drg_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("men_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("pop_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("tob_rank", profile_data, geo_selections, techdoc = techdoc)
-  rank_mod_server("all_rank", all_indicators_data, geo_selections, techdoc = techdoc)
-  
-  
-  # logic controlling simd visualisations
-  simd_navpanel_server("cwb_simd", simd_data2, geo_selections, techdoc = techdoc)
-  simd_navpanel_server("hwb_simd", simd_data2, geo_selections, techdoc = techdoc)
-  simd_navpanel_server("cyp_simd", simd_data2, geo_selections, techdoc = techdoc)
-  simd_navpanel_server("pop_simd", simd_data2, geo_selections, techdoc = techdoc)
-  
-  
+
   # 4. POPULATION GROUPS DATASET
   # a temporary dataset passed to the population groups module - this will be expanded over time
   ineq_splits_temporary <- reactive({

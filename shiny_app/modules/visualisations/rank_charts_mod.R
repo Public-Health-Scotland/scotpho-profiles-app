@@ -128,7 +128,7 @@ rank_mod_ui <- function(id) {
             withSpinner() |> (\(x) {
               x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
               x})()
-        )
+        ))
         
       ) # close layout column wrap
     ) # close layout sidebar
