@@ -3,14 +3,14 @@
 # add in help text to explain charts for help button - we need simd button and help button?
 
 
-################################
+################################.
 # MODULE: simd_navpanel_mod ---- 
 # prepares the nav_panel layout displaying SIMD based deprivation data
-################################
+################################.
 
-#######################################################
+#######################################################.
 ## MODULE UI
-#######################################################
+#######################################################.
 
 ## ui function -----------------------------------------------------------------------
 # id = unique id 
@@ -139,18 +139,18 @@ simd_navpanel_ui <- function(id) {
 
 
 
-#######################################################
+#######################################################.
 ## MODULE SERVER
-#######################################################
+#######################################################.
 
 
 simd_navpanel_server <- function(id, simd_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     
-    #######################################################
+    #######################################################.
     ## Dynamic filters -----
-    ######################################################
+    #######################################################.
     
     # update years choices for bar chart filter, depending on indicator selected
     observe({
@@ -195,9 +195,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    #######################################################
+    #######################################################.
     ## Reactive data / values ----
-    #######################################################
+    #######################################################.
     
     # generate list of indicators (from the simd indicators dataset) available 
     selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
@@ -259,9 +259,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    #######################################################
+    #######################################################.
     ## dynamic text  ----
-    #######################################################
+    #######################################################.
     
     
     # bar chart title ---------
@@ -312,9 +312,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    ############################################
+    #############################################.
     # charts -----
-    #############################################
+    #############################################.
     
     # trend chart ---------------
     output$simd_trendchart <- renderHighchart({
@@ -449,9 +449,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    ##########################################
-    # Tables ---------
-    ###########################################
+    ###########################################.
+    # Tables ----
+    ###########################################.
     
     # trend data table -------
     output$trend_table <- renderReactable({
@@ -489,9 +489,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    ############################################
+    #############################################.
     # Downloads  ----
-    #############################################
+    #############################################.
     
     download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
     download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
