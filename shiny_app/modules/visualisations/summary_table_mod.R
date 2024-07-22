@@ -22,17 +22,36 @@ summary_table_ui <- function(id) {
     # enable guided tour
     use_cicerone(),
     
+    br(),
+    hidden(
+    card(
+      id = ns("spine_chart_explanation"),
+      card_header("How to interpret table results"),
+      card_body(
+        p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have seleced a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
+                 These charts show where your selected local area fits in amongst the range of values and the national average. For example, comparing a particular health board against all other health boards. Results can be interpreted using the key below:"),
+        layout_columns(
+          col_widths = c(4, 8),
+          p(tags$img(src='spine_chart.png', width = "350px", height = "auto", role="img",
+                     alt = "Image to illustrate how to interpret the bars presented in the local area profile table. 
+                                        Shows a grey horizontal bar with labels. The left end is labelled \"value for \'worst\' area\". 
+                                        The right end is labelled \"value for \'best\' area\". A darker grey central portion is labelled \"the middle 50% of areas\". 
+                                        A red central line is labelled \"Scotland average (mean)\". A coloured circle on the bar is labelled \"value for selected area\".
+                                        The text to the right of the image explains the meaning of the three possible circle colours.")), 
+          layout_columns(
+            span(tags$div(style = "width:20px; height:20px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - better than national average"),
+            span(tags$div(style = "width:20px; height:20px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - worse than national average"),
+            span(tags$div(style = "width:20px; height:20px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland"),
+            span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
+          ))))
+    ),
+
     bslib::card(
       bslib::card_header(
               class = "d-flex flex-row-reverse",
-              
               layout_columns(
-                width = NULL,
-                actionButton(inputId = ns("summary_tour_button"),
-                             label = "Click here for a guided tour of this page"),
-                actionButton(ns("help"), label = "Help", class = "btn-sm"),
-              div(id = ns("summary_download_pdf_wrapper"), actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm")),
-              div(id = ns("summary_download_data_wrapper"), download_data_btns_ui(ns("download_summary_data"))),
+              actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
+              download_data_btns_ui(ns("download_summary_data")),
               )
               ),
       card_body(
@@ -56,15 +75,36 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     # permits compatibility between shiny and cicerone tours
     ns <- session$ns
     
+    
+    # show spine chart explanation when any areatype other
+    # than Scotland has been selected, otherwise hide it
+    observe({
+      if (selected_geo()$areatype != "Scotland") {
+        shinyjs::show("spine_chart_explanation")
+      } else {
+        shinyjs::hide("spine_chart_explanation")
+      }
+    })
+    
+    
+    
     # prepare local summary data 
     local_summary <- reactive({
       req(selected_geo()$areatype != "Scotland")
+      
+      shiny::validate(
+        need(selected_geo()$areatype %in% unique(filtered_data()$areatype), 
+             paste0("Currently, there are no indicators in this profile available at ", selected_geo()$areatype, "level. Please select another geography level to view indicators in this profile."))
+      )
       
       # convert to data.table format (using data.table package) to run quicker 
       dt <- setDT(filtered_data())
       
       # filter data by areatype and areaname
       dt <- dt[areaname == selected_geo()$areaname & areatype == selected_geo()$areatype]
+      
+      # remove archived indicators
+      dt <- dt[!(ind_id %in% archived_indicators)]
 
       # get latest data for each indicator
       chosen_area <- dt[type_definition != "Number",
@@ -184,6 +224,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # filter on scotland 
       dt <- dt[areaname == "Scotland" & type_definition != "number"]
       
+      # remove archived indicators
+      dt <- dt[!(ind_id %in% archived_indicators)]
+      
       # order the data before grouping
       setorder(dt, indicator, year)
       
@@ -267,6 +310,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         local_summary()
       }
       
+      shiny::validate(
+        need( nrow(data) > 0, "No indicators available")
+      )
       
       # domain column 
       domain =  colDef(
@@ -618,6 +664,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         detach("package:kableExtra", unload=TRUE)
       }
     )
+
     
     
     
@@ -682,6 +729,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
  
        
+
   }) # close module server
 } # close module
 

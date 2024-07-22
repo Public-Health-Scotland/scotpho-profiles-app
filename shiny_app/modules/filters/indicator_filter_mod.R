@@ -7,7 +7,9 @@
 # id = unique id 
 indicator_filter_mod_ui <- function(id) {
   ns <- NS(id) # namespace
-  selectizeInput(ns("indicator_filter"), label = "Select indicator", choices = NULL)
+
+  selectizeInput(ns("indicator_filter"), label = "Select indicator", choices = NULL, multiple = FALSE)
+
 }
 
 # server function
@@ -16,17 +18,25 @@ indicator_filter_mod_ui <- function(id) {
 indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
-    
-    available_indicators <- reactive({
-      req(geo_selections())
-      dt <- setDT(filtered_data())
-      dt <- unique(dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]$indicator)
-    })
-    
+
     # update indicator choices
     observe({
+      
+      all <- setDT(filtered_data())
+      
+      # filter data by selected geography to get available indicators for selected profile
+      all <- all[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
+      
+      # get list of active indicators
+      active <- unique(all[!(ind_id %in% archived_indicators)]$indicator)
+      
+      # get list of archived indicators
+      archived <- unique(all[ind_id %in% archived_indicators]$indicator)
+      
+      # populate the indicator filter with indicator choices - grouping choices into active and archived
+      updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = active,
+                                                                       `Archived indicators` = archived))
 
-      updateSelectizeInput(session, "indicator_filter", choices = available_indicators(), server = TRUE)
     })
     
     

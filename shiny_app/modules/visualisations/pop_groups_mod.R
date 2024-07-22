@@ -289,11 +289,13 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         hc_yAxis(title = list(text = "")) %>%
         hc_plotOptions(series = list(animation = FALSE),
                        column = list(groupPadding = 0))|>
-        # add extra bits to chart for downloaded version (still need to add subtitles?)
+        # add extra bits to chart for downloaded version
         hc_exporting(
+          filename = paste0("ScotPHO ", selected_indicator(), " split by ", input$split_filter),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), "split by ", input$split_filter, 
-                                       " for time period: ",pop_rank_data()$trend_axis[1]))
+            title = list(text = paste0(selected_indicator(), " split by ", input$split_filter)),
+            subtitle = list(text = paste0(pop_rank_data()$trend_axis[1])),
+            yAxis = list(title = list(text = paste0(pop_rank_data()$rate_type[1])))
           )
         )
       
@@ -344,10 +346,13 @@ pop_groups_server <- function(id, dataset, geo_selections) {
           borderWidth = 1,
           table = TRUE
         ) |>
-        # add extra bits to chart for downloaded version (still need to add subtitles?)
+        # add extra bits to chart for downloaded version
         hc_exporting(
+          filename = paste0("ScotPHO trend - ", selected_indicator(), " split by ", input$split_filter),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by ", input$split_filter))
+            title = list(text = paste0(selected_indicator(), " split by ", input$split_filter)),
+            subtitle = list(text = paste0(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis))),
+            yAxis = list(title = list(text = paste0(pop_trend_data()$rate_type[1])))
           )
         )
       
@@ -436,10 +441,10 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     # Downloads  ----
     #############################################
     download_chart_mod_server(id = "save_pop_rankchart", chart_id = session$ns("pop_rank_chart"))
-    download_data_btns_server(id = "pop_rank_download", data = pop_trend_data)
+    download_data_btns_server(id = "pop_rank_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
     
     download_chart_mod_server(id = "save_pop_trendchart", chart_id = session$ns("pop_trend_chart"))
-    download_data_btns_server(id = "pop_trend_download", data = pop_trend_data)
+    download_data_btns_server(id = "pop_trend_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
   } # module server
   )# module server
 } # pop groups server
