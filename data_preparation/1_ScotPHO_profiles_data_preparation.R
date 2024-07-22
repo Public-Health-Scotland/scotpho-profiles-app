@@ -93,8 +93,6 @@ geography_lookup <- readRDS(
 )
 
 
-
-
 #########################################################################################.
 ## Update main dataset  ----
 ## information that populates summary/trend/rank tabs
@@ -116,7 +114,7 @@ TEST_suppression_applied(main_dataset) # double checking suppression function wa
 
 
 #######################################################################################
-## Create geography nodes file 
+## Create geography nodes files
 #######################################################################################
 
 # get a distinct list of geography paths in the main dataset
@@ -124,13 +122,23 @@ main_dataset_geography_list <- main_dataset |>
   select(geo_path) |>
   distinct()
 
+main_dataset <- main_dataset |>
+  mutate(areatype = factor(areatype, levels = c("Scotland", 
+                                                "Council area", 
+                                                "Health board",
+                                                "Alcohol & drug partnership",
+                                                "HSC partnership",
+                                                "HSC locality",
+                                                "Intermediate zone"))) |>
+  arrange(areatype, parent_area, areaname)
+
 # convert them into lists of parent/child nodes that can be used to create a 
 # hierarchical geography filter in the data tab of the shiny app
 main_dataset_geography_list <- create_geography_nodes(main_dataset_geography_list$geo_path)
 
+
 # save file to be used in app
 saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_nodes.rds")
-
 
 
 ###############################################################
