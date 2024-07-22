@@ -103,7 +103,7 @@ pop_groups_ui <- function(id) {
                                  x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
                                  x})()
             ),
-            # tab 2: data table # still need to creat this
+            # tab 2: data table 
             bslib::nav_panel("Table",
                              reactableOutput(ns("pop_trend_table"))
             ),
@@ -148,7 +148,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     
     ## update choices for population split filter, depending on what indicator was selected
     observe({
-      
+
       available_splits <- dataset() |>
         filter(indicator == selected_indicator()) |>
         pull(unique(split_name))
@@ -186,51 +186,15 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     # creates trend data
     pop_trend_data <- reactive({
       dataset() |>
-        mutate(colour_pal= case_when(split_value== "16-24"~ phs_colors(colourname = "phs-purple"),
-                                     split_value == "25-49"~ phs_colors(colourname = "phs-magenta"),
-                                     split_value == "50-64"~ phs_colors(colourname = "phs-teal"),
-                                     split_value == "45-54"~ phs_colors(colourname = "phs-blue"),
-                                     split_value == "55-64"~ phs_colors(colourname = "phs-green"),
-                                    # split_value == "65-74"~ phs_colors(colourname = "phs-purple-50"),
-                                    # split_value == "75+"~ phs_colors(colourname = "phs-purple-30"),
-                                   #  split_value == "Total ages"~ phs_colors(colourname = "phs-purple-80"),
-                                     #
-                                     split_value== "All sex"~ phs_colors(colourname = "phs-purple"),
-                                     split_value == "Females"~ phs_colors(colourname = "phs-magenta"),
-                                     split_value == "Males"~ phs_colors(colourname = "phs-teal"),
-
-                                     split_value== "limiting_li"~ phs_colors(colourname = "phs-purple"),
-                                     split_value == "no_li"~ phs_colors(colourname = "phs-magenta"),
-                                     split_value == "non_limiting_li"~ phs_colors(colourname = "phs-teal"),
-                                     TRUE ~ phs_colors(colourname = "phs-liberty")        ))|>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
         filter(indicator == selected_indicator() & split_name == input$split_filter) # filter by selected indicator and selected split
-      
-      # dt <- setDT(dataset())
-      # 
-      # dt <- dt[, colour_pal := fcasesplit_value == "16-24", phs_colors(colourname = "phs-purple"),
-      #                             split_value == "25-34", phs_colors(colourname = "phs-magenta"),
-      #                             split_value == "35-44", phs_colors(colourname = "phs-teal"),
-      #                             split_value == "35-44", phs_colors(colourname = "phs-blue"),
-      #                             split_value == "45-54", phs_colors(colourname = "phs-green"),
-      #                             #
-      #                             split_value == "55-64", phs_colors(colourname = "phs-purple-50"),
-      #                             split_value == "65-74", phs_colors(colourname = "phs-rust"),
-      #                             split_value == "75+", phs_colors(colourname = "phs-liberty"),
-      #                             split_value == "Total ages", phs_colors(colourname = "phs-blue"),
-      #                             #
-      #                             split_value == "All sex", phs_colors(colourname = "phs-purple"),
-      #                             split_value == "Female", phs_colors(colourname = "phs-teal"),
-      #                             split_value == "Male", phs_colors(colourname = "phs-blue"),
-      #                             #
-      #                             split_value == "limiting_li", phs_colors(colourname = "phs-purple"),
-      #                             split_value == "no_li", phs_colors(colourname = "phs-teal"),
-      #                             split_value == "non_limiting_li", phs_colors(colourname = "phs-blue")]
     })
     
+    # create single year data for the bar chart 
     pop_rank_data <- reactive({
       pop_trend_data() |>
-        filter(def_period == input$pop_years_filter)
+        filter(def_period == input$pop_years_filter) |>
+        mutate(colour_pal = case_when(grepl("All", split_value) ~ phs_colors("phs-blue"), TRUE ~ phs_colors("phs-blue-50")))
     })
     
     #######################################################
@@ -244,7 +208,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       )
       
       # if data is available display chart title
-      tagList(
+      div(
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
         tags$h6(pop_rank_data()$trend_axis[1]), # time period 
         tags$p(pop_rank_data()$rate_type[1]) # measure type
@@ -261,9 +225,8 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       )
       
       # if data is available display chart title
-      tagList(
+      div(
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
-        #tags$h6(pop_trend_data()$year[1]), # time period
         tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
         tags$p(pop_trend_data()$rate_type[1]) # measure type
       )
@@ -280,6 +243,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       shiny::validate(
         need( nrow(pop_rank_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
       )
+
       
       x <- hchart(pop_rank_data(), 
                   type = "column", hcaes(x = split_value, y = measure, color = colour_pal)) %>%
@@ -305,21 +269,25 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       }
       
       x
+
+      
     }) # end pop_rank_chart
     
     # pop trend bar chart  ---------------
     
     output$pop_trend_chart <- renderHighchart({
       
-      # shiny::validate(
-      #   need( nrow(pop_rank_data()) > 3, paste0("There are insufficent data points for this indicator to generate a trend chart "))
-      # )
+      
+      # create vector of colours - needs to be the same length as the 
+      # number of lines that need to be plotted otherwise CI colours (the lighter colour plotted behind the main line)
+      # wont match up properly
+      purple_and_blues <- unname(phs_colours()[grepl("blue|purple", names(phs_colours()))])
+      colours <- head(purple_and_blues, length(unique(pop_trend_data()$split_value)))
       
       
       x <- hchart(pop_trend_data(), 
                   "line",
-                  hcaes(x = trend_axis, y = measure, group = split_value),
-                  color = unique(pop_trend_data()$colour_pal)) |>
+                  hcaes(x = trend_axis, y = measure, group = split_value)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
         hc_yAxis(title = list(text = "")) |>
@@ -382,6 +350,10 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                                         hover = list(
                                           enabled = FALSE))))
       }
+      
+      x <- x |>
+        # add phs colours
+        hc_colors(colours)
       
       x
       
