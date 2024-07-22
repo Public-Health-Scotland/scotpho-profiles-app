@@ -448,6 +448,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
         
         # title for downloaded version
         hc_exporting(
+          filename = paste0("ScotPHO trend - ", selected_indicator()),
           chartOptions = list(
             title = list(text = paste0(selected_indicator())),
             subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)))
