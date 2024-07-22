@@ -7,9 +7,10 @@
 # id = unique id 
 indicator_filter_mod_ui <- function(id) {
   ns <- NS(id) # namespace
-  selectizeInput(ns("indicator_filter"), label = "Select indicator", choices = NULL, multiple = FALSE)
-}
 
+  selectizeInput(ns("indicator_filter"), label = "Select indicator", choices = NULL, multiple = FALSE)
+
+}
 
 # server function
 # id = unique id
@@ -17,6 +18,7 @@ indicator_filter_mod_ui <- function(id) {
 indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
+
     # update indicator choices
     observe({
       
@@ -34,6 +36,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
       # populate the indicator filter with indicator choices - grouping choices into active and archived
       updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = active,
                                                                        `Archived indicators` = archived))
+
     })
     
     
@@ -46,6 +49,10 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
     
   })
 }
+
+
+
+
 
 
 ##############################################################################

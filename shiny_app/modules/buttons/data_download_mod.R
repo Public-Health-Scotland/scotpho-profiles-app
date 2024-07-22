@@ -2,8 +2,6 @@
 # MODULE: download_data_btns_mod ---- 
 # creates a menu button that when clicked on, provides 3 different options for downloading data (csv, rds or json)
 # it then downloads the data in the format the user has selected
-# note this can be used to download reactive data (i.e. data that is filtered in some way based on user selection) or
-# non-reactive (i.e. data that you read into your global script that is not manipulated/filtered further based on user input)
 # there is also an optional arguments in the server function to specify which columns of data to include in the download
 # by default all columns are included unless you use pass a vector of column names to the selectedColumns argument
 # note this module can be nested inside other modules where download buttons are required.
@@ -28,48 +26,49 @@ download_data_btns_ui <- function(id) {
 # id = unique id 
 # data = name of data to download
 # selectedColumns = vector of column names to include in data download (if required)
-download_data_btns_server <- function(id, data, selectedColumns = NULL) {
+# file_name = name of downloaded file
+
+download_data_btns_server <- function(id, data, selected_columns = NULL, file_name) {
   moduleServer(id, function(input, output, session) {
     
-    # check if data is reactive or not
-    # check if any columns have been passed to the optional selectedColumns arg
-    # if arg not used then all cols will be in the downloaded output
-    getData <- function() {
-      currentData <- if (is.reactive(data)) data() else data
-      if (!is.null(selectedColumns)) {
-        currentData[, selectedColumns, drop = FALSE]
+    dataset <- reactive({
+      # Select (and rename columns) if selected_columns arg is in use
+      # otherwise download entire df
+      if(!is.null(selected_columns)){
+        data <- data() |>
+          select(all_of(selected_columns))
       } else {
-        currentData
+      data()
       }
-    }
+    })
     
     # download as csv
     output$downloadCSV <- downloadHandler(
-      filename = paste0("scotpho_data_extract_", Sys.Date(), ".csv"),
+      filename = paste0(file_name, "_", Sys.Date(), ".csv"),
       content = function(file) {
-        write.csv(getData(), file, row.names = FALSE)
+        write.csv(dataset(), file, row.names = FALSE)
       }
     )
     
     # download as rds
     output$downloadRDS <- downloadHandler(
-      filename = paste0("scotpho_data_extract_", Sys.Date(), ".rds"),
+      filename = paste0(file_name, "_", Sys.Date(), ".rds"),
       content = function(file) {
-        saveRDS(getData(), file)
+        saveRDS(dataset(), file)
       }
     )
     
-    #download as json
+    # download as json
     output$downloadJSON <- downloadHandler(
-      filename = paste0("scotpho_data_extract_", Sys.Date(), ".json"),
+      filename = paste0(file_name, "_", Sys.Date(), ".json"),
       content = function(file) {
-        jsonlite::write_json(as.list(getData()), file)
+        jsonlite::write_json(as.list(dataset()), file)
       }
-      
     )
     
   })
 }
+
 
 
 ##############################################################################
@@ -88,23 +87,28 @@ download_data_btns_server <- function(id, data, selectedColumns = NULL) {
 # ui <- fluidPage(
 #   h1("Download reactive data"),
 #   selectInput(inputId = "colour_filter", label = "select fruit colour", choices = unique(dummy_data$colour)),
-#   download_data_btns_ui("reactive_download"),
-#   
-#   h1("Download entire dataset"),
-#   download_data_btns_ui("full_data_download")
+#   download_data_btns_ui("df_download"),
+#   download_data_btns_ui("dt_download")
 #   )
 # 
 # server <- function(input, output, session) {
-#   
-#   
-#   filtered_data <- reactive({
+# 
+# 
+#   df_data <- reactive({
 #     dummy_data |>
 #       filter(colour == input$colour_filter)
 #   })
 #   
 #   
-#   download_data_btns_server("reactive_download", data = filtered_data)
-#   download_data_btns_server("full_data_download", data = dummy_data)
+#   dt_data <- reactive({
+#     dt <- setDT(dummy_data)
+#     dt <- dt[colour == input$colour_filter]
+#     dt
+#   })
+# 
+# 
+#   download_data_btns_server("dt_download", data = dt_data, selected_columns = c("fruit"))
+#   download_data_btns_server("df_download", data = df_data)
 # }
 # 
 # 

@@ -22,15 +22,23 @@ navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, cl
 
 #module server function - 
 
-navigation_button_modSERVER <- function(id, nav_id, parent_session) {
+navigation_button_modSERVER <- function(id, nav_id, parent_session, profile_name = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
     
     shiny::observeEvent(input$button_nav, {
+      
+      # navigate to the tab
       bslib::nav_select(id="nav",
                  selected = nav_id,
                  session = parent_session)
       
-      shinyjs::js$closeNavMenu()}) # closes navmenu after button clicked - function is in main UI script 
+      # if navigating from i.e. the 'about profiles' tab to the profiles tab, also update the profile filter
+      if(!is.null(profile_name)){
+        updateSelectizeInput(inputId = "profile_choices", selected = profile_name, session = parent_session)
+      }
+      
+
+      }) 
   }) #close moduleServer
 } #close server
 
