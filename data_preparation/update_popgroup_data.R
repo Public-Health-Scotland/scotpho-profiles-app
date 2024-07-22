@@ -1,5 +1,12 @@
 ## FUNCTION: update_popgroup_data.R ----
 
+## Creates a single RDS data file within local shiny app data folder that contains latest versions of indicators which populate
+## population group tab in shiny app (ie indicators split by variables such as age/sex/disability etc)
+
+## Caution: a number of these indicators may not have complete information i.e. some are available at Scotland level but not NHS board or LA.
+## Some indicators may cover different time periods for different geography levels e.g. annual figures at Scotland level but rolling year averages for sub national geographies
+## The data preparation script should accept these variances but if issues arise consider if the data structure could be a problem.
+
 
 ## PARAMETERS
 # load_test_indicators : (default is FALSE) option to set to TRUE which reads indicators from the test shiny folder
@@ -17,7 +24,6 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   ## Combine into one dataset  -----
   popgroup_dataset <- combine_files(popgroup_data_files)
   
-
   
   ## If test indicators are to be included then list files & combine files from test shiny folder
   if (load_test_indicators == TRUE){
@@ -91,3 +97,5 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   
     
 } #close function
+
+#END.

@@ -72,7 +72,6 @@ update_techdoc(load_test_indicators = TRUE, create_backup = FALSE)
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
 
 
-
 ###################################################.
 ## Update geography lookups  ----
 ###################################################.
@@ -90,7 +89,6 @@ file.copy(
 geography_lookup <- readRDS(
   file = paste0(lookups, "Geography/opt_geo_lookup.rds") ##TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
 )
-
 
 
 
@@ -159,7 +157,7 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 
 update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
 
-
+# no validation tests currently written for population data.
 
 
 ############################################################.
