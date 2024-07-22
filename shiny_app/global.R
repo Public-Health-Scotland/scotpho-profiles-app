@@ -26,7 +26,7 @@ library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
 library(cicerone) #for guided tours of tabs
-library(sf)
+library(sf) # for transforming shapefiles
 
 library(readr) #im additiona will remove in future
 
@@ -77,6 +77,7 @@ hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
 
+
 # 4. lists ----------------------------------------------------------
 
 # profile names list - used for:
@@ -93,6 +94,10 @@ profiles_list <- list(
   "Mental Health" = "MEN",
   "All Indicators" = "ALL"
   )
+
+# archived indicators - for removing from the summary tab and separating indicators 
+# into 'active' and 'archived' in the indicator filters across the other tabs
+archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
 
 
 
