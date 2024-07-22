@@ -24,13 +24,13 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   
   
   # filter the technical document based on parameter 'load_test_indicators' either include or exclude test indicator datasets
-  # technical document coontains a column called "active" which can be set as 'A' active, 'N' not active, 'T' test
+  # technical document coontains a column called "active" which can be set as 'A' active, 'N' not active - no data, 'T' test and 'AR' archived - historic data
     if (load_test_indicators==TRUE){
     technical_doc_raw <- technical_doc_raw |>
-      filter(active %in% c("A","T")) # filter for active (A) or test (T) indicators
+      filter(active %in% c("A","T", "AR")) # filter for active (A), test (T) and archived (AR) indicators
   } else { #default parameter is false so only active indicators read in
     technical_doc_raw <- technical_doc_raw |>
-      filter(active == "A") # filter for active indicators only
+      filter(active %in% c("A", "AR")) # filter for active and archived indicators only
   }
   
     ## Clean date columns -----
