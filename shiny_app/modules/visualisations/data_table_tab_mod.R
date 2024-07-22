@@ -437,7 +437,7 @@ data_tab_mod_Server <- function(id) {
 
             # data table bulk download (note this is a module )
             # note: use filename argument once data downloads PR merged
-            download_data_btns_server(id = "datatable_downloads", data = tableData)
+            download_data_btns_server(id = "datatable_downloads", data = tableData, file_name="ScotPHO_datatab_extract")
       
       
       
