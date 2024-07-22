@@ -353,10 +353,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
           borderWidth = 1,
           table = TRUE
         ) |>
-        # add extra bits to chart for downloaded version (still need to add subtitles?)
+        # add extra bits to chart for downloaded version
         hc_exporting(
+          filename = paste0("ScotPHO SIMD trend - ", selected_indicator()),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile"))
+            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile")),
+            subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis))),
+            yAxis = list(title = list(text = paste0(unique(trend_data()$type_definition))))
           )
         )
       
@@ -415,8 +418,11 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
         hc_plotOptions(series = list(animation = FALSE),
                        column= list(groupPadding  = 0)) |>  # Reduce padding between groups of columns
         hc_exporting(
+          filename = paste0("ScotPHO SIMD - ", selected_indicator()),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile"))
+            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile")),
+            subtitle = list(text = paste0(unique(bar_data()$trend_axis))),
+            yAxis = list(title = list(text = paste0(unique(trend_data()$type_definition))))
           )
         )
       
