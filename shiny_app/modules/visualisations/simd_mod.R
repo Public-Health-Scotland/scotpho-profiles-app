@@ -3,14 +3,14 @@
 # add in help text to explain charts for help button - we need simd button and help button?
 
 
-################################
+################################.
 # MODULE: simd_navpanel_mod ---- 
 # prepares the nav_panel layout displaying SIMD based deprivation data
-################################
+################################.
 
-#######################################################
+#######################################################.
 ## MODULE UI
-#######################################################
+#######################################################.
 
 ## ui function -----------------------------------------------------------------------
 # id = unique id 
@@ -82,7 +82,7 @@ simd_navpanel_ui <- function(id) {
             bslib::nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear", size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("bar_ci_switch"), label = " include confidence intervals", FALSE),
                 selectInput(ns("simd_years_filter"), label = "select year", choices = NULL)
               )
@@ -118,7 +118,7 @@ simd_navpanel_ui <- function(id) {
             bslib::nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear",size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
               )
             ),
@@ -139,18 +139,18 @@ simd_navpanel_ui <- function(id) {
 
 
 
-#######################################################
+#######################################################.
 ## MODULE SERVER
-#######################################################
+#######################################################.
 
 
 simd_navpanel_server <- function(id, simd_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     
-    #######################################################
+    #######################################################.
     ## Dynamic filters -----
-    ######################################################
+    #######################################################.
     
     # update years choices for bar chart filter, depending on indicator selected
     observe({
@@ -195,9 +195,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    #######################################################
+    #######################################################.
     ## Reactive data / values ----
-    #######################################################
+    #######################################################.
     
     # generate list of indicators (from the simd indicators dataset) available 
     selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
@@ -259,9 +259,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    #######################################################
+    #######################################################.
     ## dynamic text  ----
-    #######################################################
+    #######################################################.
     
     
     # bar chart title ---------
@@ -312,9 +312,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    ############################################
+    #############################################.
     # charts -----
-    #############################################
+    #############################################.
     
     # trend chart ---------------
     output$simd_trendchart <- renderHighchart({
@@ -353,10 +353,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
           borderWidth = 1,
           table = TRUE
         ) |>
-        # add extra bits to chart for downloaded version (still need to add subtitles?)
+        # add extra bits to chart for downloaded version
         hc_exporting(
+          filename = paste0("ScotPHO SIMD trend - ", selected_indicator()),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile"))
+            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile")),
+            subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis))),
+            yAxis = list(title = list(text = paste0(unique(trend_data()$type_definition))))
           )
         )
       
@@ -415,8 +418,11 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
         hc_plotOptions(series = list(animation = FALSE),
                        column= list(groupPadding  = 0)) |>  # Reduce padding between groups of columns
         hc_exporting(
+          filename = paste0("ScotPHO SIMD - ", selected_indicator()),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile"))
+            title = list(text = paste0(selected_indicator(), " split by SIMD Quintile")),
+            subtitle = list(text = paste0(unique(bar_data()$trend_axis))),
+            yAxis = list(title = list(text = paste0(unique(trend_data()$type_definition))))
           )
         )
       
@@ -443,9 +449,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    ##########################################
-    # Tables ---------
-    ###########################################
+    ###########################################.
+    # Tables ----
+    ###########################################.
     
     # trend data table -------
     output$trend_table <- renderReactable({
@@ -483,9 +489,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
     })
     
     
-    ############################################
+    #############################################.
     # Downloads  ----
-    #############################################
+    #############################################.
     
     download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
     download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))

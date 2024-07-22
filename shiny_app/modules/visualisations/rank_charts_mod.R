@@ -91,7 +91,7 @@ rank_mod_ui <- function(id) {
             nav_item(
               bslib::popover(
                 title = "Filters",
-                bsicons::bs_icon("gear", size = "1.7em"),
+                chart_controls_icon(),
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
               )
             ),
@@ -283,7 +283,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
       
       # further filter if HSCL or IZ selected, 
       if(geo_selections()$areatype == "HSC locality"){
-        x <- x |> filter(hscp2019name == geo_selections()$parent_area)
+        x <- x |> filter(parent_area == geo_selections()$parent_area)
       } else if(geo_selections()$areatype == "Intermediate zone"){
         x <- x |> filter(council == geo_selections()$parent_area)
       } else{ 
@@ -343,26 +343,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
       
     })
     
-    
-    # # info to display when user clicks help button (explains how to interpret)
-    # output$rank_help <- renderUI({ 
-    #   req(selected_indicator())
-    #   tagList(
-    #     tags$h5("How to use this chart"),
-    #     p(paste0("The charts below allow you rank each ", geo_selections()$areatype, " for your selected indicator (in this case, ", selected_indicator(), ").")),
-    #     p("You can also choose to add a baseline comparator, to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator."),
-    #     p("For example, you may want to assess whether each ", geo_selections()$areatype, " is significantly higher or lower than a particular geographical area (for instance, the national average) or
-    #              whether there are particular areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)"),
-    #     br(),
-    #     p("If a comparator is selected, the chart and the map will be colour coded using the key below:"),
-    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
-    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
-    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
-    #     fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
-    #     
-    #   )
-    # })
-    
+
     
     ############################################
     # Visualisations / data table  ----
@@ -381,6 +362,32 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
 Not all profiles have available indicators for all geography types. The drugs profile has no available indicators for intermediate zones and the mental health profile has no available indicators for intermediate zones or HSC localities. Please select another profile or geography type to continue.")
       )
       
+      
+      
+      # get definition period
+      max_year <- rank_data()$def_period[1]
+      
+      # prepare areaname (including parent area if IZ/HSCL selected)
+      area <- if(geo_selections()$areatype == "HSC locality") {
+        paste("HSC Localities in ",geo_selections()$parent_area)
+      } else if(geo_selections()$areatype == "Intermediate zone"){
+        paste("Intermediate zones in ",geo_selections()$parent_area)
+      } else {
+        geo_selections()$areatype
+      }
+      
+      # prepare description of what map/chart show depending on
+      # whether comparator included (and if so which comparator)
+      chart_desc <- if(input$comparator_switch == TRUE){
+        if(input$comparator_type == "Area"){
+          tags$p(paste(area,"comparison against",input$area_comparator, " - ", max_year))
+        } else if(input$comparator_type == "Time"){
+          tags$p(area,"- ",max_year,"compared to ",input$year_comparator)
+        }
+      } else {
+        tags$p(area, " - ", max_year)
+      }
+      
       # if there' no comparator selected, or the selected comparator is "area" then create a bar chart
       if(input$comparator_switch == FALSE | (input$comparator_switch == TRUE & input$comparator_type == "Area")) {
         
@@ -389,8 +396,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
           hc_yAxis(gridLineWidth = 0) |>
           hc_xAxis(title = list(text = "")) |>
           hc_yAxis(title = list(text = "")) |>
-          hc_chart(margin = c(10, 0, 0, 150),
-                   backgroundColor = 'white') |>
+          hc_chart( backgroundColor = 'white') |>
           hc_plotOptions(series = list(animation = FALSE)) |>
           hc_tooltip(
             headerFormat = "<table>",
@@ -405,8 +411,11 @@ Not all profiles have available indicators for all geography types. The drugs pr
           ) |>
           # title for downloaded version
           hc_exporting(
+            filename = paste0("ScotPHO rank - ", selected_indicator(), " - ", geo_selections()$areatype),
             chartOptions = list(
-              title = list(text = selected_indicator())
+              title = list(text = paste0(selected_indicator(), " split by ", geo_selections()$areatype)),
+              subtitle = list(text = paste0(chart_desc)),
+              yAxis = list(title = list(text = paste0(unique(rank_data()$type_definition))))
             )
           )
         
@@ -549,7 +558,14 @@ Not all profiles have available indicators for all geography types. The drugs pr
      ######################################
      
      # note these are both modules 
-     download_chart_mod_server(id = "save_rank_chart", chart_id = session$ns("rank_chart")) # save chart as png
+     download_chart_mod_server(id = "save_rank_chart", 
+                               chart_id = session$ns("rank_chart"), 
+                               height = if(geo_selections()$areatype == "Intermediate zone") {
+                              1200 } else if(geo_selections()$areatype == "Health board") {
+                               600 } else if(geo_selections()$areatype %in% c("Council area", "HSC partnership", "Alcohol & drug partnership", "HSC locality")) {
+                               700 } else {
+                                 500
+                               }) # save chart as png
      
      download_data_btns_server(id = "rank_download", 
                                data = rank_data, 

@@ -13,6 +13,7 @@
 
 # UI function:
 # id = unique id
+# see https://www.highcharts.com/docs/export-module/export-module-overview 
 download_chart_mod_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -22,8 +23,10 @@ download_chart_mod_ui <- function(id) {
       var chartIndex = Highcharts.charts.findIndex(function(chart) {
         return chart && chart.renderTo.id === message.chartId;
       });
-      Highcharts.charts[chartIndex].exportChart();
-
+        Highcharts.charts[chartIndex].exportChart({
+          sourceWidth: message.width,
+          sourceHeight: message.height
+        });
     });"
       )
     ),
@@ -31,19 +34,20 @@ download_chart_mod_ui <- function(id) {
   )
 }
 
-
-
 # Server function:
 # id = unique id
 # chart_id = the inputId used for the chart displayed in the dashboard
-
-download_chart_mod_server <- function(id, chart_id) {
+download_chart_mod_server <- function(id, chart_id, width = 600, height = 400) {
   moduleServer(id, function(input, output, session) {
+    
+    
     
     # when button clicked, trigger the JS code to run
     observeEvent(input$chart_download, {
       session$sendCustomMessage("triggerDownload",
-                                list(chartId = chart_id)
+                                list(chartId = chart_id,
+                                     width = width,
+                                     height = height)
       )
     })
   })
