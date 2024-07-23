@@ -244,7 +244,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       )
       
       # if data is available display chart title
-      tagList(
+      div(
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
         tags$h6(pop_rank_data()$trend_axis[1]), # time period 
         tags$p(pop_rank_data()$rate_type[1]) # measure type
@@ -261,7 +261,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       )
       
       # if data is available display chart title
-      tagList(
+      div(
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
         #tags$h6(pop_trend_data()$year[1]), # time period
         tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 

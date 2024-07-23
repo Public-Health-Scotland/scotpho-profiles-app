@@ -334,7 +334,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
       }
       
       # display 3 x titles
-      tagList(
+      div(
         tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
         chart_desc, # chart description
         tags$p(rank_data()$type_definition[1]), # measure type

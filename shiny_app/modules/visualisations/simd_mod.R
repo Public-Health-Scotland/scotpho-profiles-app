@@ -273,7 +273,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
       )
       
       # if data is available display chart title
-      tagList(
+      div(
         tags$h5(selected_indicator(), " by SIMD quintile - snapshot", class = "chart-header"),
         tags$h6(input$simd_years_filter), # time period
         tags$p(trend_data()$type_definition[1]) # measure type
@@ -290,7 +290,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections) {
       )
       
       # if data is available display chart title
-      tagList(
+      div(
         tags$h5(selected_indicator(), " by SIMD quintile - trend", class = "chart-header"), # selected indicator
         tags$h6(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)), # time period 
         tags$p(trend_data()$type_definition[1]) # measure type
