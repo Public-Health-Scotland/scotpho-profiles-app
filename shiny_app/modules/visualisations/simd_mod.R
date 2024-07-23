@@ -28,7 +28,7 @@ simd_navpanel_ui <- function(id) {
                         
                         #guided tour button
                         actionButton(inputId = ns("deprivation_tour_button"),
-                                     label = "Click here for a guided tour of this page"),
+                                     label = "Guided tour of this page"),
                         
                         # indicator filter (note this is a module)
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),

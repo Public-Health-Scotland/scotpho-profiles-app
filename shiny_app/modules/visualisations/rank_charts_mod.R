@@ -27,7 +27,7 @@ rank_mod_ui <- function(id) {
                         
                         # guided tour button
                         actionButton(inputId = ns("rank_tour_button"),
-                                     label = "Click here for a guided tour of this page"),
+                                     label = "Guided tour of this page"),
 
                         # indicator filter (note this is a module)
                         div(id = ns("rank_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
