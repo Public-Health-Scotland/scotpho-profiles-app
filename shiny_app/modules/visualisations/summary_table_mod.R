@@ -45,7 +45,7 @@ summary_table_ui <- function(id) {
       bslib::card_header(
               class = "d-flex flex-row-reverse",
               layout_columns(
-              actionButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
+              downloadButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
               download_data_btns_ui(ns("download_summary_data")),
               )
               ),

@@ -220,7 +220,7 @@ function(input, output, session) {
     req(input$profile_choices != "")
     if (input$profile_choices != "All Indicators") {
       nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, profile_name, areatype_data)
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
     } else {
       nav_hide("sub_tabs", target = "summary_tab")
     }
