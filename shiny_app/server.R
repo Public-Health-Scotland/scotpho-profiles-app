@@ -313,12 +313,23 @@ function(input, output, session) {
   
   
   
+  # # 4. POPULATION GROUPS DATASET
+  # # a temporary dataset passed to the population groups module - this will be expanded over time
+  # ineq_splits_temporary <- reactive({
+  #   ineq_splits_data })
+  # 
+
+
   # 4. POPULATION GROUPS DATASET
   # a temporary dataset passed to the population groups module - this will be expanded over time
   ineq_splits_temporary <- reactive({
-    ineq_splits_data })
+    
+    req(profiles_list[[input$profile_choices]] %in% c("CWB")) # only run when specific profiles have been selected
+    popgroup_dataset  
   
-
+  })
+  # 
+  
   
 } # close main server function
 

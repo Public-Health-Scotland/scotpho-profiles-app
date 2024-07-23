@@ -18,9 +18,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-######################################
+######################################.
 # Set up
-######################################
+######################################.
 
 ## Load libraries -----
 library(dplyr) # data wrangling
@@ -53,13 +53,12 @@ source("data_preparation/update_techdoc.R") # script to read in & format techdoc
 source("data_preparation/update_shapefiles.R") # script to read in & format shapefiles
 source("data_preparation/update_deprivation_data.R") # script to read in & format deprivation data
 source("data_preparation/update_main_data.R") # script to read in and forma main data
+source("data_preparation/update_popgroup_data.R") # script to read in and forma main data
 
 
-
-
-###################################################
+###################################################.
 ## Update technical document ----
-##################################################
+##################################################.
 
 # Generates techdoc parquet file within shiny app data folder
 # Also makes technical_doc visible in data pane
@@ -67,16 +66,15 @@ source("data_preparation/update_main_data.R") # script to read in and forma main
 # Option:  to save a backup version of techdoc (set create_backup to TRUE)
 # Option: to include indicators data labelled as test indicators in techdoc (set load test indicators to TRUE)
 
-update_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
+update_techdoc(load_test_indicators = TRUE, create_backup = FALSE)
 
 # PLANNING ON UPDATING INDICATORS AND DEPLOYING THE APP? consider generating backup of techdoc. 
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
 
 
-
-###################################################
+###################################################.
 ## Update geography lookups  ----
-###################################################
+###################################################.
 
 ## Geography Lookup
 # copy the main geography lookup to your local repo
@@ -93,6 +91,7 @@ geography_lookup <- readRDS(
 )
 
 
+
 #########################################################################################.
 ## Update main dataset  ----
 ## information that populates summary/trend/rank tabs
@@ -101,7 +100,7 @@ geography_lookup <- readRDS(
 # switch to TRUE if including test indicators (note that you will also need to load test indicators in the update_techdoc function)
 # create_backup - switch to true if deploying the live app with updated indicator datasets 
 
-update_main_data(load_test_indicators = FALSE, create_backup = FALSE)
+update_main_data(load_test_indicators = TRUE, create_backup = FALSE)
 
 # run validation tests one by one 
 # when a test is finished running, if it's passed 'TRUE' will print in the console
@@ -113,9 +112,11 @@ TEST_suppression_applied(main_dataset) # double checking suppression function wa
 
 
 
-#######################################################################################
-## Create geography nodes files
-#######################################################################################
+
+#######################################################################################.
+## Create geography nodes file 
+#######################################################################################.
+
 
 # get a distinct list of geography paths in the main dataset
 main_dataset_geography_list <- main_dataset |>
@@ -141,10 +142,10 @@ main_dataset_geography_list <- create_geography_nodes(main_dataset_geography_lis
 saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_nodes.rds")
 
 
-###############################################################
+###############################################################.
 ## Update deprivation data  ----
 ## i.e. indicator data split by SIMD quintiles.
-##############################################################
+##############################################################.
 
 update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
 
@@ -159,21 +160,21 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 
 
 
-########################################################################
+########################################################################.
 ## Update population groups data  ----
 ## i.e. indicator data split by various different inequality groups.
-########################################################################
+########################################################################.
 
 #placeholder for when script ready
 
-#update_pop_groups_data(load_test_indicators = FALSE, create_backup = FALSE)
+update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
+
+# no validation tests currently written for population data.
 
 
-
-
-############################################################
+############################################################.
 ## Update shape files  ----
-############################################################
+############################################################.
 
 # Shapefiles (used to generate maps presented in rank tab only)
 # Note: this step is only really necessary if you are running this script for the first time
@@ -181,9 +182,9 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 update_shapefiles()
 
 
-###############################################################
+###############################################################.
 ## Remove objects  ----
-###############################################################
+###############################################################.
 
 # remove objects from global environment before running shiny app 
 rm(list = ls())
