@@ -21,19 +21,10 @@ trend_mod_ui <- function(id) {
                           open = c("indicator_filter_panel", "geo_filter_panel"), #guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
                         
-                          # accordion panel with guided tour button (closed by default)
-                          accordion_panel(
-                            value = "trend_tour_panel",
-                            "Guided Tour", icon = bsicons::bs_icon("info-circle"),
-                            actionButton(inputId = ns("trend_tour_button"),
-                                         label = "Guided tour of this page")
-                            
-                          ),
-                          
                           # accordion panel with indicator filter and definitions button
                           accordion_panel(
                             value = "indicator_filter_panel",
-                            "Indicator filter", icon = bsicons::bs_icon("sliders"),
+                            "Select an indicator", icon = bsicons::bs_icon("sliders"),
                             
                             #indicator filter (note this is a module)
                             div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"))),
@@ -45,11 +36,11 @@ trend_mod_ui <- function(id) {
                           # accordion panel with geography filters
                           accordion_panel(
                             value = "geo_filter_panel",
-                            "Geography comparator filters (optional)", icon = bsicons::bs_icon("map"),
+                            "Add area(s) to chart", icon = bsicons::bs_icon("map"),
                             
                             div(id = ns("trend_geography_wrapper"), #wrapping for tour guide
-                            textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
-                            br(),
+                          #  textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
+                          #  br(),
                             checkboxInput(ns("scot_switch_trends"), label = "Scotland", FALSE), # scotland checkbox filter
                             
                             # all other geography filters
@@ -70,9 +61,16 @@ trend_mod_ui <- function(id) {
                             layout_columns(
                               child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones:"),
                               child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities:")
-                            ))
-                          )
-                        ) # close accordion
+                            ))),
+                          # accordion panel with guided tour button (closed by default)
+                          accordion_panel(
+                            value = "trend_tour_panel",
+                            "Guided Tour", icon = bsicons::bs_icon("info-circle"),
+                            actionButton(inputId = ns("trend_tour_button"),
+                                         label = "Guided tour of this page")
+                            
+                          ) #close accordion panel
+                                                  ) # close all accordion
       ), # close sidebar
       
       # create a multi-tab card 
