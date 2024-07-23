@@ -334,8 +334,7 @@ data_tab_mod_Server <- function(id) {
       
       
       
-      # NOTE : temporarily commenting out until speed PR merged
-      # as logic for filtering by profile will need tweaked 
+
       # # update profile choices based on chosen dataset -----
       observe({
 
