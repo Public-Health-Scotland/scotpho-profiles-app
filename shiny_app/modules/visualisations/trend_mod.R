@@ -26,7 +26,7 @@ trend_mod_ui <- function(id) {
                             value = "trend_tour_panel",
                             "Guided Tour", icon = bsicons::bs_icon("info-circle"),
                             actionButton(inputId = ns("trend_tour_button"),
-                                         label = "Click here for a guided tour of this page")
+                                         label = "Guided tour of this page")
                             
                           ),
                           
