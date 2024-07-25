@@ -135,7 +135,7 @@ rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HS
 phs_theme <- bs_theme(version = 5, # bootstrap version 5
                       "nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta"), # multi-tab cards colour when selected
                       "nav-tabs-link-active-color" = "white", # multi-tab cards font colour when selected
-                      "form-label-font-weight" = "700") |> # filter labels font weight
+                      "form-label-font-weight" = "550") |> # filter labels font weight
   
   # adding custom styling for particular bits of ui (for instance making some bits of text purple without affecting all text)
   # note: could move over some stuff from css file into here i.e. for some of the landing page styling?
