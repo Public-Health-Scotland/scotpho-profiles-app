@@ -5,10 +5,10 @@
 
 # ui function
 # id = unique id 
-indicator_filter_mod_ui <- function(id) {
+indicator_filter_mod_ui <- function(id, label = "Select indicator") {
   ns <- NS(id) # namespace
 
-  selectizeInput(ns("indicator_filter"), label = "Select indicator", choices = NULL, multiple = FALSE)
+  selectizeInput(ns("indicator_filter"), label = label, choices = NULL, multiple = FALSE)
 
 }
 
