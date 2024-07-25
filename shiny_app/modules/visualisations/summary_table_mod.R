@@ -45,7 +45,9 @@ summary_table_ui <- function(id) {
             span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
           ))))
     ),
-
+    
+    layout_columns(
+      col_widths = c(-1, 10, -1),
     bslib::card(
       bslib::card_header(
               class = "d-flex flex-row-reverse",
@@ -57,6 +59,7 @@ summary_table_ui <- function(id) {
       card_body(
         withSpinner(reactableOutput(ns("summary_table"))) # summary table
        )
+    )
     )
 )
 

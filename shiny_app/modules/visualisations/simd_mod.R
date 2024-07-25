@@ -26,21 +26,12 @@ simd_navpanel_ui <- function(id) {
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
                         
-                        #guided tour button
-                        actionButton(inputId = ns("deprivation_tour_button"),
-                                     label = "Guided tour of this page"),
-                        
                         # indicator filter (note this is a module)
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
                         # Indicator definition and what is SIMD button
                         layout_column_wrap(
                           indicator_definition_btn_ui(ns("simd_ind_def"),class = "act-btn")
                         ),
-                        actionButton(ns("simd_help"), label = "What is SIMD?"),
-                        # 
-                        # # indicator filter (note this is a module)
-                        # indicator_filter_mod_ui(ns("simd_indicator_filter")),
-                        
                         # filter to include/exclude averages from charts
                         div(id = ns("deprivation_avg_switch_wrapper"), checkboxInput(ns("average_switch"), label = " include averages", TRUE)),
                         
@@ -50,7 +41,16 @@ simd_navpanel_ui <- function(id) {
                             radioButtons(inputId = ns("quint_type"), 
                                      label = "Quintile Type",
                                      choices = c("Scotland", "Local"), 
-                                     selected = "Scotland"))
+                                     selected = "Scotland")),
+                      
+                        
+                        
+                        #guided tour button
+                        actionLink(inputId = ns("deprivation_tour_button"),
+                                   label = "Take a guided tour of this page"),
+                        
+                        actionLink(ns("simd_help"), label = "What is SIMD?", icon = icon("info-circle"))
+                        
       ), # close sidebar
       
       
@@ -132,11 +132,12 @@ simd_navpanel_ui <- function(id) {
 
             # extra controls for filters
             bslib::nav_item(
+              div(id = ns("depr_popover"),
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
                 checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
-              )
+              ))
             ),
             # card footer - download buttons
             card_footer(class = "d-flex justify-content-between",
@@ -574,22 +575,6 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
         tab = ns("deprivation_barchart_tab")
       )$
       step(
-        ns("bar_table"),
-        "Data Tab",
-        "The data tab shows the figures underpinning the chart for the selected indicator.",
-        position = "right",
-        tab_id = ns("deprivation_navset_card_pill_barchart"),
-        tab = ns("deprivation_data_tab")
-      )$
-      step(
-        ns("deprivation_metadata"),
-        "Metadata Tab",
-        "The metadata tab shows information about the data source, methodological information, advice on interpretation, and any known data quality issues.",
-        position = "right",
-        tab_id = ns("deprivation_navset_card_pill_barchart"),
-        tab = ns("deprivation_metadata_tab")
-      )$
-      step(
         ns("simd_trendchart"),
         "Linechart Tab",
         "This chart shows the value of a measure by deprivation quintile over time. 
@@ -599,12 +584,14 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
         tab = ns("deprivation_linechart_tab")
       )$
       step(
-        ns("trend_table"),
-        "Data Tab",
-        "The data tab shows the figures underpinning the chart for the selected indicator.",
-        position = "left",
-        tab_id = ns("deprivation_navset_card_pill_linechart"),
-        tab = ns("deprivation_table_linechart_tab")
+        ns("deprivation_navset_card_pill_linechart"),
+        "Other views",
+        "You can switch between viewing charts, the data or the metadata using the buttons above each chart."
+      )$
+      step(
+        ns("depr_popover"),
+        "Chart controls",
+        "You can switch between viewing charts, the data or the metadata using the buttons above each chart."
       )$
       step(
         ns("deprivation_indicator_filter_wrapper"), 

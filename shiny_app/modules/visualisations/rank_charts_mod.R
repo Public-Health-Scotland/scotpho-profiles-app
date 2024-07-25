@@ -25,9 +25,6 @@ rank_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
                         
-                        # guided tour button
-                        actionButton(inputId = ns("rank_tour_button"),
-                                     label = "Guided tour of this page"),
 
                         # indicator filter (note this is a module)
                         div(id = ns("rank_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
@@ -69,7 +66,10 @@ rank_mod_ui <- function(id) {
                                         label = "Select comparator year",
                                         choices = NULL)
                           )
-                        ) # close hidden comparator filters panel
+                        ), # close hidden comparator filters panel
+                        
+                        # guided tour button
+                        actionLink(inputId = ns("rank_tour_button"), label = "Take a guided tour of this page")
       ), # close sidebar
       
       layout_column_wrap(
@@ -107,11 +107,13 @@ rank_mod_ui <- function(id) {
      
             nav_spacer(),
             nav_item(
+              div(id = ns("rank_popover"),
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
               )
+            )
             ),
             card_footer(class = "d-flex justify-content-between",
                         div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
@@ -632,20 +634,15 @@ Not all profiles have available indicators for all geography types. The drugs pr
          tab = ns("rank_chart_tab")
        )$
        step(
-         ns("rank_table"), #table tab
-         "Data Tab",
-         "The data tab shows the figures underpinning the chart for the selected indicator.",
-         position = "right",
-         tab_id = ns("rank_navset_card_pill"),
-         tab = ns("rank_data_tab")
+         ns("rank_popover"), # popover icon
+         "Adjust Chart Settings",
+         "Click here to add error bars the chart."
        )$
        step(
-         ns("rank_metadata"), #metadata tab
-         "Metadata Tab",
-         "The metadata tab shows information about the data source, methodological information, advice on interpretation, and any known data quality issues.",
-         position = "right",
-         tab_id = ns("rank_navset_card_pill"),
-         tab = ns("rank_metadata_tab")
+         ns("rank_navset_card_pill"), #table tab
+         "Other views",
+         "You can switch between viewing the chart, the data or the metadata for your selectd indicator.",
+         position = "right"
        )$
        step(
          ns("rank_map_wrapper"),
