@@ -331,7 +331,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
       techdoc |>
         filter(indicator_name == selected_indicator()) |>
-        select(indicator_defintion,data_source, notes_caveats, interpretation, numerator, denominator, disclosure_control) |>
+        select(indicator_definition,data_source, notes_caveats, interpretation, numerator, denominator, disclosure_control) |>
         pivot_longer(cols = everything(), names_to = "Item", values_to = "Description") |>
         mutate(Item = gsub("_", " ", Item))
     })
