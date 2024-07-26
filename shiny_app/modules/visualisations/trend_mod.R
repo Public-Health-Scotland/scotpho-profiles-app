@@ -90,7 +90,7 @@ trend_mod_ui <- function(id) {
         
         # caveats/methodological info tab ----------------
         nav_panel("Metadata",
-                  uiOutput(ns("trend_notes_caveats"))
+                  reactableOutput(ns("indicator_metadata"))
         ),
         
         # add space
@@ -324,6 +324,22 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     
     
+    # select some metadata fields from the technical document to display
+    # in the metadata tab for the selected indicator
+    metadata <- reactive({
+      req(selected_indicator())
+      
+      techdoc |>
+        filter(indicator_name == selected_indicator()) |>
+        select(indicator_definition,data_source, notes_caveats, interpretation, numerator, denominator, disclosure_control) |>
+        pivot_longer(cols = everything(), names_to = "Item", values_to = "Description") |>
+        mutate(Item = gsub("_", " ", Item))
+    })
+    
+
+    
+    
+    
     #######################################################
     ## dynamic text  ----
     #######################################################
@@ -350,44 +366,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     # (note this is a module)
     indicator_definition_btn_server("trend_ind_def", selected_indicator = selected_indicator) 
     
-    
-    # # caveats to display between chart heading and chart if any NA values for numerator/measure 
-    # output$trend_caveats <- renderUI({
-    #   
-    #   #select only numerators/rates for years where data potentially affected by pandemic (exclude SALSUS NAs)
-    #   covid_caveats <- trend_data() |> 
-    #     filter(year == 2019:2022) |> 
-    #     select(numerator, measure) 
-    #   
-    #   # conditionally display caveats if NAs in rate/numerator between 2019 and 2022
-    #   # to do : resolve warning message: Warning: There was 1 warning in `filter()`.
-    #   #ℹ In argument: `year == 2019:2022`.
-    #   #Caused by warning in `year == 2019:2022`:
-    #   #  ! longer object length is not a multiple of shorter object length
-    #   
-    #   if(sum(is.na(covid_caveats$numerator)) > 0 | sum(is.na(covid_caveats$measure)) > 0){
-    #     tags$p("Please note that due to the impact of the COVID-19 pandemic on data collections required to produce this indicator, there is a gap in the trend for affected years.", style="color:red")
-    #   }
-    #   
-    #   
-    # })
-    
-    
 
-    
-    # info to display when user clicks supporting information tab
-    output$trend_notes_caveats <- renderUI({
-      req(selected_indicator())
-      
-      #create dataframe containing only notes_caveats column for selected indicator from techdoc
-      indicator_caveats <- techdoc |> 
-        filter(indicator_name == selected_indicator()) |> 
-        select(notes_caveats)
-      
-      #print notes and caveats for selected indicator
-      tags$p(indicator_caveats)
-    })
-    
     
     
     output$geo_instructions <- renderText({
@@ -505,6 +484,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                 )
                 )
       
+    })
+    
+    
+    
+    
+    
+    # table for metadata tab
+    output$indicator_metadata <- renderReactable({
+      reactable(data = metadata(),
+                defaultExpanded = TRUE,
+                defaultPageSize = nrow(metadata()),
+                columns = list(
+                  Description = colDef(minWidth = 350)))
     })
     
     

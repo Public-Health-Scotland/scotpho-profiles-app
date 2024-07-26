@@ -28,6 +28,8 @@ library(bsicons) # for icons
 library(cicerone) #for guided tours of tabs
 library(sf)
 library(DT)
+library(tidyr) # for pivot longer used in meta data tab
+
 
 library(readr) #im additiona will remove in future
 
