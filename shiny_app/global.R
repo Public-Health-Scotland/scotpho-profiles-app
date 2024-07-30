@@ -28,6 +28,8 @@ library(bsicons) # for icons
 library(cicerone) #for guided tours of tabs
 library(sf)
 library(DT)
+library(tidyr) # for pivot longer used in meta data tab
+
 
 library(readr) #im additiona will remove in future
 
@@ -53,16 +55,8 @@ simd_dataset <- read_parquet("data/deprivation_dataset") # dataset behind simd p
 
 techdoc <- read_parquet("data/techdoc") # technical document
 
-#temp data upload and simple wrangle
-ineq_splits_data <- readr::read_csv("data/88007_meeting_mvpa_im.csv") |>
-  rename(areatype = geography,
-         areaname = location_name) |>
-  mutate(areatype = case_when(areatype == "healthboard" ~ "Health board",
-                              areatype == "scotland" ~ "Scotland",
-                              areatype == "council" ~ "Council area", TRUE ~ areatype)) |>
-  mutate(areaname = case_when(areaname == "scotland" ~ "Scotland", TRUE ~ areaname)) |>
-  mutate(indicator = "Meets recommendations")|>
-  filter(split_name!="simd")
+popgroup_dataset <- read_parquet("data/popgroup_dataset") # dataset behind popgroup panel
+
 
 # shapefiles (for map) 
 ca_bound <- readRDS("data/CA_boundary.rds") # Council area

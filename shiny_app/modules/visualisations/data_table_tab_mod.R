@@ -334,21 +334,20 @@ data_tab_mod_Server <- function(id) {
       
       
       
-      # NOTE : temporarily commenting out until speed PR merged
-      # as logic for filtering by profile will need tweaked 
+
       # # update profile choices based on chosen dataset -----
-      # observe({
-      #   
-      #   available_profile_choices <- switch(input$dataset_selector,
-      #                                       "Main Dataset" = profiles_list,
-      #                                       "Inequalities Dataset" = depr_profile_list)
-      #   
-      #   updateVirtualSelect(session = session,
-      #                       inputId = "profile_selector",
-      #                       choices = available_profile_choices)
-      # })
-      # 
-      
+      observe({
+
+        available_profile_choices <- switch(input$dataset_selector,
+                                            "Main Dataset" = profiles_list,
+                                            "Inequalities Dataset" = profiles_list[profiles_list %in% c("HWB", "CWB", "CYP", "DRG", "ALC", "TOB")])
+
+        updateVirtualSelect(session = session,
+                            inputId = "profile_selector",
+                            choices = available_profile_choices)
+      })
+
+
       
       
       

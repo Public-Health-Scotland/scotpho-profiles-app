@@ -92,8 +92,7 @@ trend_mod_ui <- function(id) {
         # caveats/methodological info tab ----------------
         nav_panel("Metadata",
                   value = ns("trend_metadata_tab"), #id for guided tour
-                  uiOutput(ns("trend_metadata"))
-
+                  reactableOutput(ns("indicator_metadata"))
         ),
         
         # add space
@@ -386,6 +385,22 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     
     
+    # select some metadata fields from the technical document to display
+    # in the metadata tab for the selected indicator
+    metadata <- reactive({
+      req(selected_indicator())
+      
+      techdoc |>
+        filter(indicator_name == selected_indicator()) |>
+        select(indicator_definition,data_source, notes_caveats, interpretation, numerator, denominator, disclosure_control) |>
+        pivot_longer(cols = everything(), names_to = "Item", values_to = "Description") |>
+        mutate(Item = gsub("_", " ", Item))
+    })
+    
+
+    
+    
+    
     #######################################################
     ## Dynamic text  ----
     #######################################################
@@ -407,30 +422,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       )
       
     })
-    
-
-    
-   
-    # info to display when user clicks metadata tab
-    output$trend_metadata <- renderUI({
-      req(selected_indicator())
-
-      
-      #create dataframe containing only notes_caveats column for selected indicator from techdoc
-      indicator_caveats <- techdoc |> 
-        filter(indicator_name == selected_indicator()) |> 
-        select(notes_caveats)
-      
-      #print notes and caveats for selected indicator
-      tags$p(indicator_caveats)
-    })
-    
-    
-    
-    output$geo_instructions <- renderText({
-      paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
-    })
-    
     
 
     ############################################
@@ -530,6 +521,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                 )
                 )
       
+    })
+    
+    
+    
+    
+    
+    # table for metadata tab
+    output$indicator_metadata <- renderReactable({
+      reactable(data = metadata(),
+                defaultExpanded = TRUE,
+                defaultPageSize = nrow(metadata()),
+                columns = list(
+                  Description = colDef(minWidth = 350)))
     })
     
     

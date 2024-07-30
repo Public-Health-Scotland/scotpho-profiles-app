@@ -357,26 +357,13 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
       }
      
         # display 3 x titles
-        tagList(
+        div(
          tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
          chart_desc, # chart description
          tags$p(rank_data()$type_definition[1]), # measure type
          
         )
       
-     })
-    
-    # info to display when user clicks metadata tab
-    output$rank_metadata <- renderUI({
-      
-      #create dataframe containing only notes_caveats column for selected indicator from techdoc
-      indicator_caveats <- techdoc |> 
-        filter(indicator_name == selected_indicator()) |> 
-        select(notes_caveats)
-      
-      #print notes and caveats for selected indicator
-      tags$p(indicator_caveats)
-    })
 
     
     ############################################

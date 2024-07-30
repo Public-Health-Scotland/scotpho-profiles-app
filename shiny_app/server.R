@@ -47,7 +47,7 @@ function(input, output, session) {
   
   # this module corresponds the the button on the profiles tab which when clicked on 
   # takes you to the about profiles tab 
-  navigation_button_modSERVER("about_profiles_header", nav_id = "about_profiles", parent_session = session)
+  navigation_button_modSERVER("about_profiles_header", nav_id = "about_profiles", parent_session = session, selected_profile = reactive({input$profile_choices}))
 
   
   # these modules correspond to the buttons that sit in each accordion panel on the about profiles button page
@@ -61,9 +61,7 @@ function(input, output, session) {
   navigation_button_modSERVER("view_profile_DRG", nav_id="Profiles", parent_session = session, profile_name = "Drugs")
   navigation_button_modSERVER("view_profile_TOB", nav_id="Profiles", parent_session = session, profile_name = "Tobacco")
   
-  
-  
-  
+
   #####################################################
   # REACTIVE VALUES
   ####################################################
@@ -220,7 +218,7 @@ function(input, output, session) {
     req(input$profile_choices != "")
     if (input$profile_choices != "All Indicators") {
       nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, profile_name, areatype_data)
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
     } else {
       nav_hide("sub_tabs", target = "summary_tab")
     }
@@ -309,14 +307,18 @@ function(input, output, session) {
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
   })
-  
+
 
 
   # 4. POPULATION GROUPS DATASET
   # a temporary dataset passed to the population groups module - this will be expanded over time
   ineq_splits_temporary <- reactive({
-    ineq_splits_data })
+    
+    req(profiles_list[[input$profile_choices]] %in% c("CWB")) # only run when specific profiles have been selected
+    popgroup_dataset  
   
+  })
+  # 
 
 } # close main server function
 
