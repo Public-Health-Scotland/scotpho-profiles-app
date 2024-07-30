@@ -111,7 +111,6 @@ page_navbar(
                     actionButton("apply_geo_filters", label = "Apply geography filters", class = "btn-apply-geo-filter")
                     ) # close layout columns
                   )), # close hidden div
-
              br(), # add space between header and sub-tabs
 
   
@@ -153,7 +152,11 @@ page_navbar(
                        nav_panel(title = "Deprivation", value = "simd_tab", simd_navpanel_ui("simd")),
                        
                        # population groups sub-tab
-                       nav_panel(title = "Population groups", value = "pop_groups_tab", pop_groups_ui("pop_groups"))
+                       nav_panel(title = "Population groups", value = "pop_groups_tab", pop_groups_ui("pop_groups")),
+                       nav_spacer(),
+                       
+                       # button to navigat to about profiles tab
+                       nav_item(navigation_button_modUI("about_profiles_header", "About this profile", button_icon = icon("info-circle"), class = "btn-sm"))
                        
             ) # close subtabs
             ), # close entire profiles tab
@@ -187,6 +190,7 @@ page_navbar(
     # about profiles tab (to do: replace placeholder text)
     nav_panel(title = "About Profiles", value = "about_profiles",
               accordion(
+                id = "profiles_accordion",
                 open= FALSE, #no accordion panels open on loading
                 multiple = TRUE, #allows multiple profile accordion panels to be open at once
                 h1("About the ScotPHO Profiles"),

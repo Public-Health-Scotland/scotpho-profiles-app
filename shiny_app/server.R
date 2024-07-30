@@ -47,7 +47,7 @@ function(input, output, session) {
   
   # this module corresponds the the button on the profiles tab which when clicked on 
   # takes you to the about profiles tab 
-  navigation_button_modSERVER("about_profiles_header", nav_id = "about_profiles", parent_session = session)
+  navigation_button_modSERVER("about_profiles_header", nav_id = "about_profiles", parent_session = session, selected_profile = reactive({input$profile_choices}))
 
   
   # these modules correspond to the buttons that sit in each accordion panel on the about profiles button page
@@ -61,9 +61,7 @@ function(input, output, session) {
   navigation_button_modSERVER("view_profile_DRG", nav_id="Profiles", parent_session = session, profile_name = "Drugs")
   navigation_button_modSERVER("view_profile_TOB", nav_id="Profiles", parent_session = session, profile_name = "Tobacco")
   
-  
-  
-  
+
   #####################################################
   # REACTIVE VALUES
   ####################################################
