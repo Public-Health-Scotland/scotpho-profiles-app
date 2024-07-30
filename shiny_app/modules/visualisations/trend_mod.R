@@ -16,7 +16,7 @@ trend_mod_ui <- function(id) {
       use_cicerone(),
       
       # sidebar for filters ------------------
-      sidebar = sidebar(width = 450,
+      sidebar = sidebar(width = 500,
                         accordion(
                           open = c("indicator_filter_panel", "geo_filter_panel"), # guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
@@ -365,7 +365,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
       # also filter by scotland
-      if(geo_selections()$areatype == "Scotland" | input$scot_switch_trends == TRUE){
+      if(input$scot_switch_trends == TRUE){
         scotland <- indicator_filtered_data() |>
           filter(areaname == "Scotland")
         
@@ -380,7 +380,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(year)
+        arrange(areaname, year)
     })
     
     
@@ -508,10 +508,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
       data <- trend_data() |>
         select(areatype, areaname, trend_axis, y)
-      
-      #filters out duplicates when Scotland selected in global options
-      data <- unique(data)
-      
+
       reactable(data,
                 columns = list(
                   areatype = colDef(name = "Area type"),
