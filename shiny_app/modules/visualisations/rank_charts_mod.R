@@ -363,6 +363,8 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
          tags$p(rank_data()$type_definition[1]), # measure type
          
         )
+        
+     })
       
 
     
