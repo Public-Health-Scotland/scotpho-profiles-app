@@ -18,6 +18,10 @@
 summary_table_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    
+    # enable guided tour
+    use_cicerone(),
+    
     br(),
     hidden(
     card(
@@ -41,6 +45,7 @@ summary_table_ui <- function(id) {
             span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
           ))))
     ),
+
     bslib::card(
       bslib::card_header(
               class = "d-flex flex-row-reverse",
@@ -67,6 +72,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
   
   moduleServer(id, function(input, output, session) {
     
+    # permits compatibility between shiny and cicerone tours
+    ns <- session$ns
     
     
     # show spine chart explanation when any areatype other
@@ -601,9 +608,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
     })
-    
 
-    
     
     # download data module 
     download_data_btns_server(id = "download_summary_data", 
@@ -659,7 +664,72 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         detach("package:kableExtra", unload=TRUE)
       }
     )
-  
+
+    
+    
+    
+    # info to display when user clicks help button (explains how to interpret the spine chart)
+    observeEvent(input$help, {
+      if(selected_geo()$areaname != "Scotland"){
+      showModal(modalDialog(
+        title = "How to interpret table results",
+        tagList(
+          paste0("The results below provide a snapshot of the latest data for the ", selected_profile() , " profile in ", selected_geo()$areaname, " compared to Scotland. 
+        The spine charts show where ", selected_geo()$areaname, " fits in amongst the range of values (i.e. all other, ", selected_geo()$areatype, "s), as explained in 
+        the key below."),
+          br(),
+          tags$img(src = "spinechart.PNG", style = "width:100%; height:auto;"),
+          
+          fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - statistically significantly better")),
+          fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - statistically significantly worse")),
+          fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland")),
+          fluidRow(span(tags$div(style = "width:30px; height:30px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated"))
+        )
+      ))
+      }else{
+        showModal(modalDialog(
+          title = "How to interpret table results",
+          tagList(
+            p("The results below provide a snapshot of the latest data for the ", selected_profile() , " profile in ", "Scotland."),
+            p("The sparklines show how each indicator has changed over time."),
+            p("The figures can be more closely interrogated and compared to other geographical areas in the Trends tab."))))
+          
+        
+        }
+    })
+    
+    
+    
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    guide_summary <- Cicerone$
+      new()$
+      step(
+        ns("summary_download_pdf_wrapper"),
+        "Download PDF",
+        "Click here to download a PDF containing all available indicators for the selected area.",
+        position = "below"
+      )$
+      step(
+        ns("summary_download_data_wrapper"),
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "below"
+      )
+    
+    #initiate the guide
+    guide_summary$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$summary_tour_button, {
+      guide_summary$start()
+    })
+    
+ 
+       
+
   }) # close module server
 } # close module
 

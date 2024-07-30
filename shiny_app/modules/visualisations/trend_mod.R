@@ -11,46 +11,36 @@ trend_mod_ui <- function(id) {
     bslib::layout_sidebar(
       full_screen = FALSE,
       height = "80%",
-      
+
       # enable guided tour
       use_cicerone(),
       
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         accordion(
-                          open = c("indicator_filter_panel", "geo_filter_panel"), #guided tour panel closed by default
+                          open = c("indicator_filter_panel", "geo_filter_panel"), # guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
-                        
-                          # accordion panel with guided tour button (closed by default)
-                          accordion_panel(
-                            value = "trend_tour_panel",
-                            "Guided Tour", icon = bsicons::bs_icon("info"),
-                            actionButton(inputId = ns("trend_tour_button"),
-                                         label = "Click here for a guided tour of this page")
-                            
-                          ),
                           
                           # accordion panel with indicator filter and definitions button
                           accordion_panel(
                             value = "indicator_filter_panel",
-                            "Indicator filter", icon = bsicons::bs_icon("sliders"),
-                            div(id = "trend_indicator_filter_wrapper", indicator_filter_mod_ui(ns("trend_indicator_filter"))),
-                            div(id = "trend_indicator_definition_wrapper", indicator_definition_btn_ui(ns("trend_ind_def")))
+                            "Select an indicator", 
+                                            #indicator filter (note this is a module)
+                            div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"), label = NULL))
+
                           ),
                           
                           # accordion panel with geography filters
                           accordion_panel(
                             value = "geo_filter_panel",
-                            "Geography comparator filters (optional)", icon = bsicons::bs_icon("map"),
+                            "Add area(s) to chart", 
                             
-                            div(id = "trend_geography_wrapper",
-                            textOutput(ns("geo_instructions")),  # explanation of how to use geography filters
-                            br(),
+                            div(id = ns("trend_geography_wrapper"), #wrapping for tour guide
+
                             checkboxInput(ns("scot_switch_trends"), label = "Scotland", FALSE), # scotland checkbox filter
                             
                             # all other geography filters
                             # note these filters are enabled/disabled in the server function based on selected indicator
-                            
                             layout_columns(
                               selectizeInput(inputId = ns("hb_filter"), label = "Health Boards:", choices = hb_list, multiple = TRUE),
                               selectizeInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
@@ -64,20 +54,30 @@ trend_mod_ui <- function(id) {
                             selectizeInput(inputId = ns("hscp_filter_2"), label = "To select a locality or intermediate zone, first select a HSC partnership:", choices = hscp_list),
                             
                             layout_columns(
-                              child_geography_filters_mod_ui(id = ns("child_imz"), label = "Intermediate Zones:"),
-                              child_geography_filters_mod_ui(id = ns("child_locality"), label = "HSC Localities:")
-                            ))
+                            selectizeInput(inputId = ns("locality_filter"), label = "HSC localities:", choices = character(0), multiple = TRUE),
+                            selectizeInput(inputId = ns("iz_filter"), label = "Intermediate zones:", choices = character(0), multiple = TRUE)
+                            )
+                            
+                            
+                            )),
+                          accordion_panel(
+                            value = "help_panel",
+                            title = "Get help", icon = icon("info-circle"),
+                            actionLink(inputId = ns("trend_tour_button"), label = "Take a guided tour of this page")
                           )
-                        ) # close accordion
+                                                  ) # close all accordion
       ), # close sidebar
+
       
       # create a multi-tab card 
-      div(id = "trend_card_wrapper",
+      div(id = ns("trend_card_wrapper"),
             navset_card_pill(
-        full_screen = TRUE,
+              id = ns("trend_navset_card_pill"),
+              full_screen = TRUE,
         
         # charts tab -----------------------
         nav_panel("Charts",
+                  value = ns("trend_chart_tab"), #id for guided tour
                   uiOutput(ns("trend_title")), # title 
                   uiOutput(ns("trend_caveats")), # caveats
                   highchartOutput(outputId = ns("trend_chart")) # chart
@@ -85,11 +85,13 @@ trend_mod_ui <- function(id) {
         
         # data tab ------------------
         nav_panel("Data", 
+                  value = ns("trend_data_tab"), #id for guided tour
                   reactableOutput(ns("trend_table")) # table
         ), 
         
         # caveats/methodological info tab ----------------
         nav_panel("Metadata",
+                  value = ns("trend_metadata_tab"), #id for guided tour
                   reactableOutput(ns("indicator_metadata"))
         ),
         
@@ -112,8 +114,8 @@ trend_mod_ui <- function(id) {
         
         # footer with download buttons
         card_footer(class = "d-flex justify-content-between",
-                    div(id = "trend_download_chart", download_chart_mod_ui(ns("download_trends_chart"))),
-                    div(id = "trend_download_data", download_data_btns_ui(ns("download_trends_data"))))
+                    div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
+                    div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
       )) # close navset card pill
     ) # close layout sidebar
   ) # close taglist
@@ -121,59 +123,73 @@ trend_mod_ui <- function(id) {
 
 
 
+#######################################################
+## MODULE SERVER
+#######################################################
+
 trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
   moduleServer(id, function(input, output, session) {
     
-    
+    # permits compatibility between shiny and cicerone tours
+    ns <- session$ns
     
     #######################################################
     # Dynamic filters
     #######################################################
     
-    # enable/ disable geography filters and update the filter labels, 
-    # depending on what indicator was selected 
-    observe({
+    # enable/ disable geography filters depending on the selected indicator
+    observeEvent(selected_indicator(), {
       req(indicator_filtered_data())
       
       # stores available areatypes, depending on what indicator was selected
       available_areatypes <- indicator_filtered_data() |>
         pull(unique(areatype))
       
+      # stores available HSC localities depending on what parent area was selected
+      available_localities <- indicator_filtered_data() |>
+        filter(areatype == "HSC locality" & parent_area == input$hscp_filter_2) |>
+        pull(unique(areaname))
+      
+      # stores available Intermediate zones depending on what parent area was selected
+      available_izs <- indicator_filtered_data() |>
+        filter(areatype == "Intermediate zone" & parent_area == input$hscp_filter_2) |>
+        pull(unique(areaname))
+      
 
       # If 'Health board' is available, enable hb_filter, otherwise disable it
       if("Health board" %in% available_areatypes) {
         shinyjs::enable("hb_filter")
-        updateSelectizeInput(session, "hb_filter", label = "Health Boards:")
+        updateSelectizeInput(session, "hb_filter", options = list(placeholder = NULL), selected = hb_selections())
       } else {
         shinyjs::disable("hb_filter")
-        updateSelectizeInput(session, "hb_filter", label = "Health Boards (not available)")
+        updateSelectizeInput(session, "hb_filter", options = list(placeholder = "Unavailable"))
       }
       
       # If 'Council area' is available, enable ca_filter, otherwise disable it
       if("Council area" %in% available_areatypes) {
         shinyjs::enable("ca_filter")
-        updateSelectizeInput(session, "ca_filter", label = "Council Areas:")        
+        updateSelectizeInput(session, "ca_filter", options = list(placeholder = NULL), selected = ca_selections())        
       } else {
         shinyjs::disable("ca_filter")
-        updateSelectizeInput(session, "ca_filter", label = "Council Areas: (not available)")
+        updateSelectizeInput(session, "ca_filter", options = list(placeholder = "Unavailable"))
       }
       
       # If 'HSC partnership' is available, enable hscp_filter, otherwise disable it
       if("HSC partnership" %in% available_areatypes) {
         shinyjs::enable("hscp_filter")
-        updateSelectizeInput(session, "hscp_filter", label = "Health and Social Care Partnerships:")
+        updateSelectizeInput(session, "hscp_filter", options = list(placeholder = NULL), selected = hscp_selections())
       } else {
-        updateSelectizeInput(session, "hscp_filter", label = "Health and Social Care Partnerships: (not available)")
+        updateSelectizeInput(session, "hscp_filter", options = list(placeholder = "Unavailable"))
         shinyjs::disable("hscp_filter")
       }
       
       # If 'Alcohol & drug partnership' is available, enable adp_filter, otherwise disable it
       if("Alcohol & drug partnership" %in% available_areatypes) {
         shinyjs::enable("adp_filter")
-        updateSelectizeInput(session, "adp_filter", label = "Alcohol and Drug Partnerships:")
+        updateSelectizeInput(session, "adp_filter", options = list(placeholder = NULL), selected = adp_selections())
       } else {
         shinyjs::disable("adp_filter")
-        updateSelectizeInput(session, "adp_filter", label ="Alcohol and Drug Partnerships: (not available)")
+        updateSelectizeInput(session, "adp_filter", options = list(placeholder = "Unavailable"))
       }
       
       # If 'HSC Locality' or 'Intermediate zone' is available, enable parent area filter (hscp_filter_2), otherwise disable it
@@ -183,8 +199,24 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
         
       } else{
         shinyjs::disable("hscp_filter_2")
-        updateSelectizeInput(session, "hscp_filter_2", label = "To select a locality or intermediate zone, first select an HSC partnership: (not available)")
-        
+      }
+      
+      # If 'HSC Locality' is available, enable the filter otherwise disable it
+      if("HSC locality" %in% available_areatypes){
+        shinyjs::enable("locality_filter")
+        updateSelectizeInput(session, "locality_filter", choices = available_localities, options = list(placeholder = NULL), selected = locality_selections())
+      } else {
+        updateSelectizeInput(session, "locality_filter", options = list(placeholder = "Unavailable"), selected = character(0))
+        shinyjs::disable("locality_filter")
+      }
+      
+      # If 'Intermediate zone' is available, enable the filter otherwise disable it
+      if("Intermediate zone" %in% available_areatypes){
+        shinyjs::enable("iz_filter")
+        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections())
+      } else {
+        updateSelectizeInput(session, "iz_filter", options = list(placeholder = "Unavailable"), selected = character(0))
+        shinyjs::disable("iz_filter")
       }
       
     })
@@ -204,26 +236,32 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       else if(geo_selections()$areatype == "Alcohol & drug partnership"){
         updateSelectizeInput(session, "adp_filter", choices = adp_list[adp_list!=geo_selections()$areaname])
       }
-      else if(geo_selections()$areatype == "Intermediate zone"){
-        updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
-      }
-      else if(geo_selections()$areatype == "HSC locality"){
+      else if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")){
         updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
       }
       
     })
     
     
-    # Clear what was previously selected from the filters if a user changes
-    # selection from global geography filter (otherwise they remain selected)
-    observeEvent(geo_selections()$areaname, {
+    # Clear what was previously selected from the filters if a user changes selection from geography filter (otherwise they remain selected)
+    observeEvent(geo_selections(), {
+      
+      # clear the filters
       updateSelectizeInput(session, "hb_filter", selected = character(0))
       updateSelectizeInput(session, "ca_filter", selected = character(0))
       updateSelectizeInput(session, "hscp_filter", selected = character(0))
-      updateSelectizeInput(session, "hscp_filter_2", selected = character(0))
       updateSelectizeInput(session, "adp_filter", selected = character(0))
-      updateSelectizeInput(session, "child_imz", selected = character(0))
-      updateSelectizeInput(session, "child_locality", selected = character(0))
+      updateSelectizeInput(session, "iz_filter", selected = character(0))
+      updateSelectizeInput(session, "locality_filter", selected = character(0))
+      
+      # clear the reactive vals
+      hb_selections(NULL)
+      ca_selections(NULL)
+      hscp_selections(NULL)
+      adp_selections(NULL)
+      locality_selections(NULL)
+      iz_selections(NULL)
+      
     })
     
     
@@ -257,6 +295,42 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     #######################################################
     ## Reactive data / values ----
     #######################################################
+    
+    # create reactive objects to store selected geographies
+    hb_selections <- reactiveVal()
+    ca_selections <- reactiveVal()
+    hscp_selections <- reactiveVal()
+    adp_selections <- reactiveVal()
+    locality_selections <- reactiveVal()
+    iz_selections <- reactiveVal()
+    
+    
+    # update the reactive objects whenever selections are made
+    # from each of the geography filters
+    observeEvent(input$hb_filter, {
+      hb_selections(input$hb_filter)
+    })
+    
+    observeEvent(input$ca_filter, {
+      ca_selections(input$ca_filter)
+    })
+    
+    observeEvent(input$hscp_filter, {
+      hscp_selections(input$hscp_filter)
+    })
+    
+    observeEvent(input$adp_filter, {
+      adp_selections(input$adp_filter)
+    })
+    
+    observeEvent(input$locality_filter, {
+      locality_selections(input$locality_filter)
+    })
+    
+    observeEvent(input$iz_filter, {
+      iz_selections(input$iz_filter)
+    })
+    
 
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
@@ -271,20 +345,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     })
     
     
-    # create reactive object that stores selected HSCP for child geography filters
-    # note: this 'parent area' value is passed to the module that creates the choices for the IZ/HSCL filter
-    HSCP_selection <- reactive({
-      list(
-        parent_area = input$hscp_filter_2 
-      )
-    })
-    
-    
-    # server logic for dynamic filters for child geographies based on HSCP selected
-    IMZ_selection <- child_geography_filters_mod_server(id = "child_imz", filtered_data = indicator_filtered_data, HSCP_selection = HSCP_selection, child_areatype = "Intermediate zone", geo_selections = geo_selections, label =  "Intermediate Zones:")
-    Locality_selection <- child_geography_filters_mod_server(id = "child_locality", filtered_data = indicator_filtered_data, HSCP_selection = HSCP_selection, child_areatype = "HSC locality", geo_selections = geo_selections, label = "HSC Localities:")
-    
-    
+
     
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
@@ -298,13 +359,13 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
             (areaname %in% input$ca_filter & areatype == "Council area")| # filter by selected council areas
             (areaname %in% input$adp_filter & areatype == "Alcohol & drug partnership") |# filter by selected adps
             (areaname %in% input$hscp_filter & areatype == "HSC partnership")| #filter by selected hscps
-            (areaname %in% IMZ_selection() & areatype == "Intermediate zone")| # filter by selected IZs
-            (areaname %in% Locality_selection() & areatype == "HSC locality")# filter by selected HSC localities
+            (areaname %in% input$iz_filter & areatype == "Intermediate zone")| # filter by selected IZs
+            (areaname %in% input$locality_filter & areatype == "HSC locality")# filter by selected HSC localities
         )
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
       # also filter by scotland
-      if(geo_selections()$areatype == "Scotland" | input$scot_switch_trends == TRUE){
+      if(input$scot_switch_trends == TRUE){
         scotland <- indicator_filtered_data() |>
           filter(areaname == "Scotland")
         
@@ -319,7 +380,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(year)
+        arrange(areaname, year)
     })
     
     
@@ -341,7 +402,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     
     #######################################################
-    ## dynamic text  ----
+    ## Dynamic text  ----
     #######################################################
     
     output$trend_title <- renderUI({
@@ -362,31 +423,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
     })
     
-    #server logic for indicator definition button - shows indidcator definition when definition button clicked 
-    # (note this is a module)
-    indicator_definition_btn_server("trend_ind_def", selected_indicator = selected_indicator) 
-    
 
-    
-    
-    output$geo_instructions <- renderText({
-      paste0("Select areas to plot and compare with ", geo_selections()$areaname,". You can select multiple areas of any available geography type.")
-    })
-    
-    
-    ############################################
-    # Guided tour
-    ###########################################
-    
-    #initiate the guide
-    guide_trend$init()
-    
-    #when guided tour button is clicked, start the guide
-    observeEvent(input$trend_tour_button, {
-      guide_trend$start()
-    })
-    
-    
     ############################################
     # Charts/tables 
     #############################################
@@ -471,10 +508,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
       data <- trend_data() |>
         select(areatype, areaname, trend_axis, y)
-      
-      #filters out duplicates when Scotland selected in global options
-      data <- unique(data)
-      
+
       reactable(data,
                 columns = list(
                   areatype = colDef(name = "Area type"),
@@ -507,7 +541,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     
     # server for chart and data downloads
     download_chart_mod_server(id = "download_trends_chart", chart_id = session$ns("trend_chart"))
-    
+      
     download_data_btns_server(id = "download_trends_data", 
                               data = trend_data, 
                               file_name = "Trends_ScotPHO_data_extract", 
@@ -522,5 +556,73 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                                                    "measure", 
                                                   "upper_confidence_interval" = "upci", # rename column 
                                                   "lower_confidence_interval" = "lowci")) # rename column 
+    
+      
+    ############################################
+    # Guided tour
+    ###########################################
+    
+    #Set up trend steps
+    guide_trend <- Cicerone$
+      new(
+        padding = 8
+      )$
+      step(
+        ns("trend_chart"), # trend chart 
+        title = "Chart Tab",
+        description = "The trend chart is designed to explore how a single indicator has changed over time for one or more geographical areas. <br>
+        Use the mouse to hover over a data point and see detailed information on its value, time period and area.",
+        tab_id = ns("trend_navset_card_pill"), 
+        tab = ns("trend_chart_tab")
+      )$
+      step(
+        "trend_popover", # popover icon
+        "Adjust Chart Settings",
+        "Click here to see chart settings. Confidence intervals (95%) can be added to the chart. They are shown as shaded areas and give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size.
+        The chart can also be switched from a measure (e.g. rate or percentage) to actual numbers (e.g. the number of births with a healthy birthweight)."
+      )$
+      step(
+        ns("trend_navset_card_pill"), # tabs within the multi-tab card
+        title = "Other tabs",
+        description = "You can switch between viewing the chart, the data or metadata for your selected indicator using the buttons highlighted."
+      )$
+      step(
+        ns("trend_indicator_filter_wrapper"), #indicator filter
+        "Indicator Filter",
+        "First select an indicator.<br>
+        The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
+        The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
+        position = "bottom"
+      )$
+      step(
+        ns("trend_geography_wrapper"), # all geography filters
+        "Geography Filters",
+        "Add one or more geographical areas of any type to the chart to compare with your selected geography.<br>
+        There may be some indicators for which data is not available for the full time series or at a particular geography level.<br>
+        If an area type other than Scotland is selected in the global options, the Scotland checkbox can be clicked to add or remove the trend line.",
+        position = "right"
+      )$
+      step(
+        ns("trend_download_chart"), #downlaod chart button
+        "Download Chart Button",
+        "Click here to download the chart with all selected geographies as a PNG.",
+        position = "bottom"
+      )$
+      step(
+        ns("trend_download_data"), #download data button
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "left"
+      )
+    
+    #initiate the guide
+    guide_trend$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$trend_tour_button, {
+      guide_trend$start()
     })
-}
+    
+    
+  }) # close moduleServer
+} # close server function

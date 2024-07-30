@@ -307,15 +307,7 @@ function(input, output, session) {
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
   })
-  
-  
-  
-  
-  # # 4. POPULATION GROUPS DATASET
-  # # a temporary dataset passed to the population groups module - this will be expanded over time
-  # ineq_splits_temporary <- reactive({
-  #   ineq_splits_data })
-  # 
+
 
 
   # 4. POPULATION GROUPS DATASET
@@ -327,8 +319,7 @@ function(input, output, session) {
   
   })
   # 
-  
-  
+
 } # close main server function
 
 ##END

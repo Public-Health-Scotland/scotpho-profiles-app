@@ -34,13 +34,15 @@ library(tidyr) # for pivot longer used in meta data tab
 library(readr) #im additiona will remove in future
 
 
-# 2. Sourcing modules and narrative text -------------------------------------------
+# 2. Sourcing modules, narrative text and guided tours  ------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
 list.files("narrative", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
+list.files("guided tours", full.names = TRUE, recursive = TRUE) |> 
+  map(~ source(.))
 
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/main_dataset") # main dataset (to do: rename optdata file in data prep script)
@@ -127,7 +129,7 @@ rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HS
 phs_theme <- bs_theme(version = 5, # bootstrap version 5
                       "nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta"), # multi-tab cards colour when selected
                       "nav-tabs-link-active-color" = "white", # multi-tab cards font colour when selected
-                      "form-label-font-weight" = "700") |> # filter labels font weight
+                      "form-label-font-weight" = "550") |> # filter labels font weight
   
   # adding custom styling for particular bits of ui (for instance making some bits of text purple without affecting all text)
   # note: could move over some stuff from css file into here i.e. for some of the landing page styling?
@@ -167,59 +169,5 @@ chart_controls_icon <- function(size = "2em") {
                    class = "chart-controls-icon")
 }
 
-# 6. Tab tours -----------------------------------------------------------------
 
-guide_trend <- Cicerone$
-  new(
-    padding = 8
-  )$
-  step(
-    "trend_card_wrapper",
-    "Chart Tab",
-    "The trend chart is designed to explore how a single indicator has changed over time for one or more geograpical area.<br>
-    Use the mouse to hover over a data point to see detailed information on its value, time period and area.<br>
-    The tabs at the top of this panel switch between the chart, data and further information to aid interpretation.",
-    position = "left"
-  )$
-  step(
-    "trend_indicator_filter_wrapper", # id of div wrapper - specified in trend module rather than indicator filter module
-    "Indicator Filter",
-    "First select an indicator.<br>
-    The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
-    The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
-    position = "bottom"
-  )$
-  step(
-    "trend_indicator_definition_wrapper",
-    "Indicator Definition Button",
-    "Click here for a more detailed definition of an selected indicator.",
-    position = "bottom"
-  )$
-  step(
-    "trend_geography_wrapper",
-    "Geography Filters",
-    "Add one or more geographical areas of any type to the chart to compare with your selected geography.<br>
-    There may be some indicators for which data is not available for the full time series or at a particular geography level.<br>
-     If an area type other than Scotland is selected in the global options, the Scotland checkbox can be clicked to add or remove the trend line.",
-    position = "right"
-  )$
-  step(
-    "trend_download_chart",
-    "Download Chart Button",
-    "Click here to download the chart with all selected geographies as a PNG.",
-    position = "bottom"
-  )$
-  step(
-    "trend_download_data",
-    "Download Data Button",
-    "Click here to download the selected data as a CSV, RDS or JSON file.",
-    position = "left"
-  #popovers help not working just yet - revist after merging of changes to popover design
-    # )$
-  # step(
-  #   "trend_popovers",
-  #   "Adjust Chart Settings",
-  #   "Click here to see chart settings. Confidence intervals (95%) can be added to the chart. They are shown as shaded areas and give an indication of the precision of a rate or percentage. The width of a confidence interval is related to sample size.
-  #   The chart can also be switched from a measure (e.g. rate or percentage) to actual numbers (e.g. the number of births with a healthy birthweight)."
-  )
   
