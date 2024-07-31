@@ -27,6 +27,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
       # filter data by selected geography to get available indicators for selected profile
       all <- all[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
+      
       # get list of active indicators
       active <- unique(all[!(ind_id %in% archived_indicators)]$indicator)
       
@@ -34,8 +35,9 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
       archived <- unique(all[ind_id %in% archived_indicators]$indicator)
       
       # populate the indicator filter with indicator choices - grouping choices into active and archived
-      updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = active,
-                                                                       `Archived indicators` = archived))
+      updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = as.list(active),
+                                                                       `Archived indicators` = as.list(archived)))
+
 
     })
     
