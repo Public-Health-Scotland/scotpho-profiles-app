@@ -13,7 +13,7 @@ trend_mod_ui <- function(id) {
       height = "80%",
 
       # enable guided tour
-      use_cicerone(),
+     #use_cicerone(),
       
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
@@ -540,7 +540,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     ###################################
     
     # server for chart and data downloads
-    download_chart_mod_server(id = "download_trends_chart", chart_id = session$ns("trend_chart"))
+    download_chart_mod_server(id = "download_trends_chart", chart_id = ns("trend_chart"))
       
     download_data_btns_server(id = "download_trends_data", 
                               data = trend_data, 

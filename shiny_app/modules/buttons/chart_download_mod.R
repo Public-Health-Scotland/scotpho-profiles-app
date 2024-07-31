@@ -6,14 +6,14 @@
 
 # This module creates a link that says 'save chart' that when clicked on, triggers some JS code to run 
 # which downloads the chart displayed on the dashboard by using the 'exportChart' function from highcharts.
+# see https://www.highcharts.com/docs/export-module/export-module-overview  for more details
 # This module can be nested within other modules (e.g. if creating cards which contains charts where you want to add download options)
-# note if using within another module, make sure to wrap the chart_id in sessions$ns for it to work
-# i.e. save_chart_mod_server("save_rank_chart", chart_id = session$ns("rank_chart))
+# note if using within another module, make sure to wrap the chart_id in ns for it to work
+# i.e. save_chart_mod_server("save_rank_chart", chart_id = ns("rank_chart))
 
 
 # UI function:
 # id = unique id
-# see https://www.highcharts.com/docs/export-module/export-module-overview 
 download_chart_mod_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -34,13 +34,17 @@ download_chart_mod_ui <- function(id) {
   )
 }
 
+
+
 # Server function:
-# id = unique id
-# chart_id = the inputId used for the chart displayed in the dashboard
+# id = id matching the one assigned to ui function
+# chart_id = the outputId of the chart
+# width = optional argumnt to set width of the downloaded chart - set to 600 by default
+# height = optional argument to set height of the downloaded chart - set to 400 by default
 download_chart_mod_server <- function(id, chart_id, width = 600, height = 400) {
   moduleServer(id, function(input, output, session) {
     
-    
+    ns <- session$ns
     
     # when button clicked, trigger the JS code to run
     observeEvent(input$chart_download, {
@@ -63,11 +67,10 @@ download_chart_mod_server <- function(id, chart_id, width = 600, height = 400) {
 # library(highcharter)
 # 
 # 
-#  ui <- fluidPage(
-# 
-#  download_chart_mod_ui(id = "download_barchart"),
-#   highchartOutput("my_chart")
-#   )
+# ui <- fluidPage(
+#    download_chart_mod_ui(id = "download_barchart"),
+#    highchartOutput(outputId = "my_chart")
+#    )
 # 
 # server <- function(input, output, session){
 # 
@@ -85,7 +88,7 @@ download_chart_mod_server <- function(id, chart_id, width = 600, height = 400) {
 # }
 # 
 # shinyApp(ui, server)
-# 
-# 
+
+
 
 

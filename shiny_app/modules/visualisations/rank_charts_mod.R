@@ -20,7 +20,7 @@ rank_mod_ui <- function(id) {
       #height = 650,
       
       # enable guided tour
-      use_cicerone(),
+     # use_cicerone(),
       
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
@@ -582,7 +582,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
      
      # note these are both modules 
      download_chart_mod_server(id = "save_rank_chart", 
-                               chart_id = session$ns("rank_chart"), 
+                               chart_id = ns("rank_chart"), 
                                height = if(geo_selections()$areatype == "Intermediate zone") {
                               1200 } else if(geo_selections()$areatype == "Health board") {
                                600 } else if(geo_selections()$areatype %in% c("Council area", "HSC partnership", "Alcohol & drug partnership", "HSC locality")) {

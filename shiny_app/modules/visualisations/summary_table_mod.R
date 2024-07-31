@@ -20,7 +20,7 @@ summary_table_ui <- function(id) {
   tagList(
     
     # enable guided tour
-    use_cicerone(),
+   # use_cicerone(),
     
     br(),
     hidden(

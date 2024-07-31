@@ -21,7 +21,7 @@ simd_navpanel_ui <- function(id) {
     layout_sidebar(
       
       # enable guided tour
-      use_cicerone(),
+      #use_cicerone(),
       
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
@@ -519,8 +519,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     # Downloads  ----
     #############################################.
     
-    download_chart_mod_server(id = "save_simd_barchart", chart_id = session$ns("simd_barchart"))
-    download_chart_mod_server(id = "save_simd_trendchart", chart_id = session$ns("simd_trendchart"))
+    download_chart_mod_server(id = "save_simd_barchart", chart_id = ns("simd_barchart"))
+    download_chart_mod_server(id = "save_simd_trendchart", chart_id = ns("simd_trendchart"))
     
     download_data_btns_server(id = "simd_barchart_download", 
                               data = bar_data, 

@@ -150,7 +150,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     observe({
 
       available_splits <- dataset() |>
-        filter(indicator == selected_indicator()) |>
+        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype) |>
         pull(unique(split_name))
       
       updateSelectInput(session, inputId = "split_filter", choices = available_splits)
@@ -412,10 +412,10 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     ############################################
     # Downloads  ----
     #############################################
-    download_chart_mod_server(id = "save_pop_rankchart", chart_id = session$ns("pop_rank_chart"))
+    download_chart_mod_server(id = "save_pop_rankchart", chart_id = ns("pop_rank_chart"))
     download_data_btns_server(id = "pop_rank_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
     
-    download_chart_mod_server(id = "save_pop_trendchart", chart_id = session$ns("pop_trend_chart"))
+    download_chart_mod_server(id = "save_pop_trendchart", chart_id = ns("pop_trend_chart"))
     download_data_btns_server(id = "pop_trend_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
   } # module server
   )# module server
