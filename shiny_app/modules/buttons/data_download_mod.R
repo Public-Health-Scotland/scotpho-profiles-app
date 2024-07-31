@@ -13,11 +13,11 @@ download_data_btns_ui <- function(id) {
   ns <- NS(id) # namespace
   shinyWidgets::dropdownButton(
     label = "Download data", icon = icon("download"), circle = FALSE, status = 'download_btns_menu', 
-    tooltip = shinyWidgets::tooltipOptions(placement = "right", title = "Click to view available formats"),
     shiny::downloadLink(ns("downloadCSV"), label = "as CSV"),
     shiny::downloadLink(ns("downloadRDS"), label = "as RDS"),
     shiny::downloadLink(ns("downloadJSON"), label = "as JSON")
-  )
+  ) |>
+    bslib::tooltip("Click to view available formats")
 }
 
 
