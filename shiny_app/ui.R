@@ -50,7 +50,7 @@ page_navbar(
                          profile_buttons = tagList(
                            layout_columns(
                              profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**.")),
-                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing", description = markdown("View indicators relating to **Population health and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
+                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing Portfolio", description = markdown("View indicators relating to **Population health, inequalities and wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
                              profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco control", description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**")),
                              ),
                            layout_columns(
