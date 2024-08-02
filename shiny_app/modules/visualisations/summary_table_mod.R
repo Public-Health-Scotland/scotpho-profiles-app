@@ -480,7 +480,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
             function(rowInfo) {
               var containerId = rowInfo.row.unique_id;
               var chartHTML = '<div id=\"' + containerId + '\" style=\"height: 100px; width: 100%\"></div>';
-              var time_period = rowInfo.row.trend_min + ' - ' + rowInfo.row.trend_max;
+              var time_period = rowInfo.row.trend_min + ' to ' + rowInfo.row.trend_max;
               
               setTimeout(function() {
                 Highcharts.chart(containerId, {
