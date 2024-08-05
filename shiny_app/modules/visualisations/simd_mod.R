@@ -33,7 +33,7 @@ simd_navpanel_ui <- function(id) {
                           indicator_definition_btn_ui(ns("simd_ind_def"),class = "act-btn")
                         ),
                         # filter to include/exclude averages from charts
-                        div(id = ns("deprivation_avg_switch_wrapper"), checkboxInput(ns("average_switch"), label = " include averages", TRUE)),
+                        div(id = ns("deprivation_avg_switch_wrapper"), checkboxInput(ns("average_switch"), label = " include averages",FALSE)),
                         
                         
                         # quint type filter 
