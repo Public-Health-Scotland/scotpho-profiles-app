@@ -445,7 +445,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       # create highchart object
       chart <- hchart(trend_data(), 
                       "line", 
-                      hcaes(x = trend_axis, y = measure, group = areaname),
+                      hcaes(x = trend_axis, y = y, group = areaname),
                       marker = list(enabled = TRUE)
                       ) |>
         hc_plotOptions(series=list(animation=FALSE)) |>
