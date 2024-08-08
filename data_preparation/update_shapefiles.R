@@ -11,6 +11,7 @@ hb_bound<- readRDS(paste0(shape_files,"HB_boundary.rds")) # Health board
 hscp_bound <- readRDS(paste0(shape_files,"HSCP_boundary.rds"))# HSC Partnerships
 hscloc_bound <- readRDS(paste0(shape_files,"HSC_locality_boundary.rds")) # HSC localities
 iz_bound <- readRDS(paste0(shape_files,"IZ_boundary.rds")) # Intermediate zone
+pd_bound <- readRDS(paste0(shape_files,"PD_boundary.rds")) # Police divisions
 #scot_bound <- readRDS("data/scot_bound.rds") # scotland
 
 
@@ -22,6 +23,7 @@ hb_bound <- sf::st_as_sf(hb_bound)
 hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
+pd_bound <- sf::st_as_sf(pd_bound)
 #scot_bound <- sf::st_as_sf(scot_bound)
 
 # 
@@ -30,6 +32,7 @@ write_rds(hb_bound,"shiny_app/data/HB_boundary.rds")
 write_rds(hscp_bound,"shiny_app/data/HSCP_boundary.rds")
 write_rds(hscloc_bound,"shiny_app/data/HSC_locality_boundary.rds")
 write_rds(iz_bound,"shiny_app/data/IZ_boundary.rds")
+write_rds(pd_bound,"shiny_app/data/PD_boundary.rds")
 
 }
 
