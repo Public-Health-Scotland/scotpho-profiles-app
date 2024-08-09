@@ -64,7 +64,7 @@ hb_bound <- readRDS("data/HB_boundary.rds") # Health board
 hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
-
+pd_bound <- readRDS("data/PD_boundary.rds") # Police divisions
 
 # transform shapefiles - needs to be done here or else app doesn't work?!
 # note: look into this at some point as wasn't required in old profiles tool
@@ -73,7 +73,7 @@ hb_bound <- sf::st_as_sf(hb_bound)
 hscp_bound <- sf::st_as_sf(hscp_bound)
 hscloc_bound <- sf::st_as_sf(hscloc_bound)
 iz_bound <- sf::st_as_sf(iz_bound)
-
+pd_bound <- sf::st_as_sf(pd_bound)
 
 # 4. lists ----------------------------------------------------------
 
@@ -107,19 +107,20 @@ ca_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Council area"])
 adp_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Alcohol & drug partnership"])
 hsc_loc_list <- sort(geo_lookup$areaname[geo_lookup$areatype== "HSC locality"])
 imz_list <- sort(geo_lookup$areaname[geo_lookup$areatype== "Intermediate zone"])
-
+pd_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Police division"])
 
 # geography areatypes
 areatype_list <- c("Alcohol & drug partnership", 
                    "Council area", 
-                   "Health board",  
+                   "Health board",
+                   "Police division",
                    "HSC locality", 
                    "HSC partnership",  
                    "Intermediate zone",
                    "Scotland")
 
 
-rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HSC partnership", "Scotland", "Health board")]
+rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HSC partnership", "Scotland", "Health board", "Police division")]
 
 
 
