@@ -78,7 +78,7 @@ TEST_suppression_applied <- function(data) {
   # and check if there are any rows where the numerator is less than the suppression threshold
   # i.e. if threshold is 10, should be no numerator figures less than 10.
   data <- data |>
-    left_join(technical_doc, by = c("indicator" = "indicator_name")) |>
+    left_join(techdoc, by = c("indicator" = "indicator_name")) |>
     filter(supression == "Y") |>
     subset(numerator < supress_less_than)
   
