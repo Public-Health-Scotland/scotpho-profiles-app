@@ -110,6 +110,7 @@ replace_old_geography_codes <- function(data, col_name) {
 
 apply_suppressions <- function(dataset) {
   
+  if ("Y" %in% unique(dataset$supression)) { #don't run this chunk unless supression==Y, because otherwise cases without supression==Y will crash this function
   dataset <- dataset |>
     # suppress numerator if required (for crude rates, %'s and standardised rates)
     mutate(numerator = case_when(supression == "Y" & 
@@ -122,6 +123,9 @@ apply_suppressions <- function(dataset) {
                                 type_id %in% c('cr', '%') & 
                                 numerator < supress_less_than ~ NA_real_, TRUE ~ .x))
     )
+  }
+  
+  return(dataset)
 }
 
 
