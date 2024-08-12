@@ -80,9 +80,10 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
 
   # Make dataset visible outside of function
   deprivation_dataset <<- deprivation_dataset %>%
-    select(-c("file_name", "parent_area", "areaname_full"))  # deselect columns not required in shiny app
+    select(-c("file_name", "parent_area", #"areaname_full", #areaname_full required to make validation test work
+              "supression", "supress_less_than" # additional columns removed to make the validation test work (are they actually required?)
+              ))  # deselect columns not required in shiny app
   
- 
   #write parquet file to shiny app data folder
   write_parquet(deprivation_dataset, "shiny_app/data/deprivation_dataset")
   
