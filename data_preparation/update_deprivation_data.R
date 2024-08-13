@@ -25,7 +25,8 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     ## Find new indicators data files in the test shiny data folder -----
     test_deprivation_files <- list.files(
       path = test_shiny_files, 
-      pattern = "*_ineq.csv", 
+    #  pattern = "*_ineq.csv", 
+      pattern = "*_ineq.rds", #to match the non-test files
       full.names = TRUE
     )
     
