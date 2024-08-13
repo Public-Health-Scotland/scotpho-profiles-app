@@ -176,7 +176,7 @@ function(input, output, session) {
   # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP") & !is.null(profiles_list[[input$profile_choices]])) {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "simd_tab")
       simd_navpanel_server("simd", simd_data, geo_selections)
       
@@ -186,10 +186,10 @@ function(input, output, session) {
   })
   
 
-  # run the module that creates the server logic for the population groups tab ONLY when care and wellbeing profile is selected, otherwise hide the tab
+  # run the module that creates the server logic for the population groups tab ONLY when CWB or MEN profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] == "CWB") {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN")) {
       nav_show("sub_tabs", target = "pop_groups_tab")
       pop_groups_server("pop_groups", ineq_splits_temporary, geo_selections)
     } else {
@@ -295,7 +295,7 @@ function(input, output, session) {
   # filters the simd dataset by selected profile and is passed to the deprivation module 
   simd_data <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected
+    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP", "MEN")) # only run when specific profiles have been selected
 
     dt <- setDT(simd_dataset) # set to class data.table
 
@@ -314,7 +314,7 @@ function(input, output, session) {
   # a temporary dataset passed to the population groups module - this will be expanded over time
   ineq_splits_temporary <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("CWB")) # only run when specific profiles have been selected
+    req(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN")) # only run when specific profiles have been selected
     popgroup_dataset  
   
   })
