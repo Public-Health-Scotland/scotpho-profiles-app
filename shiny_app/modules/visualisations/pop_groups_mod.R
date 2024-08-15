@@ -115,6 +115,8 @@ pop_groups_ui <- function(id) {
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
+                # constrain y-axis to start at zero
+                checkboxInput(ns("zero_popgp"), label = "y-axis should include zero", value = TRUE),
                 # too many CI for age split, removed at this stage
                 checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE) 
               )
@@ -355,6 +357,16 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                                         hover = list(
                                           enabled = FALSE))))
       }
+      
+      # constrain y-axis to include zero if box is checked
+      if(input$zero_popgp == TRUE) {
+        
+        x <- x |>
+          hc_yAxis(min=0) 
+        
+      }
+      
+      
       
       x <- x |>
         # add phs colours
