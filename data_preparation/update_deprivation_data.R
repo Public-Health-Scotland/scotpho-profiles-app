@@ -25,7 +25,7 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     ## Find new indicators data files in the test shiny data folder -----
     test_deprivation_files <- list.files(
       path = test_shiny_files, 
-      pattern = "*_ineq.csv", 
+      pattern = "*_ineq.rds", # was .csv previously: changed to match the non-test dataset. Is this OK?
       full.names = TRUE
     )
     
@@ -63,9 +63,9 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     mutate(across(c(sii, rii, par),
              ~ case_when(. > 0 ~ "positive", . < 0 ~ "negative",  . == 0 ~ "zero"),
              .names = "{.col}_gradient")) |>
-    mutate(
-      qmax = quintile[which.max(measure)], # which quintile contains highest rate/value
-      qmin = quintile[which.min(measure)] # which quintile contains lowest rate/value
+    mutate( # added logic for combos with NA values 
+      qmax = ifelse(sum(is.na(measure))==5, as.character(NA), quintile[which.max(measure)]), # which quintile contains highest rate/value
+      qmin = ifelse(sum(is.na(measure))==5, as.character(NA), quintile[which.min(measure)]) # which quintile contains lowest rate/value
     ) |>
     ungroup() |>
     rename(indicator = indicator_name)
@@ -80,7 +80,9 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
 
   # Make dataset visible outside of function
   deprivation_dataset <<- deprivation_dataset %>%
-    select(-c("file_name", "parent_area", "areaname_full"))  # deselect columns not required in shiny app
+    select(-c("file_name", "parent_area", # deselect columns not required in shiny app
+              #"areaname_full" #areaname_full required to make validation test work
+              "supression", "supress_less_than")) # additional columns need to be removed to make the validation test work for ineq data
   
  
   #write parquet file to shiny app data folder
