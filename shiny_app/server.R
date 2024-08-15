@@ -216,10 +216,17 @@ function(input, output, session) {
   # run the module that creates the server logic for the summary tab, unless 'all indicators' is selected as the profile, in which case hide the tab
   observe({
     req(input$profile_choices != "")
-    if (input$profile_choices != "All Indicators") {
+    if (input$profile_choices != "All Indicators" & input$profile_choices != "Care and Wellbeing") {
       nav_show("sub_tabs", target = "summary_tab")
       summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
+    
+      } else if(input$profile_choices == "Care and Wellbeing"){
+        
+      nav_show("sub_tabs", target = "summary_tab")
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
+                                                                                                                         "Healthy places", "Impact of ill health prevention","Discrimination and racism"))
     } else {
+      
       nav_hide("sub_tabs", target = "summary_tab")
     }
   })
