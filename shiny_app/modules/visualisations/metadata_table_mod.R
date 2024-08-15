@@ -49,3 +49,34 @@ metadata_table_mod_Server <- function(id, selected_indicator, technical_doc = te
   )
 }
 
+
+####################################
+# EXAMPLE USAGE ----
+# before uncommenting and running the below you should run the main shiny app first so that techdoc 
+# containing the indicator metadata saves in your global environment
+# or alternatively read the techdoc in first
+####################################
+
+
+# library(shiny)
+# 
+# ui <- fluidPage(
+#   # indicator filter
+#   selectizeInput(
+#     inputId = "indicator_filter", 
+#     label = "select indicator:", 
+#     choices = c("Alcohol-related hospital admissions","Active travel to school")
+#   ),
+#   
+#   # metdata table module 
+#   metadata_table_mod_UI(id = "metadata")
+# )
+# 
+# server <- function(input, output, session) {
+#   
+#   # call metadata table module, passing what was selected from the filter
+#   metadata_table_mod_Server(id = "metadata", selected_indicator = reactive({input$indicator_filter}))
+# }
+# 
+# shinyApp(ui, server)
+
