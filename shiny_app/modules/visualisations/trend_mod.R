@@ -293,10 +293,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
     })
     
     
-    
     # dynamically enabling/disabling the  numerator/rate radio buttons depending on selected indicator
     # this is required because for some indicators, we only publish the rate so numerator not always available
-    observe({
+    observeEvent(selected_indicator(), {
     req(indicator_filtered_data())
       # check the first row of the data filtered by selected indicator
       # if the numerator column is empty ensure the selected option to plot in the trend chart is 'rate'
