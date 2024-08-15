@@ -300,6 +300,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
       x <- switch(geo_selections()$areatype,
                   "Health board" = hb_bound,
                   "Council area" = ca_bound,
+                  "Police division" = pd_bound,
                   "HSC partnership" = hscp_bound,
                   "HSC locality" = hscloc_bound,
                   "Intermediate zone" = iz_bound
@@ -314,7 +315,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
         x
       }
       x <- x |> left_join(rank_data(), by = join_by(code))
-      
+
     })
 
      
@@ -584,7 +585,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
      download_chart_mod_server(id = "save_rank_chart", 
                                chart_id = ns("rank_chart"), 
                                height = if(geo_selections()$areatype == "Intermediate zone") {
-                              1200 } else if(geo_selections()$areatype == "Health board") {
+                              1200 } else if(geo_selections()$areatype %in% c("Health board", "Police division")) {
                                600 } else if(geo_selections()$areatype %in% c("Council area", "HSC partnership", "Alcohol & drug partnership", "HSC locality")) {
                                700 } else {
                                  500
@@ -616,7 +617,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
          "Chart Tab",
          "These charts allow areas to be ranked against others of the same type.<br>
      You can also add a baseline comparator to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator.<br>
-     For example, you may want to assess whether each  is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular 
+     For example, you may want to assess whether each is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular 
      areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)",
          position = "right",
          tab_id = ns("rank_navset_card_pill"),
