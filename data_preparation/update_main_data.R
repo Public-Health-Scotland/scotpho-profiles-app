@@ -29,7 +29,11 @@ if (load_test_indicators == TRUE){
     pattern = "*_shiny.csv", 
     full.names = TRUE
   )
-  
+  test_indicator_files <- test_indicator_files[-5] # temporary removals to make sure all files had same number cols
+  test_indicator_files <- test_indicator_files[-7]
+  test_indicator_files <- test_indicator_files[-7]
+  test_indicator_files <- test_indicator_files[-8]
+  test_indicator_files <- test_indicator_files[-9]
   ## Combine into one dataset  -----
   test_indicator_dataset <- combine_files(test_indicator_files)
   
@@ -137,7 +141,6 @@ main_dataset <- main_dataset |>
 # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
 # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
 main_dataset <- create_geography_path_column(main_dataset)
-
 
 # make available in global environment for viewing what will be sent to shiny app
 main_dataset <<- main_dataset
