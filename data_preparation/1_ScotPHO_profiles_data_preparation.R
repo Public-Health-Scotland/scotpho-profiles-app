@@ -76,21 +76,26 @@ update_techdoc(load_test_indicators = TRUE, create_backup = FALSE)
 ## Update geography lookups  ----
 ###################################################.
 
-## Geography Lookup
-# copy the main geography lookup to your local repo
-file.copy(
-  paste0(lookups, "Geography/opt_geo_lookup.rds"), # old file path - TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
-  paste0("shiny_app/data/profiles_geo_lookup.rds"),  # copy to local shiny app data folder
-  overwrite = TRUE
-)
+# ## Geography Lookup
+# # copy the main geography lookup to your local repo
+# file.copy(
+#   paste0(lookups, "Geography/opt_geo_lookup.rds"), # old file path - TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
+#   paste0("shiny_app/data/profiles_geo_lookup.rds"),  # copy to local shiny app data folder
+#   overwrite = TRUE
+# )
+# 
+# # open geography look from shiny app data folder 
+# # (required for matches on areanames, area type and parent geographies to geography codes in indicator datasets)
+# geography_lookup <- readRDS(
+#   file = paste0(lookups, "Geography/opt_geo_lookup.rds") ##TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
+# )
 
-# open geography look from shiny app data folder 
-# (required for matches on areanames, area type and parent geographies to geography codes in indicator datasets)
-geography_lookup <- readRDS(
-  file = paste0(lookups, "Geography/opt_geo_lookup.rds") ##TO DO rename opt_geo_lookup to profiles_geo_lookup in looksups repo
-)
+# while testing the updated geo_lookup (which includes police divisions)
+geography_lookup <- readRDS("shiny_app/data/profiles_geo_lookup.rds")
 
-
+geography_lookup <- geography_lookup %>% #TEMPORARY ADDITION TO MAKE IT WORK
+  mutate(across(.cols = c('areaname', 'areatype', 'parent_area'),
+                ~ as.character(.x)))  # convert to character before next step, to avoid factor mess
 
 #########################################################################################.
 ## Update main dataset  ----
@@ -130,7 +135,8 @@ main_dataset <- main_dataset |>
                                                 "Alcohol & drug partnership",
                                                 "HSC partnership",
                                                 "HSC locality",
-                                                "Intermediate zone"))) |>
+                                                "Intermediate zone",
+                                                "Police division"))) |> #new addition
   arrange(areatype, parent_area, areaname)
 
 # convert them into lists of parent/child nodes that can be used to create a 
@@ -147,7 +153,8 @@ saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_node
 ## i.e. indicator data split by SIMD quintiles.
 ##############################################################.
 
-update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
+#update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
+update_deprivation_data(load_test_indicators = TRUE, create_backup = FALSE)
 
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
 
@@ -191,4 +198,18 @@ rm(list = ls())
 
 ##END
 
+#deletions to remove indicators failing the tests:
+main_dataset <- read_parquet("shiny_app/data/main_dataset") %>%
+  filter(!(ind_id %in% c(1, 4, 5, 7, 4157#, 
+                         #99124, 99125, 99126
+                         ))) %>%
+  arrange(ind_id, code, year)
+write_parquet(main_dataset, "shiny_app/data/main_dataset")
 
+
+deprivation_dataset <- read_parquet("shiny_app/data/deprivation_dataset") %>%
+  filter(!(ind_id %in% c(13024, 21004, 21101, 21106, 20705, 1547, 13033, 13034, 4150, 12535,
+                         12534, 13025, 20305, 21105, 7, 20306))) %>% #label issue
+  filter(!(ind_id %in% c(4121, 99102, 99101, 21005, 21006, 21103, 21104, 30008))) %>% # max year issue
+  arrange(ind_id, code, quintile, year)
+write_parquet(deprivation_dataset, "shiny_app/data/deprivation_dataset")
