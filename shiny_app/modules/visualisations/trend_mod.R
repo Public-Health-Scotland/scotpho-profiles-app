@@ -399,7 +399,11 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(areaname, year)
+        arrange(year)
+      
+      
+      df
+      
     })
     
     
@@ -468,9 +472,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                       marker = list(enabled = TRUE)
                       ) |>
         hc_plotOptions(series=list(animation=FALSE)) |>
-        hc_xAxis(title = "") |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_yAxis(title = list(text = type_definition)) |>
+        hc_xAxis(categories = unique(trend_data()$trend_axis), title = "") |>
         hc_legend(align = "left", verticalAlign = "top") |>
         hc_chart(backgroundColor = 'white') |>
 
