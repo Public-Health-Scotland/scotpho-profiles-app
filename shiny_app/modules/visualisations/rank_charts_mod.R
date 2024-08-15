@@ -28,9 +28,7 @@ rank_mod_ui <- function(id) {
 
                         # indicator filter (note this is a module)
                         div(id = ns("rank_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
-                        
-                        # indicator definition button
-                        indicator_definition_btn_ui(ns("rank_ind_def"),class="act-btn"),
+
                         
                         # comparator switch filter 
                         div(id = ns("rank_comparator_wrapper"),
@@ -102,7 +100,7 @@ rank_mod_ui <- function(id) {
             # metadata tab
             nav_panel("Metadata",
                     value = ns("rank_metadata_tab"), #id for guided tour
-                    uiOutput(ns("rank_metadata"))
+                    metadata_table_mod_UI(ns("indicator_metadata")) # metdata table
           ),
      
             nav_spacer(),
@@ -145,7 +143,7 @@ rank_mod_ui <- function(id) {
 # id = unique id 
 # profile_data = reactive df in main server
 # geo_selections <- reactive values in main server storing global geography selections
-rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
+rank_mod_server <- function(id, profile_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
 
@@ -192,8 +190,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
     selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", 
                                                       profile_data, geo_selections)
     
-    # calls definition button module server script and passes the actual indicator selected)
-    indicator_definition_btn_server("rank_ind_def", selected_indicator = selected_indicator)  
+
     
     # prepares data to be plotted --------------------------------------------
     rank_data <- reactive({
@@ -369,7 +366,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, techdoc) {
 
     
     ############################################
-    # Visualisations / data table  ----
+    # Visualisations / data tables  ----
     #############################################
     
     # chart (barchart/dumbell chart)
@@ -573,6 +570,10 @@ Not all profiles have available indicators for all geography types. The drugs pr
                 defaultExpanded = T,
                 defaultPageSize = nrow(data))
     })
+    
+  
+    # metdata table (note this is a module)
+    metadata_table_mod_Server("indicator_metadata", selected_indicator)
     
     
      
