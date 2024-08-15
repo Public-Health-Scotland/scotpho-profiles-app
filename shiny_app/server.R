@@ -170,7 +170,7 @@ function(input, output, session) {
   
   
   # run the module containing server logic for the  rank tab - this is visible for every single profile
-  rank_mod_server("rank", areatype_data, geo_selections)
+  rank_mod_server("rank", areatype_data, geo_selections, techdoc)
   
   
   # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
@@ -178,7 +178,7 @@ function(input, output, session) {
     req(input$profile_choices != "")
     if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "simd_tab")
-      simd_navpanel_server("simd", simd_data, geo_selections)
+      simd_navpanel_server("simd", simd_data, geo_selections, techdoc)
       
     } else {
       nav_hide("sub_tabs", target = "simd_tab")
