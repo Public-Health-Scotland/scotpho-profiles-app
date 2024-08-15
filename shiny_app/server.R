@@ -166,7 +166,7 @@ function(input, output, session) {
   ###############################################################
   
   # run the module containing server logic for the trends tab - this is visible for every single profile 
-  trend_mod_server("trends", profile_data, geo_selections, techdoc)
+  trend_mod_server("trends", profile_data, geo_selections)
   
   
   # run the module containing server logic for the  rank tab - this is visible for every single profile
