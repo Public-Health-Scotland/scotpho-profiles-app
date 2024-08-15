@@ -107,6 +107,8 @@ trend_mod_ui <- function(id) {
             radioButtons(inputId = ns("numerator_button_trends"), label = NULL, 
                          choices = c("Rate", "Numerator"),
                          selected = "Rate"),
+            # constrain y-axis to start at zero
+            checkboxInput(ns("zero_trend"), label = "y-axis should include zero", value = TRUE),
             # ci switch
             checkboxInput(ns("ci_switch_trends"), label = "95% confidence intervals", FALSE),
           ))
@@ -490,6 +492,14 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                           states = list(
                             hover = list(
                               enabled = FALSE)))) 
+        
+      }
+      
+      # constrain y-axis to include zero if box is checked
+      if(input$zero_trend == TRUE) {
+        
+        chart <- chart |>
+          hc_yAxis(min=0) 
         
       }
       
