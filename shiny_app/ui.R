@@ -56,7 +56,7 @@ page_navbar(
                            layout_columns(
                              profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
                              profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
-                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **Mental health** for adults. Forthcoming in 2025: indicators for children and young people."))
+                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."))
                            ),
                            
                            layout_columns(
@@ -145,7 +145,8 @@ page_navbar(
                                  ),
                        
                        # trends sub-tab
-                       nav_panel(title = "Trends", value = "trends_tab", trend_mod_ui("trends")),
+                   #    nav_panel(title = "Trends", value = "trends_tab", trend_mod_ui("trends")),
+                       nav_panel(title = "Trends", value = "trends_tab", trend_mhi_mod_ui("trends")),
                        
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
