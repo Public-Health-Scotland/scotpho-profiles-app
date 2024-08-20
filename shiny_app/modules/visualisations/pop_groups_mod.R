@@ -189,7 +189,8 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     pop_trend_data <- reactive({
       dataset() |>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
-        filter(indicator == selected_indicator() & split_name == input$split_filter) # filter by selected indicator and selected split
+        filter(indicator == selected_indicator() & split_name == input$split_filter) |> # filter by selected indicator and selected split
+        arrange(year)
     })
     
     # create single year data for the bar chart 
@@ -294,6 +295,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                   hcaes(x = trend_axis, y = measure, group = split_value)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
+        hc_xAxis(categories = unique(pop_trend_data()$trend_axis)) |>
         hc_yAxis(title = list(text = "")) |>
         # style xaxis labels - keeping only first and last label
         hc_xAxis(labels = list(
