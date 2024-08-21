@@ -65,8 +65,8 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
              ~ case_when(. > 0 ~ "positive", . < 0 ~ "negative",  . == 0 ~ "zero"),
              .names = "{.col}_gradient")) |>
     mutate(
-      qmax = quintile[which.max(measure)], # which quintile contains highest rate/value
-      qmin = quintile[which.min(measure)] # which quintile contains lowest rate/value
+      qmax = ifelse(!is.na(measure), quintile[which.max(measure)], as.character(NA)), # which quintile contains highest rate/value
+      qmin = ifelse(!is.na(measure), quintile[which.min(measure)], as.character(NA)) # which quintile contains lowest rate/value
     ) |>
     ungroup() |>
     rename(indicator = indicator_name)
