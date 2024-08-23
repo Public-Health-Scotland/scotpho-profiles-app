@@ -32,7 +32,7 @@ definitions_tab_UI <- function(id) {
                      choices = as.list(c("All", names(profiles_list))),
                      selected = "All",
                      options = list(placeholder = 'Select a profile')
-                     ),
+      ),
       # geography level filter 
       selectizeInput(ns("geo_search"), 
                      label = "Filter by geography level",
@@ -71,15 +71,15 @@ definitions_tab_Server <- function(id) {
             filter(if_any(contains("profile_domain"),
                           ~ substr(.x, 1, 3) %in% profiles_list[[input$profile_choices]]))
         }
-
+        
         x
-
+        
       })
-
+      
       ###################################
       # Data table 
       ###################################
-  
+      
       
       # Display indicator search results in a table with expandable rows
       # Using reactive data from above
@@ -111,19 +111,17 @@ definitions_tab_Server <- function(id) {
           # Customise columns in the table 
           columns = list(
             
-          # indicator column 
-          indicator_name = colDef(name = "Indicator search results", minWidth = 350, html = T,
+            # indicator column 
+            indicator_name = colDef(name = "Indicator search results", minWidth = 350, html = T,
                                     
-          # Technical information to display when row expanded
-          # ${rowInfo.values['column name'] returns the value in that column for the particular row of data the user has expanded
-          # Note this can be done in R without using any JS however it runs significantly slower with this amount of metadata.
-                    details = JS(" function(rowInfo) {
+                                    # Technical information to display when row expanded
+                                    # ${rowInfo.values['column name'] returns the value in that column for the particular row of data the user has expanded
+                                    # Note this can be done in R without using any JS however it runs significantly slower with this amount of metadata.
+                                    details = JS(" function(rowInfo) {
                      return  `
                      
-
                      
                      <br>
-
                      <div>
                      <h4 class = 'metadata-header'>Indicator definition</h4>
                      ${rowInfo.values['indicator_definition']}
@@ -137,28 +135,24 @@ definitions_tab_Server <- function(id) {
                      </div>
                      
                      <br>
-
                      <div>
                      <h4 class = 'metadata-header'>Data source</h4>
                      ${rowInfo.values['data_source']}
                      </div>
                      
                      <br>
-
                      <div>
                      <h4 class = 'metadata-header'>Numerator</h4>
                      ${rowInfo.values['numerator']}
                      </div>
                      
                      <br>
-
                      <div>
                      <h4 class = 'metadata-header'>Denominator</h4>
                      ${rowInfo.values['denominator']}
                      </div>
                      
                      <br>
-
                      <h4 class = 'metadata-header'>Methodology</h4>
                      
                      <table class = 'methodology-table' style='width:100%; table-layout: fixed'>
@@ -195,20 +189,17 @@ definitions_tab_Server <- function(id) {
                      </table>
                      
                      <br>
-
-
                      <div>
                      <h4 class = 'metadata-header'>Inclusion rationale</h4>
                      ${rowInfo.values['inclusion_rationale']}
                      </div>
                      
                      <br>
-
                      <div>
                      <h4 class = 'metadata-header'>Notes and caveats</h4>
                      ${rowInfo.values['notes_caveats']}
                      </div>`}")),
-          
+            
             # 2 x update dates columns 
             last_updated = colDef(name = "Last updated", sortable = FALSE),
             next_update = colDef(defaultSortOrder = "desc", sortable = FALSE, name = "Next update (provisional)"),
@@ -275,7 +266,7 @@ definitions_tab_Server <- function(id) {
                       select(-c(indicator_author, analyst_notes, source_last_updated, source_next_update, covid_impact, active, ind_id, days_since_update)),
                     file, row.names=FALSE) }
       )
-    
+      
       
       
     })} # close server module function 
@@ -314,4 +305,3 @@ definitions_tab_Server <- function(id) {
 # 
 # # run app
 # shinyApp(ui, server)
-

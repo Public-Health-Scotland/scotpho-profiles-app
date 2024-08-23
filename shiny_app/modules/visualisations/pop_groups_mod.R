@@ -17,12 +17,6 @@ pop_groups_ui <- function(id) {
     layout_sidebar(
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
-                        # 2 x help buttons
-                        layout_column_wrap(
-                          1/2,
-                          actionButton(ns("help"), label = "Help", class = "act-btn"), # help button
-                          indicator_definition_btn_ui(ns("ind_def"), class= "act-btn") # indicator definitions button
-                        ),
                         
                         # indicator filter (note this is a module)
                         indicator_filter_mod_ui(ns("indicator_filter")),
@@ -64,6 +58,11 @@ pop_groups_ui <- function(id) {
             # tab 2: data table
             bslib::nav_panel("Table",
                              reactableOutput(ns("pop_rank_table")) # table
+            ),
+            
+            # tab 3: indicator metadata
+            bslib::nav_panel("Metadata",
+                             metadata_table_mod_UI(ns("indicator_metadata"))
             ),
             
             
@@ -177,11 +176,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     
     # generate list of indicators (from the simd indicators dataset) available 
     selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", dataset, geo_selections)
-    
-    
-    # calls definition button module server script and passes the actual indicator selected)
-    indicator_definition_btn_server("ind_def", selected_indicator = selected_indicator)  
-    
+
     
     # creates trend data
     pop_trend_data <- reactive({
@@ -324,18 +319,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
           )
         )
       
-      # # add averae line if switch turned on 
-      # if(input$average_switch == TRUE){
-      #   
-      #   x <- x |> hc_add_series(
-      #     trend_data(),
-      #     "line",
-      #     name = "Average",
-      #     color = "#FF0000",
-      #     hcaes(x = trend_axis, y = avg)
-      #   )
-      #   
-      # }
+
       
       
       # if the confidence interval switch turned on, plot cis
@@ -364,6 +348,8 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       
       
     }) #end  pop trend chart
+    
+    
     
     ##########################################
     # Tables ---------
@@ -406,6 +392,11 @@ pop_groups_server <- function(id, dataset, geo_selections) {
       
       
     })
+    
+    
+    
+    # metadata table
+    metadata_table_mod_Server("indicator_metadata", selected_indicator)
     
     ### need to create pop trend table
     

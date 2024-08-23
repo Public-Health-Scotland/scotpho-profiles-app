@@ -92,7 +92,7 @@ trend_mod_ui <- function(id) {
         # caveats/methodological info tab ----------------
         nav_panel("Metadata",
                   value = ns("trend_metadata_tab"), #id for guided tour
-                  reactableOutput(ns("indicator_metadata"))
+                  metadata_table_mod_UI(ns("indicator_metadata"))
         ),
         
         # add space
@@ -127,7 +127,7 @@ trend_mod_ui <- function(id) {
 ## MODULE SERVER
 #######################################################
 
-trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
+trend_mod_server <- function(id, filtered_data, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -406,23 +406,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
     })
     
-    
-    
-    # select some metadata fields from the technical document to display
-    # in the metadata tab for the selected indicator
-    metadata <- reactive({
-      req(selected_indicator())
-      
-      techdoc |>
-        filter(indicator_name == selected_indicator()) |>
-        select(indicator_definition,data_source, notes_caveats, interpretation, numerator, denominator, disclosure_control) |>
-        pivot_longer(cols = everything(), names_to = "Item", values_to = "Description") |>
-        mutate(Item = gsub("_", " ", Item))
-    })
-    
 
-    
-    
     
     #######################################################
     ## Dynamic text  ----
@@ -543,18 +527,10 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       
     })
     
+    # table for metadata tab (note this is a module)
+    metadata_table_mod_Server("indicator_metadata", selected_indicator)
     
-    
-    
-    
-    # table for metadata tab
-    output$indicator_metadata <- renderReactable({
-      reactable(data = metadata(),
-                defaultExpanded = TRUE,
-                defaultPageSize = nrow(metadata()),
-                columns = list(
-                  Description = colDef(minWidth = 350)))
-    })
+
     
     
     

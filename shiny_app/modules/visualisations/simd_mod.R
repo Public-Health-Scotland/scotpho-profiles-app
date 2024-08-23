@@ -1,8 +1,3 @@
-#to-do
-
-# add in help text to explain charts for help button - we need simd button and help button?
-
-
 ################################.
 # MODULE: simd_navpanel_mod ---- 
 # prepares the nav_panel layout displaying SIMD based deprivation data
@@ -20,18 +15,12 @@ simd_navpanel_ui <- function(id) {
   tagList(
     layout_sidebar(
       
-      # enable guided tour
-      #use_cicerone(),
-      
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
                         
                         # indicator filter (note this is a module)
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
-                        # Indicator definition and what is SIMD button
-                        layout_column_wrap(
-                          indicator_definition_btn_ui(ns("simd_ind_def"),class = "act-btn")
-                        ),
+
                         # filter to include/exclude averages from charts
                         div(id = ns("deprivation_avg_switch_wrapper"), checkboxInput(ns("average_switch"), label = " include averages",FALSE)),
                         
@@ -84,7 +73,7 @@ simd_navpanel_ui <- function(id) {
           # tab 3: metadata
           bslib::nav_panel("Metadata",
                            value = ns("deprivation_metadata_tab"), #id for guided tour
-                           uiOutput(ns("deprivation_metadata"))
+                           metadata_table_mod_UI(ns("indicator_metadata"))
           ),
           
           
@@ -157,7 +146,7 @@ simd_navpanel_ui <- function(id) {
 ## MODULE SERVER
 #######################################################.
 
-simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
+simd_navpanel_server <- function(id, simd_data, geo_selections){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -170,8 +159,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     # update years choices for bar chart filter, depending on indicator selected
     observe({
       
-      #req(active_nav() == nav_id)
-      
+
       available_years <- simd_data() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         arrange(desc(year)) |>
@@ -216,10 +204,6 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
     
     # generate list of indicators (from the simd indicators dataset) available 
     selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
-    
-    
-    # calls definition button module server script and passes the actual indicator selected)
-    indicator_definition_btn_server("simd_ind_def", selected_indicator = selected_indicator)  
     
     
     geography_data <- reactive({
@@ -513,6 +497,10 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, techdoc){
                 )
       )
     })
+    
+    
+    # metadata table (note this is a module)
+    metadata_table_mod_Server("indicator_metadata", selected_indicator)
     
     
     #############################################.
