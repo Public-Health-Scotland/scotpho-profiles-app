@@ -165,8 +165,6 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 ## i.e. indicator data split by various different inequality groups.
 ########################################################################.
 
-#placeholder for when script ready
-
 update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
 
 # no validation tests currently written for population data.
