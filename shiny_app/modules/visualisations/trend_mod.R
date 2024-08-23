@@ -276,6 +276,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
       }
     })
     
+
     
     
     # disable Scotland checkbox when Scotland already selected in global options
@@ -289,6 +290,24 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
         shinyjs::show("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = TRUE)
       }
+    })
+    
+    
+    # dynamically enabling/disabling the  numerator/rate radio buttons depending on selected indicator
+    # this is required because for some indicators, we only publish the rate so numerator not always available
+    observeEvent(selected_indicator(), {
+    req(indicator_filtered_data())
+      # check the first row of the data filtered by selected indicator
+      # if the numerator column is empty ensure the selected option to plot in the trend chart is 'rate'
+      # and disable the filter
+      if(is.na(indicator_filtered_data()$numerator[1])){
+        updateRadioButtons(session, "numerator_button_trends", selected = "Rate")
+        shinyjs::disable("numerator_button_trends")
+        # otherwise enable the filter to allow users to toggle between numerator/rate
+      } else{
+        shinyjs::enable("numerator_button_trends")
+      }
+      
     })
     
     
@@ -380,7 +399,11 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(areaname, year)
+        arrange(year)
+      
+      
+      df
+      
     })
     
     
@@ -449,9 +472,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, techdoc) {
                       marker = list(enabled = TRUE)
                       ) |>
         hc_plotOptions(series=list(animation=FALSE)) |>
-        hc_xAxis(title = "") |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_yAxis(title = list(text = type_definition)) |>
+        hc_xAxis(categories = unique(trend_data()$trend_axis), title = "") |>
         hc_legend(align = "left", verticalAlign = "top") |>
         hc_chart(backgroundColor = 'white') |>
 
