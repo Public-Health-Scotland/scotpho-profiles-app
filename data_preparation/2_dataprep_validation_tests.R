@@ -72,13 +72,14 @@ TEST_suppression_applied <- function(data) {
   
   # find indicators in tech doc requiring suppression and they're suppression threshhold
   techdoc <- technical_doc |>
-    select(indicator_name, supression, supress_less_than)
+    select(indicator_name, ind_id, supression, supress_less_than)
   
   # join information onto dataset, filter on indicator requiring suppression
   # and check if there are any rows where the numerator is less than the suppression threshold
   # i.e. if threshold is 10, should be no numerator figures less than 10.
   data <- data |>
-    left_join(technical_doc, by = c("indicator" = "indicator_name")) |>
+    #   left_join(techdoc, by = c("indicator" = "indicator_name")) |>
+    left_join(techdoc, by = "ind_id") |> #safer (because "Persistent poverty" was included twice, with slightly different breakdowns, so gave error if joined using name, but not using ind_id. Obviously we want to avoid having indicators with the same name too though... (I've renamed the MH indicator now, but still think this logic makes sense))
     filter(supression == "Y") |>
     subset(numerator < supress_less_than)
   
