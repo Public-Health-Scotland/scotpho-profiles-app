@@ -186,12 +186,12 @@ function(input, output, session) {
   })
   
 
-  # run the module that creates the server logic for the population groups tab ONLY when care and wellbeing profile is selected, otherwise hide the tab
+  # run the module that creates the server logic for the population groups tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] == "CWB") {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "pop_groups_tab")
-      pop_groups_server("pop_groups", ineq_splits_temporary, geo_selections)
+      pop_groups_server("pop_groups",popgroup_data, geo_selections)
     } else {
       nav_hide("sub_tabs", target = "pop_groups_tab")
     }
@@ -299,7 +299,7 @@ function(input, output, session) {
 
 
   # 3. DEPRIVATION DATASET
-  # filters the simd dataset by selected profile and is passed to the deprivation module 
+  # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
     
     req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected
@@ -318,11 +318,21 @@ function(input, output, session) {
 
 
   # 4. POPULATION GROUPS DATASET
-  # a temporary dataset passed to the population groups module - this will be expanded over time
-  ineq_splits_temporary <- reactive({
+  # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
+  popgroup_data <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("CWB")) # only run when specific profiles have been selected
-    popgroup_dataset  
+    req(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN")) # only run when specific profiles have been selected
+
+    dt <- setDT(popgroup_dataset) # set to class data.table
+    
+    # filter by selected geography as deprivation tab only displays info on a single area
+    dt <- dt[(areatype == geo_selections()$areatype | areatype == "Scotland") & areaname == geo_selections()$areaname]
+    
+    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
+    dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
+               substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
+               substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
+    
   
   })
   # 
