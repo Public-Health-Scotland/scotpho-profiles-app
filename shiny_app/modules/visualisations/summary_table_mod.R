@@ -485,7 +485,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
               setTimeout(function() {
                 Highcharts.chart(containerId, {
                   chart: {
-                    type: 'line',
+                    type: 'area',
                     backgroundColor:'transparent',
                     animation: false
                   },
@@ -538,7 +538,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                     plotOptions: {
                       series: {
                         animation: false,
-                        stacking: 'normal',
+                        connectNulls: true,
                         dataLabels: {
                           enabled: false
                         },
