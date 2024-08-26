@@ -176,7 +176,7 @@ function(input, output, session) {
   # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP") & !is.null(profiles_list[[input$profile_choices]])) {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "simd_tab")
       simd_navpanel_server("simd", simd_data, geo_selections)
       
@@ -302,7 +302,7 @@ function(input, output, session) {
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected
+    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP", "MEN")) # only run when specific profiles have been selected
 
     dt <- setDT(simd_dataset) # set to class data.table
 
