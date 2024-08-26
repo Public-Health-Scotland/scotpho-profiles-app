@@ -305,7 +305,8 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                }
              }"))) |>
         hc_chart(backgroundColor = 'white') |>
-        hc_plotOptions(series = list(animation = FALSE)) |>
+        hc_plotOptions(series = list(animation = FALSE,
+                                     connectNulls=TRUE)) |>
         hc_tooltip(
           crosshairs = TRUE,
           borderWidth = 1,

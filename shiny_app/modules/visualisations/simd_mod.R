@@ -357,7 +357,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
                }
              }"))) |>
         hc_chart(backgroundColor = 'white') |>
-        hc_plotOptions(series = list(animation = FALSE)) |>
+        hc_plotOptions(series = list(animation = FALSE,
+                                     connectNulls=TRUE)) |>
         hc_tooltip(
           crosshairs = TRUE,
           borderWidth = 1,

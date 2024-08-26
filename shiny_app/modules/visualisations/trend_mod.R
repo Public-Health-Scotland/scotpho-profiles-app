@@ -455,7 +455,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
                       hcaes(x = trend_axis, y = y, group = areaname),
                       marker = list(enabled = TRUE)
                       ) |>
-        hc_plotOptions(series=list(animation=FALSE)) |>
+        hc_plotOptions(series=list(animation=FALSE,
+                                   connectNulls=TRUE)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_yAxis(title = list(text = type_definition)) |>
         hc_xAxis(categories = unique(trend_data()$trend_axis), title = "") |>
