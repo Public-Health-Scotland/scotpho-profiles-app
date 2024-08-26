@@ -176,7 +176,7 @@ function(input, output, session) {
   # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP") & !is.null(profiles_list[[input$profile_choices]])) {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "simd_tab")
       simd_navpanel_server("simd", simd_data, geo_selections)
       
@@ -216,7 +216,7 @@ function(input, output, session) {
   # run the module that creates the server logic for the summary tab, unless 'all indicators' is selected as the profile, in which case hide the tab
   observe({
     req(input$profile_choices != "")
-    if (input$profile_choices != "All Indicators" & input$profile_choices != "Care and Wellbeing") {
+    if (input$profile_choices != "All Indicators" & input$profile_choices != "Care and Wellbeing" & input$profile_choices != "Mental Health") {
       nav_show("sub_tabs", target = "summary_tab")
       summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
     
@@ -225,7 +225,12 @@ function(input, output, session) {
       nav_show("sub_tabs", target = "summary_tab")
       summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
                                                                                                                          "Healthy places", "Impact of ill health prevention","Discrimination and racism"))
-    } else {
+      } else if(input$profile_choices == "Mental Health"){
+        
+        nav_show("sub_tabs", target = "summary_tab")
+        summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Mental health outcomes", "Individual determinants",
+                                                                                                                           "Community determinants", "Structural determinants"))
+        } else {
       
       nav_hide("sub_tabs", target = "summary_tab")
     }
@@ -302,7 +307,7 @@ function(input, output, session) {
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP")) # only run when specific profiles have been selected
+    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP", "MEN")) # only run when specific profiles have been selected
 
     dt <- setDT(simd_dataset) # set to class data.table
 
