@@ -172,30 +172,37 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     
     
     observe({
-      # if scotland is selected or the selected indicator is patients per GP (not available at local quintiles)
+      
+      # if local quintiles are not available for the selected indicator and geography
       # then set selected quintile to "Scotland" and disable the filter
       
-      if(geo_selections()$areatype == "Scotland" | selected_indicator() == "Patients per general practitioner"){
-        updateRadioButtons(session, "quint_type", selected = "Scotland")
-        shinyjs::disable("quint_type")
-        
-        # otherwise, if the areatype is local set the quintile to "Local" by default
-      } else if (geo_selections()$areatype != "Scotland"){
-        updateRadioButtons(session, "quint_type", selected = "Local")
-        
-        if(selected_indicator() %in% c("Mortality amenable to healthcare",
+      available_quints <- simd_data() |>
+        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+        select(quint_type) %>%
+        unique()
+
+      # If Scotland is selected, only scotland-level quintiles are appropriate (disable the radio buttons)
+      # If another geography is selected but local-level quintiles aren't available do the same:
+      if (length(available_quints)==1 & "sc_quin" %in% available_quints){
+          updateRadioButtons(session, "quint_type", selected = "Scotland")
+          shinyjs::disable("quint_type")
+
+      # otherwise, if the areatype is local set the quintile to "Local" by default
+            } else if (geo_selections()$areatype != "Scotland"){
+              updateRadioButtons(session, "quint_type", selected = "Local")
+              
+              if(selected_indicator() %in% c("Mortality amenable to healthcare",
                                        "Repeat emergency hospitalisation in the same year",
                                        "Preventable emergency hospitalisation for a chronic condition",
                                        "Life expectancy, females",
                                        "Life expectancy, males")) {
-          
-          shinyjs::disable("quint_type")
-        } else {
-          shinyjs::enable("quint_type")
-        }
-      }
-      
-    })
+                
+                shinyjs::disable("quint_type")
+                } else {
+                  shinyjs::enable("quint_type")
+                } 
+              }
+      })
     
     
     #######################################################.
