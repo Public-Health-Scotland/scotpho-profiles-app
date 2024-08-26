@@ -130,7 +130,8 @@ main_dataset <- main_dataset |>
                                                 "Alcohol & drug partnership",
                                                 "HSC partnership",
                                                 "HSC locality",
-                                                "Intermediate zone"))) |>
+                                                "Intermediate zone",
+                                                "Police division"))) |>
   arrange(areatype, parent_area, areaname)
 
 # convert them into lists of parent/child nodes that can be used to create a 
@@ -147,7 +148,7 @@ saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_node
 ## i.e. indicator data split by SIMD quintiles.
 ##############################################################.
 
-update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
+update_deprivation_data(load_test_indicators = TRUE, create_backup = FALSE)
 
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
 
@@ -188,5 +189,3 @@ update_shapefiles()
 rm(list = ls())
 
 ##END
-
-
