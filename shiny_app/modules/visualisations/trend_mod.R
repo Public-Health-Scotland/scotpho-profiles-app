@@ -47,6 +47,10 @@ trend_mod_ui <- function(id) {
                             ),
                             
                             layout_columns(
+                              uiOutput(ns("ui_pd_filter")) # placeholder for police division filter (which is conditional on selected indicator) 
+                            ),
+                            
+                            layout_columns(
                               selectizeInput(inputId = ns("hscp_filter"), label = "Health and Social Care Partnerships:", choices = hscp_list, multiple = TRUE),
                               selectizeInput(inputId = ns("adp_filter"), label = "Alcohol and Drugs Partnerships:", choices = adp_list, multiple = TRUE)
                             ),
@@ -222,6 +226,22 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     })
     
 
+    ## Showing Police Division selection box if this geography is available for the indicator (i.e., mental health profile)
+    output$ui_pd_filter <- renderUI({
+      req(indicator_filtered_data())
+      
+      # stores available areatypes, depending on what indicator was selected
+      available_areatypes <- indicator_filtered_data() |>
+        pull(unique(areatype))
+      
+      # If 'Police division' is available, SHOW pd_filter, otherwise DON'T SHOW
+      if("Police division" %in% available_areatypes) {
+        selectizeInput(inputId = ns("pd_filter"), label = "Police divisions:", choices = pd_list, multiple = TRUE)
+      }
+      
+    })
+    
+    
     # remove globally selected areaname from available areas in dropdowns
     observe({
       if(geo_selections()$areatype == "Health board"){
@@ -239,6 +259,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       else if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")){
         updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
       }
+      else if(geo_selections()$areatype == "Police division"){
+        updateSelectizeInput(session, "pd_filter", choices = pd_list[pd_list!=geo_selections()$areaname])
+      }
       
     })
     
@@ -253,6 +276,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       updateSelectizeInput(session, "adp_filter", selected = character(0))
       updateSelectizeInput(session, "iz_filter", selected = character(0))
       updateSelectizeInput(session, "locality_filter", selected = character(0))
+      updateSelectizeInput(session, "pd_filter", selected = character(0))
+      
       
       # clear the reactive vals
       hb_selections(NULL)
@@ -261,6 +286,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       adp_selections(NULL)
       locality_selections(NULL)
       iz_selections(NULL)
+      pd_selections(NULL)
+      
       
     })
     
@@ -322,6 +349,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     adp_selections <- reactiveVal()
     locality_selections <- reactiveVal()
     iz_selections <- reactiveVal()
+    pd_selections <- reactiveVal()
     
     
     # update the reactive objects whenever selections are made
@@ -350,6 +378,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       iz_selections(input$iz_filter)
     })
     
+    observeEvent(input$pd_filter, {
+      pd_selections(input$pd_filter)
+    })
 
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
@@ -379,7 +410,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
             (areaname %in% input$adp_filter & areatype == "Alcohol & drug partnership") |# filter by selected adps
             (areaname %in% input$hscp_filter & areatype == "HSC partnership")| #filter by selected hscps
             (areaname %in% input$iz_filter & areatype == "Intermediate zone")| # filter by selected IZs
-            (areaname %in% input$locality_filter & areatype == "HSC locality")# filter by selected HSC localities
+            (areaname %in% input$locality_filter & areatype == "HSC locality")| # filter by selected HSC localities
+            (areaname %in% input$pd_filter & areatype == "Police division") # filter by selected police divisions
         )
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
