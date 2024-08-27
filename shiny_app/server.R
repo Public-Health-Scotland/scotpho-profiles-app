@@ -216,24 +216,26 @@ function(input, output, session) {
   # run the module that creates the server logic for the summary tab, unless 'all indicators' is selected as the profile, in which case hide the tab
   observe({
     req(input$profile_choices != "")
-    if (input$profile_choices != "All Indicators" & input$profile_choices != "Care and Wellbeing" & input$profile_choices != "Mental Health") {
-      nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
     
-      } else if(input$profile_choices == "Care and Wellbeing"){
-        
+    if (input$profile_choices == "All Indicators"){ # if all indicators selected then hide the summary view
+      nav_hide("sub_tabs", target = "summary_tab")
+      
+    } else if(input$profile_choices == "Care and Wellbeing"){ #supply CWB specific profile domain ordering
+      
       nav_show("sub_tabs", target = "summary_tab")
       summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
                                                                                                                          "Healthy places", "Impact of ill health prevention","Discrimination and racism"))
-      } else if(input$profile_choices == "Mental Health"){
-        
-        nav_show("sub_tabs", target = "summary_tab")
-        summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Mental health outcomes", "Individual determinants",
-                                                                                                                           "Community determinants", "Structural determinants"))
-        } else {
+    } else if(input$profile_choices == "Mental Health"){ #supply mental health specific profile domain ordering
       
-      nav_hide("sub_tabs", target = "summary_tab")
+      nav_show("sub_tabs", target = "summary_tab")
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Mental health outcomes", "Individual determinants",
+                                                                                                                         "Community determinants", "Structural determinants"))
+    } else { # all other profiles run the summary tab but no need to supply domain order and they will sort alphabetically
+      nav_show("sub_tabs", target = "summary_tab")
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
+      
     }
+    
   })
   
   
