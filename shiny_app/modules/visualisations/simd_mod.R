@@ -268,7 +268,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
       
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(trend_data()) > 0, "No indicators available")
+        need( nrow(trend_data()) > 0, "No data available")
       )
       
       # if data is available display chart title
@@ -285,7 +285,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
       
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(trend_data()) > 0, "No indicators available")
+        need( nrow(trend_data()) > 0, "No data available")
       )
       
       # if data is available display chart title
@@ -331,7 +331,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
       
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(trend_data()) > 0, paste0("SIMD data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+        need( nrow(trend_data()) > 0, paste0("SIMD data is not available at ", geo_selections()$areatype, " level for this indicator. Please select a different area type (of either Scotland, Health board or Council area."))
       )
       
       # if there is data, plot trend chart 
@@ -415,7 +415,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
       
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(bar_data()) > 0, paste0("SIMD data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+        need( nrow(bar_data()) > 0, paste0("SIMD data is not available at ", geo_selections()$areatype, " level for this indicator. Please select a different area type (of either Scotland, Health board or Council area)."))
       )
       
       # if there is data available, plot bar chart 
