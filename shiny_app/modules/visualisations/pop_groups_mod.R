@@ -200,7 +200,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     output$pop_rank_title <- renderUI({
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(pop_trend_data()) > 0, "No indicators available")
+        need( nrow(pop_trend_data()) > 0, "No data available")
       )
       
       # if data is available display chart title
@@ -237,7 +237,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     output$pop_rank_chart <- renderHighchart({
       
       shiny::validate(
-        need( nrow(pop_rank_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+        need( nrow(pop_rank_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level for this indicator. Please select a different area type (of either Scotland, Health board or Council area)."))
       )
 
       

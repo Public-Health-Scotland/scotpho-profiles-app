@@ -326,7 +326,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
        # create dynamic text if no indicators available for selected profile
        # and geography / if Scotland selected
        shiny::validate(
-         need( nrow(rank_data()) > 0, "No indicators available for this profile and area type.")
+         need( nrow(rank_data()) > 0, "No data available for this profile and area type.")
        )
        
        # get definition period
