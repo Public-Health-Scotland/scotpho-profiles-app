@@ -90,7 +90,7 @@ profiles_list <- list(
   "Tobacco" = "TOB",
   "Mental Health" = "MEN",
   "All Indicators" = "ALL"
-  )
+)
 
 # archived indicators - for removing from the summary tab and separating indicators 
 # into 'active' and 'archived' in the indicator filters across the other tabs
@@ -121,7 +121,15 @@ areatype_list <- c("Alcohol & drug partnership",
 
 rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HSC partnership", "Scotland", "Health board")]
 
-
+# domain orders
+CWB_domain_order <- c("Over-arching indicators","Early years","Education","Work","Living standards",
+                      "Healthy places", "Impact of ill health prevention","Discrimination and racism")
+MEN_domain_order <- c("Mental health outcomes", "Individual determinants",
+                      "Community determinants", "Structural determinants",
+                      "Male adult", "Female adult" # to be dropped once indicators reassigned elsewhere/archived
+)
+CYP_domain_order <- c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"
+)
 
 # 5. Dashboard theme ---------------------------------------------------------------
 
@@ -154,7 +162,7 @@ phs_theme <- bs_theme(version = 5, # bootstrap version 5
       ".global-filter {background-color: #ECECEC; color: black; padding: 5px;}", # make global filter buttons grey
       ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}",
       ".chart-controls-icon {background-color:#0078D4; color:white; border-radius:5em; padding:5px;}" # styling of the chart controls icon
-
+      
     )
   )
 
@@ -170,4 +178,4 @@ chart_controls_icon <- function(size = "2em") {
 }
 
 
-  
+
