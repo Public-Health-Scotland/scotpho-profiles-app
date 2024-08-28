@@ -325,6 +325,18 @@ function(input, output, session) {
   # REACTIVE DATASETS
   ###################################################
   
+  # function to create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+  # is assigned to more than one profile (and therefore more than one domain)
+   add_domain_col <- function(dataset) {
+    dataset <- dataset[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
+                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+                                 fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
+                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+    dataset
+    
+  }
+  
   # 1. MAIN DATASET FILTERED BY PROFILE
   # searches for the abbreviated name of the selected profile across the 3 profile columns in the main dataset
   # note: there are 3 profile columns because some indicators belong to more than 1 profile 
@@ -344,13 +356,8 @@ function(input, output, session) {
                  substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                  substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
       
-      # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-      # is assigned to more than one profile (and therefore more than one domain)
-      dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
-                                   substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                                   fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
-                                           substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                           substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+      dt <- add_domain_col(dt)
+      
     }
   })
   
@@ -383,13 +390,7 @@ function(input, output, session) {
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
     
-    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-    # is assigned to more than one profile (and therefore more than one domain)
-    dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
-                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                                 fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
-                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+    dt <- add_domain_col(dt)
     
   })
   
@@ -411,13 +412,7 @@ function(input, output, session) {
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
     
-    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-    # is assigned to more than one profile (and therefore more than one domain)
-    dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
-                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                                 fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
-                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+    dt <- add_domain_col(dt)
     
     
   })
