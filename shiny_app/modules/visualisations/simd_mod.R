@@ -146,7 +146,7 @@ simd_navpanel_ui <- function(id) {
 ## MODULE SERVER
 #######################################################.
 
-simd_navpanel_server <- function(id, simd_data, geo_selections){
+simd_navpanel_server <- function(id, simd_data, geo_selections, domain_order=NULL){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -203,7 +203,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     #######################################################.
     
     # generate list of indicators (from the simd indicators dataset) available 
-    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
+    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections, domain_order)
     
     
     geography_data <- reactive({

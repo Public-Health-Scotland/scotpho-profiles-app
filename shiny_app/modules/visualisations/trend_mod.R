@@ -127,7 +127,7 @@ trend_mod_ui <- function(id) {
 ## MODULE SERVER
 #######################################################
 
-trend_mod_server <- function(id, filtered_data, geo_selections) {
+trend_mod_server <- function(id, filtered_data, geo_selections, domain_order=NULL) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -354,7 +354,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
                                                       filtered_data,
-                                                      geo_selections)
+                                                      geo_selections, 
+                                                      domain_order)
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({

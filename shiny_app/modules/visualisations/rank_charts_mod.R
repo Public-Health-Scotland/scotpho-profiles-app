@@ -143,7 +143,7 @@ rank_mod_ui <- function(id) {
 # id = unique id 
 # profile_data = reactive df in main server
 # geo_selections <- reactive values in main server storing global geography selections
-rank_mod_server <- function(id, profile_data, geo_selections) {
+rank_mod_server <- function(id, profile_data, geo_selections, domain_order=NULL) {
   moduleServer(id, function(input, output, session) {
     
 
@@ -188,7 +188,7 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
     # stores selected indicator ----------------------------------------------
     # (note this is a module )
     selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", 
-                                                      profile_data, geo_selections)
+                                                      profile_data, geo_selections, domain_order)
     
 
     
