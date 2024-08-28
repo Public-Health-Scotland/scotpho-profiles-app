@@ -120,3 +120,49 @@ about_alc_text <- tagList(
   br()
   )
 
+
+###########################################.
+### Mental Health ----
+
+about_men_text <- tagList(
+  
+  h5("Overview"),
+  p("The Mental Health Profile is the result of Public Health Scotland's ",
+    tags$a("Mental Health Indicators", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/"),
+    "project. "),
+  p("The aim of the project is to make relevant data more accessible to local and national users. 
+    Better access to timely data will support efforts to improve population mental health, 
+    through more effective planning and policies, and more efficient resource allocation. 
+    Further information on development of the mental health profile can be found at the link above."),
+  p("The mental health indicators include measures of mental health outcomes, as well as of 
+    a wide range of interconnected determinants (risk factors and protective factors) of these outcomes. 
+    These are presented separately for adults and for children and young people. "),
+  br(),
+  
+  h5("Mental Health Profile for Adults"),
+  p("The ",
+    tags$a("adult mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/adult-mental-health-indicators/"),
+    "includes 55 indicators grouped into four high-level \"domains\":"),
+    tags$li("10 ", tags$b("mental health outcomes")), 
+    tags$li("9 ", tags$b("individual-level determinants")), 
+    tags$li("11 ", tags$b("community-level determinants")), 
+    tags$li("25 ", tags$b("structural-level determinants")), 
+  p("Some indicators currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. "),
+  p("Adults are defined as individuals aged 16 years and over, unless otherwise stated."),
+  br(),
+  
+  h5("Mental Health Profile for Children and Young People"),
+  p("The ",
+    tags$a("children and young people's mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/children-and-young-people-mental-health-indicators/"),
+    "includes 70 indicators grouped into six high-level \"domains\":"),
+  tags$li("11 ", tags$b("mental health outcomes")), 
+  tags$li("12 ", tags$b("individual-level determinants")), 
+  tags$li("17 ", tags$b("determinants related to family and friends")), 
+  tags$li("7 ", tags$b("determinants related to the learning environment")), 
+  tags$li("5 ", tags$b("community-level determinants")), 
+  tags$li("18 ", tags$b("structural-level determinants")), 
+  p("Some indicators currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. "),
+  p("The indicators cover different periods of childhood, from pre-birth to early adulthood."),
+  br()
+  
+)
