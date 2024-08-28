@@ -109,8 +109,12 @@ function(input, output, session) {
     tags$h1("Profile:", input$profile_choices, class = "profile-header")
   })
   
+  # 2. header showing choices for mental health profile (conditional on this profile being selected)
+  output$mhprofile_header <- renderUI({
+    tags$h1("Age group:", input$mhprofile_choices, class = "profile-header")
+  })
   
-  # 2. header showing selected areatype and areaname
+  # 3. header showing selected areatype and areaname
   output$geography_header <- renderUI({
     
     if(geo_selections()$areatype == "Scotland") {
@@ -144,19 +148,27 @@ function(input, output, session) {
     hide("prof_filter_hidden")
   })
   
-  
   # when a user clicks the 'change area' filter, toggle the hidden geography filters to make them visible
   observeEvent(input$show_geo_filters, {
     toggle("geo_filters_hidden")
   })
-  
   
   # once a user has clicked the button to updated their geography choices, hide the filter again 
   observeEvent(input$apply_geo_filters, {
     hide("geo_filters_hidden")
   })
   
+   # when a user clicks the 'change age group' filter (mental health only), toggle the hidden filter to make it visible
+  observeEvent(input$show_mhprofile_filter, {
+    toggle("mhprof_filter_hidden")
+  })
   
+  # once a user has updated their choice in the filter, hide the filter again 
+  observeEvent(input$mhprofile_choices, {
+    hide("mhprof_filter_hidden")
+  })
+  
+ 
   
   
   

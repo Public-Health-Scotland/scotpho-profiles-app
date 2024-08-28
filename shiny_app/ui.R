@@ -92,6 +92,22 @@ page_navbar(
                                      choices = names(profiles_list),  
                                      options = list(onInitialize = I('function() { this.setValue(""); }')))
                     )),
+  
+            # Conditional Mental Health profile header with button
+            conditionalPanel(condition = "input.profile_choices == 'Mental Health'", 
+              div(class = "header-elements",
+                  uiOutput("mhprofile_header"),
+                  shiny::actionLink(inputId = "show_mhprofile_filter", label = "Change age group", icon = icon("filter"), class = "global-filter")
+              ),
+              # hidden profile filter to display when button clicked 
+              hidden(div(id = "mhprof_filter_hidden",
+                         selectizeInput(inputId = "mhprofile_choices", 
+                                        label = "", 
+                                        choices = c("Adults", "Children and Young People"),  
+                                        selected = "Adults")
+              ))
+            ), #close conditional panel
+  
               # geography header with button
                 div(class = "header-elements",
                   uiOutput("geography_header"),
@@ -113,6 +129,8 @@ page_navbar(
                     actionButton("apply_geo_filters", label = "Apply geography filters", class = "btn-apply-geo-filter")
                     ) # close layout columns
                   )), # close hidden div
+
+  
              br(), # add space between header and sub-tabs
 
   
