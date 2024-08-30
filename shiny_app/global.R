@@ -55,7 +55,12 @@ simd_dataset <- read_parquet("data/deprivation_dataset") # dataset behind simd p
 
 techdoc <- read_parquet("data/techdoc") # technical document
 
-popgroup_dataset <- read_parquet("data/popgroup_dataset") # dataset behind popgroup panel
+#popgroup_dataset <- read_parquet("data/popgroup_dataset") # dataset behind popgroup panel
+popgroup_dataset <- read_parquet("data/popgroup_dataset_new") %>% # dataset behind popgroup panel
+  mutate(split_name = case_when(split_name=="SIMD" ~ "Deprivation (SIMD)", # do this in the data prep stage
+                                TRUE ~ split_name)) %>%
+  arrange(ind_id, year, code, split_name, split_value, split_value2)
+
 
 
 # shapefiles (for map) 
