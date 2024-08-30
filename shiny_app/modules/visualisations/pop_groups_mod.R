@@ -25,9 +25,13 @@ pop_groups_ui <- function(id) {
                         # as they are updated dynamically on the server side, depending on selected indicator)
                         selectInput(
                           inputId = ns("split_filter"),
-                          label = "Select equality split:",
+                          label = "Select population split:",
                           selectize = TRUE,
                           choices = NULL
+                        ),
+                        selectizeInput(inputId = ns("split2_filter"), 
+                                       label = "Select 2nd population split:", 
+                                       choices = NULL
                         )
       ), # close sidebar
       
@@ -140,16 +144,14 @@ pop_groups_ui <- function(id) {
 pop_groups_server <- function(id, dataset, geo_selections) {
   moduleServer(id, function(input, output, session) {
     
-    
     #######################################################
     ## Dynamic filters -----
     ######################################################
     
     ## update choices for population split filter, depending on what indicator was selected
     observe({
-
-      available_splits <- dataset() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype) |>
+      req(popgroup_filtered_data())
+      available_splits <- popgroup_filtered_data() |>
         pull(unique(split_name))
       
       updateSelectInput(session, inputId = "split_filter", choices = available_splits)
@@ -159,9 +161,8 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     
     # update years choices for bar chart filter, depending on indicator selected
     observe({
-      
-      available_years <- dataset() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+      req(popgroup_filtered_data())
+      available_years <- popgroup_filtered_data() |>
         arrange(desc(year)) |>
         pull(unique(def_period))
       
@@ -170,24 +171,96 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     })
     
     
+    observe( {
+      req(popgroup_filtered_data()) 
+
+      # stores available 2nd splits (is empty if no 2nd splits available)
+      available_2nd_splits <- popgroup_filtered_data() %>% # clunky: needs work
+        filter(split_name == input$split_filter & !is.na(split_value2)) %>%
+        select(split_value2) %>%
+        group_by(split_value2) %>%
+        summarise() %>%
+        arrange(desc(split_value2)) %>%  # to give Total first, and then Male and Female if available (could factorise also when more options)
+        pull(split_value2)
+      
+      # If 2nd splits are available, enable split2_filter, otherwise disable it
+      if(length(available_2nd_splits)>0) {
+        shinyjs::enable("split2_filter")
+        updateSelectizeInput(session, 
+                             inputId = "split2_filter",
+                             options = list(placeholder = NULL), 
+                             label = "Select 2nd population split:", 
+                             choices = available_2nd_splits
+        )
+      } else {
+        updateSelectizeInput(session, 
+                             inputId = "split2_filter", 
+                             options = list(placeholder = "Unavailable"),
+                             choices = character(0),
+                             selected = character(0)
+                             )
+        shinyjs::disable("split2_filter")
+      }
+    })
+      
+
+    
     #######################################################
     ## Reactive data / values ----
     #######################################################
     
-    # generate list of indicators (from the simd indicators dataset) available 
+    # generate list of indicators (from the popgroup dataset) available 
     selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", dataset, geo_selections)
 
     
-    # creates trend data
-    pop_trend_data <- reactive({
+    # create reactive data - filtering by selected indicator
+    popgroup_filtered_data <- reactive({
+      
+      req(dataset())
+      
       dataset() |>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
-        filter(indicator == selected_indicator() & split_name == input$split_filter) |> # filter by selected indicator and selected split
-        arrange(year)
+        filter(indicator == selected_indicator()) # filter by selected indicator
+    })
+
+    # creates trend data
+    pop_trend_data <- reactive({
+
+      req(popgroup_filtered_data())
+      
+      #should be an easier logic, but "if (exists("input$split2_filter"))" wasn't working...
+      available_2nd_splits <- popgroup_filtered_data() %>% # clunky: needs work
+        filter(split_name == input$split_filter & !is.na(split_value2)) %>%
+        select(split_value2) %>%
+        group_by(split_value2) %>%
+        summarise() %>%
+        arrange(desc(split_value2)) %>%  # to give Total first, and then Male and Female if available (could factorise also when more options)
+        pull(split_value2)
+      
+      # If 2nd splits are available, enable split2_filter, otherwise disable it
+      if(length(available_2nd_splits)>0) {
+
+      df <- popgroup_filtered_data() %>%
+        filter(split_name == input$split_filter) %>% # filter by selected split
+        filter(split_value2 == input$split2_filter) %>% # filter by the 2nd split value
+        filter(!split_value == "Total") %>% # when SIMD data has Total row (not sure whether this will be used yet...)
+        arrange(year, split_value2) 
+      
+      } else {
+        
+      df <- popgroup_filtered_data() %>%
+          filter(split_name == input$split_filter) %>% # filter by selected split
+          arrange(year)
+      
+      } 
+       
+      df
+      
     })
     
     # create single year data for the bar chart 
     pop_rank_data <- reactive({
+      req(pop_trend_data())
       pop_trend_data() |>
         filter(def_period == input$pop_years_filter) |>
         mutate(colour_pal = case_when(grepl("All", split_value) ~ phs_colors("phs-blue"), TRUE ~ phs_colors("phs-blue-50")))
@@ -246,7 +319,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         hc_yAxis(gridLineWidth = 0) %>%
         hc_chart(backgroundColor = 'white') %>%
         hc_xAxis(title = list(text = "")) %>%
-        hc_xAxis(categories = unique(pop_trend_data()$trend_axis)) |>
         hc_yAxis(title = list(text = "")) %>%
         hc_plotOptions(series = list(animation = FALSE),
                        column = list(groupPadding = 0))|>
@@ -290,6 +362,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
         hc_yAxis(title = list(text = "")) |>
+        hc_xAxis(categories = unique(pop_trend_data()$trend_axis)) |>
         # style xaxis labels - keeping only first and last label
         hc_xAxis(labels = list(
           rotation = 0,
