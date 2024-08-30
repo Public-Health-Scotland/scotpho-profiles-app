@@ -191,7 +191,7 @@ function(input, output, session) {
     req(input$profile_choices != "")
     if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "pop_groups_tab")
-      pop_groups_server("pop_groups",popgroup_data, geo_selections)
+      pop_groups_server("pop_groups",popgroup_data, geo_selections, reactive({input$profile_choices}))
     } else {
       nav_hide("sub_tabs", target = "pop_groups_tab")
     }
