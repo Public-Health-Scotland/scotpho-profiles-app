@@ -128,7 +128,7 @@ about_men_text <- tagList(
   
   h5("Overview"),
   p("The Mental Health Profile is the result of Public Health Scotland's ",
-    tags$a("Mental Health Indicators", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/"),
+    tags$a("Mental Health Indicators", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", target="_blank"),
     "project. "),
   p("The aim of the project is to make relevant data more accessible to local and national users. 
     Better access to timely data will support efforts to improve population mental health, 
@@ -141,7 +141,7 @@ about_men_text <- tagList(
   
   h5("Mental Health Profile for Adults"),
   p("The ",
-    tags$a("adult mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/adult-mental-health-indicators/"),
+    tags$a("adult mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/adult-mental-health-indicators/", target="_blank"),
     "includes 55 indicators grouped into four high-level \"domains\":"),
     tags$li("10 ", tags$b("mental health outcomes")), 
     tags$li("9 ", tags$b("individual-level determinants")), 
@@ -153,7 +153,7 @@ about_men_text <- tagList(
   
   h5("Mental Health Profile for Children and Young People"),
   p("The ",
-    tags$a("children and young people's mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/children-and-young-people-mental-health-indicators/"),
+    tags$a("children and young people's mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/children-and-young-people-mental-health-indicators/", target="_blank"),
     "includes 70 indicators grouped into six high-level \"domains\":"),
   tags$li("11 ", tags$b("mental health outcomes")), 
   tags$li("12 ", tags$b("individual-level determinants")), 
