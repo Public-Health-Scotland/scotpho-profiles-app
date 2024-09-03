@@ -218,7 +218,7 @@ page_navbar(
                                 navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
                 ),
                 accordion_panel("Mental Health",
-                                p(" "),
+                                about_men_text,
                                 navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
                 ),
                 accordion_panel("Population",
