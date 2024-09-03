@@ -46,9 +46,12 @@ trend_mod_ui <- function(id) {
                               selectizeInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
                             ),
                             
-                            layout_columns(
-                              uiOutput(ns("ui_pd_filter")) # placeholder for police division filter (which is conditional on selected indicator) 
+                            # police division filter (hidden unless mental health profile is selected)
+                            div(id = ns("pd_panel"),
+                            selectizeInput(inputId = ns("pd_filter"), label = "Police divisions:", choices = pd_list, multiple = TRUE)
                             ),
+                            
+
                             
                             layout_columns(
                               selectizeInput(inputId = ns("hscp_filter"), label = "Health and Social Care Partnerships:", choices = hscp_list, multiple = TRUE),
@@ -131,7 +134,7 @@ trend_mod_ui <- function(id) {
 ## MODULE SERVER
 #######################################################
 
-trend_mod_server <- function(id, filtered_data, geo_selections) {
+trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -141,6 +144,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # Dynamic filters
     #######################################################
     
+
     # enable/ disable geography filters depending on the selected indicator
     observeEvent(selected_indicator(), {
       req(indicator_filtered_data())
@@ -223,24 +227,25 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         shinyjs::disable("iz_filter")
       }
       
+      # hide the pd filter if any profile other than 'mental health' has been selected
+      # as police divisions are only available for a small subset of MH indicators
+      # If MH profile has been selected and 'Police division' is available for selected indicator, enable pd_filter, otherwise disable it
+      if(selected_profile() != "Mental Health"){
+        hide("pd_panel")
+      } else {
+        show("pd_panel")
+      if("Police division" %in% available_areatypes) {
+        shinyjs::enable("pd_filter")
+        updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections())
+      } else {
+        shinyjs::disable("pd_filter")
+        updateSelectizeInput(session, "pd_filter", options = list(placeholder = "Unavailable"))
+      }
+      }
+
     })
     
 
-    ## Showing Police Division selection box if this geography is available for the indicator (i.e., mental health profile)
-    output$ui_pd_filter <- renderUI({
-      req(indicator_filtered_data())
-      
-      # stores available areatypes, depending on what indicator was selected
-      available_areatypes <- indicator_filtered_data() |>
-        pull(unique(areatype))
-      
-      # If 'Police division' is available, SHOW pd_filter, otherwise DON'T SHOW
-      if("Police division" %in% available_areatypes) {
-        selectizeInput(inputId = ns("pd_filter"), label = "Police divisions:", choices = pd_list, multiple = TRUE)
-      }
-      
-    })
-    
     
     # remove globally selected areaname from available areas in dropdowns
     observe({
