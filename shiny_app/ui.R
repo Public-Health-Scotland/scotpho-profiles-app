@@ -99,6 +99,21 @@ page_navbar(
                 ),
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
+                
+                           # notice to display to users if they select police divisions as they are only 
+                           # available for some indicators within the mental health profile.
+                           conditionalPanel(condition = "input.areatype == 'Police division'",
+                                            br(),
+                                            layout_columns(
+                                              col_widths = c(8, -4),
+                                              card(
+                                                card_header(bs_icon("info-circle-fill", size = "1.2em"),"Police divisions",class = "info-box-header"),
+                                                card_body("Please note that data split by police division is currently only available for a small subset of indicators within the mental health profile.")
+                                              )
+                                            )
+                           ),         
+                           
+                           
                   layout_columns(widths = c(4, 4, 2),fillable = FALSE,
                     # area type filter 
                     selectizeInput("areatype", "Area type:", choices = areatype_list, selected = "Scotland"),
