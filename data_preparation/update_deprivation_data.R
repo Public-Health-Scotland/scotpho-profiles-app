@@ -58,7 +58,7 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   
   ## create new fields ----
   deprivation_dataset <- deprivation_dataset |>
-    group_by(ind_id, year, quint_type, code) |>
+    group_by(ind_id, year, quint_type, code, sex) |>
     # label if par, sii or rii  positive or negative (helps with health inequality dynamic summary text)
     mutate(across(c(sii, rii, par),
              ~ case_when(. > 0 ~ "positive", . < 0 ~ "negative",  . == 0 ~ "zero"),

@@ -321,11 +321,11 @@ function(input, output, session) {
   # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
   popgroup_data <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN")) # only run when specific profiles have been selected
+    req(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN", "HWB", "CYP")) # only run when specific profiles have been selected
 
     dt <- setDT(popgroup_dataset) # set to class data.table
     
-    # filter by selected geography as deprivation tab only displays info on a single area
+    # filter by selected geography as popgroups tab only displays info on a single area
     dt <- dt[(areatype == geo_selections()$areatype | areatype == "Scotland") & areaname == geo_selections()$areaname]
     
     # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document

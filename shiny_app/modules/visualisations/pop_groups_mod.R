@@ -5,11 +5,11 @@
 ################################
 
 # to do:
-# quintile buttons and SIMD help only come on if SIMD is an option?
 # remove (Total) from titles if no male/female (could be sex-split indicator already)
-# add totals to all splits, so average can be shown. 
-# check that local quintiles work.
-# fix duplicates in data table
+# disable averages if not available
+# not finding avg for MH depression at first pass, but does find shortly after. 
+# colour coding for CI bands
+# suicide rate not available by SIMD on app...
 
 
 
@@ -26,34 +26,37 @@ pop_groups_ui <- function(id) {
     layout_sidebar(
       # sidebar for filters -----------------------------
       sidebar = sidebar(width = 300,
+                        useShinyjs(), # Set up shinyjs
                         
                         # indicator filter (note this is a module)
-                        indicator_filter_mod_ui(ns("indicator_filter")),
-                        
+                        div(id = ns("popgroup_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
+
                         # filter to select pop split (set choices to NULL 
                         # as they are updated dynamically on the server side, depending on selected indicator)
-                        selectInput(
-                          inputId = ns("split_filter"),
-                          label = "Select population split:",
-                          selectize = TRUE,
-                          choices = NULL),
+                        div(id = ns("popsplit_filter_wrapper"), 
+                            selectInput(
+                              inputId = ns("split_filter"),
+                              label = "Select population split:",
+                              selectize = TRUE,
+                              choices = NULL)),
                         
-                        selectizeInput(inputId = ns("split2_filter"), 
-                                       label = "Select 2nd population split:", 
-                                       choices = NULL),
-                        
-                        # filter to include/exclude averages from charts
-                        div(id = ns("deprivation_avg_switch_wrapper"), checkboxInput(ns("average_switch"), label = " include averages",FALSE)),
+                        div(id = ns("popsplit2_filter_wrapper"), 
+                            selectizeInput(inputId = ns("split2_filter"), # this is disabled if no 2nd splits are available
+                                                          label = "Select 2nd population split:",
+                                                          choices = "Total",
+                                                          selected = "Total")),
                         
                         # quint type filter 
-                        div(id = ns("deprivation_quintile_type_wrapper"), 
-                            radioButtons(inputId = ns("quint_type"), 
-                                         label = "Quintile Type",
-                                         choices = c("Scotland", "Local"), 
-                                         selected = "Scotland")),
-                        
-                        #guided tour button
-                        actionLink(inputId = ns("deprivation_tour_button"),
+                        div(id = ns("deprivation_quintile_type_wrapper"),
+                            uiOutput(ns("ui_quint_button"))), # placeholder for the radio buttons (shown if split==SIMD)
+                                             
+
+                        # filter to include/exclude averages from charts (this will apply to all splits, not just deprivation)
+                        div(id = ns("avg_switch_wrapper"), 
+                            checkboxInput(ns("average_switch"), label = " include averages",FALSE)),
+
+                        # guided tour button
+                        actionLink(inputId = ns("popgroup_tour_button"),
                                    label = "Take a guided tour of this page"),
                         
                         actionLink(ns("simd_help"), label = "What is SIMD?", icon = icon("info-circle"))
@@ -103,6 +106,7 @@ pop_groups_ui <- function(id) {
             # extra controls for bar chart 
             bslib::nav_item(
               bslib::popover(
+                id = ns("popgroup_popover"),
                 title = "Filters",
                 chart_controls_icon(),
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
@@ -190,14 +194,14 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         pull(unique(split_name))
       
       updateSelectInput(session, inputId = "split_filter", choices = available_splits)
-      
-      
+
     })
     
     # update years choices for bar chart filter, depending on indicator selected
     observe({
       req(popgroup_filtered_data())
       available_years <- popgroup_filtered_data() |>
+        filter(split_name == input$split_filter) |> # filter by selected split
         arrange(desc(year)) |>
         pull(unique(def_period))
       
@@ -205,65 +209,137 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
                         choices = available_years, selected = available_years[1])
     })
     
-    
+    ## update the splits available for the 2nd split filter
     observe( {
-      req(popgroup_filtered_data()) 
+      req(popgroup_filtered_data())
 
       # stores available 2nd splits (is empty if no 2nd splits available)
-      available_2nd_splits <- popgroup_filtered_data() %>% # clunky: needs work
+      # clunky code: needs work
+      available_2nd_splits <- popgroup_filtered_data() %>% 
         filter(split_name == input$split_filter & !is.na(split_value2)) %>%
         select(split_value2) %>%
         group_by(split_value2) %>%
         summarise() %>%
-        arrange(desc(split_value2)) %>%  # to give Total first, and then Male and Female if available (could factorise also when more options)
+        arrange(desc(split_value2)) %>%  # to give Total first, and then Male and Female if available (could factorise when more options)
         pull(split_value2)
-      
+
       # If 2nd splits are available, enable split2_filter, otherwise disable it
       if(length(available_2nd_splits)>0) {
-        shinyjs::enable("split2_filter")
-        updateSelectizeInput(session, 
+        updateSelectizeInput(session,
                              inputId = "split2_filter",
-                             options = list(placeholder = NULL), 
-                             label = "Select 2nd population split:", 
-                             choices = available_2nd_splits
-        )
+                             options = list(placeholder = NULL),
+                             choices = available_2nd_splits)
+        shinyjs::enable("split2_filter")
       } else {
-        updateSelectizeInput(session, 
-                             inputId = "split2_filter", 
+        updateSelectizeInput(session,
+                             inputId = "split2_filter",
                              options = list(placeholder = "Unavailable"),
                              choices = character(0),
-                             selected = character(0)
-                             )
+                             selected = character(0))
         shinyjs::disable("split2_filter")
       }
     })
+    
+   # # ## Show radio buttons for selection of the quintile type, if SIMD is the chosen split
+   # #  # If geog==Scotland then quintile can only be sc_quin, so select this and disable the buttons
+   # #  # If only one quint_type option then select this and disable the radio buttons
+   # #  # If two quint_type options then enable the radio buttons
+    output$ui_quint_button <- renderUI({
       
-    observe({
-      # if scotland is selected or the selected indicator is patients per GP OR the profile==MEN (not available at local quintiles) 
-      # then set selected quintile to "Scotland" and disable the filter
+      req(popgroup_filtered_data())
+      req(input$split_filter)
       
-      if(geo_selections()$areatype == "Scotland" | selected_indicator() == "Patients per general practitioner" | selected_profile() == "MEN"){
-        updateRadioButtons(session, "quint_type", selected = "Scotland")
-        shinyjs::disable("quint_type")
+      if (input$split_filter == "Deprivation (SIMD)") {
+      # stores available quint types 
+      available_quints <- popgroup_filtered_data() |>
+        filter(split_name == "Deprivation (SIMD)") |>
+        pull(unique(quint_type))
+      
+      # Change selected options and disable the radio buttons, depending on the indicator selected
+      if("sc_quin" %in% available_quints & ("hb_quin" %in% available_quints | "ca_quin" %in% available_quints)) {
+        radioButtons(inputId = ns("quint_button"), #WORKING
+                                    label = "Deprivation quintile type:",
+                                    choices = c("Scotland", "Local"),
+                                    selected = "Local")
         
-        # otherwise, if the areatype is local set the quintile to "Local" by default
-      } else if (geo_selections()$areatype != "Scotland"){
-        updateRadioButtons(session, "quint_type", selected = "Local")
         
-        if(selected_indicator() %in% c("Mortality amenable to healthcare",
-                                       "Repeat emergency hospitalisation in the same year",
-                                       "Preventable emergency hospitalisation for a chronic condition",
-                                       "Life expectancy, females",
-                                       "Life expectancy, males")) {
-          
-          shinyjs::disable("quint_type")
-        } else {
-          shinyjs::enable("quint_type")
-        }
+      } else if("sc_quin" %in% available_quints & !("hb_quin" %in% available_quints | "ca_quin" %in% available_quints)) {
+        shinyjs::disable("quint_button") # NOT WORKING (DISABLING) AT SCOTLAND LEVEL
+        radioButtons(inputId = ns("quint_button"),
+                     label = "Deprivation quintile type:",
+                     choices = c("Scotland", "Local"),
+                     selected = "Scotland")
+        # then disable it
+        
+      } else if(!("sc_quin" %in% available_quints) & ("hb_quin" %in% available_quints | "ca_quin" %in% available_quints)) {
+        shinyjs::disable("quint_button")
+        radioButtons(inputId = ns("quint_button"),
+                     label = "Deprivation quintile type:",
+                     choices = c("Scotland", "Local"),
+                     selected = "Local")
+        # then disable it
       }
-      
+      }
     })
     
+    # enable/disable average button depending on the selected indicator
+    observeEvent(selected_indicator(), {
+      req(popgroup_filtered_data())
+      
+      # stores available split_values
+      available_splits <- popgroup_filtered_data() |>
+        filter(split_name == input$split_filter) |>
+        pull(unique(split_value))
+      
+      # If 'Total' is available, enable avg button, otherwise disable it
+      if("Total" %in% available_splits) {
+        shinyjs::enable("average_switch")
+      } else {
+        shinyjs::disable("average_switch") # DISABLING WHEN AVAILABLE, E.G., MENTAL WELLBEING. SOMETIMES DISABLES WHEN TICKED
+        updateCheckboxInput(session, "average_switch", value=NULL)
+      }
+    })
+      
+    
+   #   # Have all of the conditions previously used in the quint_type radio button logic been accounted for here?
+   #   #   # if scotland is selected or the selected indicator is patients per GP OR the profile==MEN (not available at local quintiles) 
+   #   #   # then set selected quintile to "Scotland" and disable the filter
+   #   #         if(geo_selections()$areatype == "Scotland" | selected_indicator() == "Patients per general practitioner" | selected_profile() == "MEN"){
+   #   #     updateRadioButtons(session, "quint_type", selected = "Scotland")
+   #   #     shinyjs::disable("quint_type")
+   #   #     
+   #   #     # otherwise, if the areatype is local set the quintile to "Local" by default
+   #   #   } else if (geo_selections()$areatype != "Scotland"){
+   #   #     updateRadioButtons(session, "quint_type", selected = "Local")
+   #   #     
+   #   #     if(selected_indicator() %in% c("Mortality amenable to healthcare",
+   #   #                                    "Repeat emergency hospitalisation in the same year",
+   #   #                                    "Preventable emergency hospitalisation for a chronic condition",
+   #   #                                    "Life expectancy, females",
+   #   #                                    "Life expectancy, males")) {
+   #   #       
+   #   #       shinyjs::disable("quint_type")
+   #   #     } else {
+   #   #       shinyjs::enable("quint_type")
+   #   #     }
+
+     
+   # enable/disable the average switch depending on the selected indicator and splits
+   observe({
+     req(popgroup_filtered_data())
+     
+     available_split_values <- popgroup_filtered_data() |>
+       pull(unique(split_value))
+  
+     
+     # If 'Total' is available, enable the 'include averages' button, otherwise disable it
+     if("Total" %in% available_split_values) {
+       shinyjs::enable("average_switch")
+     } else {
+       shinyjs::disable("average_switch")
+     }
+   })
+
     #######################################################
     ## Reactive data / values ----
     #######################################################
@@ -293,72 +369,55 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       df <- popgroup_filtered_data() %>%
         filter(split_name == input$split_filter) %>% # filter by selected split
         filter(split_value2 == input$split2_filter) %>% # filter by the 2nd split value
-       # filter(!split_value == "Total") %>% # when SIMD data has Total row (not sure whether this will be used yet...)
         arrange(year, split_value2) 
+      
+      if(input$quint_button == "Scotland"){
+        df <- df[quint_type == "sc_quin"]
+      } else {
+        df <- df[quint_type != "sc_quin"]
+      }
       
       } else {
         
       df <- popgroup_filtered_data() %>%
-          filter(split_name == input$split_filter) %>% # filter by selected split
+          filter(split_name == input$split_filter) %>% # filter by selected split only
           arrange(year)
       
       } 
-       
-      df
       
-    })
-    
-    # Additional trend data filtering and processing required if the split is SIMD:
-    simd_pop_trend_data <- reactive({
+      # don't require this step: not all have totals, so this crashes (e.g., exp of harassment)
+      if ("Total" %in% unique(df$split_value)) {
       
-      req(pop_trend_data())
-      req(input$split_filter == "Deprivation (SIMD)")
-
-      # filter by selected indicator
-      dt <- pop_trend_data()
-      
-      # filter by quint type 
-      if(input$quint_type == "Scotland"){
-        dt <- dt[quint_type == "sc_quin"]
-      } else {
-        dt <- dt[quint_type != "sc_quin"]
-      }
-      
-      # get totals and rename them ready for joining
-      totals <- dt[split_value == "Total"]
+      # get totals and rename them ready for joining back in as 'average' columns
+      totals <- df[split_value == "Total"]
       setnames(totals, old = c("measure", "upci", "lowci"), new = c("avg", "avg_upci", "avg_lowci"))
       totals <- totals[, c("trend_axis", "avg", "avg_upci", "avg_lowci")]
-
-      # remove totals from simd data
-      dt <- dt[split_value != "Total"]
+      
+      # remove totals from popgroup data
+      df <- df[split_value != "Total"]
       
       # add the totals back on as a column 
-      dt <- dt[totals, on = "trend_axis"]
-      # create colour palette
-      dt <- dt[, colour_pal := fcase(split_value == "1 - most deprived", phs_colors(colourname = "phs-blue"),
-                                     split_value == "2", colour = "#c8c6d1", # phs graphite (need colours that are unique for line chart but effectively not noticible when rendered)
-                                     split_value == "3", colour = "#c8c6d2", # phs graphite-ish
-                                     split_value == "4", colour = "#c8c6d3", # phs graphite -ish#2
-                                     default = phs_colors(colourname = "phs-magenta"))]
-      dt
+      df <- df[totals, on = "trend_axis"]
+      }
       
+      # apply colour schemes
+      df <- df %>%
+        mutate(colour_pal = case_when(split_value %in% c("1 - most deprived", "5 - lowest income") ~ "#0078D4", # phs_colors(colourname = "phs-blue")
+                                    split_value == "2" ~ "#c8c6d1", # phs graphite (need colours that are unique for line chart but effectively not noticible when rendered)
+                                    split_value == "3" ~ "#c8c6d2", # phs graphite-ish
+                                    split_value == "4" ~ "#c8c6d3", # phs graphite -ish#2
+                                    split_value %in%  c("5 - least deprived", "1 - highest income") ~ "#9B4393", # phs_colors(colourname = "phs-magenta")
+                                    TRUE ~ "#80BCEA"))  # phs_colors("phs-blue-50")
+        
     })
+    
 
     # create single year data for the bar chart 
     pop_bar_data <- reactive({
       req(pop_trend_data())
       pop_trend_data() |>
-        filter(def_period == input$pop_years_filter) |>
-        mutate(colour_pal = case_when(grepl("All", split_value) ~ phs_colors("phs-blue"), TRUE ~ phs_colors("phs-blue-50")))
-    })
-    
-    # SIMD: create single year data for the bar chart 
-    simd_pop_bar_data <- reactive({
-      req(simd_pop_trend_data())
-      simd_pop_trend_data() |>
         filter(def_period == input$pop_years_filter) 
     })
-    
     
     #######################################################
     ## dynamic text  ----
@@ -373,18 +432,27 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       # if data is available display chart title
       # If 2nd splits are available (i.e., only for SIMD currently), filter the data on the selected split2
       if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
-        div(
+        if(grepl("males", selected_indicator())) { # don't give 'Total' in title if males/females already in indicator name
+          div(
+            tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
+            tags$h6(pop_bar_data()$trend_axis[1]), # time period 
+            tags$p(pop_bar_data()$rate_type[1]) # measure type
+          )
+        } else {
+          div(
           tags$h5(selected_indicator(), " (", input$split2_filter, "); split by ", input$split_filter, class = "chart-header"),
           tags$h6(pop_bar_data()$trend_axis[1]), # time period 
           tags$p(pop_bar_data()$rate_type[1]) # measure type
           )
-      } else {
+      }
+        } else {
         div(
           tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
           tags$h6(pop_bar_data()$trend_axis[1]), # time period 
           tags$p(pop_bar_data()$rate_type[1]) # measure type
         )
       }
+      
     })
     
     # need to add pop-trend title stuff
@@ -399,18 +467,26 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       # if data is available display chart title
       # If 2nd splits are available (i.e., only for SIMD currently), filter the data on the selected split2
       if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
+        if(grepl("males", selected_indicator())) { # don't give 'Total' in title if males/females already in indicator name
+          div(
+            tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
+            tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
+            tags$p(pop_trend_data()$rate_type[1]) # measure type
+          )
+        } else {
         div(
           tags$h5(selected_indicator(), " (", input$split2_filter, "); split by ", input$split_filter, class = "chart-header"),
           tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
           tags$p(pop_trend_data()$rate_type[1]) # measure type
         )
-      } else {
+      }
+        } else {
         div(
           tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
           tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
           tags$p(pop_trend_data()$rate_type[1]) # measure type
         )
-      }
+        }
     })
     
     observeEvent(input$simd_help, {
@@ -442,12 +518,13 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         need( nrow(pop_bar_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select a different area type (of either Scotland, Health board or Council area)."))
       )
       
-      if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
-        bar_data <- simd_pop_bar_data()
-      } else {
-        bar_data <- pop_bar_data()
-      }
-
+      # if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
+      #   bar_data <- simd_pop_bar_data()
+      # } else {
+      #   bar_data <- pop_bar_data()
+      # }
+      bar_data <- pop_bar_data()
+      
       
       x <- hchart(bar_data, 
                   type = "column", hcaes(x = split_value, y = measure, color = colour_pal)) %>% 
@@ -459,7 +536,6 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
                        column = list(groupPadding = 0))
 
       # incude average line if switch turned on
-      # N.B. only works for simd data currently: need to include more totals in the popgroup data
       if(input$average_switch == TRUE){
 
         x <- x |> hc_add_series(
@@ -510,11 +586,12 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     
     output$pop_trend_chart <- renderHighchart({
       
-      if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
-        trend_data <- simd_pop_trend_data()
-      } else {
-        trend_data <- pop_trend_data()
-      }
+      # if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
+      #   trend_data <- simd_pop_trend_data()
+      # } else {
+      #   trend_data <- pop_trend_data()
+      # }
+      trend_data <- pop_trend_data()
       
       # create vector of colours - needs to be the same length as the 
       # number of lines that need to be plotted otherwise CI colours (the lighter colour plotted behind the main line)
@@ -525,7 +602,8 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       
       x <- hchart(trend_data, 
                   "line",
-                  hcaes(x = trend_axis, y = measure, group = split_value)) |>
+                  hcaes(x = trend_axis, y = measure, group = split_value),
+                  marker = list(enabled = TRUE)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
         hc_yAxis(title = list(text = "")) |>
@@ -607,7 +685,8 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
           "line",
           name = "Average",
           color = "#C73918",
-          hcaes(x = trend_axis, y = avg)
+          hcaes(x = trend_axis, y = avg),
+          marker = list(enabled = TRUE)
         )
       } 
       
@@ -626,7 +705,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     output$pop_bar_table <- renderReactable({
       
       if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
-        data <- simd_pop_bar_data() |>
+        data <- pop_bar_data() |>
           select(def_period, split_value2, split_value, measure)
         
         reactable(data = data,
@@ -664,7 +743,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       
       if(input$split_filter == "Deprivation (SIMD)") { #will need generalising if other 1st splits are available
         
-        data <- simd_pop_trend_data() |>
+        data <- pop_trend_data() |>
           select(def_period, split_value2, split_value, measure)
         
         reactable(data = data,
@@ -718,38 +797,36 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     # Guided tour
     ###########################################
     
-    guide_deprivation <- Cicerone$
+    guide_popgroup <- Cicerone$
       new()$
       step(
-        ns("simd_barchart"),
+        ns("pop_bar_chart"),
         "Bar Chart",
-        "This chart shows how the selected measure varies according to the relative deprivation of an area of residence, 
-        It allows comparison of the most and least deprived areas.",
+        "This chart shows how the selected measure varies according to the chosen split groups, at the chosen point in time.",
         position = "right",
-        tab_id = ns("deprivation_navset_card_pill_barchart"),
-        tab = ns("deprivation_barchart_tab")
+        tab_id = ns("pop_navset_card_pill_barchart"),
+        tab = ns("pop_bar_tab")
       )$
       step(
-        ns("simd_trendchart"),
+        ns("pop_trend_chart"),
         "Linechart Tab",
-        "This chart shows the value of a measure by deprivation quintile over time. 
-        It allows comparison of the most and least deprived areas over time.",
+        "This chart shows the value of the indicator for the chosen population groups over time.",
         position = "left",
-        tab_id = ns("deprivation_navset_card_pill_linechart"),
-        tab = ns("deprivation_linechart_tab")
+        tab_id = ns("pop_navset_card_pill_linechart"),
+        tab = ns("pop_linechart_tab")
       )$
       step(
-        ns("deprivation_navset_card_pill_linechart"),
+        ns("pop_navset_card_pill_barchart"),
         "Other views",
         "You can switch between viewing charts, the data or the metadata using the buttons above each chart."
       )$
       step(
-        ns("depr_popover"),
+        ns("popgroup_popover"),
         "Chart controls",
-        "You can switch between viewing charts, the data or the metadata using the buttons above each chart."
+        "You can change how the data are presented using the cog symbol button above each chart."
       )$
       step(
-        ns("deprivation_indicator_filter_wrapper"), 
+        ns("popgroup_indicator_filter_wrapper"), 
         "Indicator Filter",
         "First select an indicator.<br>
         The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
@@ -757,21 +834,33 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         position = "right"
       )$
       step(
-        ns("simd_help"),
-        "Information on SIMD",
-        "Click here for more information on SIMD",
+        ns("popsplit_filter_wrapper"), 
+        "Population group split filter",
+        "Select from the available population splits.",
         position = "right"
       )$
       step(
-        ns("deprivation_avg_switch_wrapper"),
+        ns("popsplit2_filter_wrapper"), 
+        "2nd population group split filter",
+        "Select a second population split, if available.",
+        position = "right"
+      )$
+      step(
+        ns("avg_switch_wrapper"),
         "Average Line",
-        "Click to add or remove a trend line showing the average for the measure across all quintiles.",
+        "Click to add or remove a line showing the average for the measure across all split values.",
         position = "right"
       )$
       step(
-        ns("deprivation_quintile_type_wrapper"),
+        ns("deprivation_quintile_type_wrapper"), # not visible by default. will this work?
         "Quintile Type",
         "When an area other than Scotland is selected, click here to toggle between local and Scottish quintiles.",
+        position = "right"
+      )$
+      step(
+        ns("simd_help"), # not visible by default. will this work?
+        "Information on SIMD",
+        "Click here for more information on SIMD",
         position = "right"
       )$
       step(
@@ -789,11 +878,11 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     
     
     #initiate the guide
-    guide_deprivation$init()
+    guide_popgroup$init()
     
     #when guided tour button is clicked, start the guide
-    observeEvent(input$deprivation_tour_button, {
-      guide_deprivation$start()
+    observeEvent(input$popgroup_tour_button, {
+      guide_popgroup$start()
     })
   
     
