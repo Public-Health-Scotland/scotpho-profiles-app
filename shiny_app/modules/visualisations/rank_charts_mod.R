@@ -299,7 +299,8 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
                   "Council area" = ca_bound,
                   "HSC partnership" = hscp_bound,
                   "HSC locality" = hscloc_bound,
-                  "Intermediate zone" = iz_bound
+                  "Intermediate zone" = iz_bound,
+                  "Police division" = pd_bound
       )
       
       # further filter if HSCL or IZ selected, 
@@ -585,7 +586,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
      download_chart_mod_server(id = "save_rank_chart", 
                                chart_id = ns("rank_chart"), 
                                height = if(geo_selections()$areatype == "Intermediate zone") {
-                              1200 } else if(geo_selections()$areatype == "Health board") {
+                              1200 } else if(geo_selections()$areatype %in% c("Health board", "Police division")) {
                                600 } else if(geo_selections()$areatype %in% c("Council area", "HSC partnership", "Alcohol & drug partnership", "HSC locality")) {
                                700 } else {
                                  500

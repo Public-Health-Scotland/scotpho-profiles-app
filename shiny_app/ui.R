@@ -56,7 +56,7 @@ page_navbar(
                            layout_columns(
                              profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
                              profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
-                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **adult mental health**, for both males and females."))
+                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Mental Health", description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."))
                            ),
                            
                            layout_columns(
@@ -99,6 +99,21 @@ page_navbar(
                 ),
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
+                
+                           # notice to display to users if they select police divisions as they are only 
+                           # available for some indicators within the mental health profile.
+                           conditionalPanel(condition = "input.areatype == 'Police division'",
+                                            br(),
+                                            layout_columns(
+                                              col_widths = c(8, -4),
+                                              card(
+                                                card_header(bs_icon("info-circle-fill", size = "1.2em"),"Police divisions",class = "info-box-header"),
+                                                card_body("Please note that data split by police division is currently only available for a small subset of indicators within the mental health profile.")
+                                              )
+                                            )
+                           ),         
+                           
+                           
                   layout_columns(widths = c(4, 4, 2),fillable = FALSE,
                     # area type filter 
                     selectizeInput("areatype", "Area type:", choices = areatype_list, selected = "Scotland"),

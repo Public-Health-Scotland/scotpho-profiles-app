@@ -46,6 +46,13 @@ trend_mod_ui <- function(id) {
                               selectizeInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
                             ),
                             
+                            # police division filter (hidden unless mental health profile is selected)
+                            div(id = ns("pd_panel"),
+                            selectizeInput(inputId = ns("pd_filter"), label = "Police divisions:", choices = pd_list, multiple = TRUE)
+                            ),
+                            
+
+                            
                             layout_columns(
                               selectizeInput(inputId = ns("hscp_filter"), label = "Health and Social Care Partnerships:", choices = hscp_list, multiple = TRUE),
                               selectizeInput(inputId = ns("adp_filter"), label = "Alcohol and Drugs Partnerships:", choices = adp_list, multiple = TRUE)
@@ -127,7 +134,7 @@ trend_mod_ui <- function(id) {
 ## MODULE SERVER
 #######################################################
 
-trend_mod_server <- function(id, filtered_data, geo_selections) {
+trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -137,6 +144,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     # Dynamic filters
     #######################################################
     
+
     # enable/ disable geography filters depending on the selected indicator
     observeEvent(selected_indicator(), {
       req(indicator_filtered_data())
@@ -219,9 +227,26 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
         shinyjs::disable("iz_filter")
       }
       
+      # hide the pd filter if any profile other than 'mental health' has been selected
+      # as police divisions are only available for a small subset of MH indicators
+      # If MH profile has been selected and 'Police division' is available for selected indicator, enable pd_filter, otherwise disable it
+      if(selected_profile() != "Mental Health"){
+        hide("pd_panel")
+      } else {
+        show("pd_panel")
+      if("Police division" %in% available_areatypes) {
+        shinyjs::enable("pd_filter")
+        updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections())
+      } else {
+        shinyjs::disable("pd_filter")
+        updateSelectizeInput(session, "pd_filter", options = list(placeholder = "Unavailable"))
+      }
+      }
+
     })
     
 
+    
     # remove globally selected areaname from available areas in dropdowns
     observe({
       if(geo_selections()$areatype == "Health board"){
@@ -239,6 +264,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       else if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")){
         updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
       }
+      else if(geo_selections()$areatype == "Police division"){
+        updateSelectizeInput(session, "pd_filter", choices = pd_list[pd_list!=geo_selections()$areaname])
+      }
       
     })
     
@@ -253,6 +281,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       updateSelectizeInput(session, "adp_filter", selected = character(0))
       updateSelectizeInput(session, "iz_filter", selected = character(0))
       updateSelectizeInput(session, "locality_filter", selected = character(0))
+      updateSelectizeInput(session, "pd_filter", selected = character(0))
+      
       
       # clear the reactive vals
       hb_selections(NULL)
@@ -261,6 +291,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       adp_selections(NULL)
       locality_selections(NULL)
       iz_selections(NULL)
+      pd_selections(NULL)
+      
       
     })
     
@@ -322,6 +354,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
     adp_selections <- reactiveVal()
     locality_selections <- reactiveVal()
     iz_selections <- reactiveVal()
+    pd_selections <- reactiveVal()
     
     
     # update the reactive objects whenever selections are made
@@ -350,6 +383,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
       iz_selections(input$iz_filter)
     })
     
+    observeEvent(input$pd_filter, {
+      pd_selections(input$pd_filter)
+    })
 
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
@@ -379,7 +415,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections) {
             (areaname %in% input$adp_filter & areatype == "Alcohol & drug partnership") |# filter by selected adps
             (areaname %in% input$hscp_filter & areatype == "HSC partnership")| #filter by selected hscps
             (areaname %in% input$iz_filter & areatype == "Intermediate zone")| # filter by selected IZs
-            (areaname %in% input$locality_filter & areatype == "HSC locality")# filter by selected HSC localities
+            (areaname %in% input$locality_filter & areatype == "HSC locality")| # filter by selected HSC localities
+            (areaname %in% input$pd_filter & areatype == "Police division") # filter by selected police divisions
         )
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked

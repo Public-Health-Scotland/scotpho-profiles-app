@@ -246,7 +246,6 @@ pop_groups_server <- function(id, dataset, geo_selections) {
         hc_yAxis(gridLineWidth = 0) %>%
         hc_chart(backgroundColor = 'white') %>%
         hc_xAxis(title = list(text = "")) %>%
-        hc_xAxis(categories = unique(pop_trend_data()$trend_axis)) |>
         hc_yAxis(title = list(text = "")) %>%
         hc_plotOptions(series = list(animation = FALSE),
                        column = list(groupPadding = 0))|>
@@ -289,6 +288,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
                   hcaes(x = trend_axis, y = measure, group = split_value)) |>
         hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
         hc_xAxis(title = list(text = "")) |>
+        hc_xAxis(categories = unique(pop_trend_data()$trend_axis)) |>
         hc_yAxis(title = list(text = "")) |>
         # style xaxis labels - keeping only first and last label
         hc_xAxis(labels = list(
