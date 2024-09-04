@@ -1,7 +1,9 @@
 # processing the popgroup data file for new tab.
 
+# This script takes the existing deprivation_dataset and popgroup_dataset and standardises and adds columns so that they can be appended for use in the new popgroups tab.
 
-popgroup_dataset_new <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/popgroup_dataset_new")  # dataset behind popgroup panel
+# New file produced = popgroup_dataset_new.parquet
+# ========================================================
 # new data format:
 # split_name is the same: this populates the first split filter "Select population split"
 # split_names have been standardised throughout. 
@@ -31,21 +33,13 @@ popgroup_dataset_new <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-
 # quint_type has been assumed to be scotland unless specified. 
 # Check this assumption is correct. Applies to HWB and CWB profiles only (when SIMD data were included in the popgroups file)
 
+############################################
+# Processing the popgroup_dataset
+############################################
 
 # Original popgroup dataset: n = 26,563 
-popgroup_dataset <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/popgroup_dataset") # dataset behind popgroup panel
+popgroup_dataset <- read_parquet("/shiny_app/data/popgroup_dataset") # dataset behind popgroup panel
 
-
-# popgroup_dataset2 <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/popgroup_dataset2") # dataset behind popgroup panel
-# #15955
-
-
-# Original SIMD file: n = 258,329
-simd_dataset2 <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/deprivation_dataset")
-# sex included, NA for most
-
-# The main popgroups dataset doesn't have a 'total' category for SIMD: will this be a problem?
-# No, but won't show 'average' line unless total is given. Can extract from main dataset
 # standardise the splits:
 popgroup_dataset_std <- popgroup_dataset %>%
   mutate(split_name = case_when(split_name=="Gender" ~ "Sex", # some also have split_name == Total when split_value==All: how to use?
@@ -101,20 +95,21 @@ table(popgp_have_total$has_total)
 #7379 2753    
 
 # get totals for those with 0 total data:
-no_totals <- popgp_have_total %>% # n=7377
+no_totals <- popgp_have_total %>% # n=7379
   filter(has_total==0) %>%
   select(-has_total)
 
-totals <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/main_dataset") %>% # main dataset 
+totals <- read_parquet("/shiny_app/data/main_dataset") %>% # main dataset 
   merge(y=no_totals, by=c("year", "def_period", "code", "ind_id"), all.y=T)
-#some dat with splits have no totals:
-ind_w_no_totals <- totals %>% #n=204
-  filter(is.na(indicator))
 
-table(ind_w_no_totals$ind_id)
-# 30057 99105 99106 99107 99108 99109 99116 99117 99118 99121 99123 
-# 2    12    42    10    42    28     8     6    10    12    32 
-# 10 CWB indicators: 99105-109, 99116-118, 99121, 99123 and 1 MHI: 30057 (violent crime, because SCJS pooled some years for police div estimates)
+# #some data with splits have no totals:
+# ind_w_no_totals <- totals %>% #n=204
+#   filter(is.na(indicator))
+# 
+# table(ind_w_no_totals$ind_id)
+# # 30057 99105 99106 99107 99108 99109 99116 99117 99118 99121 99123 
+# # 2    12    42    10    42    28     8     6    10    12    32 
+# # 10 CWB indicators: 99105-109, 99116-118, 99121, 99123 and 1 MHI: 30057 (violent crime, because SCJS pooled some years for police div estimates)
 
 
 # prep the total rows for appending to the rest of the data
@@ -124,25 +119,29 @@ totals_4_popgroup_data <- totals %>%
          split_value2=ifelse(split_name=="Deprivation (SIMD)", "Total", as.character(NA)),
          quint_type = ifelse(split_name=="Deprivation (SIMD)", "sc_quin", as.character(NA))) # all missing quint_types assumed to be sc_quin
 
+
+############################################
+# Processing the deprivation_dataset
+############################################
+
 # Existing SIMD file:
-simd_dataset2 <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/deprivation_dataset") %>% # dataset behind simd panel
+simd_dataset2 <- read_parquet("/shiny_app/data/deprivation_dataset") %>% # dataset behind simd panel
   mutate(split_value2=case_when(sex=="Male" ~ "Male",
                                 sex=="Female" ~ "Female",
                                 sex=="Total" ~ "Total",
                                 is.na(sex) ~ "Total"),
-       #  quint_type = case_when(is.na(quint_type) ~ "sc_quin", # all have quint_type
+       #  quint_type = case_when(is.na(quint_type) ~ "sc_quin", # all have quint_type, so this assumption not needed
        #                         TRUE ~ quint_type),
          split_name = "Deprivation (SIMD)") %>%
   rename(split_value = quintile) 
 
 # find which simd splits don't have total
-have_total <- read_parquet("/conf/MHI_Data/Liz/repos/scotpho-profiles-app/shiny_app/data/deprivation_dataset") %>%
+have_total <- read_parquet("/shiny_app/data/deprivation_dataset") %>%
   mutate(total_quint = ifelse(quintile=="Total", 1, 0)) %>%
   group_by(year, def_period, code, ind_id, sex, quint_type) %>%
   summarise(has_total = sum(total_quint)) %>%
   ungroup()
-# all SIMD data in the deprivation data has quintile==Total
-
+# all SIMD data in the deprivation data have quintile==Total (used for averages)
 
 #check what splits are now used:
 simd_dataset2_std_split <- simd_dataset2 %>% # 
@@ -151,13 +150,16 @@ simd_dataset2_std_split <- simd_dataset2 %>% #
   unique()       
 
 
+############################################
+# Appending the datasets
+############################################
+
 popgroup_dataset_new <- bind_rows(popgroup_dataset_std, totals_4_popgroup_data, simd_dataset2) %>% #42 vars
   arrange(ind_id, year, code, split_name, split_value, split_value2)
 ## save final file to local repo
-write_parquet(popgroup_dataset_new, "shiny_app/data/popgroup_dataset_new")
+write_parquet(popgroup_dataset_new, "/shiny_app/data/popgroup_dataset_new")
 
 # # # what are the splits and names now?
 popgroup_dataset_new_split <- popgroup_dataset_new %>% # 42 vars
   select(split_value, split_value2, split_name) %>%
   unique()
-# write.csv(popgroup_dataset_new_split, "popgroup_dataset_new_split.csv", row.names=FALSE)
