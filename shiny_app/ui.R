@@ -24,11 +24,20 @@ page_navbar(
     use_cicerone(), # required for guided tours
     tags$script(src = "https://code.highcharts.com/highcharts.js"), # required for spinecharts
     tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),# required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
-    includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
+    includeCSS("www/styles.css"), # required to specify formatting (particularly of landing page)
+    # This piece of code is temporary and can be removed when the bslib package is next updated
+    # It prevents a random extra clickable link appearing on the right-hand side of the gear icon in each multi-tab card
+    # this all stems from an bug with card footers which has been fixed in the dev version of bslib
+    # but this fix is not yet available on the cran version
+      tags$script(HTML("
+      $(document).ready(function() {
+        $('.nav-pills').each(function() {
+          $(this).find('.nav-link').last().remove();
+        });
+      });
+    "))
     ), 
 
-
-  
   #######################################
   # Homepage
   ######################################
