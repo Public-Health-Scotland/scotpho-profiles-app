@@ -32,7 +32,7 @@ library(tidyr) # for pivot longer used in meta data tab
 
 
 library(readr) #im additiona will remove in future
-library(tibble) #need for indicator_filter_mod fix: https://github.com/Rdatatable/data.table/issues/3745#issuecomment-1380723524
+
 
 # 2. Sourcing modules, narrative text and guided tours  ------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
