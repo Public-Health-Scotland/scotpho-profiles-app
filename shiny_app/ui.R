@@ -200,6 +200,7 @@ page_navbar(
   
   nav_menu(
     title = "More information",
+    align = "right", # ensures tab names inside the menu are not cut-off
     
     # about scotpho tab
     nav_panel(title = "About ScotPHO", value = "about_scotpho", about_scotpho_text),
