@@ -61,7 +61,17 @@ function(input, output, session) {
   navigation_button_modSERVER("view_profile_DRG", nav_id="Profiles", parent_session = session, profile_name = "Drugs")
   navigation_button_modSERVER("view_profile_TOB", nav_id="Profiles", parent_session = session, profile_name = "Tobacco")
   
+  
+  # ensure that if a user directly clicks the 'Profiles'tab in the navigation bar, 'All indicators' is selected from the profile filter
+  # This avoids a user being faced with a blank screen with no charts when they haven't used the profile buttons on the homepage to navigate
+  observeEvent(input$nav, {
+    req(input$profile_choices == "")
+    req(input$nav == "Profiles")
+    updateSelectizeInput(inputId = "profile_choices", selected = "All Indicators", session = session)
+    
+  })
 
+  
   #####################################################
   # REACTIVE VALUES
   ####################################################

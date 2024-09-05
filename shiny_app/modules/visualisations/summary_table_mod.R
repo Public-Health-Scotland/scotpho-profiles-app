@@ -39,8 +39,8 @@ summary_table_ui <- function(id) {
                                         A red central line is labelled \"Scotland average (mean)\". A coloured circle on the bar is labelled \"value for selected area\".
                                         The text to the right of the image explains the meaning of the three possible circle colours.")), 
           layout_columns(
-            span(tags$div(style = "width:20px; height:20px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - better than national average"),
-            span(tags$div(style = "width:20px; height:20px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - worse than national average"),
+            span(tags$div(style = "width:20px; height:20px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - worse than national average"),
+            span(tags$div(style = "width:20px; height:20px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - better than national average"),
             span(tags$div(style = "width:20px; height:20px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland"),
             span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
           ))))
