@@ -517,6 +517,18 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                     name: '',
                     data: rowInfo.row.measures,
                     color: '#0078D4',
+                    fillColor: {
+                    linearGradient: {
+                    x1: 0,
+                    y1: 0,
+                    x2: 0,
+                    y2: 1
+                    },
+                    stops: [
+                    [0, '#B3D7F2'],
+                    [1, '#E6F2FB'] 
+                    ]
+                    },
                     marker: {
                     enabled: true,
                     radius: 3 
