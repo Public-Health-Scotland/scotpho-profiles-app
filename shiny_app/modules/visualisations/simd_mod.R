@@ -125,6 +125,8 @@ simd_navpanel_ui <- function(id) {
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
+                # constrain y-axis to start at zero
+                checkboxInput(ns("zero_simd"), label = "y-axis should include zero", value = TRUE),
                 checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE)
               ))
             ),
@@ -411,6 +413,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
                                       states = list(
                                         hover = list(
                                           enabled = FALSE))))
+      }
+      
+      # constrain y-axis to include zero if box is checked
+      if(input$zero_simd == TRUE) {
+        
+        x <- x |>
+          hc_yAxis(min=0) 
       }
       
       x
