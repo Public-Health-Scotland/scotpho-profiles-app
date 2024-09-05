@@ -24,8 +24,6 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
       
       all <- setDT(filtered_data())
       
-      all <- all %>% data.table() %>% as.tibble() %>% as.data.table() # fix from https://github.com/Rdatatable/data.table/issues/3745#issuecomment-1380723524
-      
       # filter data by selected geography to get available indicators for selected profile
       all <- all[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
