@@ -69,7 +69,7 @@ definitions_tab_Server <- function(id) {
         if(input$profile_search != "All"){
           x <- x |>
             filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% profiles_list[[input$profile_choices]]))
+                          ~ substr(.x, 1, 3) %in% profiles_list[[input$profile_search]]))
         }
         
         x
