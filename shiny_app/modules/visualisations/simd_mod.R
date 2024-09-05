@@ -309,9 +309,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
         tagList(
           #simd explanation
           p("To prepare the charts shown we divide geographical areas into five groups (also known as quintiles) based on their relative levels of deprivation, as measured by the ",
-            tags$a(href="https://www2.gov.scot/simd",  "Scottish Index of Multiple Deprivation (SIMD).")),
+            tags$a(href="https://www2.gov.scot/simd",  "Scottish Index of Multiple Deprivation (SIMD).", target = "_blank")),
           p("Those living in areas assigned to quntile 1 experience the highest levels of relative deprivation and those living in quintile 5 the lowest relative deprivation."),
-          p("Geogrpahical areas are assigned to a within Scotland quintile or a local quintile (e.g. within NHS board or within local authority quintile) based on the SIMD ranking."),
+          p("Geographical areas are assigned to a within Scotland quintile or a local quintile (e.g. within NHS board or within local authority quintile) based on the SIMD ranking."),
           p("Indicator data for an NHS board or council area is presented by local deprivation quintiles by default. This tool allows users to switch from the default local quintiles to view the same data according to Scotland quintiles.")
         ) #close taglist
       ))
