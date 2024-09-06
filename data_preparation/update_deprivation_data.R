@@ -58,7 +58,7 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   
   ## create new fields ----
   deprivation_dataset <- deprivation_dataset |>
-    group_by(ind_id, year, quint_type, code) |>
+    group_by(ind_id, year, quint_type, code, sex) |>
     # label if par, sii or rii  positive or negative (helps with health inequality dynamic summary text)
     mutate(across(c(sii, rii, par),
              ~ case_when(. > 0 ~ "positive", . < 0 ~ "negative",  . == 0 ~ "zero"),
@@ -85,8 +85,8 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
               "supression", "supress_less_than")) # additional columns need to be removed to make the validation test work for ineq data
   
  
-  #write parquet file to shiny app data folder
-  write_parquet(deprivation_dataset, "shiny_app/data/deprivation_dataset")
+  #write parquet file to ScotPHO data folder, before combining with the popgroups file
+  write_parquet(deprivation_dataset, paste0(test_shiny_files, "/processed_intermediate_datasets/deprivation_dataset"))
   
   
   ## Optional: Create backup of from local repo -----
@@ -96,7 +96,7 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   if (create_backup == TRUE) {
     
     file.copy(
-      "shiny_app/data/deprivation_dataset", 
+      paste0(test_shiny_files, "processed_intermediate_datasets/deprivation_dataset"), 
       paste0(backups, "deprivation_dataset_", Sys.Date()), 
       overwrite = TRUE
     )

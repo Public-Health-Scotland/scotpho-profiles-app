@@ -78,8 +78,8 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   # make available in global environment for viewing what will be sent to shiny app
   popgroup_dataset <<- popgroup_dataset
   
-  ## save final file to local repo
-  write_parquet(popgroup_dataset, "shiny_app/data/popgroup_dataset")
+  #write parquet file to ScotPHO data folder, before combining with the deprivation file
+  write_parquet(popgroup_dataset, paste0(test_shiny_files, "/processed_intermediate_datasets/popgroup_dataset"))
   
   ## Optional: Create backup of from local repo -----
   ## Usually would only want to create a backup if you intend to update live tool
@@ -87,7 +87,7 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   if (create_backup == TRUE) {
     
     file.copy(
-      "shiny_app/data/popgroup_dataset", 
+      paste0(test_shiny_files, "/processed_intermediate_datasets/popgroup_dataset"), 
       paste0(backups, "popgroup_dataset", Sys.Date()), 
       overwrite = TRUE
     )
