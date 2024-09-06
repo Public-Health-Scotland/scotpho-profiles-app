@@ -183,23 +183,10 @@ function(input, output, session) {
   rank_mod_server("rank", areatype_data, geo_selections)
   
   
-  # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
-  observe({
-    req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
-      nav_show("sub_tabs", target = "simd_tab")
-      simd_navpanel_server("simd", simd_data, geo_selections)
-      
-    } else {
-      nav_hide("sub_tabs", target = "simd_tab")
-    }
-  })
-  
-
   # run the module that creates the server logic for the population groups tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "pop_groups_tab")
       pop_groups_server("pop_groups",popgroup_data, geo_selections)
     } else {
@@ -305,7 +292,7 @@ function(input, output, session) {
   
   
   # 2. MAIN DATASET FILTERED BY BOTH PROFILE AND AREATYPE
-  # used for rank/deprivation/summary tabs 
+  # used for rank/summary tabs 
   areatype_data <- reactive({
     req(profile_data())
     profile_data() |>
@@ -314,35 +301,15 @@ function(input, output, session) {
   
   
 
-
-  # 3. DEPRIVATION DATASET
-  # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
-  simd_data <- reactive({
-    
-    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP", "MEN")) # only run when specific profiles have been selected
-
-    dt <- setDT(simd_dataset) # set to class data.table
-
-    # filter by selected geography as deprivation tab only displays info on a single area
-    dt <- dt[(areatype == geo_selections()$areatype | areatype == "Scotland") & areaname == geo_selections()$areaname]
-
-    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-    dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
-  })
-
-
-
   # 4. POPULATION GROUPS DATASET
   # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
   popgroup_data <- reactive({
     
-    req(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN")) # only run when specific profiles have been selected
+    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP", "MEN")) # only run when specific profiles have been selected
 
     dt <- setDT(popgroup_dataset) # set to class data.table
     
-    # filter by selected geography as deprivation tab only displays info on a single area
+    # filter by selected geography as popgroup tab only displays info on a single area
     dt <- dt[(areatype == geo_selections()$areatype | areatype == "Scotland") & areaname == geo_selections()$areaname]
     
     # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
