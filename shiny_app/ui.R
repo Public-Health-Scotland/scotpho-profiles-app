@@ -174,9 +174,6 @@ page_navbar(
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
                        
-                       # deprivation sub-tab 
-                       nav_panel(title = "Deprivation", value = "simd_tab", simd_navpanel_ui("simd")),
-                       
                        # population groups sub-tab
                        nav_panel(title = "Population groups", value = "pop_groups_tab", pop_groups_ui("pop_groups")),
                        nav_spacer(),
