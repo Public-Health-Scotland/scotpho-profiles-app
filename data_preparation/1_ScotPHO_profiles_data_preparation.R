@@ -52,8 +52,9 @@ source("data_preparation/2_dataprep_validation_tests.R") # validation checks
 source("data_preparation/update_techdoc.R") # script to read in & format techdoc
 source("data_preparation/update_shapefiles.R") # script to read in & format shapefiles
 source("data_preparation/update_deprivation_data.R") # script to read in & format deprivation data
-source("data_preparation/update_main_data.R") # script to read in and forma main data
-source("data_preparation/update_popgroup_data.R") # script to read in and forma main data
+source("data_preparation/update_main_data.R") # script to read in and format main data
+source("data_preparation/update_popgroup_data.R") # script to read in and format popgroup data
+source("data_preparation/combine_popgroup_and_simd_data.R") # script to combine popgroup and deprivation data
 
 
 ###################################################.
@@ -169,6 +170,16 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
 
 # no validation tests currently written for population data.
+
+
+
+########################################################################.
+## Combine popgroups and deprivation data  ----
+########################################################################.
+
+combine_popgroup_and_simd_data(create_backup = FALSE)
+
+# no validation tests currently written.
 
 
 ############################################################.
