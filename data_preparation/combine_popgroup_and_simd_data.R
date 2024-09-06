@@ -54,13 +54,13 @@ combine_popgroup_and_simd_data <- function(create_backup = FALSE) {
     mutate(split_name = case_when(split_name=="Gender" ~ "Sex", # some also have split_name == Total when split_value==All: how to use?
                                   split_name %in% c("Scottish Index of Multiple Deprivation", "SIMD") ~ "Deprivation (SIMD)",
                                   split_name %in% c("Long-term physical/mental health condition", "Longterm conditions") ~ "Long-term conditions",
-                                  split_name=="Equivalised income" ~ "Income (Equivalised)",
+                                  split_name %in% c("Equivalised income", "Equivalised Income") ~ "Income (Equivalised)",
                                   TRUE ~ split_name)) %>%
-    mutate(split_value = case_when(split_value=="1st-Top quintile" ~ "1 - highest income",
+    mutate(split_value = case_when(split_value %in% c("1st-Top quintile", "Top Quintile") ~ "1 - highest income",
                                    split_value=="2nd quintile" ~ "2",
                                    split_value=="3rd quintile" ~ "3",
                                    split_value=="4th quintile" ~ "4",
-                                   split_value=="5th-Bottom quintile" ~ "5 - lowest income",
+                                   split_value %in% c("5th-Bottom quintile", "Bottom Quintile") ~ "5 - lowest income",
                                    split_value=="1st-Most deprived" ~ "1 - most deprived",
                                    split_value=="2nd" ~ "2",
                                    split_value=="3rd" ~ "3",
@@ -68,13 +68,14 @@ combine_popgroup_and_simd_data <- function(create_backup = FALSE) {
                                    split_value=="5th-Least deprived" ~ "5 - least deprived",
                                    split_value=="5 - most deprived" ~ "5 - least deprived", # checked the data to confirm this was coded wrong
                                    split_value=="All sexes" ~ "Total",
-                                   split_value=="Males" ~ "Male",
-                                   split_value=="Females" ~ "Female",
+                                   split_value %in% c("Males", "Men") ~ "Male",
+                                   split_value %in% c("Females", "Women") ~ "Female",
                                    split_name=="Long-term conditions" & split_value %in% c("Limiting long-term conditions", "Limiting long-term illness") ~ "Yes, limiting",
                                    split_name=="Long-term conditions" & split_value %in% c("Non-limiting long-term conditions", "Non-limiting long-term illness") ~ "Yes, but not limiting",
                                    split_name=="Long-term conditions" & split_value %in% c("No long-term conditions", "No long-term illness") ~ "No",
                                    split_value %in% c("Working to age adults", "Working age adults") ~ "Working-age adults",
                                    split_value %in% c("All ages", "All") ~ "Total",
+                                   split_value== "Not Disabled" ~ "Not disabled",
                                    split_name=="Age" ~ gsub("-", " to ", split_value),
                                    TRUE ~ split_value)) %>%
     mutate(split_value = case_when(split_name=="Age" ~ gsub("Aged ", "", split_value),
@@ -85,8 +86,7 @@ combine_popgroup_and_simd_data <- function(create_backup = FALSE) {
                                     TRUE ~ as.character(NA))) %>%
     mutate(quint_type = case_when(split_name == "Deprivation (SIMD)" ~ "sc_quin", # an assumption: check
                                   TRUE ~ as.character(NA))) %>%
-    filter(!split_name=="Total") #%>%
-  # filter(!ind_id %in% c(30000:39999)) # remove original MHI data, as adding in more complete set (with SIMD x sex)
+    filter(!split_name=="Total") 
   
   # #check what splits are now used:
   # popgroup_std_splits <- popgroup_std %>% # 
