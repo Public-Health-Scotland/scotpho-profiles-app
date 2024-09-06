@@ -45,23 +45,6 @@ function(input, output, session) {
   navigation_button_modSERVER("explore_indicators", nav_id="definitions", parent_session = session)
 
   
-  # this module corresponds the the button on the profiles tab which when clicked on 
-  # takes you to the about profiles tab 
-  navigation_button_modSERVER("about_profiles_header", nav_id = "about_profiles", parent_session = session, selected_profile = reactive({input$profile_choices}))
-
-  
-  # these modules correspond to the buttons that sit in each accordion panel on the about profiles button page
-  # when clicked on, they take you back to the profiles tab, and update the filter to match the profile of interess
-  navigation_button_modSERVER("view_profile_HWB", nav_id="Profiles", parent_session = session, profile_name = "Health and Wellbeing")
-  navigation_button_modSERVER("view_profile_CYP", nav_id="Profiles", parent_session = session, profile_name = "Children and Young People")
-  navigation_button_modSERVER("view_profile_CWB", nav_id="Profiles", parent_session = session, profile_name = "Care and Wellbeing")
-  navigation_button_modSERVER("view_profile_ALC", nav_id="Profiles", parent_session = session, profile_name = "Alcohol")
-  navigation_button_modSERVER("view_profile_MEN", nav_id="Profiles", parent_session = session, profile_name = "Mental Health")
-  navigation_button_modSERVER("view_profile_POP", nav_id="Profiles", parent_session = session, profile_name = "Population")
-  navigation_button_modSERVER("view_profile_DRG", nav_id="Profiles", parent_session = session, profile_name = "Drugs")
-  navigation_button_modSERVER("view_profile_TOB", nav_id="Profiles", parent_session = session, profile_name = "Tobacco")
-  
-  
   # ensure that if a user directly clicks the 'Profiles'tab in the navigation bar, 'All indicators' is selected from the profile filter
   # This avoids a user being faced with a blank screen with no charts when they haven't used the profile buttons on the homepage to navigate
   observeEvent(input$nav, {
@@ -249,8 +232,17 @@ function(input, output, session) {
   })
   
   
-  
-  
+  # only show the 'About profile' sub-tab when 1 of 5 particular profiles has been selected
+  # otherwise hide it (as we don't yet have the text created for some profiles)
+  observeEvent(input$profile_choices, {
+    req(input$profile_choices != "")
+    if(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN", "CYP", "ALC", "HWB")){
+      nav_show("sub_tabs", target = "about_profile_tab")
+    } else {
+      nav_hide("sub_tabs", target = "about_profile_tab")
+    }
+  })
+
 
   ############################################
   # MODULES FOR THE ADDITIONAL INFO TABS
@@ -261,6 +253,9 @@ function(input, output, session) {
   
   # data tab server logic
   data_tab_mod_Server("data_tab")
+  
+  
+
 
   
   
