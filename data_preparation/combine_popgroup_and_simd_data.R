@@ -53,7 +53,7 @@ combine_popgroup_and_simd_data <- function(create_backup = FALSE) {
   popgroup_std <- popgroup %>%
     mutate(split_name = case_when(split_name=="Gender" ~ "Sex", # some also have split_name == Total when split_value==All: how to use?
                                   split_name %in% c("Scottish Index of Multiple Deprivation", "SIMD") ~ "Deprivation (SIMD)",
-                                  split_name %in% c("Long-term physical/mental health condition", "Longterm conditions") ~ "Long-term conditions",
+                                  split_name %in% c("Long-term physical/mental health condition", "Limiting Longstanding Illness", "Longterm conditions") ~ "Long-term conditions",
                                   split_name %in% c("Equivalised income", "Equivalised Income") ~ "Income (Equivalised)",
                                   TRUE ~ split_name)) %>%
     mutate(split_value = case_when(split_value %in% c("1st-Top quintile", "Top Quintile") ~ "1 - highest income",
@@ -70,9 +70,9 @@ combine_popgroup_and_simd_data <- function(create_backup = FALSE) {
                                    split_value=="All sexes" ~ "Total",
                                    split_value %in% c("Males", "Men") ~ "Male",
                                    split_value %in% c("Females", "Women") ~ "Female",
-                                   split_name=="Long-term conditions" & split_value %in% c("Limiting long-term conditions", "Limiting long-term illness") ~ "Yes, limiting",
-                                   split_name=="Long-term conditions" & split_value %in% c("Non-limiting long-term conditions", "Non-limiting long-term illness") ~ "Yes, but not limiting",
-                                   split_name=="Long-term conditions" & split_value %in% c("No long-term conditions", "No long-term illness") ~ "No",
+                                   split_name=="Long-term conditions" & split_value %in% c("Limiting long-term conditions", "Limiting long-term illness", "Limiting Longstanding Illness") ~ "Yes, limiting",
+                                   split_name=="Long-term conditions" & split_value %in% c("Non-limiting long-term conditions", "Non-limiting long-term illness", "Non to Limiting Longstanding Illness") ~ "Yes, but not limiting",
+                                   split_name=="Long-term conditions" & split_value %in% c("No long-term conditions", "No long-term illness", "No Longstanding Illness") ~ "No",
                                    split_value %in% c("Working to age adults", "Working age adults") ~ "Working-age adults",
                                    split_value %in% c("All ages", "All") ~ "Total",
                                    split_value== "Not Disabled" ~ "Not disabled",
