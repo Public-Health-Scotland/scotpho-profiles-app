@@ -74,6 +74,9 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
   popgroup_dataset <- create_geography_path_column(popgroup_dataset)
   
+  # restrict to distinct rows (deals with situation if there are duplicates of the input files (or in these files): occurs in CWB)
+  popgroup_dataset <- popgroup_dataset |>
+    distinct() 
   
   # make available in global environment for viewing what will be sent to shiny app
   popgroup_dataset <<- popgroup_dataset

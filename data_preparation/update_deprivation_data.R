@@ -50,7 +50,8 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     mutate(quintile = recode(quintile,"1" = "1 - most deprived","5" = "5 - least deprived")) |>
     mutate_at(c("numerator", "measure", "lowci", "upci", "rii", "upci_rii",
                 "lowci_rii", "sii", "lowci_sii", "upci_sii", "par", "abs_range",
-                "rel_range", "rii_int", "lowci_rii_int", "upci_rii_int"),round, 1)
+                "rel_range", "rii_int", "lowci_rii_int", "upci_rii_int"),round, 1) 
+
   
   ## apply suppression function ----
   deprivation_dataset <- deprivation_dataset |>
@@ -75,16 +76,20 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
   deprivation_dataset <- create_geography_path_column(deprivation_dataset)
   
-  # make dataset available in global environment for validation tests
-   deprivation_dataset_validation <<- deprivation_dataset 
 
-  # Make dataset visible outside of function
-  deprivation_dataset <<- deprivation_dataset %>%
+  # Remove columns not required in app
+  deprivation_dataset <- deprivation_dataset %>%
     select(-c("file_name", "parent_area", # deselect columns not required in shiny app
               #"areaname_full" #areaname_full required to make validation test work
               "supression", "supress_less_than")) # additional columns need to be removed to make the validation test work for ineq data
   
- 
+  # restrict to distinct rows (deals with situation if there are duplicates of the input files (or in these files): occurs in CWB)
+  deprivation_dataset <- deprivation_dataset |>
+    distinct() 
+  
+  # make dataset available in global environment for validation tests
+  deprivation_dataset_validation <<- deprivation_dataset 
+  
   #write parquet file to ScotPHO data folder, before combining with the popgroups file
   write_parquet(deprivation_dataset, paste0(test_shiny_files, "/processed_intermediate_datasets/deprivation_dataset"))
   

@@ -81,7 +81,7 @@ main_dataset <- main_dataset |>
     )
   )
 
-
+  
 # some indicators have years missing from their dataset (e.g. if no data was collected that year due to covid)
 # To ensure that the data in the trend tab doesn't drop to 0 for those years, we create data for those missing years
 # and populate the measure with 'NA' instead - this creates a gap in the trend chart, instead of an incorrect drop to 0
@@ -138,6 +138,9 @@ main_dataset <- main_dataset |>
 # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
 main_dataset <- create_geography_path_column(main_dataset)
 
+## restrict to distinct rows (deals with situation if there are duplicates of the input files (or in these files): occurs in CWB)
+main_dataset <- main_dataset |>
+  distinct() 
 
 # make available in global environment for viewing what will be sent to shiny app
 main_dataset <<- main_dataset
