@@ -31,7 +31,7 @@ page_navbar(
     # but this fix is not yet available on the cran version
       tags$script(HTML("
       $(document).ready(function() {
-        $('.nav-pills').each(function() {
+        $('.card-header-pills').each(function() {
           $(this).find('.nav-link').last().remove();
         });
       });
@@ -179,10 +179,18 @@ page_navbar(
                        
                        # population groups sub-tab
                        nav_panel(title = "Population groups", value = "pop_groups_tab", pop_groups_ui("pop_groups")),
-                       nav_spacer(),
                        
-                       # button to navigat to about profiles tab
-                       nav_item(navigation_button_modUI("about_profiles_header", "About this profile", button_icon = icon("info-circle"), class = "btn-sm"))
+                       # About this profile sub tab (text that appears is conditional depending on selected profile)
+                       # the text for each profile is defined in the 'narrative' subfolder in the 'about_profiles_narrative.R' script
+                       # note there is only text for the 5 profiles listed below at the moment
+                       nav_panel(title = "About this profile", value = "about_profile_tab",
+                                 conditionalPanel("input.profile_choices == 'Health and Wellbeing'", about_hwb_text),
+                                 conditionalPanel("input.profile_choices == 'Care and Wellbeing'", about_cwb_text),
+                                 conditionalPanel("input.profile_choices == 'Mental Health'", about_men_text),
+                                 conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
+                                 conditionalPanel("input.profile_choices == 'Children and Young People'", about_cyp_text)
+                       )
+
                        
             ) # close subtabs
             ), # close entire profiles tab
@@ -213,48 +221,7 @@ page_navbar(
     
     # about scotpho tab
     nav_panel(title = "About ScotPHO", value = "about_scotpho", about_scotpho_text),
-    
-    # about profiles tab (to do: replace placeholder text)
-    nav_panel(title = "About Profiles", value = "about_profiles",
-              accordion(
-                id = "profiles_accordion",
-                open= FALSE, #no accordion panels open on loading
-                multiple = TRUE, #allows multiple profile accordion panels to be open at once
-                h1("About the ScotPHO Profiles"),
-                p("Here is some information about each of the ScotPHO profiles."),
-                accordion_panel("Health and Wellbeing",
-                                about_hwb_text,
-                                navigation_button_modUI(button_id="view_profile_HWB", button_name="View Profile")
-                ),
-                accordion_panel("Children and Young People",
-                                about_cyp_text,
-                                navigation_button_modUI(button_id="view_profile_CYP", button_name="View Profile")
-                ),
-                accordion_panel("Care and Wellbeing",
-                                about_cwb_text,
-                                navigation_button_modUI(button_id="view_profile_CWB", button_name="View Profile")
-                ),
-                accordion_panel("Alcohol",
-                                about_alc_text,
-                                navigation_button_modUI(button_id="view_profile_ALC", button_name="View Profile")
-                ),
-                accordion_panel("Drugs",
-                                p(" "),
-                                navigation_button_modUI(button_id="view_profile_DRG", button_name="View Profile")
-                ),
-                accordion_panel("Mental Health",
-                                about_men_text,
-                                navigation_button_modUI(button_id="view_profile_MEN", button_name="View Profile")
-                ),
-                accordion_panel("Population",
-                                p(" "),
-                                navigation_button_modUI(button_id="view_profile_POP", button_name="View Profile")
-                ),
-                accordion_panel("Tobacco",
-                                p(" "),
-                                navigation_button_modUI(button_id="view_profile_TOB", button_name="View Profile")
-                )
-              )),
+
     
     # indicator definitions tab
     nav_panel(title = "Indicator Definitions",
