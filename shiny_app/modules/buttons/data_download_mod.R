@@ -32,13 +32,20 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
   moduleServer(id, function(input, output, session) {
     
     dataset <- reactive({
+      
+      # Convert data.table to data.frame
+      if ("data.table" %in% class(data())) {
+        data <- as.data.frame(data())
+      }
+      
+      
       # Select (and rename columns) if selected_columns arg is in use
       # otherwise download entire df
       if(!is.null(selected_columns)){
-        data <- data() |>
+        data <- data |>
           select(all_of(selected_columns))
       } else {
-      data()
+      data
       }
     })
     
@@ -46,7 +53,7 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
     output$downloadCSV <- downloadHandler(
       filename = paste0(file_name, "_", Sys.Date(), ".csv"),
       content = function(file) {
-        write.csv(dataset(), file, row.names = FALSE)
+        write.csv(as.data.frame(dataset()), file, row.names = FALSE)
       }
     )
     
