@@ -34,6 +34,7 @@ create_multi_line_trend_chart <- function(data,
                                           reduce_xaxis_labels = FALSE,
                                           zero_yaxis = TRUE,
                                           include_confidence_intervals = FALSE,
+                                          include_average = FALSE,
                                           chart_theme = theme,
                                           colour_palette = c("multi", "simd", "single")) {
   
@@ -115,6 +116,20 @@ create_multi_line_trend_chart <- function(data,
         )
       )
   }
+  
+  
+  # add average line
+  if(include_average == TRUE) {
+    hc <- hc |>
+    hc_add_series(
+      data,
+      "line",
+      name = "Average",
+      color = "#C73918",
+      hcaes(x = trend_axis, y = total)
+      )
+  }
+    
   
   # assign colour palette and theme 
   hc <- hc |>
@@ -228,6 +243,7 @@ create_bar_chart <- function(data,
                              yaxis_col = "measure",
                              chart_theme = theme,
                              include_confidence_intervals = FALSE,
+                             include_average = FALSE,
                              upci_col = "upci",
                              lowci_col = "lowci",
                              horizontal = TRUE,
@@ -259,6 +275,18 @@ create_bar_chart <- function(data,
         whiskerColor = "#000000")
     
   }
+  
+  
+  if(include_average == TRUE){
+    hc <- hc |>
+      hc_add_series(
+        name = "Average",
+        data = data,
+        type = "line",
+        color = "#C73918", #red colour for average line
+        marker = list(enabled = FALSE),
+        enableMouseTracking = FALSE) #turns off mouse tracking on average line only
+    }
 
   hc <- hc |>
     hc_add_theme(chart_theme)

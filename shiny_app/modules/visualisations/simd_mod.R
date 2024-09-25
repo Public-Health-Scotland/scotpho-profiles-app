@@ -599,9 +599,70 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     # CHARTS/TABLES ----
     ########################################
     
+    # render the chart to display on left-hand side (conditional depending on which measure was selected)
+    # using the data stored within simd_measures_data()$left_data (which is also conditional depending on what measure was selected)
+    output$left_chart <- renderHighchart({
+      
+      # only create charts if there is data available to plot
+      shiny::validate(
+        need(nrow(indicator_data()) > 0,
+             paste0("SIMD data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+      )
+      
+      
+      hc <- switch(input$depr_measures,
+                   
+                   # SIMD bar chart
+                   "Patterns of inequality" = create_bar_chart(data = simd_measures_data()$left_data,
+                                                               xaxis_col = "quintile",
+                                                               yaxis_col = "measure",
+                                                               include_confidence_intervals = input$left_ci_switch,
+                                                               colour_palette = "simd"),
+                   
+                   # SII trend chart
+                   "Inequality gap" = create_single_line_trend_chart(
+                     data = simd_measures_data()$left_data, 
+                     yaxis_col = "sii", 
+                     upci_col = "upci_sii",
+                     lowci_col = "lowci_sii",
+                     reduce_xaxis_labels = TRUE,
+                     zero_yaxis = input$left_zero_axis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = input$left_ci_switch, # filter returns TRUE/FALSE
+                     include_average = input$left_average_switch), # filter returns TRUE/FALSE
+                   
+                   
+                   # attributable to inequality bar chart
+                   # note there is no custom function yet for stacked bar charts
+                   # as this is the only one used currently in the dashboard
+                   "Potential for improvement" = hchart(
+                     simd_measures_data()$left_data, 
+                     type = 'column', 
+                     hcaes(y = value, group = measure_name, x = quintile)) |>
+                     hc_plotOptions(series = list(stacking = "normal")) |>
+                     hc_colors(c(phs_colors("phs-blue"), phs_colors("phs-purple"))) |>
+                     hc_add_theme(theme) |>
+                     hc_xAxis(title = list(text = "")) |>
+                     hc_yAxis(title = list(text = ""))
+      )
+      
+      # add options for downloaded version only
+      hc <- hc |>
+        hc_exporting(
+          filename = chart_text()$right_chart_filename,
+          chartOptions = list(
+            title = list(text = chart_text()$right_chart_title, align = "left"),
+            subtitle = list(text = chart_text()$right_chart_subtitle_1, align = "left"),
+            caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
+          )
+        )
+      
+      hc
+    })
     
     
-    # render the chart to display on right-hand side 
+    
+    # render the chart to display on right-hand side (conditional depending on which measure was selected)
+    # using the data stored within simd_measures_data()$right_data (which is also conditional depending on what measure was selected)
     output$right_chart <- renderHighchart({
       
       # only create charts if there is data available to plot
@@ -620,7 +681,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
         legend_position = "bottom",
         reduce_xaxis_labels = TRUE,
         colour_palette = "simd",
-        include_confidence_intervals = input$right_ci_switch),
+        include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
+        include_average = input$left_average_switch # filter returns TRUE/FALSE
+        ),
       
       # RII trend chart
       "Inequality gap" = create_single_line_trend_chart(
@@ -629,8 +692,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
         upci_col = "upci_rii_int",
         lowci_col = "lowci_rii_int",
         reduce_xaxis_labels = TRUE,
-        zero_yaxis = input$right_zero_axis_switch,
-        include_confidence_intervals = input$right_ci_switch),
+        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
+        include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
       
       
       # PAR trend chart
@@ -639,7 +702,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
         yaxis_col = "par", 
         reduce_xaxis_labels = TRUE,
         include_confidence_intervals = FALSE,
-        zero_yaxis = input$right_zero_axis_switch)
+        zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
       )
       
       # add options for downloaded version only
@@ -656,63 +719,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
       hc
     })
     
-    # render the chart to display on left-hand side 
-    output$left_chart <- renderHighchart({
-      
-      # only create charts if there is data available to plot
-      shiny::validate(
-        need(nrow(indicator_data()) > 0,
-             paste0("SIMD data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
-      )
-      
-      
-      hc <- switch(input$depr_measures,
-      
-      # SIMD bar chart
-      "Patterns of inequality" = create_bar_chart(data = simd_measures_data()$left_data,
-                                                  xaxis_col = "quintile",
-                                                  yaxis_col = "measure",
-                                                  include_confidence_intervals = input$left_ci_switch,
-                                                  colour_palette = "simd"),
-      
-      # SII trend chart
-      "Inequality gap" = create_single_line_trend_chart(
-        data = simd_measures_data()$left_data, 
-        yaxis_col = "sii", 
-        upci_col = "upci_sii",
-        lowci_col = "lowci_sii",
-        reduce_xaxis_labels = TRUE,
-        zero_yaxis = input$left_zero_axis_switch,
-        include_confidence_intervals = input$left_ci_switch),
-      
-      
-      # attributable to inequality bar chart
-      # note there is no custom function yet for stacked bar charts
-      # as this is the only one used currently in the dashboard
-      "Potential for improvement" = hchart(
-        simd_measures_data()$left_data, 
-        type = 'column', 
-        hcaes(y = value, group = measure_name, x = quintile)) |>
-        hc_plotOptions(series = list(stacking = "normal")) |>
-        hc_colors(c(phs_colors("phs-blue"), phs_colors("phs-purple"))) |>
-        hc_add_theme(theme) |>
-        hc_xAxis(title = list(text = "")) |>
-        hc_yAxis(title = list(text = ""))
-      )
-      
-      # add options for downloaded version only
-      hc <- hc |>
-        hc_exporting(
-          filename = chart_text()$right_chart_filename,
-          chartOptions = list(
-            title = list(text = chart_text()$right_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$right_chart_subtitle_1, align = "left"),
-            caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
-          )
-        )
-      
-      hc
-    })
+
     
     
     # render the data to be displayed on the left
