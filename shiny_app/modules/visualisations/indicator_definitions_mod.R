@@ -247,7 +247,8 @@ definitions_tab_Server <- function(id) {
             year_type = colDef(show = F),
             indicator_author = colDef(show = F),
             interpretation = colDef(show = F),
-            scotpho_profiles = colDef(show = F)
+            scotpho_profiles = colDef(show = F),
+            pop_group_splits = colDef(show = F)
           ) # close columns list
         ) # close reactable 
       }) # close render reactable
