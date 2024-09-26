@@ -225,7 +225,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     })
     
     
-    # show the option to include averagres only when patterns of inequality has been selected
+    # show the option to include averages only when patterns of inequality has been selected
     # and have it pre-set to be switched off, otherwise turn the switch off and hide it
     observeEvent(input$depr_measures, {
       if(input$depr_measures == "Patterns of inequality"){
@@ -327,7 +327,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
       dt <- simd_data() |>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         filter(indicator == selected_indicator()) |>
-        mutate(across(sii:abs_range,abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
+        mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
       
       # filter by quint type 
       if(input$quint_type == "Scotland"){
@@ -454,8 +454,16 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
                        left_data = indicator_data() |>
                          filter(sex == input$sex_filter) |>
                          filter(year == max(year) & quintile != "Total") |>
-                         mutate(baseline = measure[quintile == "5 - least deprived"],
-                                `attributable to inequality` = measure - measure[quintile == "5 - least deprived"]) |>
+                         #add columns which allow columns behind PAF bar to be created
+                         #since some indicators are considered better with higher values and some better when lower values
+                         mutate(highest_measure= case_when(quintile==qmax ~ measure, TRUE ~ 0),
+                                lowest_measure= case_when(quintile==qmin ~ measure, TRUE ~0),
+                                highest=max(highest_measure),
+                                lowest=max(lowest_measure),
+                                baseline=case_when(interpret=="L" ~ lowest,
+                                                   interpret=="H" ~ measure),
+                                `attributable to inequality`=case_when(interpret=="L" ~ abs(measure-baseline),
+                                                                       (interpret=="H" ~ abs(measure-highest)))) |>
                          pivot_longer(cols = c("attributable to inequality", "baseline"), names_to = "measure_name") |>
                          select(indicator, type_definition, areaname, areatype, trend_axis, quintile, measure_name, value),
                        
@@ -627,9 +635,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
                      lowci_col = "lowci_sii",
                      reduce_xaxis_labels = TRUE,
                      zero_yaxis = input$left_zero_axis_switch, # filter returns TRUE/FALSE
-                     include_confidence_intervals = input$left_ci_switch, # filter returns TRUE/FALSE
-                     include_average = input$left_average_switch), # filter returns TRUE/FALSE
-                   
+                     include_confidence_intervals = input$left_ci_switch), # filter returns TRUE/FALSE
+
                    
                    # attributable to inequality bar chart
                    # note there is no custom function yet for stacked bar charts
