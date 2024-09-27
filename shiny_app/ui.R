@@ -192,6 +192,22 @@ page_navbar(
                                                          tags$a("phs.scotpho@phs.scot.", href = "mailto:phs.scotpho@phs.scot?subject=Care%20and%20Wellbeing%20Indicator%20Feedback"))
                                                        )
                                                   ),
+                                 # only display this card when Mental Health profile selected
+                                 conditionalPanel(condition = "input.profile_choices == 'Mental Health'",
+                                                  br(),
+                                                  card(max_height = 150,
+                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development",class = "info-box-header"),
+                                                       p("October 2024: The Mental Health profile currently contains ", 
+                                                       tags$a("indicators for adults", 
+                                                              href = "https://publichealthscotland.scot/publications/adult-mental-health-indicator-resources/",
+                                                              target = "_blank"), 
+                                                       " only.",
+                                                       tags$a("Indicators for children and young people", 
+                                                              href = "https://www.publichealthscotland.scot/publications/children-and-young-people-mental-health-indicator-resources/",
+                                                              target = "_blank"),
+                                                       " will be added in 2025")
+                                                  )
+                                 ),
                                  summary_table_ui("summary")
                                  ),
                        
