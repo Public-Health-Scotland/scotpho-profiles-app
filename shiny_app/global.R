@@ -122,8 +122,6 @@ areatype_list <- c("Alcohol & drug partnership",
                    "Scotland")
 
 
-rank_area_comparators_list <- geo_lookup$areaname[geo_lookup$areatype %in% c("HSC partnership", "Scotland", "Health board")]
-
 
 
 # 5. Dashboard theme ---------------------------------------------------------------

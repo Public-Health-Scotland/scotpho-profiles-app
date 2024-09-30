@@ -54,8 +54,8 @@ rank_mod_ui <- function(id) {
                             condition = "input['comparator_type'] === 'Area'",
                             selectizeInput(inputId = ns("area_comparator"),
                                         label = "Select comparator area",
-                                        choices = rank_area_comparators_list,
-                                        selected = "Scotland")
+                                        choices = NULL,
+                                        )
                           ),
                           conditionalPanel(
                             ns = NS(id),
@@ -177,6 +177,30 @@ rank_mod_server <- function(id, profile_data, geo_selections) {
         enable("ci_switch")
       }
       
+      
+    })
+    
+    # update choices in area filter if 'area' selected as comparator
+    observe({
+      
+      req(profile_data())
+      req(selected_indicator())
+      
+      # get areanames that are applicable for that indicator
+      x <- profile_data() |>
+        filter(indicator == selected_indicator() & areatype %in% c("Scotland", "Health board", "HSC partnership", "Police division")) %>%
+        select(areatype, areaname) %>%
+        distinct() %>%
+        mutate(areatype = factor(areatype, # get factor levels sorted so Scotland appears first, and the areanames can be sorted within each areatype
+                                 levels = c("Scotland", "Health board", "HSC partnership", "Police division"),
+                                 labels = c("Scotland", "Health board", "HSC partnership", "Police division")))  %>%
+        arrange(areatype, areaname)
+      
+      rank_area_comparators_list <- x$areaname
+      
+      updateSelectizeInput(session, inputId = "area_comparator",
+                           choices = rank_area_comparators_list,
+                           selected = "Scotland")
       
     })
     
