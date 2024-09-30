@@ -147,11 +147,12 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     ## Dynamic filters -----
     ######################################################
     
-    ## update choices for population split filter, depending on what indicator was selected
+    ## update choices for population split filter, depending on what indicator was selected, include sort on split name
     observe({
 
       available_splits <- dataset() |>
         filter(indicator == selected_indicator() & areatype == geo_selections()$areatype) |>
+        arrange(split_name) |>
         pull(unique(split_name))
       
       updateSelectInput(session, inputId = "split_filter", choices = available_splits)

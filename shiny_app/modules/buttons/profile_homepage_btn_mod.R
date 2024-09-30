@@ -25,7 +25,7 @@ profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, de
                    div(class = "d-flex flex-column align-items-center", 
                        div(icon(profile_icon, class = "fa-3x")),
                        br(),
-                       h3(profile_name, style = "color: #3F3685; font-weight: 700;"),
+                       h3(profile_name, style = "color: #3F3685; font-weight: 650; text-align:center;"),
                        p(description)))))
   )
 }
