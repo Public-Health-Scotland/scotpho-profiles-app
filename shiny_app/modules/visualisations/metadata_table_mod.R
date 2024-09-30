@@ -28,7 +28,13 @@ metadata_table_mod_Server <- function(id, selected_indicator, technical_doc = te
         
         technical_doc |>
           filter(indicator_name == selected_indicator()) |>
-          select(indicator_definition,data_source, notes_caveats, interpretation, numerator, denominator, disclosure_control) |>
+          select(Definition = indicator_definition, 
+                 Source = data_source, 
+                 Notes = notes_caveats, 
+                 Interpretation = interpretation, 
+                 Numerator = numerator, 
+                 Denominator = denominator, 
+                 Suppression = disclosure_control) |>
           pivot_longer(cols = everything(), names_to = "Item", values_to = "Description") |>
           mutate(Item = gsub("_", " ", Item))
       })
@@ -41,7 +47,8 @@ metadata_table_mod_Server <- function(id, selected_indicator, technical_doc = te
                   defaultExpanded = TRUE,
                   defaultPageSize = nrow(metadata()),
                   columns = list(
-                    Description = colDef(minWidth = 200)))
+                    Item = colDef(maxWidth = 150)
+                    ))
       })
       
       
