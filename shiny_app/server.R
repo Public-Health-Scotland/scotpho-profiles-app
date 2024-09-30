@@ -252,9 +252,10 @@ function(input, output, session) {
   definitions_tab_Server("metadata")
   
   # data tab server logic
+  observeEvent(input$nav, {
+    req(input$nav == "dt")
   data_tab_mod_Server("data_tab")
-  
-  
+  })
 
 
   

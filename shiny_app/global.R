@@ -33,15 +33,14 @@ library(tidyr) # for pivot longer used in meta data tab
 
 library(readr) #im additiona will remove in future
 
-# 2. Sourcing modules, narrative text and guided tours  ------------------------
+# 2. Sourcing modules, narrative text and highchart functions  ------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
 list.files("narrative", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
 
-list.files("guided tours", full.names = TRUE, recursive = TRUE) |> 
-  map(~ source(.))
+source("highcharter functions.R")
 
 # 3. Required datafiles ------------------------------------------------------------
 main_dataset <- read_parquet("data/main_dataset") # main dataset (to do: rename optdata file in data prep script)
@@ -169,6 +168,11 @@ chart_controls_icon <- function(size = "2em") {
                    title = "Click here to view customise chart options", # tooltip/for screenreaders
                    class = "chart-controls-icon")
 }
+
+
+
+
+
 
 
   
