@@ -15,7 +15,7 @@ indicator_filter_mod_ui <- function(id, label = "Select indicator") {
 # server function
 # id = unique id
 # filtered_data = reactive df which determines available choices for the filter 
-indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
+indicator_filter_mod_server <- function(id, filtered_data, geo_selections, domain_order= NULL) {
   moduleServer(id, function(input, output, session) {
     
 
@@ -27,16 +27,47 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
       # filter data by selected geography to get available indicators for selected profile
       all <- all[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
+      # get lists of active indicators grouped by domain (and sorted: either alphabetically, or by specified domain_order)
+      all_domains <- sort(unique(all$domain))
+      
+      if(!is.null(domain_order)) {
+        all_domains <- all_domains[order(match(all_domains, domain_order))]
+      }
+      
+      ind_list <- list()
+      
+      # Subset the indicators by domain, sort them, and add to the ind_list (which becomes a list of lists)
+      for (i in all_domains) {
+        # single item lists were being treated differently in the drop down, hence this logic
+        if (length(unique(all[!(ind_id %in% archived_indicators) & (domain == i)]$indicator)) > 1) { 
+          ind_list[[i]] <- sort(unique(all[!(ind_id %in% archived_indicators) & (domain == i)]$indicator))
+        } else if (length(unique(all[!(ind_id %in% archived_indicators) & (domain == i)]$indicator)) == 1){
+          ind_list[[i]] <- list(sort(unique(all[!(ind_id %in% archived_indicators) & (domain == i)]$indicator)))
+        }
+      }
+      # Add the archived indicators
+      # single item lists were being treated differently in the drop down, hence this logic
+      if (length(unique(all[(ind_id %in% archived_indicators)]$indicator)) > 1) {
+        ind_list[["Archived"]] <- sort(unique(all[(ind_id %in% archived_indicators)]$indicator))
+      } else if (length(unique(all[(ind_id %in% archived_indicators)]$indicator)) == 1) {
+        ind_list[["Archived"]] <- list(sort(unique(all[(ind_id %in% archived_indicators)]$indicator)))
+      }
+      
+      
+      # populate the indicator filter with indicator choices - grouping choices into domains, then archived at the end
+      updateSelectizeInput(session, "indicator_filter", 
+                           choices = ind_list) 
+      
       
       # get list of active indicators
-      active <- unique(all[!(ind_id %in% archived_indicators)]$indicator)
+      #active <- unique(all[!(ind_id %in% archived_indicators)]$indicator)
       
-      # get list of archived indicators
-      archived <- unique(all[ind_id %in% archived_indicators]$indicator)
-      
-      # populate the indicator filter with indicator choices - grouping choices into active and archived
-      updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = as.list(active),
-                                                                       `Archived indicators` = as.list(archived)))
+      # # get list of archived indicators
+      # archived <- unique(all[ind_id %in% archived_indicators]$indicator)
+      # 
+      # # populate the indicator filter with indicator choices - grouping choices into active and archived
+      # updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = as.list(active),
+      #                                                                  `Archived indicators` = as.list(archived)))
 
 
     })

@@ -1,8 +1,8 @@
-###############################################
+###############################################.
 #
 # App main server script
 #
-##############################################
+##############################################.
 
 
 
@@ -16,9 +16,9 @@ function(input, output, session) {
   })
   
   
-  ###################################################
-  # NAVIGATION TO DIFFERENT TABS
-  ###################################################
+  ###################################################.
+  # NAVIGATION TO DIFFERENT TABS ----
+  ###################################################.
   
   # throughout the app, there are various buttons included to help users navigate their way through the dashboard to various different tabs
   # all these buttons are created using modules. You'll find many of these modules included in the main UI script or nested within larger modules
@@ -55,9 +55,9 @@ function(input, output, session) {
   })
 
   
-  #####################################################
-  # REACTIVE VALUES
-  ####################################################
+  #####################################################.
+  # REACTIVE VALUES ----
+  #####################################################.
   
   # create an object to store selected 'areaname', 'areatype' and 'parent_area' from the geography filters
   # note: when the app is initially launched, these values are set to "Scotland" because Scotland
@@ -87,11 +87,29 @@ function(input, output, session) {
   })
   
   
+  # create reactive value that contains the domain ordering   
+  profile_domain_order <- reactiveVal(
+    
+    if(input$profile_choices == "CWP"){
+      c("Over-arching indicators","Early years","Education","Work","Living standards",
+        "Healthy places", "Impact of ill health prevention","Discrimination and racism")
+      
+    } else if(input$profile_choices == "CYP"){
+      c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included")
+      
+    } else if(input$profile_choices == "MEN"){
+      c("Mental health outcomes", "Individual determinants","Community determinants", "Structural determinants",
+        "Male adult", "Female adult") # last two domains to be dropped once indicators reassigned elsewhere/archived
+      
+    } else{
+      NULL
+    }
+  )
 
   
-  ################################################
-  # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB 
-  ##################################################
+  #######################################################################.
+  # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB ----
+  #######################################################################.
   
   
   # these 2 bits of dynamic text form the part of the two headers at the top
@@ -153,10 +171,9 @@ function(input, output, session) {
   
   
   
-  
-  ###############################################################
-  # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB 
-  ###############################################################
+  #######################################################################.
+  # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB ----
+  #######################################################################.
   
   # run the module containing server logic for the trends tab - this is visible for every single profile 
   trend_mod_server("trends", profile_data, geo_selections, reactive({input$profile_choices}))
@@ -213,16 +230,18 @@ function(input, output, session) {
     if (input$profile_choices == "All Indicators"){ # if all indicators selected then hide the summary view
       nav_hide("sub_tabs", target = "summary_tab")
       
-    } else if(input$profile_choices == "Care and Wellbeing"){ #supply CWB specific profile domain ordering
-      
+    } else if(input$profile_choices == "Care and Wellbeing"){ #supply CWB specific profile domain ordering declared in global script
       nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
-                                                                                                                         "Healthy places", "Impact of ill health prevention","Discrimination and racism"))
-    } else if(input$profile_choices == "Mental Health"){ #supply mental health specific profile domain ordering
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data,  domain_order = profile_domain_order)
       
+    } else if(input$profile_choices == "Mental Health"){ #supply MEN specific profile domain ordering declared in global script
       nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Mental health outcomes", "Individual determinants",
-                                                                                                                         "Community determinants", "Structural determinants"))
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = profile_domain_order)
+      
+    } else if(input$profile_choices == "Children and Young People"){ #supply CYP specific profile domain ordering declared in global script
+            nav_show("sub_tabs", target = "summary_tab")
+      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = profile_domain_order)
+      
     } else { # all other profiles run the summary tab but no need to supply domain order and they will sort alphabetically
       nav_show("sub_tabs", target = "summary_tab")
       summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
@@ -244,9 +263,9 @@ function(input, output, session) {
   })
 
 
-  ############################################
-  # MODULES FOR THE ADDITIONAL INFO TABS
-  ############################################
+  #######################################################################.
+  # MODULES FOR THE ADDITIONAL INFO TABS ----
+  #######################################################################.
   
   # indicator definitions tab server logic
   definitions_tab_Server("metadata")
@@ -260,15 +279,24 @@ function(input, output, session) {
 
   
   
-  
-  
+  #######################################################################.
+  # REACTIVE DATASETS ----
+  #######################################################################.
 
- 
+  # 'add_domain_col' is a function that extracts the appropriate indicator domain based on the profile selected tha adds this as a column to a datatable
+  # this ensures we return the correct domain for the chosen profile in cases where an indicator is assigned to more than one profile (and therefore more than one domain)
+  add_domain_col <- function(dataset) {
+    dataset <- dataset[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
+                                           substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+                                           fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
+                                                   substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+                                                   substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+    dataset
+    
+  }
   
-  ###################################################
-  # REACTIVE DATASETS
-  ###################################################
-
+  
+  
   # 1. MAIN DATASET FILTERED BY PROFILE
   # searches for the abbreviated name of the selected profile across the 3 profile columns in the main dataset
   # note: there are 3 profile columns because some indicators belong to more than 1 profile 
@@ -280,24 +308,20 @@ function(input, output, session) {
 
     if(input$profile_choices == "All Indicators") {
     main_dataset
-    } else {
+    
+      } else {
     dt <- setDT(main_dataset) # set to class data.table
-
+    
     # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
     dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
+    
+    #call 'add_domain_col' function that adds a column with the indicator domain that matches profile selection 
+    dt <- add_domain_col(dt) 
 
-    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-    # is assigned to more than one profile (and therefore more than one domain)
-    dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
-                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                                 fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
-                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
     }
   })
-  
   
   
   # 2. MAIN DATASET FILTERED BY BOTH PROFILE AND AREATYPE
@@ -309,8 +333,6 @@ function(input, output, session) {
   })
   
   
-
-
   # 3. DEPRIVATION DATASET
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
@@ -326,6 +348,10 @@ function(input, output, session) {
     dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
+    
+    #call 'add_domain_col' function that adds a column with the indicator domain that matches profile selection 
+    dt <- add_domain_col(dt)
+    
   })
 
 
@@ -346,6 +372,8 @@ function(input, output, session) {
                substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
                substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
     
+    #call 'add_domain_col' function that adds a column with the indicator domain that matches profile selection 
+    dt <- add_domain_col(dt)
   
   })
   # 
