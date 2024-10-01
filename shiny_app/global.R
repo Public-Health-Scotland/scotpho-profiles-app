@@ -99,12 +99,12 @@ archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
 # domain orders - some profiles require domains to be sorted in a specific order rather than the default behaviour which would sort them alphabetically
 # these domain orders are passed to Server script 
 
-CWB_domain_order <- c("Over-arching indicators","Early years","Education","Work","Living standards",
-                      "Healthy places", "Impact of ill health prevention","Discrimination and racism")
-MEN_domain_order <- c("Mental health outcomes", "Individual determinants",
-                      "Community determinants", "Structural determinants",
-                      "Male adult", "Female adult") # last two domains to be dropped once indicators reassigned elsewhere/archived
-CYP_domain_order <- c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included")
+# CWB_domain_order <- c("Over-arching indicators","Early years","Education","Work","Living standards",
+#                       "Healthy places", "Impact of ill health prevention","Discrimination and racism")
+# MEN_domain_order <- c("Mental health outcomes", "Individual determinants",
+#                       "Community determinants", "Structural determinants",
+#                       "Male adult", "Female adult") # last two domains to be dropped once indicators reassigned elsewhere/archived
+# CYP_domain_order <- c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included")
 
 
 

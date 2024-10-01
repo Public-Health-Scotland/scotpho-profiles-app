@@ -88,7 +88,7 @@ function(input, output, session) {
   
   
   # create reactive value that contains the domain ordering   
-  profile_domain_order <- reactiveVal(
+  profile_domain_order <- reactive({
     
     if(input$profile_choices == "CWP"){
       c("Over-arching indicators","Early years","Education","Work","Living standards",
@@ -103,7 +103,7 @@ function(input, output, session) {
       
     } else{
       NULL
-    }
+    }}
   )
 
   
@@ -176,37 +176,37 @@ function(input, output, session) {
   #######################################################################.
   
   # run the module containing server logic for the trends tab - this is visible for every single profile 
-  trend_mod_server("trends", profile_data, geo_selections, reactive({input$profile_choices}))
+  #trend_mod_server("trends", profile_data, geo_selections, reactive({input$profile_choices}))
   
   
   # run the module containing server logic for the  rank tab - this is visible for every single profile
-  rank_mod_server("rank", areatype_data, geo_selections)
+#  rank_mod_server("rank", areatype_data, geo_selections)
   
   
   # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
-  observe({
-    req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
-      nav_show("sub_tabs", target = "simd_tab")
-      simd_navpanel_server("simd", simd_data, geo_selections)
-      
-    } else {
-      nav_hide("sub_tabs", target = "simd_tab")
-    }
-  })
-  
+  # observe({
+  #   req(input$profile_choices != "")
+  #   if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
+  #     nav_show("sub_tabs", target = "simd_tab")
+  #     simd_navpanel_server("simd", simd_data, geo_selections)
+  #     
+  #   } else {
+  #     nav_hide("sub_tabs", target = "simd_tab")
+  #   }
+  # })
+  # 
 
   # run the module that creates the server logic for the population groups tab ONLY when specific profiles are selected, otherwise hide the tab
-  observe({
-    req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
-      nav_show("sub_tabs", target = "pop_groups_tab")
-      pop_groups_server("pop_groups",popgroup_data, geo_selections)
-    } else {
-      nav_hide("sub_tabs", target = "pop_groups_tab")
-    }
-  })
-  
+  # observe({
+  #   req(input$profile_choices != "")
+  #   if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
+  #     nav_show("sub_tabs", target = "pop_groups_tab")
+  #     pop_groups_server("pop_groups",popgroup_data, geo_selections)
+  #   } else {
+  #     nav_hide("sub_tabs", target = "pop_groups_tab")
+  #   }
+  # })
+  # 
   
   
   # always default to the summary tab when user switches profile (unless all indicators has been selected as there is no summary for this - default to trends tab instead)

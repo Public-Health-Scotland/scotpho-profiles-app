@@ -130,7 +130,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # Arrange by 'domain'
       chosen_area <- setorder(chosen_area, domain)
       
-      if(is.null(domain_order)) {
+      if(is.null(domain_order())) {
         
         # Arrange by 'domain'
         chosen_area <- setorder(chosen_area, domain)
@@ -138,7 +138,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       } else {
         
         # arrange by 'domain' with custom sort order
-        chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order)]
+        chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order())]
         chosen_area <- setorder(chosen_area, domain)
         
       }
@@ -252,14 +252,14 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # set domain column as the first in the table
       setcolorder(dt, "domain")
       
-      if(is.null(domain_order)) {
+      if(is.null(domain_order())) {
       
       # Arrange by 'domain'
       dt <- setorder(dt, domain)
       
       } else {
         
-      dt <- dt[, domain := factor(domain, levels = domain_order)]
+      dt <- dt[, domain := factor(domain, levels = domain_order())]
       dt <- setorder(dt, domain)
         
       }
