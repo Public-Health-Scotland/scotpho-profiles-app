@@ -92,13 +92,17 @@ profiles_list <- list(
 
 # there are some profiles where the domains should be ordered in a particular way 
 # e.g. CWB profile should start with 'overarching indicators'
-# the list below specifies the order for domains to be appear in the indicator filter
-# and summary table for these selected profiles
+# to add a specified order for a profile domains all that should be required is to add to the list below. 
+# The order specified will add (non-select-able) domains to the indicator filter dropdown and dictate the order of 
+# domains wihtin profile summary table and within the indicator filter.
+# If a profile does not have an domain ordering supplied domains and indicators will sort alphbetically.
+
 profile_domain_order <- list(
   "Care and Wellbeing" = c("Over-arching indicators","Early years","Education","Work","Living standards",
                            "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
   "Mental Health" =  c("Mental health outcomes", "Individual determinants",
-                       "Community determinants", "Structural determinants")
+                       "Community determinants", "Structural determinants"),
+  "Children and Young People" =  c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included")
 )
 
 
@@ -200,21 +204,21 @@ prepare_profile_data <- function(dataset,
     dt <- dt[areaname == selected_areaname]
   }
   
-  
+  # within the technical document indicator can be assigned to one or more profile
   # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
 dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]] |
              substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]] |
              substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]]
 
-#create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-# is assigned to more than one profile (and therefore more than one domain)
-dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]],
+  #create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+  # is assigned to more than one profile (and therefore more than one domain)
+  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]],
                              substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
                              fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]],
                                      substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
                                      substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
-
-dt
+  
+dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
   
 }
 
