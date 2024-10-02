@@ -139,7 +139,7 @@ pop_groups_ui <- function(id) {
 #######################################################
 
 
-pop_groups_server <- function(id, dataset, geo_selections) {
+pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -178,7 +178,7 @@ pop_groups_server <- function(id, dataset, geo_selections) {
     #######################################################
     
     # generate list of indicators (from the simd indicators dataset) available 
-    selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", dataset, geo_selections)
+    selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", dataset, geo_selections, selected_profile)
 
     
     # creates trend data

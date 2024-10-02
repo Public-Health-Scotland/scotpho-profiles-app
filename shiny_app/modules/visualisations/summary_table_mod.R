@@ -68,7 +68,7 @@ summary_table_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, domain_order = NULL) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data) {
   
   moduleServer(id, function(input, output, session) {
     
@@ -127,23 +127,16 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       chosen_area <- chosen_area[other_areas, on = c("ind_id", "year"),
                                  c("Q0", "Q100", "Q25", "Q75") := .(other_areas$Q0, other_areas$Q100 ,other_areas$Q25, other_areas$Q75)]
       
-      # Arrange by 'domain'
-      chosen_area <- setorder(chosen_area, domain)
       
-      if(is.null(domain_order)) {
-        
-        # Arrange by 'domain'
-        chosen_area <- setorder(chosen_area, domain)
-        
-      } else {
-        
-        # arrange by 'domain' with custom sort order
-        chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order)]
-        chosen_area <- setorder(chosen_area, domain)
-        
+      # if the selected profile has a particular order the domains should appear in the table
+      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
+      if(selected_profile() %in% names(profile_domain_order)){
+        chosen_area <- chosen_area[, domain := factor(domain, levels = profile_domain_order[[selected_profile()]])]
       }
       
-      
+      chosen_area <- setorder(chosen_area, domain)
+
       # assign colours to values depending on statistical significance
       final <- chosen_area %>%
         mutate(marker_colour = case_when(lowci <= scotland_value & upci >= scotland_value & interpret %in% c("H", "L") ~'#6A6C6D',
@@ -252,17 +245,15 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # set domain column as the first in the table
       setcolorder(dt, "domain")
       
-      if(is.null(domain_order)) {
-      
-      # Arrange by 'domain'
-      dt <- setorder(dt, domain)
-      
-      } else {
-        
-      dt <- dt[, domain := factor(domain, levels = domain_order)]
-      dt <- setorder(dt, domain)
-        
+
+      # if the selected profile has a particular order the domains should appear in the table
+      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
+      if(selected_profile() %in% names(profile_domain_order)){
+        dt <- dt[, domain := factor(domain, levels = profile_domain_order[[selected_profile()]])]
       }
+      
+      dt <- setorder(dt, domain)
       
       dt
       
