@@ -1,7 +1,15 @@
 ### to do
-# add content to help button
 # write small example app at end of script
-# add description of module at top of script
+
+###########################################################################.
+# MODULE: trend_mod ---- 
+# prepares the nav_panel layout displaying trends data
+###########################################################################.
+
+
+#######################################################.
+## MODULE UI
+#######################################################.
 
 
 trend_mod_ui <- function(id) {
@@ -132,9 +140,15 @@ trend_mod_ui <- function(id) {
 
 
 
-#######################################################
-## MODULE SERVER
-#######################################################
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
+
+# id = unique id
+# filtered_data =  reactive dataframe where data has already been filtered by profile 
+# geo_selections = reactive values that come main server script contain the geonames & geotypes to display
+# selected_profile = name of reactive value storing selected profile from main server script
+
 
 trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
@@ -142,9 +156,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # permits compatibility between shiny and cicerone tours
     ns <- session$ns
     
-    #######################################################
+    #######################################################.
     # Dynamic filters
-    #######################################################
+    #######################################################.
     
 
     # enable/ disable geography filters depending on the selected indicator
@@ -345,9 +359,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     })
     
     
-    #######################################################
+    #######################################################.
     ## Reactive data / values ----
-    #######################################################
+    #######################################################.
     
     # create reactive objects to store selected geographies
     hb_selections <- reactiveVal()
@@ -392,7 +406,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
                                                       filtered_data,
-                                                      geo_selections)
+                                                      geo_selections,
+                                                      selected_profile)
     
     # create reactive data - filtering by selected indicator
     indicator_filtered_data <- reactive({
@@ -447,9 +462,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
 
     
-    #######################################################
+    #######################################################.
     ## Dynamic text  ----
-    #######################################################
+    #######################################################.
     
     output$trend_title <- renderUI({
       req(trend_data())
@@ -470,9 +485,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     })
     
 
-    ############################################
-    # Charts/tables 
-    #############################################
+    #############################################.
+    # Charts/tables ----
+    #############################################.
     
     # trend chart
     output$trend_chart <- renderHighchart({
@@ -582,9 +597,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     
     
-    ###################################
-    # Downloads
-    ###################################
+    ###################################.
+    # Downloads ----
+    ###################################.
     
     # server for chart and data downloads
     download_chart_mod_server(id = "download_trends_chart", chart_id = ns("trend_chart"))
@@ -605,9 +620,9 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
                                                   "lower_confidence_interval" = "lowci")) # rename column 
     
       
-    ############################################
-    # Guided tour
-    ###########################################
+    ###########################################.
+    # Guided tour ----
+    ###########################################.
     
     #Set up trend steps
     guide_trend <- Cicerone$

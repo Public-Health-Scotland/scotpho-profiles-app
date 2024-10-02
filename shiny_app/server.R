@@ -1,8 +1,8 @@
-###############################################
+###############################################.
 #
 # App main server script
 #
-##############################################
+##############################################.
 
 
 
@@ -16,9 +16,9 @@ function(input, output, session) {
   })
   
   
-  ###################################################
-  # NAVIGATION TO DIFFERENT TABS
-  ###################################################
+  ###################################################.
+  # NAVIGATION TO DIFFERENT TABS ----
+  ###################################################.
   
   # throughout the app, there are various buttons included to help users navigate their way through the dashboard to various different tabs
   # all these buttons are created using modules. You'll find many of these modules included in the main UI script or nested within larger modules
@@ -55,9 +55,9 @@ function(input, output, session) {
   })
 
   
-  #####################################################
-  # REACTIVE VALUES
-  ####################################################
+  #####################################################.
+  # REACTIVE VALUES ----
+  #####################################################.
   
   # create an object to store selected 'areaname', 'areatype' and 'parent_area' from the geography filters
   # note: when the app is initially launched, these values are set to "Scotland" because Scotland
@@ -86,12 +86,15 @@ function(input, output, session) {
     )
   })
   
-  
+  # store name of selected profile - this is passed to each module to check if the selected profile
+  # needs it's domains to be ordered in a particular way 
+  # (i.e. in the summary table, or within the indicator filter itself across the other sub-tabs)
+  selected_profile <- reactive({input$profile_choices})
 
   
-  ################################################
-  # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB 
-  ##################################################
+  ###########################################################################################.
+  # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB ----
+  ###########################################################################################.
   
   
   # these 2 bits of dynamic text form the part of the two headers at the top
@@ -154,43 +157,43 @@ function(input, output, session) {
   
   
   
-  ###############################################################
-  # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB 
-  ###############################################################
+  ###############################################################.
+  # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB ----
+  ###############################################################.
   
-  # run the module containing server logic for the trends tab - this is visible for every single profile 
-  trend_mod_server("trends", profile_data, geo_selections, reactive({input$profile_choices}))
-  
-  
+  # run the module containing server logic for the trends tab - this is visible for every single profile
+  trend_mod_server("trends", profile_data, geo_selections, selected_profile)
+
+
   # run the module containing server logic for the  rank tab - this is visible for every single profile
-  rank_mod_server("rank", areatype_data, geo_selections)
-  
-  
-  # run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
+  rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
+
+
+  #run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
     if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "simd_tab")
-      simd_navpanel_server("simd", simd_data, geo_selections)
-      
+      simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
+
     } else {
       nav_hide("sub_tabs", target = "simd_tab")
     }
   })
-  
+
 
   # run the module that creates the server logic for the population groups tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
     if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "pop_groups_tab")
-      pop_groups_server("pop_groups",popgroup_data, geo_selections)
+      pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
     } else {
       nav_hide("sub_tabs", target = "pop_groups_tab")
     }
   })
-  
-  
+
+
   
   # always default to the summary tab when user switches profile (unless all indicators has been selected as there is no summary for this - default to trends tab instead)
   # this ensures if a user is on a profile that contains a custom tab that is not available for other profiles
@@ -203,35 +206,24 @@ function(input, output, session) {
       nav_select(id = "sub_tabs",selected = "trends_tab", session = session)
     }
   })
-  
 
-  
+
+
   # run the module that creates the server logic for the summary tab, unless 'all indicators' is selected as the profile, in which case hide the tab
   observe({
     req(input$profile_choices != "")
-    
+
     if (input$profile_choices == "All Indicators"){ # if all indicators selected then hide the summary view
       nav_hide("sub_tabs", target = "summary_tab")
-      
-    } else if(input$profile_choices == "Care and Wellbeing"){ #supply CWB specific profile domain ordering
-      
+
+    } else {
       nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
-                                                                                                                         "Healthy places", "Impact of ill health prevention","Discrimination and racism"))
-    } else if(input$profile_choices == "Mental Health"){ #supply mental health specific profile domain ordering
-      
-      nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data, domain_order = c("Mental health outcomes", "Individual determinants",
-                                                                                                                         "Community determinants", "Structural determinants"))
-    } else { # all other profiles run the summary tab but no need to supply domain order and they will sort alphabetically
-      nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, reactive({input$profile_choices}), areatype_data)
-      
+      summary_table_server("summary", geo_selections, selected_profile, areatype_data)
     }
-    
+
   })
-  
-  
+
+
   # only show the 'About profile' sub-tab when 1 of 5 particular profiles has been selected
   # otherwise hide it (as we don't yet have the text created for some profiles)
   observeEvent(input$profile_choices, {
@@ -244,13 +236,13 @@ function(input, output, session) {
   })
 
 
-  ############################################
-  # MODULES FOR THE ADDITIONAL INFO TABS
-  ############################################
-  
+  # # ############################################.
+  # # # MODULES FOR THE ADDITIONAL INFO TABS ----
+  # # ############################################.
+
   # indicator definitions tab server logic
   definitions_tab_Server("metadata")
-  
+
   # data tab server logic
   observeEvent(input$nav, {
     req(input$nav == "dt")
@@ -259,15 +251,9 @@ function(input, output, session) {
 
 
   
-  
-  
-  
-
- 
-  
-  ###################################################
-  # REACTIVE DATASETS
-  ###################################################
+  ###################################################.
+  # REACTIVE DATASETS ----
+  ###################################################.
 
   # 1. MAIN DATASET FILTERED BY PROFILE
   # searches for the abbreviated name of the selected profile across the 3 profile columns in the main dataset
@@ -276,25 +262,14 @@ function(input, output, session) {
   # this dataset is passed to the trends tab module
   # it's also used to create a smaller dataset which further filters by selected areatype
   profile_data <- reactive({
-    req(input$profile_choices != "")
 
     if(input$profile_choices == "All Indicators") {
     main_dataset
     } else {
-    dt <- setDT(main_dataset) # set to class data.table
-
-    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-    dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
-
-    # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-    # is assigned to more than one profile (and therefore more than one domain)
-    dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]],
-                                 substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                                 fifelse(substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]],
-                                         substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                         substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+      prepare_profile_data( #function from global script
+        dataset = main_dataset,
+        selected_profile = input$profile_choices
+      )
     }
   })
   
@@ -314,18 +289,12 @@ function(input, output, session) {
   # 3. DEPRIVATION DATASET
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
-    
-    req(profiles_list[[input$profile_choices]] %in% c("HWB", "CWB", "POP", "CYP", "MEN")) # only run when specific profiles have been selected
-
-    dt <- setDT(simd_dataset) # set to class data.table
-
-    # filter by selected geography as deprivation tab only displays info on a single area
-    dt <- dt[(areatype == geo_selections()$areatype | areatype == "Scotland") & areaname == geo_selections()$areaname]
-
-    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-    dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
+      prepare_profile_data(
+      dataset = simd_dataset,
+      selected_profile = input$profile_choices,
+      selected_areatype = geo_selections()$areatype,
+      selected_areaname = geo_selections()$areaname
+    )
   })
 
 
@@ -333,22 +302,18 @@ function(input, output, session) {
   # 4. POPULATION GROUPS DATASET
   # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
   popgroup_data <- reactive({
-    
-    req(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN")) # only run when specific profiles have been selected
 
-    dt <- setDT(popgroup_dataset) # set to class data.table
-    
-    # filter by selected geography as deprivation tab only displays info on a single area
-    dt <- dt[(areatype == geo_selections()$areatype | areatype == "Scotland") & areaname == geo_selections()$areaname]
-    
-    # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-    dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain2, 1, 3) == profiles_list[[input$profile_choices]] |
-               substr(profile_domain3, 1, 3) == profiles_list[[input$profile_choices]]]
-    
-  
+     prepare_profile_data(
+      dataset = popgroup_dataset,
+      selected_profile = input$profile_choices,
+      selected_areatype = geo_selections()$areatype,
+      selected_areaname = geo_selections()$areaname
+    )
   })
-  # 
+  
+  
+  
+
 
 } # close main server function
 

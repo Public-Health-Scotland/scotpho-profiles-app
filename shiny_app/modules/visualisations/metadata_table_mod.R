@@ -4,6 +4,11 @@
 # This table is nested inside other larger layout modules and is displayed when the user selects the 'metadata' tab on a multi-tab card
 # and is found across most sub-tabs that display data for a single indicator (i.e. trends, rank, pop groups)
 
+
+#######################################################.
+## MODULE UI ----
+#######################################################.
+
 # id = unique id 
 metadata_table_mod_UI <- function(id) {
   ns <- NS(id)
@@ -12,6 +17,10 @@ metadata_table_mod_UI <- function(id) {
   )
 }
 
+
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
 
 # id = unique id matching that assigned when using ui function
 # techdoc = the technical document containing indicator metadata
@@ -57,12 +66,12 @@ metadata_table_mod_Server <- function(id, selected_indicator, technical_doc = te
 }
 
 
-####################################
+####################################.
 # EXAMPLE USAGE ----
 # before uncommenting and running the below you should run the main shiny app first so that techdoc 
 # containing the indicator metadata saves in your global environment
 # or alternatively read the techdoc in first
-####################################
+####################################.
 
 
 # library(shiny)

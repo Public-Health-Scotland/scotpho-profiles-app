@@ -1,15 +1,19 @@
-#####################################
+#######################################################.
 # indicator_definitions_mod.R
 # This module creates the layout for the indicator definitions tab
 # It uses the technical document to create a table with indicators, 
 # that when clicked on, expands metadata from the techdoc for each indicator
-#####################################
+#######################################################.
 
 # TO DO: fix broken links in the technical document in supporting information and related publications column
 # temporarily removed from this table since so many of the links refer to old ISD website/ beta PHS website
 
-# UI function:
+#######################################################.
+## MODULE UI ----
+#######################################################.
+
 # id = unique id 
+
 definitions_tab_UI <- function(id) {
   ns <- NS(id) # namespace
   tagList(
@@ -47,16 +51,18 @@ definitions_tab_UI <- function(id) {
 } # close module
 
 
-
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
 
 definitions_tab_Server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
       
-      ###################################
-      # Reactive data
-      ##################################
+      ##################################.
+      # Reactive data ----
+      ##################################.
       
       # Reactive data to be used in table
       tech_info <- reactive({
@@ -76,9 +82,9 @@ definitions_tab_Server <- function(id) {
         
       })
       
-      ###################################
-      # Data table 
-      ###################################
+      ###################################.
+      # Data table ----
+      ###################################.
       
       
       # Display indicator search results in a table with expandable rows
@@ -254,9 +260,9 @@ definitions_tab_Server <- function(id) {
       }) # close render reactable
       
       
-      ################################
-      # Downloads
-      #################################
+      #################################.
+      # Downloads ----
+      #################################.
       
       # Download document when button clicked
       output$techdoc_download <- downloadHandler(
@@ -272,13 +278,13 @@ definitions_tab_Server <- function(id) {
       
     })} # close server module function 
 
-##################################
+##################################.
 # EXAMPLE USAGE
 # uncomment the code below in order to see how this module works
 # note you will require the 'techdoc' parquet file and the 'profiles_list' (both in main app global script) for this to work
 # therefore recommended that you run the main app first before running this example app
 # so that these 2 items become available in your global environment
-###################################
+###################################.
 
 # packages
 # library(shiny)

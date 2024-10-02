@@ -1,10 +1,10 @@
 ### to do 
 # get small example app working properly
 
-
-
 ###############################################################################.
 # MODULE: summary_table_mod ---- 
+###############################################################################.
+
 # prepares summary data for each profile and creates a table containing the latest data for each indicator in a profile, for the chosen geography
 # within this table, there is a spine chart rendered one each row
 # note for the charts to work you need to add a link to the highchart js library in the UI script (highcharts is not free - ScotPHO have a licence for this)
@@ -12,63 +12,69 @@
 # option to download as pdf (requires a separate rmarkdown file to re-create the summary table)
 # option to download data in various formats using another module which is nested in this module (see download_data_mod.R)
 
+###############################################################################.
+# UI function ----
+###############################################################################.
 
-# UI function:
 # id = unique id 
+
 summary_table_ui <- function(id) {
   ns <- NS(id)
   tagList(
     
     # enable guided tour
-   # use_cicerone(),
+    # use_cicerone(),
     
     br(),
     hidden(
-    card(
-      id = ns("spine_chart_explanation"),
-      card_header("How to interpret table results"),
-      card_body(
-        p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have seleced a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
+      card(
+        id = ns("spine_chart_explanation"),
+        card_header("How to interpret table results"),
+        card_body(
+          p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have seleced a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
                  These charts show where your selected local area fits in amongst the range of values and the national average. For example, comparing a particular health board against all other health boards. Results can be interpreted using the key below:"),
-        layout_columns(
-          col_widths = c(4, 8),
-          p(tags$img(src='spine_chart.png', width = "350px", height = "auto", role="img",
-                     alt = "Image to illustrate how to interpret the bars presented in the local area profile table. 
+          layout_columns(
+            col_widths = c(4, 8),
+            p(tags$img(src='spine_chart.png', width = "350px", height = "auto", role="img",
+                       alt = "Image to illustrate how to interpret the bars presented in the local area profile table. 
                                         Shows a grey horizontal bar with labels. The left end is labelled \"value for \'worst\' area\". 
                                         The right end is labelled \"value for \'best\' area\". A darker grey central portion is labelled \"the middle 50% of areas\". 
                                         A red central line is labelled \"Scotland average (mean)\". A coloured circle on the bar is labelled \"value for selected area\".
                                         The text to the right of the image explains the meaning of the three possible circle colours.")), 
-          layout_columns(
-            span(tags$div(style = "width:20px; height:20px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - worse than national average"),
-            span(tags$div(style = "width:20px; height:20px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - better than national average"),
-            span(tags$div(style = "width:20px; height:20px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland"),
-            span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
-          ))))
+            layout_columns(
+              span(tags$div(style = "width:20px; height:20px; background-color:orange; border-radius:50%; display:inline-block; margin:5px;"), "orange - worse than national average"),
+              span(tags$div(style = "width:20px; height:20px; background-color:blue; border-radius:50%; display:inline-block; margin:5px;"), "blue - better than national average"),
+              span(tags$div(style = "width:20px; height:20px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland"),
+              span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
+            ))))
     ),
-
+    
     bslib::card(
       bslib::card_header(
-              class = "d-flex flex-row-reverse",
-              layout_columns(
-              downloadButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
-              download_data_btns_ui(ns("download_summary_data")),
-              )
-              ),
+        class = "d-flex flex-row-reverse",
+        layout_columns(
+          downloadButton(ns("download_summary_pdf"), "Download PDF report", class = "btn-sm"),
+          download_data_btns_ui(ns("download_summary_data")),
+        )
+      ),
       card_body(
         withSpinner(reactableOutput(ns("summary_table"))) # summary table
-       )
+      )
     )
-)
-
+  )
 }
 
-# server function 
+
+###############################################################################.
+# SERVER function 
+###############################################################################.
+
 # id = unique id
 # selected_geo = name of the reactive value storing selected areaname and selected areatype
 # selected_profile = name of reactive value storing selected profile
 # filtered_data = name of reactive dataframe where data has already been filtered by profile 
 
-summary_table_server <- function(id, selected_geo, selected_profile, filtered_data, domain_order = NULL) {
+summary_table_server <- function(id, selected_geo, selected_profile, filtered_data) {
   
   moduleServer(id, function(input, output, session) {
     
@@ -76,8 +82,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     ns <- session$ns
     
     
-    # show spine chart explanation when any areatype other
-    # than Scotland has been selected, otherwise hide it
+    # show spine chart explanation when any areatype other than Scotland has been selected, otherwise hide it
     observe({
       if (selected_geo()$areatype != "Scotland") {
         shinyjs::show("spine_chart_explanation")
@@ -87,8 +92,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     })
     
     
-    
-    # prepare local summary data 
+    # prepare local summary data ----
     local_summary <- reactive({
       req(selected_geo()$areatype != "Scotland")
       
@@ -127,23 +131,16 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       chosen_area <- chosen_area[other_areas, on = c("ind_id", "year"),
                                  c("Q0", "Q100", "Q25", "Q75") := .(other_areas$Q0, other_areas$Q100 ,other_areas$Q25, other_areas$Q75)]
       
-      # Arrange by 'domain'
-      chosen_area <- setorder(chosen_area, domain)
       
-      if(is.null(domain_order)) {
-        
-        # Arrange by 'domain'
-        chosen_area <- setorder(chosen_area, domain)
-        
-      } else {
-        
-        # arrange by 'domain' with custom sort order
-        chosen_area <- chosen_area[, domain := factor(domain, levels = domain_order)]
-        chosen_area <- setorder(chosen_area, domain)
-        
+      # if the selected profile has a particular order the domains should appear in the table
+      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
+      if(selected_profile() %in% names(profile_domain_order)){
+        chosen_area <- chosen_area[, domain := factor(domain, levels = profile_domain_order[[selected_profile()]])]
       }
       
-      
+      chosen_area <- setorder(chosen_area, domain)
+
       # assign colours to values depending on statistical significance
       final <- chosen_area %>%
         mutate(marker_colour = case_when(lowci <= scotland_value & upci >= scotland_value & interpret %in% c("H", "L") ~'#6A6C6D',
@@ -154,7 +151,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                                          interpret == "O" ~ '#FFFFFF', TRUE ~ '#FFFFFF'))
       
       
-      # creating spine chart data
+      # creating spine chart data ----
       final <- final %>%
         # duplicate chosen area value in another column so one can be used in the table and one can be used for spine chart
         mutate(chosen_value = measure) %>%
@@ -186,8 +183,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         mutate(unique_id = paste0("highchart-", indicator, "-", chosen_value, Sys.time()))
       
       
-      
-      # selecting columns required for table
+      # selecting columns required for table ----
       final <- final %>%
         select(code,
                areaname,
@@ -212,9 +208,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     })
     
     
-    
-    
-    # prepare scotland summary data 
+    # prepare scotland summary data ----
     scotland_summary <- reactive({
       req(selected_geo()$areatype == "Scotland")
       
@@ -252,17 +246,15 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # set domain column as the first in the table
       setcolorder(dt, "domain")
       
-      if(is.null(domain_order)) {
-      
-      # Arrange by 'domain'
-      dt <- setorder(dt, domain)
-      
-      } else {
-        
-      dt <- dt[, domain := factor(domain, levels = domain_order)]
-      dt <- setorder(dt, domain)
-        
+
+      # if the selected profile has a particular order the domains should appear in the table
+      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
+      if(selected_profile() %in% names(profile_domain_order)){
+        dt <- dt[, domain := factor(domain, levels = profile_domain_order[[selected_profile()]])]
       }
+      
+      dt <- setorder(dt, domain)
       
       dt
       
@@ -270,7 +262,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     })
     
     
-    # prepare data for download extract
+    # prepare data for download extract ----
     data_download <- reactive({
       if(selected_geo()$areatype == "Scotland"){
         df <- scotland_summary() |>
@@ -314,7 +306,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         need( nrow(data) > 0, "No indicators available")
       )
       
-      # domain column 
+      # domain column ----
       domain =  colDef(
         name = "Domain",
         maxWidth = 120,
@@ -329,7 +321,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                                      "))
       
       
-      # indicator column --------
+      # indicator column ----
       indicator = colDef(
         name = "Indicator",
         minWidth = 320,
@@ -350,7 +342,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                                                                      </div>
                                                                    </div>`;}"))
       
-      # Scotland column -------
+      # Scotland column ----
       scotland_value = colDef(
         maxWidth = 80,
         name = "Scotland",
@@ -361,7 +353,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
       
-      # Chosen area column -------
+      # Chosen area column ----
       measure = colDef(
         maxWidth = 80,
         name = as.character(selected_geo()$areaname),
@@ -370,10 +362,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
         }
       )
       
-      
-      
-      
-      # spine chart column
+      # spine chart column ----
       chart = colDef(name = "Chart",
                      html = T,
                      minWidth = 200,
@@ -622,16 +611,14 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     })
 
     
-    # download data module 
+    # download data module ----
     download_data_btns_server(id = "download_summary_data", 
                               file_name = "ScotPHO_summary_data_extract",
                               data = data_download
                               )
 
-    # 
     
-    
-    # download PDF logic
+    # download PDF logic ----
     output$download_summary_pdf <- downloadHandler(
       
       # name of file when downloaded
@@ -680,9 +667,9 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
 
     
     
-    ############################################
-    # Guided tour
-    ###########################################
+    ###########################################.
+    # Guided tour ----
+    ###########################################.
     
     guide_summary <- Cicerone$
       new()$
@@ -716,13 +703,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
 
 
 
-
-
-
-##############################################################################
+##############################################################################.
 # example usage - repex of how this module works can be generated by running 
 # the functions declared above then uncommenting the code below.
-##############################################################################
+##############################################################################.
 # library(bslib)
 # library(shiny)
 # 

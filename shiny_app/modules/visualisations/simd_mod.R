@@ -1,13 +1,12 @@
-################################.
-# MODULE: simd_navpanel_mod ---- 
+###########################################################################.
+# MODULE: simd_mod ---- 
 # prepares the nav_panel layout displaying SIMD based deprivation data
-################################.
+###########################################################################.
 
 #######################################################.
-## MODULE UI
+## MODULE UI ----
 #######################################################.
 
-## ui function -----------------------------------------------------------------------
 # id = unique id 
 simd_navpanel_ui <- function(id) {
   ns <- NS(id)
@@ -15,7 +14,7 @@ simd_navpanel_ui <- function(id) {
   tagList(
     layout_sidebar(
       
-      # sidebar for filters -----------------------------
+      # sidebar for filters -----
       sidebar = sidebar(width = 300,
                         
                         # indicator filter (note this is a module)
@@ -184,10 +183,16 @@ simd_navpanel_ui <- function(id) {
 
 
 #######################################################.
-## MODULE SERVER
+## MODULE SERVER----
 #######################################################.
 
-simd_navpanel_server <- function(id, simd_data, geo_selections){
+# id = unique id 
+# simd_data = reactive dataframe created in main server script contains simd data already filtered by profile
+# geo_selections = reactive values in main server stores global geography selections
+# selected_profile = name of reactive value stores selected profile from main server script
+
+
+  simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -290,9 +295,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     
     
     
-    ####################################################
-    # TAB NAVIGATION 
-    ###################################################
+    ####################################################.
+    # TAB NAVIGATION ----
+    ####################################################.
     
     # go to the help tab when 'learn more' is clicked (for the left card)
     observeEvent(input$left_chart_info_link, {
@@ -316,7 +321,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     
     # generate list of indicators (from the simd indicators dataset) available
     # and return the selected indicator
-    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections)
+    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections, selected_profile)
     
     
     # filter data passed to the module by the selected indicator and selected area
@@ -566,9 +571,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     })
     
     
-    #####################################
+    #####################################.
     # DYNAMIC TEXT ----
-    ####################################
+    ####################################.
     
     
     # render the title and subtitle for the left hand side card
@@ -603,9 +608,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     }) 
     
     
-    ######################################
+    #######################################.
     # CHARTS/TABLES ----
-    ########################################
+    #######################################.
     
     # render the chart to display on left-hand side (conditional depending on which measure was selected)
     # using the data stored within simd_measures_data()$left_data (which is also conditional depending on what measure was selected)
@@ -764,9 +769,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections){
     metadata_table_mod_Server(id = "metadata", selected_indicator)
     
     
-    ###############################
+    ###############################.
     # DOWNLOADS ----
-    ###############################
+    ###############################.
     
     # chart downloads (note these are modules)
     download_chart_mod_server(id = "save_left_chart", chart_id = ns("left_chart"))
