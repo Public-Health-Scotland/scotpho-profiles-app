@@ -186,9 +186,9 @@ chart_controls_icon <- function(size = "2em") {
 
 
 
-# function to prepare datasets to be used for each sub-tab in the dashboard
-prepare_profile_data <- function(dataset,
-                                 selected_profile,
+# function to prepare datasets to be used for each sub-tab in the dashboard (called in server script when generating reactive datasets)
+prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp) that must be supplied when calling function 
+                                 selected_profile, #reactive object created in server script contains name of selected profile
                                  selected_areaname = NULL, 
                                  selected_areatype = NULL){
   

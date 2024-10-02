@@ -1,13 +1,13 @@
-################################.
-# MODULE: simd_navpanel_mod ---- 
+###########################################################################.
+# MODULE: simd_mod ---- 
 # prepares the nav_panel layout displaying SIMD based deprivation data
-################################.
+###########################################################################.
 
-#######################################################.
+#######################################################
 ## MODULE UI
 #######################################################.
 
-## ui function -----------------------------------------------------------------------
+## ui function ----
 # id = unique id 
 simd_navpanel_ui <- function(id) {
   ns <- NS(id)
@@ -15,7 +15,7 @@ simd_navpanel_ui <- function(id) {
   tagList(
     layout_sidebar(
       
-      # sidebar for filters -----------------------------
+      # sidebar for filters -----
       sidebar = sidebar(width = 300,
                         
                         # indicator filter (note this is a module)

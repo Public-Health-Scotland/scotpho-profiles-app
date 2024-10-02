@@ -1,12 +1,12 @@
-###############################################
+###############################################.
 #
 # App main ui script
 #
-##############################################
+##############################################.
 
-#######################################
+#######################################.
 # Initial structure  ------
-######################################
+#######################################.
 
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
@@ -38,9 +38,9 @@ page_navbar(
     "))
     ), 
 
-  #######################################
-  # Homepage
-  ######################################
+  #######################################.
+  # Homepage ----
+  ######################################.
   
   # this tab is the homepage of the app. Note that some of the code to create this landing page sits in a seperate HTML file
   # the profile_homepage_btn_mod_UI is a module that creates a button to navigate to the profiles tab of the app.
@@ -106,9 +106,9 @@ page_navbar(
   
   
   
-  ############################################
-  # PROFILES TAB
-  ############################################
+  ############################################.
+  # PROFILES TAB ----
+  ############################################.
   nav_panel(title = "Profiles",
             
   # From here down to around line 115 is all the elements that make up the top section of the profiles tab
@@ -125,7 +125,7 @@ page_navbar(
                 hidden(div(id = "prof_filter_hidden",
                       selectizeInput(inputId = "profile_choices", 
                                      label = "", 
-                                     choices = names(profiles_list),  
+                                     choices = names(profiles_list),  # manually written list declared in global script
                                      options = list(onInitialize = I('function() { this.setValue(""); }')))
                     )),
               # geography header with button
@@ -167,9 +167,9 @@ page_navbar(
              br(), # add space between header and sub-tabs
 
   
-  ########################################
-  # Profiles sub-tabs -------
-  ########################################
+  ########################################.
+  # Profiles sub-tabs ----
+  ########################################.
   
   # the navset_tab() function creates sub-tabs within the profiles tab to allow the users to explore the data in various ways
   # Note that although all the possible sub-tabs that can exist in the app appear here in this UI script, they are not all shown on the dashboard at once
@@ -240,20 +240,20 @@ page_navbar(
   
   nav_spacer(), # add space to navbar 
   
-  ########################################
+  ########################################.
   # Data table tab -------
-  ########################################
+  ########################################.
   nav_panel("Download data", value = "dt", data_tab_modUI("data_tab")), 
   
   
-  ########################################
+  ########################################.
   # Link to github repo  -------
-  ########################################
+  ########################################.
   nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-tool/tree/master", target = "_blank")),
   
-  ########################################
+  ########################################.
   # Menu with additional tabs  -------
-  ########################################
+  ########################################.
   
   # this section creates a drop-down menu containing 3 tabs which provide further information on ScotPHO
   # i.e. an about scotpho tab, an indicator definitions tab and an about profiles tab 

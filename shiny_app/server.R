@@ -1,8 +1,8 @@
-###############################################
+###############################################.
 #
 # App main server script
 #
-##############################################
+##############################################.
 
 
 
@@ -16,9 +16,9 @@ function(input, output, session) {
   })
   
   
-  ###################################################
-  # NAVIGATION TO DIFFERENT TABS
-  ###################################################
+  ###################################################.
+  # NAVIGATION TO DIFFERENT TABS ----
+  ###################################################.
   
   # throughout the app, there are various buttons included to help users navigate their way through the dashboard to various different tabs
   # all these buttons are created using modules. You'll find many of these modules included in the main UI script or nested within larger modules
@@ -55,9 +55,9 @@ function(input, output, session) {
   })
 
   
-  #####################################################
-  # REACTIVE VALUES
-  ####################################################
+  #####################################################.
+  # REACTIVE VALUES ----
+  #####################################################.
   
   # create an object to store selected 'areaname', 'areatype' and 'parent_area' from the geography filters
   # note: when the app is initially launched, these values are set to "Scotland" because Scotland
@@ -92,9 +92,9 @@ function(input, output, session) {
   selected_profile <- reactive({input$profile_choices})
 
   
-  ################################################
-  # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB 
-  ##################################################
+  ###########################################################################################.
+  # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB ----
+  ###########################################################################################.
   
   
   # these 2 bits of dynamic text form the part of the two headers at the top
@@ -157,9 +157,9 @@ function(input, output, session) {
   
   
   
-  ###############################################################
-  # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB 
-  ###############################################################
+  ###############################################################.
+  # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB ----
+  ###############################################################.
   
   # run the module containing server logic for the trends tab - this is visible for every single profile
   trend_mod_server("trends", profile_data, geo_selections, selected_profile)
@@ -236,9 +236,9 @@ function(input, output, session) {
   })
 
 
-  # # ############################################
-  # # # MODULES FOR THE ADDITIONAL INFO TABS
-  # # ############################################
+  # # ############################################.
+  # # # MODULES FOR THE ADDITIONAL INFO TABS ----
+  # # ############################################.
 
   # indicator definitions tab server logic
   definitions_tab_Server("metadata")
@@ -251,9 +251,9 @@ function(input, output, session) {
 
 
   
-  ###################################################
-  # REACTIVE DATASETS
-  ###################################################
+  ###################################################.
+  # REACTIVE DATASETS ----
+  ###################################################.
 
   # 1. MAIN DATASET FILTERED BY PROFILE
   # searches for the abbreviated name of the selected profile across the 3 profile columns in the main dataset
@@ -266,7 +266,7 @@ function(input, output, session) {
     if(input$profile_choices == "All Indicators") {
     main_dataset
     } else {
-      prepare_profile_data(
+      prepare_profile_data( #function from global script
         dataset = main_dataset,
         selected_profile = input$profile_choices
       )

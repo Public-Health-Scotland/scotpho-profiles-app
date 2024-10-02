@@ -1,7 +1,15 @@
 ### to do
-# add content to help button
 # write small example app at end of script
-# add description of module at top of script
+
+###########################################################################.
+# MODULE: trend_mod ---- 
+# prepares the nav_panel layout displaying trends data
+###########################################################################.
+
+
+#######################################################.
+## MODULE UI
+#######################################################.
 
 
 trend_mod_ui <- function(id) {
@@ -132,19 +140,25 @@ trend_mod_ui <- function(id) {
 
 
 
-#######################################################
-## MODULE SERVER
-#######################################################
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
 
-trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile, domain_order) {
+# id = unique id
+# filtered_data = name of reactive dataframe where data has already been filtered by profile 
+# geo_selections = reactive values that come main server script contain the geonames & geotypes to display
+# selected_profile = name of reactive value storing selected profile from main server script
+
+
+trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
     ns <- session$ns
     
-    #######################################################
+    #######################################################.
     # Dynamic filters
-    #######################################################
+    #######################################################.
     
 
     # enable/ disable geography filters depending on the selected indicator
