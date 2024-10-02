@@ -43,17 +43,15 @@ list.files("narrative", full.names = TRUE, recursive = TRUE) |>
 source("highcharter functions.R")
 
 # 3. Required datafiles ------------------------------------------------------------
-main_dataset <- read_parquet("data/main_dataset") # main dataset (to do: rename optdata file in data prep script)
-geo_lookup <- readRDS("data/profiles_geo_lookup.rds") # geography lookup
-geo_lookup <- setDT(geo_lookup) 
+main_dataset <- setDT(read_parquet("data/main_dataset")) # main dataset (to do: rename optdata file in data prep script)
+simd_dataset <- setDT(read_parquet("data/deprivation_dataset")) # dataset behind simd panel
+popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset")) # dataset behind popgroup panel
 
+# lookups
+geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
-
-simd_dataset <- read_parquet("data/deprivation_dataset") # dataset behind simd panel
-
 techdoc <- read_parquet("data/techdoc") # technical document
 
-popgroup_dataset <- read_parquet("data/popgroup_dataset") # dataset behind popgroup panel
 
 
 # shapefiles (for map) 
@@ -92,6 +90,19 @@ profiles_list <- list(
   "All Indicators" = "ALL"
   )
 
+# there are some profiles where the domains should be ordered in a particular way 
+# e.g. CWB profile should start with 'overarching indicators'
+# the list below specifies the order for domains to be appear in the indicator filter
+# and summary table for these selected profiles
+profile_domain_order <- list(
+  "Care and Wellbeing" = c("Over-arching indicators","Early years","Education","Work","Living standards",
+                           "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
+  "Mental Health" =  c("Mental health outcomes", "Individual determinants",
+                       "Community determinants", "Structural determinants")
+)
+
+
+  
 # archived indicators - for removing from the summary tab and separating indicators 
 # into 'active' and 'archived' in the indicator filters across the other tabs
 archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
@@ -171,6 +182,41 @@ chart_controls_icon <- function(size = "2em") {
 
 
 
+# function to prepare datasets to be used for each sub-tab in the dashboard
+prepare_profile_data <- function(dataset,
+                                 selected_profile,
+                                 selected_areaname = NULL, 
+                                 selected_areatype = NULL){
+  
+  dt <- dataset
+  
+  # filter by areatype
+  if(!is.null(selected_areatype)){
+    dt <- dt[areatype == selected_areatype]
+  }
+  
+  # filter by areaname
+  if(!is.null(selected_areaname)){
+    dt <- dt[areaname == selected_areaname]
+  }
+  
+  
+  # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
+dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]] |
+             substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]] |
+             substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]]
+
+#create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+# is assigned to more than one profile (and therefore more than one domain)
+dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]],
+                             substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
+                             fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]],
+                                     substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
+                                     substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
+
+dt
+  
+}
 
 
 
