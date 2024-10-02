@@ -7,38 +7,49 @@
 # id = unique id 
 indicator_filter_mod_ui <- function(id, label = "Select indicator") {
   ns <- NS(id) # namespace
-
   selectizeInput(ns("indicator_filter"), label = label, choices = NULL, multiple = FALSE)
-
+  
 }
 
 # server function
 # id = unique id
 # filtered_data = reactive df which determines available choices for the filter 
-indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
+indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
-
+    
     # update indicator choices
-    observe({
-      
-      all <- setDT(filtered_data())
+    observeEvent(c(filtered_data(), geo_selections()),{
+      dt <- setDT(filtered_data())
       
       # filter data by selected geography to get available indicators for selected profile
-      all <- all[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
+      dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
+      # select columns and get unique rows
+      dt <- unique(dt[, c("indicator", "ind_id", "domain")])
       
-      # get list of active indicators
-      active <- unique(all[!(ind_id %in% archived_indicators)]$indicator)
+      # replace domain to be called 'Archive indicators' if indicator is in archived_indicators vector (in global script)
+      dt <- dt[ind_id %in% archived_indicators, domain := "Archived indicators"]
       
-      # get list of archived indicators
-      archived <- unique(all[ind_id %in% archived_indicators]$indicator)
-      
-      # populate the indicator filter with indicator choices - grouping choices into active and archived
-      updateSelectizeInput(session, "indicator_filter", choices = list(`Active indicators` = as.list(active),
-                                                                       `Archived indicators` = as.list(archived)))
+      # if the selected profile has a particular order the domains should appear in the table
+      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
+      # in the indicator filter, whilst also ensuring that 'archived' indicators are always at the bottom
+      if(selected_profile() %in% names(profile_domain_order)){
+        dt$domain<- factor(dt$domain, levels = c(profile_domain_order[[selected_profile()]], "Archived indicators"))
+      } else {
+        dt$domain<- factor(dt$domain, levels = c(setdiff(unique(dt$domain), "Archived indicators"), "Archived indicators"))
+      }
 
-
+      # Create a list of choices for the filter grouped by domain 
+      choices <- split(dt$indicator, dt$domain) # create list that splits up indicators by domain
+      choices <- lapply(choices, function(x) as.list(x)) # convert to list of lists
+      
+      
+      # populate the indicator filter with indicator choices grouped by domain
+      updateSelectizeInput(session, "indicator_filter", 
+                           choices = choices
+      ) 
     })
     
     
@@ -121,4 +132,3 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections) {
 # 
 # 
 # shinyApp(ui, server)
-
