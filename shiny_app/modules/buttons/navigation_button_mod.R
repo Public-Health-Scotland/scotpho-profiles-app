@@ -9,7 +9,7 @@
 ###############################################################################.
 
 
-#module UI function -
+#module UI function ----
 #name is mandatory but icon and class are optional
 navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, class = NULL){
   ns <- shiny::NS(button_id)
@@ -20,7 +20,7 @@ navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, cl
                           icon = button_icon))}
 
 
-#module server function - 
+#module server function ----
 
 navigation_button_modSERVER <- function(id, nav_id, parent_session, profile_name = NULL, selected_profile = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
