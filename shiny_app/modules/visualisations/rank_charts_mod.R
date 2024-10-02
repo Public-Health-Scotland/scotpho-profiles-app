@@ -2,13 +2,16 @@
 # sort time comparison dummbell chart colours?
 # add mini app to show how module works
 
-
-################################
+########################################################.
 # MODULE: rank_charts_mod ---- 
 # prepares the rank section 
-################################
+########################################################.
 
-## ui function -----------------------------------------------------------------------
+
+
+#######################################################.
+## MODULE UI ----
+#######################################################.
 # id = unique id 
 rank_mod_ui <- function(id) {
   ns <- NS(id)
@@ -136,13 +139,15 @@ rank_mod_ui <- function(id) {
 } # close ui function 
 
 
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
 
-
-
-# server function:
 # id = unique id 
-# profile_data = reactive df in main server
-# geo_selections <- reactive values in main server storing global geography selections
+# profile_data = reactive dataframe created in main server script contains main data already filtered by profile
+# geo_selections = reactive values in main server stores global geography selections
+# selected_profile = name of reactive value stores selected profile from main server script
+
 rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
@@ -152,9 +157,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) 
 
     ns <- session$ns
     
-    #######################################################
-    # Dynamic filters
-    #######################################################
+    #######################################################.
+    # Dynamic filters ----
+    #######################################################.
     
     # update choices in years filter if "time" selected as comparator
     observe({
@@ -205,9 +210,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) 
     })
     
     
-    #######################################################
+    #######################################################.
     ## Reactive data / values ----
-    #######################################################
+    #######################################################.
     
     # stores selected indicator ----------------------------------------------
     # (note this is a module )
@@ -340,11 +345,11 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) 
     })
 
      
-     #######################################################
+     #######################################################.
      ## Dynamic text  ----
-     #######################################################
+     #######################################################.
 
-     # title ---------
+     # title
      output$rank_title <- renderUI({
        req(rank_data())
        
@@ -389,10 +394,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) 
      })
       
 
-    
-    ############################################
+    #############################################.
     # Visualisations / data tables  ----
-    #############################################
+    #############################################.
     
     # chart (barchart/dumbell chart)
     output$rank_chart <- renderHighchart({
@@ -602,9 +606,9 @@ Not all profiles have available indicators for all geography types. The drugs pr
     
     
      
-     ######################################
+     ######################################.
      # Downloads -------
-     ######################################
+     ######################################.
      
      # note these are both modules 
      download_chart_mod_server(id = "save_rank_chart", 
@@ -631,9 +635,9 @@ Not all profiles have available indicators for all geography types. The drugs pr
                                                     "lower_confidence_interval" = "lowci"))
      
      
-     ############################################
-     # Guided tour
-     ###########################################
+     ############################################.
+     # Guided tour ----
+     ############################################.
      
      guide_rank<- Cicerone$
        new()$

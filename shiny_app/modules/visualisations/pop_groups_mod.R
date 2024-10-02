@@ -1,21 +1,20 @@
-################################
+##########################################################################.
 # MODULE: Population module ---- 
-# prepares the layout displaying the population group splits
+# prepares the nav_panel layout displaying the population group splits
+##########################################################################.
 
-################################
 
-#######################################################
-## MODULE UI
-#######################################################
+#######################################################.
+## MODULE UI ----
+#######################################################.
 
-## ui function -----------------------------------------------------------------------
 # id = unique id 
 pop_groups_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
     layout_sidebar(
-      # sidebar for filters -----------------------------
+      # sidebar for filters ----
       sidebar = sidebar(width = 300,
                         
                         # indicator filter (note this is a module)
@@ -35,7 +34,7 @@ pop_groups_ui <- function(id) {
       layout_column_wrap(
         1/2,
         
-        # Bar chart card ------------------------------------------
+        # Bar chart card ----
 
         # footer with download buttons
         # NOTE: the 'footer' argument for navset_card_pill() is currently not working
@@ -134,18 +133,18 @@ pop_groups_ui <- function(id) {
 
 
 
-#######################################################
-## MODULE SERVER
-#######################################################
+#######################################################.
+## MODULE SERVER----
+#######################################################.
 
 
 pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
     
-    #######################################################
+    ##########################.
     ## Dynamic filters -----
-    ######################################################
+    #########################.
     
     ## update choices for population split filter, depending on what indicator was selected, include sort on split name
     observe({
@@ -173,9 +172,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     })
     
     
-    #######################################################
+    #######################################################.
     ## Reactive data / values ----
-    #######################################################
+    #######################################################.
     
     # generate list of indicators (from the simd indicators dataset) available 
     selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", dataset, geo_selections, selected_profile)
@@ -196,9 +195,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         mutate(colour_pal = case_when(grepl("All", split_value) ~ phs_colors("phs-blue"), TRUE ~ phs_colors("phs-blue-50")))
     })
     
-    #######################################################
+    #######################################################.
     ## dynamic text  ----
-    #######################################################
+    #######################################################.
     
     output$pop_rank_title <- renderUI({
       # ensure there is data available, otherwise show message instead
@@ -231,9 +230,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       )
     })
     
-    ############################################
+    ############################################.
     # charts -----
-    #############################################
+    ############################################.
     
     # pop rank bar chart  ---------------
     
@@ -365,9 +364,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     
     
     
-    ##########################################
-    # Tables ---------
-    ###########################################
+    ##########################################.
+    # Tables ----
+    ##########################################.
     
     # rank data table -------
     output$pop_rank_table <- renderReactable({
@@ -414,9 +413,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     
     ### need to create pop trend table
     
-    ############################################
+    ############################################.
     # Downloads  ----
-    #############################################
+    ############################################.
     download_chart_mod_server(id = "save_pop_rankchart", chart_id = ns("pop_rank_chart"))
     download_data_btns_server(id = "pop_rank_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
     

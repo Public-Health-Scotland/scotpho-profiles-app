@@ -1,4 +1,4 @@
-# child geography filters module -----------------------------------------------
+# child geography filters module ----
 #creates an indicator filter where the choices are updated dynamically based on 
 #the parent geography (HSCP) selected
 #this module will be used in the trend tab to create filters for IMZ and locality
@@ -81,9 +81,9 @@ child_geography_filters_mod_server <- function(id, filtered_data, HSCP_selection
 }
 
 
-##############################################################################
+##############################################################################.
 # example usage
-##############################################################################
+##############################################################################.
 # library(shiny)
 # library(dplyr)
 # library(bslib)

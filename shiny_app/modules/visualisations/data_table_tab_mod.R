@@ -1,11 +1,14 @@
-#####################################
+#####################################.
 # data_table_tab_mod.R
 # This module creates the layout for the data tab
 # It allows users to build a data table that can be downloaded in various formats
-#####################################
+#####################################.
 
-# TO DO: expand to include other datasets (i.e. SIMD, pop groups splits etc.)
+# TO DO: expand to include other datasets (i.e. pop groups splits etc.)
 
+#######################################################.
+## MODULE UI ----
+#######################################################.
 
 data_tab_modUI <- function(id) {
   ns <- NS(id)
@@ -102,6 +105,10 @@ data_tab_modUI <- function(id) {
   )
 }
 
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
+
 data_tab_mod_Server <- function(id) {
   moduleServer(
     id,
@@ -110,9 +117,9 @@ data_tab_mod_Server <- function(id) {
       ns <- session$ns
       
       
-      #############################
-      # REACTIVE DATASETS
-      ##############################
+      #############################.
+      # REACTIVE DATASETS ----
+      #############################.
 
       # selected dataset
       selectedData <- reactive({
@@ -259,9 +266,9 @@ data_tab_mod_Server <- function(id) {
       })
       
       
-    ####################################
-    # DYNAMIC FILTERS
-    #####################################
+    #####################################.
+    # DYNAMIC FILTERS ----
+    #####################################.
       
       
       # create geography filter using GeographyNodes() reactive object
@@ -332,9 +339,6 @@ data_tab_mod_Server <- function(id) {
       })
       
       
-      
-      
-
       # # update profile choices based on chosen dataset -----
       observe({
 
@@ -384,9 +388,9 @@ data_tab_mod_Server <- function(id) {
       
       
       
-    ##############################
-    # DATA TABLE 
-    ##############################
+    ##############################.
+    # DATA TABLE ----
+    ##############################.
       
       output$data_tab_table <- renderDT({
         
@@ -430,9 +434,9 @@ data_tab_mod_Server <- function(id) {
       })
       
       
-            #################################
-            # Downloads
-            ##################################
+            ##################################.
+            # Downloads ----
+            ##################################.
 
             # data table bulk download (note this is a module )
             # note: use filename argument once data downloads PR merged
@@ -446,16 +450,13 @@ data_tab_mod_Server <- function(id) {
 
 
 
-
-
-
-######################################
+######################################.
 # EXAMPLE USAGE 
 # uncomment the code below to see how this module works
 # note this module requires the 'main_dataset' parquet file, the 'main_data_geo_nodes' file 
 # and the 'profiles_list' object from the global script
 # Therefore recommended that you first run the main app first so these 3 things become available in your global environment
-######################################
+######################################.
 
 # # packages
 # library(shiny)
