@@ -82,7 +82,7 @@ rank_mod_ui <- function(id) {
           navset_card_pill(
             id = ns("rank_navset_card_pill"),
             full_screen = TRUE,
-            height = 550,
+            height = 600,
             
             # charts tab
             nav_panel("Charts",
@@ -125,7 +125,7 @@ rank_mod_ui <- function(id) {
         
         div(id = ns("rank_map_wrapper"),
         card(
-          height = 550,
+          height = 600,
           full_screen = TRUE,
           leafletOutput(ns("rank_map")) |> # map
             withSpinner() |> (\(x) {
@@ -520,25 +520,14 @@ Not all profiles have available indicators for all geography types. The drugs pr
       req(map_data())
       leaflet(map_data()) |>
         addProviderTiles(provider = providers[["OpenStreetMap"]]) |>
-        addPolygons(weight = 1, 
-                    color = "black",
+        addPolygons(data = map_data(), weight = 1, color = "black",
                     fillColor = ~value_palette()(measure),
                     fillOpacity = 0.5, 
                     smoothFactor = 0.5, 
                     opacity = 1, 
                     label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
-                    labelOptions = labelOptions(
-                      style = list("font-weight" = "normal", padding = "3px 8px"),
-                      textsize = "13px",
-                      direction = "auto"
-                    ),
-                    highlightOptions = highlightOptions(
-                      color = "white", 
-                      weight = 2, 
-                      bringToFront = TRUE
-                    )
-        ) |>
-        
+                    highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) |>
+        addLegend(pal = value_palette(), values = ~measure) |>
         # add option to save chart as png
         onRender(
           "function(el, x) {
@@ -554,6 +543,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
     
     # update map when comparator toggled on/off
     observe({
+      req(map_data())
       if(input$comparator_switch == TRUE) {
         leafletProxy("rank_map", session) |>
           clearShapes() |>
@@ -564,8 +554,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
                       fillOpacity = 0.5, smoothFactor = 0.5, opacity = 0.8,
                       highlightOptions = highlightOptions(color = "white", weight = 2, opacity = 1, bringToFront = FALSE)) |>
           addLegend(colors = c("#4da6ff",  "#ffa64d", "#ccccff", "#999966"),
-                    labels = c("better than comparator", "worse than comparator", "no difference", "N/A"),
-                    position = "bottomright")
+                    labels = c("better than comparator", "worse than comparator", "no difference", "N/A"))
         
       } else {
         leafletProxy("rank_map", session) |>
@@ -577,7 +566,8 @@ Not all profiles have available indicators for all geography types. The drugs pr
                       smoothFactor = 0.5, 
                       opacity = 1, 
                       label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
-                      highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE))
+                      highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) |>
+          addLegend(pal = value_palette(), values = map_data()$measure)
       }
     })
     
