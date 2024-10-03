@@ -25,6 +25,7 @@ page_fluid(style = "padding:0; margin:0;",
 # it's also where some external script are sourced that are required for different part of the app to work
 page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
+  title = tags$img(src = "scotpho-logo.PNG", height = "57.5px;"), # add scotpho logo to left-hand side
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
   collapsible = TRUE, # collapse tabs on smaller screens
@@ -48,7 +49,15 @@ page_navbar(
           $(this).find('.nav-link').last().remove();
         });
       });
-    "))
+    ")),
+    
+    # the code below adds phs logo to right-hand side as per solution here: 
+    #https://stackoverflow.com/questions/78710175/how-can-i-align-a-logo-in-the-navbar-header-of-an-r-shiny-app-created-using-bsli
+    tags$script(
+      HTML('$(document).ready(function() {
+                      $(".navbar.navbar-default.navbar-static-top.navbar-inverse .container-fluid")
+                        .append("<src=\'phs-logo.PNG\' align=\'right\' height=\'57.5px\'>");
+                     });'))
     ), 
 
   #######################################.
