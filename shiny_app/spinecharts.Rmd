@@ -123,7 +123,7 @@ table <- df %>%
   select(domain, indicator, scotland_value, measure, def_period, type_definition) %>%
   distinct() %>%
   mutate(ind = paste0(
-    "\\textbf{",indicator, "}\n", "\\textit{\\small", def_period, " . ", type_definition, "}"))%>%
+    "\\textbf{",indicator, "}\n", "\\textit{\\small ", def_period, " . ", type_definition, "}"))%>%
   select(domain, ind, measure, scotland_value) %>%
   rename(scotland  = scotland_value) %>%
   mutate(id = row_number())
