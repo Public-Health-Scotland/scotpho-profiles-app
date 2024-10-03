@@ -8,6 +8,19 @@
 # Initial structure  ------
 #######################################.
 
+
+# temporary banner to appear at top of dashboard to notify users that the profiles tool has been redeveloped
+page_fluid(style = "padding:0; margin:0;",
+           theme = phs_theme, # dashboard theme - defined in global script
+           div(id = "banner", style = "background-color: black; color:white;",
+               layout_columns(
+                 style = "margin: 0; padding:10px;", col_widths = c(10, 2),
+                 p("This is a newly re-developed version of our tool. The old tool will remain live ",
+                 tags$a("at the following link", href = "https://scotland.shinyapps.io/ScotPHO_profiles_tool/", target = "_blank")," for a period of time. Please ", tags$a("get in touch", href="mailto:phs.scotpho@phs.scot", target = "_blank"),
+                 " if you have any queries or issues with this new version."),
+                actionButton(inputId = "close_banner", label = "Close", class = "btn-sm", icon = icon("xmark"), style = "color: white; background-color:#0078d4;")
+               ),
+           ),
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
 page_navbar(
@@ -17,7 +30,7 @@ page_navbar(
   collapsible = TRUE, # collapse tabs on smaller screens
   lang = "en",
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
-  theme = phs_theme, # dashboard theme - defined in global script
+  #theme = phs_theme, # dashboard theme - defined in global script
   # place external scripts in footer argument to avoid warnings as recommended by package developers
   header = tags$head(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
@@ -273,11 +286,7 @@ page_navbar(
     )
   ) # close nav menu
   
-  
-  
-  
-  
-  
+) 
 ) #close main ui function
 
 ### END
