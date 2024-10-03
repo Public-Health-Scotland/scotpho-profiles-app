@@ -25,7 +25,7 @@ page_fluid(style = "padding:0; margin:0;",
 # it's also where some external script are sourced that are required for different part of the app to work
 page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
-  title = tags$img(src = "scotpho-logo.PNG", height = "57.5px;"), # add scotpho logo to left-hand side
+  title = tags$img(src = "scotpho-logo.PNG", height = "50px;"), # add scotpho logo to left-hand side
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
   collapsible = TRUE, # collapse tabs on smaller screens
@@ -56,9 +56,9 @@ page_navbar(
     tags$script(
       HTML('$(document).ready(function() {
                       $(".navbar.navbar-default.navbar-static-top.navbar-inverse .container-fluid")
-                        .append("<src=\'phs-logo.PNG\' align=\'right\' height=\'57.5px\'>");
+                        .append("<img id=\'Public health scotland logo\' src=\'phs-logo.PNG\' align=\'right\' height=\'57.5px\'>");
                      });'))
-    ), 
+  ), 
 
   #######################################.
   # Homepage ----
