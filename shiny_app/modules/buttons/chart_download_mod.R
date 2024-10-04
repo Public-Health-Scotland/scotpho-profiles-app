@@ -30,7 +30,7 @@ download_chart_mod_ui <- function(id) {
     });"
       )
     ),
-    actionLink(ns("chart_download"), label = "Save chart")
+    actionButton(ns("chart_download"), label = "Save chart (PNG)", class = "me-2 btn-sm", icon = icon("chart-simple"))
   )
 }
 

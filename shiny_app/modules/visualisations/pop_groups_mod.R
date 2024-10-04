@@ -78,7 +78,7 @@ pop_groups_ui <- function(id) {
             ),
             
             # card footer - download buttons
-            card_footer(class = "d-flex justify-content-between",
+            card_footer(class = "d-flex justify-content-left",
                         download_chart_mod_ui(ns("save_pop_rankchart")),
                         download_data_btns_ui(ns("pop_rank_download")))
           )), # close bar chart card
@@ -120,7 +120,7 @@ pop_groups_ui <- function(id) {
               )
             ),
             # card footer - download buttons
-            card_footer(class = "d-flex justify-content-between",
+            card_footer(class = "d-flex justify-content-left",
                         download_chart_mod_ui(ns("save_pop_trendchart")),
                         download_data_btns_ui(ns("pop_trend_download")))
           )

@@ -116,7 +116,7 @@ rank_mod_ui <- function(id) {
               )
             )
             ),
-            card_footer(class = "d-flex justify-content-between",
+            card_footer(class = "d-flex justify-content-left",
                         div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
                         div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
           )),

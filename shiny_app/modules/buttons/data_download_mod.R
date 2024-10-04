@@ -9,15 +9,15 @@
 
 # UI function ----
 # id = unique id 
-download_data_btns_ui <- function(id) {
+# size = button size (can be 'sm', 'md' or 'lg')
+download_data_btns_ui <- function(id, size = "sm") {
   ns <- NS(id) # namespace
   shinyWidgets::dropdownButton(
-    label = "Download data", icon = icon("download"), circle = FALSE, status = 'download_btns_menu', 
+    label = "Download data", icon = icon("download"), circle = FALSE, status = 'download', size = size,
     shiny::downloadLink(ns("downloadCSV"), label = "as CSV"),
     shiny::downloadLink(ns("downloadRDS"), label = "as RDS"),
     shiny::downloadLink(ns("downloadJSON"), label = "as JSON")
-  ) |>
-    bslib::tooltip("Click to view available formats")
+  )
 }
 
 
