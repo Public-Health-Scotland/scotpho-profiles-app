@@ -15,9 +15,7 @@ page_fluid(style = "padding:0; margin:0;",
            div(id = "banner", style = "background-color: black; color:white;",
                layout_columns(
                  style = "margin: 0; padding:10px;", col_widths = c(10, 2),
-                 p("This is a newly re-developed version of our tool. The old tool will remain live ",
-                 tags$a("at the following link", href = "https://scotland.shinyapps.io/ScotPHO_profiles_tool/", target = "_blank")," for a period of time. Please ", tags$a("get in touch", href="mailto:phs.scotpho@phs.scot", target = "_blank"),
-                 " if you have any queries or issues with this new version."),
+                 p("This is a re-developed version of the ScotPHO profiles tool. If you have any queries or issues please ", tags$a("get in touch", href="mailto:phs.scotpho@phs.scot", target = "_blank"), "."),
                 actionButton(inputId = "close_banner", label = "Close", class = "btn-sm", icon = icon("xmark"), style = "color: white; background-color:#0078d4;")
                ),
            ),
