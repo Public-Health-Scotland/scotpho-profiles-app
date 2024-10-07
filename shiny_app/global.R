@@ -31,8 +31,6 @@ library(DT)
 library(tidyr) # for pivot longer used in meta data tab
 
 
-library(readr) #im additiona will remove in future
-
 # 2. Sourcing modules, narrative text and highchart functions  ------------------------
 list.files("modules", full.names = TRUE, recursive = TRUE) |>
   map(~ source(.))
@@ -140,36 +138,54 @@ areatype_list <- c("Alcohol & drug partnership",
 
 # 5. Dashboard theme ---------------------------------------------------------------
 
-# see https://rstudio.github.io/bslib/articles/bs5-variables/ for list of all variables 
-phs_theme <- bs_theme(version = 5, # bootstrap version 5
-                      "nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta"), # multi-tab cards colour when selected
-                      "nav-tabs-link-active-color" = "white", # multi-tab cards font colour when selected
-                      "form-label-font-weight" = "550") |> # filter labels font weight
-  
-  # adding custom styling for particular bits of ui (for instance making some bits of text purple without affecting all text)
-  # note: could move over some stuff from css file into here i.e. for some of the landing page styling?
+# see https://rstudio.github.io/bslib/articles/bs5-variables/ for more details
+phs_theme <- bs_theme(
+  # high level theming
+  version = 5, # bootstrap v5 required to use bslib components (like cards etc.)
+  bg = "white", # make background white
+  fg = "#222", # make foreground darkgrey/black
+  bootswatch = "shiny", # use default shiny theme
+  primary = "#0078D4", # make primary colour blue - this will change i.e. active pill colour
+  "form-label-font-weight" = "500"#, # font-weight for filter labels
+  #"nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta-10"), # multi-tab cards colour when selected
+  #"nav-tabs-link-active-color" = "black" # multi-tab cards font colour when selected
+  ) |>
+  # create colour variables to use below
+  bs_add_variables(
+    "phs-purple" = "#3F3685",
+    "phs-blue" = "#0078D4",
+    "phs-magenta" = "#9B4393"
+    )|>
+  # lower level theming
   bs_add_rules(
     list(
-      ".geography-header { color: #9B4393; font-weight: 600 !important; margin-right: 10px;}", # geography header light phs purple colour
-      ".profile-header { color: #3F3685; font-weight: bold !important; margin-right: 10px}", # profile header darker phs purple colour
-      ".btn-download_btns_menu { padding: 0}", # remove padding from download buttons menu so fits nicely in card footers
-      ".chart-header { font-weight: bold !important;}", # make chart titles bold
-      "strong { color: #9B4393 !important;}", # make the domain names purple for homepage
-      ".btn-hero {color:black; background-color:#def4ff; border:none;}", # make buttons in the hero on landing page light blue
-      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }", # info box header lighter phs purple colour with white text
-      ".metadata-header {font-weight: 600;}", # for indicator definitions tab - make headers in expandable rows bolder 
-      ".rt-tr-details {padding: 24px; box-shadow: inset 0 1px 3px #dbdbdb; background: #FDFDFC ;}", # for indificator definitions tab - make expandable panel grey
-      ".methodology-table th{border:thin solid black; background-color:purple; color:white; padding:3px; word-break: break-all;}", # for indicator def tab - make nested table headers purple
+      # header/text styling 
+      "h1 {font-weight: 700;}",
+      "h2 {font-weight: 700;}",
+      "h3 {font-weight: bold;}",
+      "h4 {font-weight: bold;}",
+      "strong { color: $phs-magenta !important;}", # make the domain names magenta for homepage cards
+      ".profile-header {color: $phs-purple;}", # make profile header purple
+      ".geography-header {color: $phs-magenta;}", # make geography header magenta
+      ".header-elements {display: flex; align-items: center;}", # make profile/geography headers sit on same line as button to open filters
+      ".chart-header { font-weight: 700; font-size: 1.2rem;}", # make chart headers bold
+      ".methodology-table th{border:thin solid black; background-color:$phs-magenta; color:white; padding:3px; word-break: break-all;}", # for indicator def tab - make nested table headers purple
+ 
+      # buttons styling 
+      ".btn-global {background-color: #E0E0E0; border:$phs-blue; color:black; border-radius:15px;}", #  global filter buttons
+      ".btn-download {color:white; background-color:$phs-blue; border:solid;}", # data download buttons for card footers
+      ".card-footer .btn-download {border:none; text-decoration:underline; color:$phs-blue; background-color:white}", # data download buttons for card footers
+      ".btn-download:hover {background-color: #e0e0e0; color:black; border:none;}", # data download buttons on hover
+      ".btn-hero {color:black; background-color:#def4ff; border:none;}", # 2 x landing page hero buttons
+      ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # hover colour for landing page profile buttons
+      ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}", # orange apply geographies button
+      
+      # other
+      ".info-box-header { background-color: $phs-magenta; color: #FFF;}", # info box header lighter phs purple colour with white text
       ".methodology-table td{ border:thin solid black; padding:3px;}", # for indicator def tab - make nested table cells have black border
-      ".shiny-output-error {color: white;}", # hiding auto-generated error messages
-      ".shiny-output-error-validation {color: #8e8f90;}", # showing custom error messages
-      ".info-box-header { background-color: #9B4393; color: #fff; font-size: 1.2em !important; }", # info box header for CWB profile- lighter phs purple colour with white text
-      ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # make profile buttons on landing page change colour when user hovers over it
-      ".header-elements {display: flex; align-items: center;}", # make profile and geography headers side-by-side with buttons to open global filters
-      ".global-filter {background-color: #ECECEC; color: black; padding: 5px;}", # make global filter buttons grey
-      ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}",
-      ".chart-controls-icon {background-color:#0078D4; color:white; border-radius:5em; padding:5px;}" # styling of the chart controls icon
-
+      ".rt-tr-details {padding: 24px; box-shadow: inset 0 1px 3px #dbdbdb; background: #FDFDFC;}", # for indicator definitions tab - make expandable panel grey
+      ".chart-controls-icon {background-color:$phs-blue; color:white; border-radius:5em; padding:5px;}" # styling of the chart controls icon
+      
     )
   )
 
@@ -178,12 +194,11 @@ phs_palette <- unname(unlist(phs_colours()))
 
 # cog icon that goes on the top right-hand side of each chart with additional chart controls (icon links to bslib popover controls)
 chart_controls_icon <- function(size = "2em") {
-  bsicons::bs_icon(name = "gear-fill", 
-                   size = size, 
+  bsicons::bs_icon(name = "gear-fill",
+                   size = size,
                    title = "Click here to view customise chart options", # tooltip/for screenreaders
                    class = "chart-controls-icon")
 }
-
 
 
 # function to prepare datasets to be used for each sub-tab in the dashboard (called in server script when generating reactive datasets)
