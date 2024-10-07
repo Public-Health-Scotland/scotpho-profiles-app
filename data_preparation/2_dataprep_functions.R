@@ -46,8 +46,9 @@ combine_files <- function(file_list) {
   }
   
   
-  combined_data <- rbindlist(lapply(file_list, function(x) {
-    
+#  combined_data <- rbindlist(lapply(file_list, function(x) {
+  combined_data <- plyr::rbind.fill(lapply(file_list, function(x) {
+      
     # read in datafile
     data <- if (file_type == 'rds') readRDS(x) else fread(x)
     

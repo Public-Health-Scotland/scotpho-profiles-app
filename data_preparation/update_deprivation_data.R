@@ -30,7 +30,8 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     )
     
     ## Combine into one dataset  -----
-    test_deprivation_dataset <- combine_files(test_deprivation_files)
+    test_deprivation_dataset <- combine_files(test_deprivation_files) %>% 
+      mutate(numerator = as.numeric(numerator)) # in case NA in any data files has turned this column to character
     
     ## Combine main dataset and test indicators
     deprivation_dataset <- bind_rows(deprivation_dataset, test_deprivation_dataset)
