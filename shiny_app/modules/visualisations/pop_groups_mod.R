@@ -42,7 +42,7 @@ pop_groups_ui <- function(id) {
         # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
         suppressWarnings(
           bslib::navset_card_pill(
-            height = 550,
+            height = 600,
             full_screen = TRUE,
             
             # tab 1: bar chart 
@@ -78,7 +78,7 @@ pop_groups_ui <- function(id) {
             ),
             
             # card footer - download buttons
-            card_footer(class = "d-flex justify-content-between",
+            card_footer(class = "d-flex justify-content-left",
                         download_chart_mod_ui(ns("save_pop_rankchart")),
                         download_data_btns_ui(ns("pop_rank_download")))
           )), # close bar chart card
@@ -88,7 +88,7 @@ pop_groups_ui <- function(id) {
 
         suppressWarnings(
           bslib::navset_card_pill(
-            height = 550,
+            height = 600,
             full_screen = TRUE,
             
             # tab 1: trend chart 
@@ -120,7 +120,7 @@ pop_groups_ui <- function(id) {
               )
             ),
             # card footer - download buttons
-            card_footer(class = "d-flex justify-content-between",
+            card_footer(class = "d-flex justify-content-left",
                         download_chart_mod_ui(ns("save_pop_trendchart")),
                         download_data_btns_ui(ns("pop_trend_download")))
           )
@@ -209,7 +209,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       div(
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
         tags$h6(pop_rank_data()$trend_axis[1]), # time period 
-        tags$p(pop_rank_data()$rate_type[1]) # measure type
+        tags$p(pop_rank_data()$type_definition[1]) # measure type
       )
     })
     
@@ -226,7 +226,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       div(
         tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
         tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
-        tags$p(pop_trend_data()$rate_type[1]) # measure type
+        tags$p(pop_trend_data()$type_definition[1]) # measure type
       )
     })
     

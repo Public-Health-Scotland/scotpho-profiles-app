@@ -114,7 +114,7 @@ simd_navpanel_ui <- function(id) {
             
             # card footer with download buttons
             card_footer(
-              class = "d-flex justify-content-between",
+              class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_left_chart")),
               download_data_btns_ui(ns("save_left_data")))
           )
@@ -168,7 +168,7 @@ simd_navpanel_ui <- function(id) {
             
             # card footer with download buttons
             card_footer(
-              class = "d-flex justify-content-between",
+              class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_right_chart")),
               download_data_btns_ui(ns("save_right_data")))
           )

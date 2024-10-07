@@ -36,7 +36,7 @@ page_navbar(
         });
       });
     "))
-    ), 
+    ),
 
   #######################################.
   # Homepage ----
@@ -70,7 +70,7 @@ page_navbar(
                            ),
 
             whats_new = layout_columns(
-              width = 1, style = "padding: 15px;",
+              width = 1,
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
@@ -119,7 +119,7 @@ page_navbar(
             # profile header with button
               div(class = "header-elements",
                 uiOutput("profile_header"),
-                shiny::actionLink(inputId = "show_profile_filter", label = "Change profile", icon = icon("filter"), class = "global-filter")
+                actionButton(inputId = "show_profile_filter", label = "Change profile", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
             # hidden profile filter to display when button clicked 
                 hidden(div(id = "prof_filter_hidden",
@@ -131,7 +131,7 @@ page_navbar(
               # geography header with button
                 div(class = "header-elements",
                   uiOutput("geography_header"),
-                  shiny::actionLink("show_geo_filters", label = "Change area", icon = icon("filter"), class = "global-filter")
+                  actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
@@ -272,11 +272,6 @@ page_navbar(
               definitions_tab_UI("metadata")
     )
   ) # close nav menu
-  
-  
-  
-  
-  
   
 ) #close main ui function
 

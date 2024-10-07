@@ -130,7 +130,7 @@ trend_mod_ui <- function(id) {
         ),
         
         # footer with download buttons
-        card_footer(class = "d-flex justify-content-between",
+        card_footer(class = "d-flex justify-content-left",
                     div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
                     div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
       )) # close navset card pill

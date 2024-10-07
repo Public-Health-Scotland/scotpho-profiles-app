@@ -25,11 +25,18 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       # filter data by selected geography to get available indicators for selected profile
       dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
+      if(selected_profile() == "All Indicators"){
+        choices <- unique(dt$indicator)
+      } else {
+      
       # select columns and get unique rows
       dt <- unique(dt[, c("indicator", "ind_id", "domain")])
       
       # replace domain to be called 'Archive indicators' if indicator is in archived_indicators vector (in global script)
       dt <- dt[ind_id %in% archived_indicators, domain := "Archived indicators"]
+      
+      # arrange indicators alphabetically
+      dt <- setorder(dt, indicator)
       
       # if the selected profile has a particular order the domains should appear in the table
       # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
@@ -45,7 +52,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       choices <- split(dt$indicator, dt$domain) # create list that splits up indicators by domain
       choices <- lapply(choices, function(x) as.list(x)) # convert to list of lists
       
-      
+      }
       # populate the indicator filter with indicator choices grouped by domain
       updateSelectizeInput(session, "indicator_filter", 
                            choices = choices
