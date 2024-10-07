@@ -19,6 +19,12 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   ## combine into one deprivation dataset
   deprivation_dataset <- combine_files(deprivation_files) #call to one of the generic functions that combines files from list
   
+  ## TEMPORARY FIX - need to adjust data prep process
+  ## sex column not yet added to all inequalities indicator output files during data prep
+  ## need to add this columns with a value of 'Total' for indicators when its missing.
+  deprivation_dataset <-deprivation_dataset |>
+    mutate(sex = "Total")
+  
   
   ## If test indicators are to be included then list files & combine files from test shiny folder
   if (load_test_indicators == TRUE){
