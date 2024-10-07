@@ -146,7 +146,7 @@ phs_theme <- bs_theme(
   fg = "#222", # make foreground darkgrey/black
   bootswatch = "shiny", # use default shiny theme
   primary = "#0078D4", # make primary colour blue - this will change i.e. active pill colour
-  "form-label-font-weight" = "500"#, # font-weight for filter labels
+  "form-label-font-weight" = "550"#, # font-weight for filter labels
   #"nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta-10"), # multi-tab cards colour when selected
   #"nav-tabs-link-active-color" = "black" # multi-tab cards font colour when selected
   ) |>
