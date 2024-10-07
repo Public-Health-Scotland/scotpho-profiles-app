@@ -8,28 +8,16 @@
 # Initial structure  ------
 #######################################.
 
-
-# temporary banner to appear at top of dashboard to notify users that the profiles tool has been redeveloped
-page_fluid(style = "margin:0; padding:0;",
-           theme = phs_theme, # dashboard theme - defined in global script
-           div(id = "banner", style = "background-color: black; color:white;",
-               layout_columns(
-                 style = "margin: 0; padding:10px;", col_widths = c(10, 2),
-                 p("This is a re-developed version of the ScotPHO profiles tool. If you have any queries or issues please ", tags$a("get in touch", href="mailto:phs.scotpho@phs.scot", target = "_blank"), "."),
-                actionButton(inputId = "close_banner", label = "Close", class = "btn-sm", icon = icon("xmark"), style = "color: white; background-color:#0078d4;")
-               ),
-           ),
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
 page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
-  title = tags$img(src = "scotpho-logo.PNG", height = "50px;"), # add scotpho logo to left-hand side
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
   collapsible = TRUE, # collapse tabs on smaller screens
   lang = "en",
   bg = phs_colours(colourname = "phs-purple"), # background navbar colour
-  #theme = phs_theme, # dashboard theme - defined in global script
+  theme = phs_theme, # dashboard theme - defined in global script
   # place external scripts in footer argument to avoid warnings as recommended by package developers
   header = tags$head(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
@@ -47,16 +35,8 @@ page_navbar(
           $(this).find('.nav-link').last().remove();
         });
       });
-    ")),
-    
-    # the code below adds phs logo to right-hand side as per solution here: 
-    #https://stackoverflow.com/questions/78710175/how-can-i-align-a-logo-in-the-navbar-header-of-an-r-shiny-app-created-using-bsli
-    tags$script(
-      HTML('$(document).ready(function() {
-                      $(".navbar.navbar-default.navbar-static-top.navbar-inverse .container-fluid")
-                        .append("<img id=\'Public health scotland logo\' src=\'phs-logo.PNG\' align=\'right\' height=\'57.5px\'>");
-                     });'))
-  ), 
+    "))
+    ),
 
   #######################################.
   # Homepage ----
@@ -90,7 +70,7 @@ page_navbar(
                            ),
 
             whats_new = layout_columns(
-              width = 1, style = "padding: 15px;",
+              width = 1,
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
@@ -129,7 +109,7 @@ page_navbar(
   ############################################.
   # PROFILES TAB ----
   ############################################.
-  nav_panel(title = "Profiles", style = "Padding:10px;",
+  nav_panel(title = "Profiles",
             
   # From here down to around line 115 is all the elements that make up the top section of the profiles tab
   # this includes the 2 x headers with buttons next to them, and the filters that appear when the buttons are clicked
@@ -287,14 +267,12 @@ page_navbar(
 
     
     # indicator definitions tab
-    nav_panel(style = "padding:20px;",
-      title = "Indicator Definitions",
+    nav_panel(title = "Indicator Definitions",
               value = "definitions",
               definitions_tab_UI("metadata")
     )
   ) # close nav menu
   
-) 
 ) #close main ui function
 
 ### END

@@ -16,16 +16,7 @@ function(input, output, session) {
   })
   
   
-  
-  ####################################################
-  # Temporary - close black banner along top of dashboard
-  ###################################################
-  
-  # close the banner when a user clicks the button
-  observeEvent(input$close_banner, {
-    shinyjs::hide("banner")
-  })
-  
+
   
   
   ###################################################.
