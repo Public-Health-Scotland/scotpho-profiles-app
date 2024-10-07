@@ -31,6 +31,9 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       # replace domain to be called 'Archive indicators' if indicator is in archived_indicators vector (in global script)
       dt <- dt[ind_id %in% archived_indicators, domain := "Archived indicators"]
       
+      # arrange indicators alphabetically
+      dt <- setorder(dt, indicator)
+      
       # if the selected profile has a particular order the domains should appear in the table
       # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
       # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
