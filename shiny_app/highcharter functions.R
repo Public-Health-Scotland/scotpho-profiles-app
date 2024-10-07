@@ -13,7 +13,8 @@ theme <- hc_theme(
   ),
   plotOptions = list(
     series = list(
-      animation = FALSE
+      animation = FALSE,
+      connectNulls=TRUE
     ),
     column = list(
       groupPadding = 0
