@@ -10,7 +10,7 @@
 
 
 # temporary banner to appear at top of dashboard to notify users that the profiles tool has been redeveloped
-page_fluid(style = "padding:0; margin:0;",
+page_fluid(style = "margin:0; padding:0;",
            theme = phs_theme, # dashboard theme - defined in global script
            div(id = "banner", style = "background-color: black; color:white;",
                layout_columns(
@@ -129,7 +129,7 @@ page_navbar(
   ############################################.
   # PROFILES TAB ----
   ############################################.
-  nav_panel(title = "Profiles",
+  nav_panel(title = "Profiles", style = "Padding:10px;",
             
   # From here down to around line 115 is all the elements that make up the top section of the profiles tab
   # this includes the 2 x headers with buttons next to them, and the filters that appear when the buttons are clicked
@@ -139,7 +139,7 @@ page_navbar(
             # profile header with button
               div(class = "header-elements",
                 uiOutput("profile_header"),
-                shiny::actionLink(inputId = "show_profile_filter", label = "Change profile", icon = icon("filter"), class = "global-filter")
+                actionButton(inputId = "show_profile_filter", label = "Change profile", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
             # hidden profile filter to display when button clicked 
                 hidden(div(id = "prof_filter_hidden",
@@ -151,7 +151,7 @@ page_navbar(
               # geography header with button
                 div(class = "header-elements",
                   uiOutput("geography_header"),
-                  shiny::actionLink("show_geo_filters", label = "Change area", icon = icon("filter"), class = "global-filter")
+                  actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
@@ -287,7 +287,8 @@ page_navbar(
 
     
     # indicator definitions tab
-    nav_panel(title = "Indicator Definitions",
+    nav_panel(style = "padding:20px;",
+      title = "Indicator Definitions",
               value = "definitions",
               definitions_tab_UI("metadata")
     )
