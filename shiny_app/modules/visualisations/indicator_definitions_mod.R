@@ -25,7 +25,7 @@ definitions_tab_UI <- function(id) {
     an indicator in the search results table to view metadata."),
     p("To view technical information and updates schedule for all indicators at once, use the download button below."),
     # download button
-    downloadButton(ns("techdoc_download"), label = "Download as CSV", class = "btn-sm"),
+    downloadButton(ns("techdoc_download"), label = "Download as CSV", class = "btn-sm btn-download"),
     hr(),
     # filters
     layout_columns(

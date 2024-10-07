@@ -15,9 +15,6 @@ data_tab_modUI <- function(id) {
   tagList(
     page_sidebar(padding = 20, gap = 20,
                        sidebar = sidebar(width = 300, padding = 20,
-                                         
-                                         h2("Filters"),
-                                         
                                          # clear filters button
                                          actionButton(ns("clear_table_filters"),
                                                       label = "Clear all filters",
@@ -25,7 +22,7 @@ data_tab_modUI <- function(id) {
                                                       class = "down"),
                                          
                                          # dataset selection filter
-                                         radioGroupButtons(
+                                         radioButtons(
                                            inputId = ns("dataset_selector"),
                                            label = bslib::tooltip(
                                              placement = "bottom",
@@ -89,7 +86,7 @@ data_tab_modUI <- function(id) {
                                          
                        ), # close sidebar
                        
-                       h1("Data table"),
+                       h1("Download data"),
                        p("Use the filters to build a data table, which can then be downloaded in various formats using the button below. 
                          Please note that the table below is a preview. The downloaded dataset will contain more columns containing metadata 
                          than are presented here."),
@@ -359,7 +356,7 @@ data_tab_mod_Server <- function(id) {
       observeEvent(input$clear_table_filters, {
         
         # reset the dataset selector to "Main Dataset"
-        updateRadioGroupButtons(session, 
+        updateRadioButtons(session, 
                                 inputId = "dataset_selector", 
                                 selected = "Main Dataset")
         
@@ -368,7 +365,7 @@ data_tab_mod_Server <- function(id) {
         
         
         # reset the time period filter to max year per indicator
-        updateRadioGroupButtons(session = session,
+        updateRadioButtons(session = session,
                                 inputId = "time_period",
                                 selected = "Latest available year")
         
