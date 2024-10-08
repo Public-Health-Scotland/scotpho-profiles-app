@@ -282,7 +282,7 @@ create_bar_chart <- function(data,
     hc <- hc |>
       hc_add_series(
         name = "Average",
-        data = data,
+        data = data$total,
         type = "line",
         color = "#C73918", #red colour for average line
         marker = list(enabled = FALSE),
