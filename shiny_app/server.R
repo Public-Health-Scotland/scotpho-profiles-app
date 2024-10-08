@@ -175,7 +175,7 @@ function(input, output, session) {
   #run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
   observe({
     req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "POP", "CYP", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
+    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "CYP", "MEN", "ALC", "DRG", "TOB") & !is.null(profiles_list[[input$profile_choices]])) {
       nav_show("sub_tabs", target = "simd_tab")
       simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
 
