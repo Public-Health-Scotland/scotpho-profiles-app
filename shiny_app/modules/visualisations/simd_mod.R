@@ -382,6 +382,7 @@ simd_navpanel_ui <- function(id) {
                          mutate(total = measure[quintile == "Total"]) |>
                          ungroup() |>
                          filter(quintile != "Total") |>
+                         arrange(year) |>
                          select(indicator, type_definition, areaname, areatype, trend_axis, quintile, measure, upci, lowci, total),
                        
                        # columns to show/hide in the SIMD data table
@@ -565,7 +566,7 @@ simd_navpanel_ui <- function(id) {
                
                right_chart_narrative = about_par_trend,
                right_chart_title = paste0("Potential for improvement"),
-               right_chart_subtitle_1 = paste0("How much ", selected_indicator(), " could be improved if the levels of the least deprived area were experienced across the whole population."),
+               right_chart_subtitle_1 = paste0("How much (%) ", selected_indicator(), " could be improved if the levels of the least deprived area were experienced across the whole population."),
                right_chart_filename = paste0("ScotPHO PAR barchart- ", selected_indicator())
              )
       )
@@ -630,6 +631,7 @@ simd_navpanel_ui <- function(id) {
                    "Patterns of inequality" = create_bar_chart(data = simd_measures_data()$left_data,
                                                                xaxis_col = "quintile",
                                                                yaxis_col = "measure",
+                                                               include_average = input$left_average_switch,
                                                                include_confidence_intervals = input$left_ci_switch,
                                                                colour_palette = "simd"),
                    
@@ -661,10 +663,10 @@ simd_navpanel_ui <- function(id) {
       # add options for downloaded version only
       hc <- hc |>
         hc_exporting(
-          filename = chart_text()$right_chart_filename,
+          filename = chart_text()$left_chart_filename,
           chartOptions = list(
-            title = list(text = chart_text()$right_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$right_chart_subtitle_1, align = "left"),
+            title = list(text = chart_text()$left_chart_title, align = "left"),
+            subtitle = list(text = chart_text()$left_chart_subtitle_1, align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
@@ -694,8 +696,9 @@ simd_navpanel_ui <- function(id) {
         legend_position = "bottom",
         reduce_xaxis_labels = TRUE,
         colour_palette = "simd",
+        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
         include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
-        include_average = input$left_average_switch # filter returns TRUE/FALSE
+        include_average = input$right_average_switch # filter returns TRUE/FALSE
         ),
       
       # RII trend chart
@@ -721,10 +724,10 @@ simd_navpanel_ui <- function(id) {
       # add options for downloaded version only
       hc <- hc |>
         hc_exporting(
-          filename =chart_text()$left_chart_filename,
+          filename =chart_text()$right_chart_filename,
           chartOptions = list(
-            title = list(text = chart_text()$left_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$left_chart_subtitle_1, align = "left"),
+            title = list(text = chart_text()$right_chart_title, align = "left"),
+            subtitle = list(text = chart_text()$right_chart_subtitle_1, align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
