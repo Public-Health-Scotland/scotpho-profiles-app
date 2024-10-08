@@ -56,13 +56,17 @@ combine_files <- function(file_list) {
     
     # add column that includes filename
     data$file_name <- basename(x)
+    
+    # make numerator column class numeric
+    data$numerator <- as.numeric(data$numerator)
+    
     #rename column
     colnames(data)[colnames(data) == 'rate'] <- 'measure'
     
     # clean column names 
     clean_names(data)
     
-  }), use.names = TRUE)
+  }), fill = TRUE)
   
   return(combined_data)
 }
