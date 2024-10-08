@@ -19,11 +19,6 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   ## combine into one deprivation dataset
   deprivation_dataset <- combine_files(deprivation_files) #call to one of the generic functions that combines files from list
   
-  # replace NAs in sex column with Total
-  # these NAs are introduced when combining files where sex column not present and so auto-filled with NAs
-  deprivation_dataset$sex[is.na(deprivation_dataset$sex)] <- "Total"
-  
-  
   ## If test indicators are to be included then list files & combine files from test shiny folder
   if (load_test_indicators == TRUE){
     ## Find new indicators data files in the test shiny data folder -----
@@ -39,6 +34,10 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
     ## Combine main dataset and test indicators
     deprivation_dataset <- bind_rows(deprivation_dataset, test_deprivation_dataset)
   } #close test indicator function
+  
+  # replace NAs in sex column with Total
+  # these NAs are introduced when combining files where sex column not present and so auto-filled with NAs
+  deprivation_dataset$sex[is.na(deprivation_dataset$sex)] <- "Total"
   
   # for now skip loading andy pulford inequality indicators
   # attach technical document info ----
