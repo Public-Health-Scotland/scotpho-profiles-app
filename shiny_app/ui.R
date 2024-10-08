@@ -152,10 +152,10 @@ page_navbar(
                            
                   layout_columns(widths = c(4, 4, 2),fillable = FALSE,
                     # area type filter 
-                    selectizeInput("areatype", "Area type:", choices = areatype_list, selected = "Scotland"),
+                    selectizeInput("areatype", "Area type", choices = areatype_list, selected = "Scotland"),
                     layout_column_wrap(width = 1,
                       # areaname filter 
-                      selectizeInput("areaname", "Areaname", choices = c("Scotland"), selected = "Scotland"),
+                      selectizeInput("areaname", "Area name", choices = c("Scotland"), selected = "Scotland"),
                       # parent area filter (only appear when HSC locality or Intermediate zone selected)
                       conditionalPanel(condition = "input.areatype == 'HSC locality' || input.areatype == 'Intermediate zone'",
                                        selectizeInput("parent_area", label = "First select a region for localities or intermediate zones", choices = hscp_list, width = "100%"))
@@ -227,6 +227,7 @@ page_navbar(
                        # the text for each profile is defined in the 'narrative' subfolder in the 'about_profiles_narrative.R' script
                        # note there is only text for the 5 profiles listed below at the moment
                        nav_panel(title = "About this profile", value = "about_profile_tab",
+                                 br(),
                                  conditionalPanel("input.profile_choices == 'Health and Wellbeing'", about_hwb_text),
                                  conditionalPanel("input.profile_choices == 'Care and Wellbeing'", about_cwb_text),
                                  conditionalPanel("input.profile_choices == 'Mental Health'", about_men_text),
