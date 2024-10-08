@@ -31,7 +31,7 @@ summary_table_ui <- function(id) {
         id = ns("spine_chart_explanation"),
         card_header("How to interpret table results"),
         card_body(
-          p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have seleced a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
+          p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have selected a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
                  These charts show where your selected local area fits in amongst the range of values and the national average. For example, comparing a particular health board against all other health boards. Results can be interpreted using the key below:"),
           layout_columns(
             col_widths = c(4, 8),
@@ -599,7 +599,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
                 defaultPageSize = nrow(data),
                 defaultExpanded = T,
                 sortable = F,
-                highlight = TRUE,
+                highlight = FALSE,
                 theme = reactableTheme(
                   headerStyle = list(backgroundColor = "#ECECEC")
                 ),
