@@ -141,6 +141,9 @@ pop_groups_ui <- function(id) {
 pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
+    # required for chart downloads
+    ns <- session$ns
+    
     
     ##########################.
     ## Dynamic filters -----
