@@ -73,7 +73,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 # function to create spine plot for each indicator
 create_indicator_trend_line <- function(data) {
   plot <- ggplot(data, aes(x = years, y = measures)) +
-  geom_line(color = phs_colors(colourname = "phs-blue")) +
+  geom_line(data=data[!is.na(data$measures),], color = phs_colors("phs-blue")) +
   geom_point(shape = 16, color = phs_colors(colourname = "phs-blue")) + 
   theme_void() +
   theme(plot.background = element_rect(fill = "white", color = "white"),
