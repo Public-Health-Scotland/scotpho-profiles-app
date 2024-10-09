@@ -159,7 +159,7 @@ for (indicator in unique_indicators) {
    counter <- counter + 1
 
  # Save the plot as a PNG with the filename created
-  ggsave(filename, plot = plot, units="mm", width=60, height=6, dpi=300)
+  ggsave(filename, plot = plot, units="mm", width=55, height=6, dpi=300)
 }
 
 
@@ -193,10 +193,10 @@ table %>%
   row_spec(0, background = "#032F4F", color = "white") %>%
 
   # set column widths
-  column_spec(1, width = "8em") %>% # domaincolumn
-   column_spec(2, width = "20em") %>% # indicator column
-   column_spec(3, width = "6em") %>% # chosen area column
-   column_spec(4, width = "3em") %>% # scotland column
+  column_spec(1, width = "6em") %>% # domaincolumn
+   column_spec(2, width = "25em") %>% # indicator column
+   column_spec(3, width = "2.7em") %>% # chosen area column
+   column_spec(4, width = "2.7em") %>% # scotland column
 
   # embed chart images on each row of final column
    kableExtra::column_spec(5, image = sprintf("%s/%s.png", graph_directory, table$id), color = "white") %>%
