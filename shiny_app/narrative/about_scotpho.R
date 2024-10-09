@@ -6,7 +6,7 @@ about_scotpho_text <- tagList(
 
                    h1("About this tool", style = "color:black; font-weight: 400"),
                    p("ScotPHO's profiles tool allows users to explore the various different profiles 
-                     produced by the ", tags$a(href="http://www.scotpho.org.uk/about-us/about-scotpho/", "ScotPHO collaboration.", 
+                     produced by the ", tags$a(href="https://www.scotpho.org.uk/resources/about-scotpho/", "ScotPHO collaboration.", 
                                                class="externallink")),
                    p("The profiles are intended to increase understanding of local health issues 
                      and to prompt further investigation, rather than to be used as a performance 
