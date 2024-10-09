@@ -170,11 +170,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # this ensures that 'worst' is always to the left of the spine, and 'best' is always to the right
       final <- final %>%
         mutate(worst = case_when(interpret == "L" ~ Q0 - Q25, TRUE ~ Q100 - Q75), # worst
-               p25 = case_when(interpret == "L" ~ Q75 - Q100, TRUE ~ Q25 - Q0), # 25th percentile
-               p75 = case_when(interpret == "L" ~ Q25 - Q75, TRUE ~ Q75 - Q25), # 75th percentile
+               p25 = case_when(interpret == "L" ~ Q25 - Q75, TRUE ~ Q75 - Q25), # 25th percentile
+               p75 = case_when(interpret == "L" ~ Q75 - Q100, TRUE ~ Q25 - Q0), # 75th percentile
                best = case_when(interpret == "L" ~ Q100, TRUE ~ Q0) # best
         )
-      
       
       final$chart <- NA # create empty column to populate with in-line highcharts
       
