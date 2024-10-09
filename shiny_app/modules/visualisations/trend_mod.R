@@ -377,31 +377,31 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # from each of the geography filters
     observeEvent(input$hb_filter, {
       hb_selections(input$hb_filter)
-    })
+    }, ignoreNULL = FALSE)
     
     observeEvent(input$ca_filter, {
       ca_selections(input$ca_filter)
-    })
+    }, ignoreNULL = FALSE)
     
     observeEvent(input$hscp_filter, {
       hscp_selections(input$hscp_filter)
-    })
+    }, ignoreNULL = FALSE)
     
     observeEvent(input$adp_filter, {
       adp_selections(input$adp_filter)
-    })
+    }, ignoreNULL = FALSE)
     
     observeEvent(input$locality_filter, {
       locality_selections(input$locality_filter)
-    })
+    }, ignoreNULL = FALSE)
     
     observeEvent(input$iz_filter, {
       iz_selections(input$iz_filter)
-    })
+    }, ignoreNULL = FALSE)
     
     observeEvent(input$pd_filter, {
       pd_selections(input$pd_filter)
-    })
+    }, ignoreNULL = FALSE)
 
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
