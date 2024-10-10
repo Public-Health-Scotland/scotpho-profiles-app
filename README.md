@@ -12,10 +12,19 @@ The changes to app design:
 
 ## Code
 
-This repo does not contain any datafiles only the scripts that allow the 
+This repo does not contain any datafiles only the scripts that generate the shiny app. Data can be downloaded from the app either through individual visualisation panels or bulk download through data download tab.
 
-# data preparation folder
+## data files 
+- main_dataset : populates visualisations in summary, trend, rank navpanels
+- popgroup_dataset: populates visualisations in popgroup navpanel
+- simd_dataset:  populates visualisations deprivation navpanel
+- techdoc: contains indicator metadata for all indicators within the tool
+- geo_lookup: lookup matching geography identification codes to geography full descriptions
+- main_data_geonodes: contains heirachical information linking smaller geographies to parent areas
+- shapefiles: simplified geographical boundary information that allow map creation within rank navpanel
+
+## 'data preparation'
 Within this folder is a master script '1_ScotPHO_profiles_data_prepartion' that generates several data files that are required for the app to run. These scripts will only run for those with sufficient internal network access permissions.
 
-# shiny_app
+## shiny_app
 Within this folder are scripts require for functioning of the profiles tool shiny app

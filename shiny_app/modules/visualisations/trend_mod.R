@@ -162,7 +162,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
 
     # enable/ disable geography filters depending on the selected indicator
-    observeEvent(selected_indicator(), {
+    observe({
       req(indicator_filtered_data())
       
       # stores available areatypes, depending on what indicator was selected
