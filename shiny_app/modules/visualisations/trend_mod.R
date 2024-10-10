@@ -431,8 +431,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
             (areaname %in% input$ca_filter & areatype == "Council area")| # filter by selected council areas
             (areaname %in% input$adp_filter & areatype == "Alcohol & drug partnership") |# filter by selected adps
             (areaname %in% input$hscp_filter & areatype == "HSC partnership")| #filter by selected hscps
-            (areaname %in% input$iz_filter & areatype == "Intermediate zone")| # filter by selected IZs
-            (areaname %in% input$locality_filter & areatype == "HSC locality")| # filter by selected HSC localities
+            (areaname %in% input$iz_filter & areatype == "Intermediate zone" & parent_area == input$hscp_filter_2)| # filter by selected IZs
+            (areaname %in% input$locality_filter & areatype == "HSC locality" & parent_area == input$hscp_filter_2)| # filter by selected HSC localities
             (areaname %in% input$pd_filter & areatype == "Police division") # filter by selected police divisions
         )
       
