@@ -66,7 +66,7 @@ source("data_preparation/update_popgroup_data.R") # script to read in and forma 
 # Option:  to save a backup version of techdoc (set create_backup to TRUE)
 # Option: to include indicators data labelled as test indicators in techdoc (set load test indicators to TRUE)
 
-update_techdoc(load_test_indicators = TRUE, create_backup = FALSE)
+update_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
 
 # PLANNING ON UPDATING INDICATORS AND DEPLOYING THE APP? consider generating backup of techdoc. 
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
@@ -100,7 +100,7 @@ geography_lookup <- readRDS(
 # switch to TRUE if including test indicators (note that you will also need to load test indicators in the update_techdoc function)
 # create_backup - switch to true if deploying the live app with updated indicator datasets 
 
-update_main_data(load_test_indicators = TRUE, create_backup = FALSE)
+update_main_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 # run validation tests one by one 
 # when a test is finished running, if it's passed 'TRUE' will print in the console
@@ -148,7 +148,7 @@ saveRDS(main_dataset_geography_list, "shiny_app/data/main_dataset_geography_node
 ## i.e. indicator data split by SIMD quintiles.
 ##############################################################.
 
-update_deprivation_data(load_test_indicators = TRUE, create_backup = FALSE)
+update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
 
@@ -166,7 +166,7 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 ## i.e. indicator data split by various different inequality groups.
 ########################################################################.
 
-update_popgroup_data(load_test_indicators = TRUE, create_backup = FALSE)
+update_popgroup_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 # no validation tests currently written for population data.
 
