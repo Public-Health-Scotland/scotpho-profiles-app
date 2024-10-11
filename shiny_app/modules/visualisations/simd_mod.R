@@ -342,11 +342,7 @@ simd_navpanel_ui <- function(id) {
         dt <- dt |>
           filter(quint_type != "sc_quin")
       }
-      
-      # step carried out in data prep - but retaining code chunk whilst we look at 
-      # # fill NA balus with 'total' - temporary step should be done in data prep?
-      # dt$sex[is.na(dt$sex)] <- "Total"
-      
+
       dt
     })
     
