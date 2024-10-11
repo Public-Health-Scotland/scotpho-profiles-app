@@ -28,17 +28,11 @@ function(input, output, session) {
   # below, there are various modules being called which control the server logic that determins what happens when a button is clicked:
   
   
-  # these modules correspond to the profile buttons on the homepage
-  # each line calls a module that will navigate to the profiles tab and update the profile filter to match the button clicked
-  profile_homepage_btn_modSERVER("hwb_nav", profile_name = "Health and Wellbeing", parent_session = session)
-  profile_homepage_btn_modSERVER("cyp_nav", profile_name = "Children and Young People",  parent_session = session)
-  profile_homepage_btn_modSERVER("cwb_nav", profile_name = "Care and Wellbeing",  parent_session = session)
-  profile_homepage_btn_modSERVER("alc_nav", profile_name = "Alcohol", parent_session = session)
-  profile_homepage_btn_modSERVER("men_nav", profile_name = "Mental Health", parent_session = session)
-  profile_homepage_btn_modSERVER("pop_nav", profile_name = "Population", parent_session = session)
-  profile_homepage_btn_modSERVER("tob_nav", profile_name = "Tobacco",  parent_session = session)
-  profile_homepage_btn_modSERVER("drg_nav", profile_name = "Drugs",  parent_session = session)
-  profile_homepage_btn_modSERVER("all_nav", profile_name = "All Indicators",  parent_session = session)
+  # these modules correspond to the profile buttons on the homepage (the module is being called once for every profile that is 
+  # in the named profile list on the global script)
+  lapply(names(profiles_list), function(profile) {
+    profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
+  })
   
   
   # these modules corresponding to the 3 buttons in the banner at the top of the landing page
@@ -164,79 +158,28 @@ function(input, output, session) {
   # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB ----
   ###############################################################.
   
-  # run the module containing server logic for the trends tab - this is visible for every single profile
-  trend_mod_server("trends", profile_data, geo_selections, selected_profile)
-
-
-  # run the module containing server logic for the  rank tab - this is visible for every single profile
-  rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
-
-
-  #run the module containing the server logic for the  deprivation tab ONLY when specific profiles are selected, otherwise hide the tab
-  observe({
-    req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "HWB", "CYP", "MEN", "ALC", "DRG", "TOB") & !is.null(profiles_list[[input$profile_choices]])) {
-      nav_show("sub_tabs", target = "simd_tab")
-      simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
-
-    } else {
-      nav_hide("sub_tabs", target = "simd_tab")
-    }
-  })
-
-
-  # run the module that creates the server logic for the population groups tab ONLY when specific profiles are selected, otherwise hide the tab
-  observe({
-    req(input$profile_choices != "")
-    if (profiles_list[[input$profile_choices]] %in% c("CWB", "MEN") & !is.null(profiles_list[[input$profile_choices]])) {
-      nav_show("sub_tabs", target = "pop_groups_tab")
-      pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
-    } else {
-      nav_hide("sub_tabs", target = "pop_groups_tab")
-    }
-  })
-
-
-  
-  # always default to the summary tab when user switches profile (unless all indicators has been selected as there is no summary for this - default to trends tab instead)
-  # this ensures if a user is on a profile that contains a custom tab that is not available for other profiles
-  # and then switches profile, they won't be faced with a blank screen
-  observe({
-    req(input$profile_choices != "") # ensure a profile has been selected
-    if(input$profile_choices != "All Indicators"){
-    nav_select(id = "sub_tabs",selected = "summary_tab", session = session)
-    } else {
-      nav_select(id = "sub_tabs",selected = "trends_tab", session = session)
-    }
-  })
-
-
-
-  # run the module that creates the server logic for the summary tab, unless 'all indicators' is selected as the profile, in which case hide the tab
-  observe({
-    req(input$profile_choices != "")
-
-    if (input$profile_choices == "All Indicators"){ # if all indicators selected then hide the summary view
-      nav_hide("sub_tabs", target = "summary_tab")
-
-    } else {
-      nav_show("sub_tabs", target = "summary_tab")
-      summary_table_server("summary", geo_selections, selected_profile, areatype_data)
-    }
-
-  })
-
-
-  # only show the 'About profile' sub-tab when 1 of 5 particular profiles has been selected
-  # otherwise hide it (as we don't yet have the text created for some profiles)
+  # conditionally show/hide subtabs depending on what profile was selected
+  # whenever a user selects a profile, this code goes through each of the possible subtabs (stored in a vector called 'all_subtabs')
+  # and checks it against the list of subtabs assigned to each profile in the profiles list
+  # for example, if "All indicators" has been selected, th
   observeEvent(input$profile_choices, {
-    req(input$profile_choices != "")
-    if(profiles_list[[input$profile_choices]] %in% c("CWB", "MEN", "CYP", "ALC", "HWB")){
-      nav_show("sub_tabs", target = "about_profile_tab")
-    } else {
-      nav_hide("sub_tabs", target = "about_profile_tab")
-    }
-  })
+    walk(all_subtabs, function(subtab) {
+      if (subtab %in% profiles_list[[input$profile_choices]]$subtabs) {
+        nav_show(id = "sub_tabs", target = subtab)
+      } else {
+        nav_hide(id = "sub_tabs", target = subtab)
+      }
+    })
+  }, ignoreInit = TRUE)
+  
+  
+  # running modules for each sub-tab
+  trend_mod_server("trends", profile_data, geo_selections, selected_profile)
+  rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
+  summary_table_server("summary", geo_selections, selected_profile, areatype_data)
+  simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
+  pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
+  
 
 
   # # ############################################.
