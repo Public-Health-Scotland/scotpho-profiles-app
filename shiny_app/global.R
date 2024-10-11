@@ -73,6 +73,9 @@ pd_bound <- sf::st_as_sf(pd_bound)
 
 # 4. lists ----------------------------------------------------------
 
+all_subtabs <- c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab")
+
+
 # this list contains information on each profile within the tool:
 # - the name of the profile (this should be spelled how you want it to appear on the landing page button/profile filter)
 # short_name =  3 letter profile abbreviation (as assigned in the tech doc) - this is used for filtering data by selected profile
@@ -275,15 +278,15 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
   
   # within the technical document indicator can be assigned to one or more profile
   # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]] |
-             substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]] |
-             substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]]
+dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]]$short_name |
+             substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]]$short_name |
+             substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]$short_name]
 
   #create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
   # is assigned to more than one profile (and therefore more than one domain)
-  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]],
+  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]]$short_name,
                              substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                             fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]],
+                             fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]]$short_name,
                                      substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
                                      substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
   
