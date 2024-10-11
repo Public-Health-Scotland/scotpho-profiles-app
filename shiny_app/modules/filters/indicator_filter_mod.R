@@ -39,14 +39,14 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       dt <- setorder(dt, indicator)
       
       # if the selected profile has a particular order the domains should appear in the table
-      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # (i.e. the domain_order is not NULL in the 'profiles_list' from the global script)
       # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
       # in the indicator filter, whilst also ensuring that 'archived' indicators are always at the bottom
-      if(selected_profile() %in% names(profile_domain_order)){
-        dt$domain<- factor(dt$domain, levels = c(profile_domain_order[[selected_profile()]], "Archived indicators"))
-      } else {
-        dt$domain<- factor(dt$domain, levels = c(setdiff(unique(dt$domain), "Archived indicators"), "Archived indicators"))
-      }
+        if(!is.null(profiles_list[[selected_profile()]]$domain_order)){
+          dt$domain<- factor(dt$domain, levels = c(profiles_list[[selected_profile()]]$domain_order, "Archived indicators"))
+        } else {
+          dt$domain<- factor(dt$domain, levels = c(setdiff(unique(dt$domain), "Archived indicators"), "Archived indicators"))
+        }
 
       # Create a list of choices for the filter grouped by domain 
       choices <- split(dt$indicator, dt$domain) # create list that splits up indicators by domain
