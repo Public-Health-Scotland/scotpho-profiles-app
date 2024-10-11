@@ -44,8 +44,7 @@ metadata_table_mod_Server <- function(id, selected_indicator, technical_doc = te
                  Numerator = numerator, 
                  Denominator = denominator, 
                  Suppression = disclosure_control) |>
-          pivot_longer(cols = everything(), names_to = "Item", values_to = "Description") |>
-          mutate(Item = gsub("_", " ", Item))
+          pivot_longer(cols = everything(), names_to = "Item", values_to = "Description")
       })
       
       

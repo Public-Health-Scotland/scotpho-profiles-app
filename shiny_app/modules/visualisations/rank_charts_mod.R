@@ -20,11 +20,7 @@ rank_mod_ui <- function(id) {
     
     layout_sidebar(
       full_screen = FALSE,
-      #height = 650,
-      
-      # enable guided tour
-     # use_cicerone(),
-      
+
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
                         

@@ -44,7 +44,6 @@ function(input, output, session) {
   # these modules corresponding to the 3 buttons in the banner at the top of the landing page
   # they controll the opening of About ScotPHO, About ScotPHO and Explore Indicators pages
   navigation_button_modSERVER("about_us", nav_id="about_scotpho", parent_session = session)
-  navigation_button_modSERVER("about_profiles", nav_id="about_profiles", parent_session = session)
   navigation_button_modSERVER("explore_indicators", nav_id="definitions", parent_session = session)
 
   
