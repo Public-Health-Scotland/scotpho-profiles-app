@@ -584,7 +584,7 @@ simd_navpanel_ui <- function(id) {
         h5(chart_text()$left_chart_title, class = "chart-header"),
         h6(chart_text()$left_chart_subtitle_1),
         p(chart_text()$left_chart_subtitle_2),
-        actionLink("left_chart_info_link", label = "Learn more") # link to interpretation tab 
+        actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
       )
       }
     })
@@ -597,7 +597,7 @@ simd_navpanel_ui <- function(id) {
         h5(chart_text()$right_chart_title, class = "chart-header"),
         h6(chart_text()$right_chart_subtitle_1),
         p(chart_text()$right_chart_subtitle_2),
-        actionLink("right_chart_info_link", label = "Learn more") # link to interpretation tab 
+        actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
       )
       }
     })
