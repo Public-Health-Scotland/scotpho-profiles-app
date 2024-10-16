@@ -551,13 +551,14 @@ simd_navpanel_ui <- function(id) {
              ),
              
              
-             # Prepare the 8 bits of text for if potential for improvement is selected
+             # Prepare the 9 bits of text for if potential for improvement is selected
              "Potential for improvement" = list(
                
                # potential for improvement bar chart titles/subtitles/interpretation/filename
                left_chart_narrative = about_par,
                left_chart_title = paste0("Attributable to inequality; ", simd_measures_data()$left_data$trend_axis[1]),
-               left_chart_subtitle_1 = paste0("The proportion of ", selected_indicator(), " which could be attributed to socioeconomic inequalities."),
+               left_chart_subtitle_1 = paste0("The portion of ", selected_indicator(), " which could be attributed to socioeconomic inequalities."),
+               left_chart_subtitle_2 = paste0(simd_measures_data()$left_data$type_definition[1]),
                left_chart_filename = paste0("ScotPHO Attributable to inequality chart - ", selected_indicator()),
                
                right_chart_narrative = about_par_trend,
