@@ -63,7 +63,10 @@ page_navbar(
                          profile_buttons = layout_column_wrap(
                            style = "padding: 15px;", width = 1/3,
                            !!!lapply(names(profiles_list), function(profile) {
-                             profile_homepage_btn_modUI(id = profile, profile_name = profile, description = profiles_list[[profile]]$homepage_description)
+                             profile_homepage_btn_modUI(id = profile, 
+                                                        profile_name = profile, 
+                                                        description = profiles_list[[profile]]$homepage_description,
+                                                        class = ifelse(profiles_list[[profile]]$active == TRUE, "profile-btn", "profile-btn-disabled"))
                            })
                          ),
 
@@ -123,7 +126,7 @@ page_navbar(
                 hidden(div(id = "prof_filter_hidden",
                       selectizeInput(inputId = "profile_choices", 
                                      label = "", 
-                                     choices = names(profiles_list),  # manually written list declared in global script
+                                     choices =  names(Filter(function(x) x$active == TRUE, profiles_list)),  # manually written list declared in global script
                                      options = list(onInitialize = I('function() { this.setValue(""); }')))
                     )),
               # geography header with button

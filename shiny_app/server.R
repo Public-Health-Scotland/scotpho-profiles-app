@@ -27,12 +27,11 @@ function(input, output, session) {
   # all these buttons are created using modules. You'll find many of these modules included in the main UI script or nested within larger modules
   # below, there are various modules being called which control the server logic that determins what happens when a button is clicked:
   
-  
-  # these modules correspond to the profile buttons on the homepage (the module is being called once for every profile that is 
-  # in the named profile list on the global script)
-  lapply(names(profiles_list), function(profile) {
-    profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
-  })
+# these modules correspond to the profile buttons on the homepage (the module is being called once for every profile that is 
+# in the named profile list on the global script)
+lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(profile) {
+  profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
+})
   
   
   # these modules corresponding to the 3 buttons in the banner at the top of the landing page

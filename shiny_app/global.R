@@ -91,7 +91,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
-    subtabs = all_subtabs
+    subtabs = all_subtabs,
+    active = TRUE
   ),
   
   # Health and wellbeing info
@@ -99,7 +100,8 @@ profiles_list <- list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab")
+    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
   ),
   
   # Children and young people info
@@ -107,16 +109,18 @@ profiles_list <- list(
     short_name = "CYP",
     homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
     domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab")
+    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
   ),
   
   # Mental health info
   "Mental Health" = list(
     short_name = "MEN",
-    markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."),
+    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."),
     domain_order = c("Mental health outcomes", "Individual determinants",
                      "Community determinants", "Structural determinants"),
-    subtabs = all_subtabs
+    subtabs = all_subtabs,
+    active = TRUE
   ),
   
   # Alcohol info
@@ -124,7 +128,8 @@ profiles_list <- list(
     short_name = "ALC",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab")
+    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
   ),
   
   # Drugs info
@@ -132,7 +137,8 @@ profiles_list <- list(
     short_name = "DRG",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab")
+    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab"),
+    active = TRUE
   ),
   
   # Tobacco info
@@ -140,7 +146,8 @@ profiles_list <- list(
     short_name = "TOB",
     homepage_description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**"),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab")
+    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab"),
+    active = TRUE
   ),
   
   # Population info
@@ -148,7 +155,8 @@ profiles_list <- list(
     short_name = "POP",
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab")
+    subtabs = c("summary_tab", "trend_tab", "rank_tab"),
+    active = TRUE
   ),
   
   # All indicaors info
@@ -156,7 +164,36 @@ profiles_list <- list(
     short_name = "ALL",
     homepage_description = markdown("View **all indicators** in this tool from across every profile."),
     domain_order = NULL,
-    subtabs = c("trend_tab", "rank_tab", "simd_tab")
+    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    active = TRUE
+  ),
+  
+  # All indicaors info
+  "Physical Activity" = list(
+    short_name = "PHY",
+    homepage_description = markdown("Under development - not yet available"),
+    domain_order = NULL,
+    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    active = TRUE
+  ),
+  
+  # All indicaors info
+  "Child Poverty" = list(
+    short_name = "CPP",
+    homepage_description = markdown("Under development - not yet available"),
+    domain_order = NULL,
+    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    active = FALSE
+  ),
+  
+  
+  # All indicaors info
+  "Child Mental Health" = list(
+    short_name = "CMH",
+    homepage_description = markdown("Under development - not yet available"),
+    domain_order = NULL,
+    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    active = FALSE
   )
 )
 
@@ -233,6 +270,7 @@ phs_theme <- bs_theme(
       ".btn-download {color:white; background-color:$phs-blue; border:$phs-blue;}", # data download buttons for card footers
       ".card-footer .btn-download {border:none; text-decoration:underline; color:$phs-blue; background-color:white}", # data download buttons for card footers
       ".btn-download:hover {background-color: #e0e0e0; color:black; border:#e0e0e0;}", # data download buttons on hover
+      ".profile-btn-disabled {background-color:#F4F4F4}",
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # 2 x landing page hero buttons
       ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # hover colour for landing page profile buttons
       ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}", # orange apply geographies button
