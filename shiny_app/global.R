@@ -79,14 +79,15 @@ pd_bound <- sf::st_as_sf(pd_bound)
 profiles_list <- list(
   "Health and Wellbeing" = "HWB",
   "Care and Wellbeing" = "CWB",
-  "Children and Young People" = "CYP",
-  "Drugs" = "DRG",
-  "Alcohol" = "ALC",
-  "Population" = "POP",
-  "Tobacco" = "TOB",
   "Mental Health" = "MEN",
+  "Tobacco" = "TOB",
+  "Alcohol" = "ALC",
+  "Drugs" = "DRG",
+  "Children and Young People" = "CYP",
+  "Population" = "POP",
   "All Indicators" = "ALL"
   )
+
 
 # there are some profiles where the domains should be ordered in a particular way 
 # e.g. CWB profile should start with 'overarching indicators'
