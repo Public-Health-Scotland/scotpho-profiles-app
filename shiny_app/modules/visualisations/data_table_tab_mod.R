@@ -36,17 +36,12 @@ data_tab_modUI <- function(id) {
                                          ),
 
                                          # quintile type filter (only if inequalities dataset is selected)
-                                         conditionalPanel(
-                                           id = ns(id),
-                                           condition = "input['dataset_selector'] === 'Inequalities Dataset'",
-                                           radioGroupButtons(
+                                           radioButtons(
                                              inputId = ns("quint_type_selector"),
                                              label = "Select quintile type",
-                                             choices = c("Local", "Scotland"),
-                                             selected = "Scotland" # default on max year for each indicator
-                                           )
-                                         ),
-                                         
+                                             choices = c("Local", "Scotland", "Both"),
+                                             selected = "Both", # default on max year for each indicator
+                                           ),
                                          # Geography filters
                                          jstreeOutput(ns("geography_selector")),
                                          
@@ -126,16 +121,7 @@ data_tab_mod_Server <- function(id) {
         })
       
       
-      
-      # choices for geography filter, depending on what dataset is selected
-      # this is required because the deprivation dataset only has Scotland, CA and HB level data
-      GeographyNodes <- reactive({
-        if(input$dataset_selector == "Main Dataset") {
-          main_data_geo_nodes # full list of geographies
-        } else {
-          main_data_geo_nodes[c(1:3)] # scotland, hb and ca only 
-        }
-      })
+
       
       
       # data to display in table /download 
@@ -146,7 +132,7 @@ data_tab_mod_Server <- function(id) {
         
         # filter by selected geographies
         paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
-        data <- data |> subset(geo_path %in% paths)
+        data <- data |> filter(geo_path %in% paths)
         
         
         # filter by time period 
@@ -158,12 +144,18 @@ data_tab_mod_Server <- function(id) {
         
         # filter by quint type (if inequalities dataset selected)
         if(input$dataset_selector == "Inequalities Dataset") {
+          
+          data <- data |>
+           mutate(quint_type = ifelse(quint_type == "sc_quin", "Scotland", "Local"))
+          
+
           if(input$quint_type_selector == "Scotland") {
-            data <- data |> filter(quint_type == "sc_quin")
-          } else {
-            data <- data |> filter(quint_type != "sc_quin")
+            data <- data |> filter(quint_type == "Scotland")
+          } else if(input$quint_type_selector == "Local"){
+            data <- data |> filter(quint_type == "Local")
           }
         } else data
+
         
         
         # if profile selected (but indicators have not been)
@@ -222,7 +214,8 @@ data_tab_mod_Server <- function(id) {
                      # all inequalities data
                      data <- data |>
                        rename(value = measure,
-                              measure = type_definition)
+                              measure = type_definition,
+                              quintile_type = quint_type)
                      
                      # sii data
                      sii <- data |>
@@ -255,8 +248,9 @@ data_tab_mod_Server <- function(id) {
                      # different inequalities measures combined
                      data <- bind_rows(data, rii, sii, par) |>
                        select(area_code, area_type, area_name, year, period, indicator, 
-                              quintile, measure, value, upper_confidence_interval, 
+                              quintile_type, quintile, measure, value, upper_confidence_interval, 
                               lower_confidence_interval, label_inequality) |>
+                       mutate(across(.cols=value:lower_confidence_interval,.fns=abs)) |>
                        arrange(indicator, area_name, year)
                    }
         
@@ -267,12 +261,35 @@ data_tab_mod_Server <- function(id) {
     # DYNAMIC FILTERS ----
     #####################################.
       
+
+      observeEvent(input$geography_selector_checked_paths, {
+        # get selected geographies
+        paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
+        
+        # if scotland is the only selection then disable the quint type filter
+        if(length(paths) == 1 & "Scotland/Scotland" %in% paths){
+        updateRadioButtons(session = session, inputId = "quint_type_selector", selected = "Scotland")
+        shinyjs::disable("quint_type_selector")
+        } else {
+          shinyjs::enable("quint_type_selector")
+        }
+      })
       
-      # create geography filter using GeographyNodes() reactive object
-      # which stores available geographies, depending on what dataset was selected
+      
+      observeEvent(input$dataset_selector, {
+        # if scotland is the only selection then disable the quint type filter
+        if(input$dataset_selector == "Main Dataset"){
+          shinyjs::hide("quint_type_selector")
+        } else {
+          shinyjs::enable("quint_type_selector")
+        }
+      }, ignoreInit = TRUE)
+      
+      
+      # create geography filter 
       output$geography_selector <- renderJstree({
         jstree(
-          GeographyNodes(),
+          main_data_geo_nodes,
           checkboxes = TRUE,
           selectLeavesOnly = TRUE,
           theme = "proton"
@@ -280,10 +297,18 @@ data_tab_mod_Server <- function(id) {
       })
       
       
-      # update geography choices when required
-      observe({
-        jstreeUpdate(session, ns("geography_selector"), GeographyNodes())
-      })
+      # update geography choices when selected dataset changes
+      observeEvent(input$dataset_selector, {
+
+          choices <- switch(input$dataset_selector,
+                            "Main Dataset" = main_data_geo_nodes,
+                            "Inequalities Dataset" = main_data_geo_nodes[c(1:3)]
+                            )
+
+        jstreeUpdate(session, ns("geography_selector"), choices)
+      }, ignoreInit = TRUE)
+      
+      
       
       
       # Update indicator filter choices based on dataset and geography selected
@@ -295,7 +320,7 @@ data_tab_mod_Server <- function(id) {
         
         # filter selected dataset by selected geographies
         data <- selectedData() |>
-          subset(geo_path %in% paths)
+          filter(geo_path %in% paths)
         
         # create vector of available indicators
         available_indicators <- unique(data$indicator)
@@ -337,7 +362,7 @@ data_tab_mod_Server <- function(id) {
       
       
       # # update profile choices based on chosen dataset -----
-      observe({
+      observeEvent(input$dataset_selector, {
 
         available_profile_choices <- switch(input$dataset_selector,
                                             "Main Dataset" = profiles_list,
@@ -346,7 +371,7 @@ data_tab_mod_Server <- function(id) {
         updateVirtualSelect(session = session,
                             inputId = "profile_selector",
                             choices = available_profile_choices)
-      })
+      }, ignoreInit = TRUE)
 
 
       
@@ -356,7 +381,7 @@ data_tab_mod_Server <- function(id) {
       observeEvent(input$clear_table_filters, {
         
         # reset the dataset selector to "Main Dataset"
-        updateRadioButtons(session, 
+        updateRadioButtons(session = session, 
                                 inputId = "dataset_selector", 
                                 selected = "Main Dataset")
         
@@ -366,12 +391,12 @@ data_tab_mod_Server <- function(id) {
         
         # reset the time period filter to max year per indicator
         updateRadioButtons(session = session,
-                                inputId = "time_period",
+                                inputId = "time_period_selector",
                                 selected = "Latest available year")
         
         # reset the indicator list to those present in main dataset
         updateVirtualSelect(session = session,
-                            inputId = "indicator",
+                            inputId = "indicator_selector",
                             selected = NULL,
                             choices = NULL)
         
@@ -393,10 +418,9 @@ data_tab_mod_Server <- function(id) {
         
         # columns to hide in table
         if(input$dataset_selector == "Main Dataset") {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3, 9,10)))
-          
+          cols_to_hide = list(list(visible=FALSE, targets=c(0,3, 9,10)))
         } else {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3,9,10,11)))
+          cols_to_hide = list(list(visible=FALSE, targets=c(0,3,10,11, 12)))
         }
         
         
@@ -407,7 +431,7 @@ data_tab_mod_Server <- function(id) {
                         "Measure type", "Numerator", "Measure", "hidden", "hidden")
           
         } else {
-          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", 
+          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", "Quintile type",
                         "Quintile", "Measure", "Value", "hidden", "hidden", "hidden")
         }
         
@@ -423,7 +447,7 @@ data_tab_mod_Server <- function(id) {
                                  searching = FALSE,
                                  language = list(
                                    zeroRecords = "Select atleast one geography to display results."),
-                                 columnDefs = cols_to_display
+                                 columnDefs = cols_to_hide
                   ))
         
         
