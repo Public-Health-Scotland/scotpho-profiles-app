@@ -49,6 +49,25 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
     updateSelectizeInput(inputId = "profile_choices", selected = "All Indicators", session = session)
     
   })
+  
+  
+  # reactive object to store selected sub-tab
+  selected_subtab <- reactiveVal(NULL)
+  
+  # update reactive object whenever a user changes sub-tab
+  observeEvent(input$sub_tabs, {
+    selected_subtab(input$sub_tabs)
+  })
+  
+  # if a user switches profile and the tab they were on doesn't exist for the newly selected profile, then default to the
+  # first available tab for that profile
+  observeEvent(input$profile_choices, {
+    if (selected_subtab() %in% profiles_list[[input$profile_choices]]$subtabs) {
+      nav_select(id = "sub_tabs", selected = selected_subtab())
+    } else {
+      nav_select(id = "sub_tabs", selected = profiles_list[[input$profile_choices]]$subtabs[1])
+    }
+  }, ignoreInit = TRUE)
 
   
   #####################################################.
@@ -255,7 +274,6 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
       selected_areaname = geo_selections()$areaname
     )
   })
-  
   
   
 
