@@ -73,7 +73,16 @@ pd_bound <- sf::st_as_sf(pd_bound)
 
 # 4. lists ----------------------------------------------------------
 
-all_subtabs <- c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab")
+# the unique id for all the possible sub-tabs that can be displayed for a profile in the app
+# these match the ids assigned to each sub-tab in the UI script (using the 'value' argument in nav_panel())
+# this vector is used in the server script to determine which sub-tabs should be hidden/shown for a selected profile
+# i.e. by going through each id and checking if it exists in the profiles_list below for the selected profile
+all_subtabs <- c("summary_tab",
+                 "trends_tab",
+                 "rank_tab", 
+                 "simd_tab", 
+                 "pop_groups_tab", 
+                 "about_profile_tab")
 
 
 # this list contains information on each profile within the tool:
@@ -81,6 +90,7 @@ all_subtabs <- c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "pop_groups
 # short_name =  3 letter profile abbreviation (as assigned in the tech doc) - this is used for filtering data by selected profile
 # homepage_description = sentence or 2 to include in the homepage button (wrap specific words in ** **  if you want them to be purple)
 # domain_order = use if there's a particular order domains should appear in the indicator filter/summary table (leave as NULL if no order required)
+# active = either TRUE or FALSE. Set to FALSE if you want the homepage button to be disabled. Set to TRUE to make profile active for users to explore.
 # subtabs = the subtabs you want to include for the profile - either pass 'all_subtabs' from vector above to include all, or select individual subtabs
 # note: to add a new profile to the tool, just add a new section to the list
 profiles_list <- list(
@@ -100,7 +110,7 @@ profiles_list <- list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
     active = TRUE
   ),
   
@@ -109,7 +119,7 @@ profiles_list <- list(
     short_name = "CYP",
     homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
     domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
     active = TRUE
   ),
   
@@ -128,7 +138,7 @@ profiles_list <- list(
     short_name = "ALC",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
     active = TRUE
   ),
   
@@ -137,7 +147,7 @@ profiles_list <- list(
     short_name = "DRG",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
     active = TRUE
   ),
   
@@ -146,7 +156,7 @@ profiles_list <- list(
     short_name = "TOB",
     homepage_description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**"),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab", "simd_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
     active = TRUE
   ),
   
@@ -155,7 +165,7 @@ profiles_list <- list(
     short_name = "POP",
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trend_tab", "rank_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab"),
     active = TRUE
   ),
   
@@ -164,7 +174,7 @@ profiles_list <- list(
     short_name = "ALL",
     homepage_description = markdown("View **all indicators** in this tool from across every profile."),
     domain_order = NULL,
-    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = TRUE
   ),
   
@@ -173,7 +183,7 @@ profiles_list <- list(
     short_name = "PHY",
     homepage_description = markdown("Under development - not yet available"),
     domain_order = NULL,
-    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = TRUE
   ),
   
@@ -182,7 +192,7 @@ profiles_list <- list(
     short_name = "CPP",
     homepage_description = markdown("Under development - not yet available"),
     domain_order = NULL,
-    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
   ),
   
@@ -192,7 +202,7 @@ profiles_list <- list(
     short_name = "CMH",
     homepage_description = markdown("Under development - not yet available"),
     domain_order = NULL,
-    subtabs = c("trend_tab", "rank_tab", "simd_tab"),
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
   )
 )
