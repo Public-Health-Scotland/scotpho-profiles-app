@@ -171,7 +171,7 @@ data_tab_mod_Server <- function(id) {
         if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
           data <- data |>
             filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% input$profile_selector))
+                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name")))
           
           
           # if a profile has been selected (and some indicators too)
@@ -180,7 +180,7 @@ data_tab_mod_Server <- function(id) {
           
           data <- data |>
             filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% input$profile_selector)) |>
+                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name"))) |>
             filter(indicator %in% input$indicator_selector)
           
           
@@ -310,7 +310,7 @@ data_tab_mod_Server <- function(id) {
           
           profile_filtered_data <- data |>
             filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% input$profile_selector))
+                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name")))
           
           
           available_indicators <- unique(profile_filtered_data$indicator)
@@ -340,8 +340,8 @@ data_tab_mod_Server <- function(id) {
       observe({
 
         available_profile_choices <- switch(input$dataset_selector,
-                                            "Main Dataset" = profiles_list,
-                                            "Inequalities Dataset" = profiles_list[profiles_list %in% c("HWB", "CWB", "CYP", "DRG", "ALC", "TOB")])
+                                            "Main Dataset" = names(profiles_list),
+                                            "Inequalities Dataset" = names(Filter(function(x)  "simd_tab" %in% x$subtabs & x$active == TRUE, profiles_list)))
 
         updateVirtualSelect(session = session,
                             inputId = "profile_selector",
