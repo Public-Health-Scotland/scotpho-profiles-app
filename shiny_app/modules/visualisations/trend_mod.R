@@ -90,7 +90,6 @@ trend_mod_ui <- function(id) {
         nav_panel("Charts",
                   value = ns("trend_chart_tab"), #id for guided tour
                   uiOutput(ns("trend_title")), # title 
-                  uiOutput(ns("trend_caveats")), # caveats
                   highchartOutput(outputId = ns("trend_chart")) # chart
         ), 
         
@@ -111,18 +110,7 @@ trend_mod_ui <- function(id) {
         
         # popover with extra controls for trend chart
         bslib::nav_item(
-          div(id = "trend_popover", bslib::popover(
-            title = "Decide how to present data in the chart",
-            chart_controls_icon(), 
-            # rate/numerator toggle
-            radioButtons(inputId = ns("numerator_button_trends"), label = NULL, 
-                         choices = c("Rate", "Numerator"),
-                         selected = "Rate"),
-            # constrain y-axis to start at zero
-            checkboxInput(ns("zero_trend"), label = "y-axis should include zero", value = TRUE),
-            # ci switch
-            checkboxInput(ns("ci_switch_trends"), label = "95% confidence intervals", FALSE),
-          ))
+          chart_controls_UI(ns("controls"), ci_switch = TRUE, yaxis_switch = TRUE, measure_switch = TRUE)
         ),
         
         # footer with download buttons
@@ -419,6 +407,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # change y variable depending on whether rate/numerator is selected
     trend_data <- reactive({
       req(indicator_filtered_data())
+      req(popover_selections())
       
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(
@@ -445,8 +434,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
       # create a y-axis column depending on whether user selects numerator or rate
       df <- df |>
-        mutate(y = case_when(input$numerator_button_trends == "Numerator" ~ numerator,
-                             input$numerator_button_trends == "Rate" ~ measure)) |>
+        mutate(y = case_when(popover_selections()$measure_switch == "Numerator" ~ numerator,
+                             popover_selections()$measure_switch == "Rate" ~ measure)) |>
         
         # arrange data by year
         arrange(year)
@@ -485,13 +474,16 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # Charts/tables ----
     #############################################.
     
+    popover_selections <- chart_controls_Server("controls")
+
+    
     # trend chart
     output$trend_chart <- renderHighchart({
       req(trend_data())
       
-      type_definition <- case_when(
-        input$numerator_button_trends == "Numerator" ~ "Number",
-        input$numerator_button_trends == "Rate" ~ paste0(unique(trend_data()$type_definition)))
+      type_definition <- ifelse(popover_selections()$measure_switch == "Numerator", "Number",
+        paste0(unique(trend_data()$type_definition))
+        )
       
       
       # create vector of colours - needs to be the same length as the 
@@ -531,7 +523,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
       
       # add confidence intervals if box is checked
-      if(input$ci_switch_trends == TRUE) {
+      if(popover_selections()$ci_switch == TRUE) {
         
         chart <- chart |>
           hc_add_series(
@@ -552,7 +544,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       }
       
       # constrain y-axis to include zero if box is checked
-      if(input$zero_trend == TRUE) {
+      if(popover_selections()$yaxis_switch == TRUE) {
         
         chart <- chart |>
           hc_yAxis(min=0) 
