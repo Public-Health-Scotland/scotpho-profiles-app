@@ -16,7 +16,7 @@ function(input, output, session) {
   })
   
   
-
+  
   
   
   ###################################################.
@@ -25,13 +25,13 @@ function(input, output, session) {
   
   # throughout the app, there are various buttons included to help users navigate their way through the dashboard to various different tabs
   # all these buttons are created using modules. You'll find many of these modules included in the main UI script or nested within larger modules
-  # below, there are various modules being called which control the server logic that determins what happens when a button is clicked:
+  # below, there are various modules being called which control the server logic that determines what happens when a button is clicked:
   
-# these modules correspond to the profile buttons on the homepage (the module is being called once for every profile that is 
-# in the named profile list on the global script)
-lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(profile) {
-  profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
-})
+  # this code runs the server function that matches the UI function that creates the profile buttons on the landing page
+  # for any profiles that are 'active' (i.e. active = TRUE in the profiles_list in the global script)
+  lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(profile) {
+    profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
+  })
   
   
   # these modules corresponding to the 3 buttons in the banner at the top of the landing page
@@ -39,15 +39,14 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
   navigation_button_modSERVER("about_us", nav_id="about_scotpho", parent_session = session)
   navigation_button_modSERVER("about_profiles", nav_id="about_profiles", parent_session = session)
   navigation_button_modSERVER("explore_indicators", nav_id="definitions", parent_session = session)
-
+  
   
   # ensure that if a user directly clicks the 'Profiles'tab in the navigation bar, 'All indicators' is selected from the profile filter
   # This avoids a user being faced with a blank screen with no charts when they haven't used the profile buttons on the homepage to navigate
   observeEvent(input$nav, {
-    req(input$profile_choices == "")
+    req(input$profiles_choices == "")
     req(input$nav == "Profiles")
     updateSelectizeInput(inputId = "profile_choices", selected = "All Indicators", session = session)
-    
   })
   
   
@@ -62,13 +61,13 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
   # if a user switches profile and the tab they were on doesn't exist for the newly selected profile, then default to the
   # first available tab for that profile
   observeEvent(input$profile_choices, {
-    if (selected_subtab() %in% profiles_list[[input$profile_choices]]$subtabs) {
+    if (selected_subtab() %in% pluck(profiles_list, input$profile_choices, "subtabs")) {
       nav_select(id = "sub_tabs", selected = selected_subtab())
     } else {
-      nav_select(id = "sub_tabs", selected = profiles_list[[input$profile_choices]]$subtabs[1])
+      nav_select(id = "sub_tabs", selected = pluck(profiles_list, input$profile_choices, "subtabs", 1))
     }
   }, ignoreInit = TRUE)
-
+  
   
   #####################################################.
   # REACTIVE VALUES ----
@@ -101,11 +100,25 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
     )
   })
   
-  # store name of selected profile - this is passed to each module to check if the selected profile
-  # needs it's domains to be ordered in a particular way 
-  # (i.e. in the summary table, or within the indicator filter itself across the other sub-tabs)
-  selected_profile <- reactive({input$profile_choices})
 
+  # this object stores info about the selected profile by taking relevant bits of info
+  # from the profiles_list in the global script. The object is used for various different things
+  # 1. storing subtabs to be shown for the selected profile to determine which tabs should be hidden/shown
+  # 2. storing the short name of the selected profile to filter the datasets that create the visualisations
+  # 3. storing a domain order for the selected profile. This is passed to each of the large visualisation modules
+  # so that the indicator filter modules which are nested inside these larger modules can access it. This ensures
+  # the indicators
+  
+  selected_profile <- reactive({
+    list(
+      full_name = input$profile_choices, 
+      short_name = pluck(profiles_list, input$profile_choices, "short_name"),
+      domain_order = pluck(profiles_list, input$profile_choices, "domain_order"),
+      subtabs = pluck(profiles_list, input$profile_choices, "subtabs")
+    )
+  })
+
+  
   
   ###########################################################################################.
   # CONDITIONAL UI FOR THE HEADER OF THE PROFILES TAB ----
@@ -131,7 +144,7 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
     }
   })
   
-
+  
   # update choices for areaname filter based on areatype selection
   observeEvent(c(input$areatype, input$parent_area), {
     if (input$areatype %in% c("HSC locality", "Intermediate zone") && !is.null(input$parent_area)) {
@@ -182,7 +195,7 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
   # for example, if "All indicators" has been selected, th
   observeEvent(input$profile_choices, {
     walk(all_subtabs, function(subtab) {
-      if (subtab %in% profiles_list[[input$profile_choices]]$subtabs) {
+      if (subtab %in% pluck(profiles_list, input$profile_choices, "subtabs")) {
         nav_show(id = "sub_tabs", target = subtab)
       } else {
         nav_hide(id = "sub_tabs", target = subtab)
@@ -198,27 +211,27 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
   
-
-
+  
+  
   # # ############################################.
   # # # MODULES FOR THE ADDITIONAL INFO TABS ----
   # # ############################################.
-
+  
   # indicator definitions tab server logic
   definitions_tab_Server("metadata")
-
+  
   # data tab server logic
   observeEvent(input$nav, {
     req(input$nav == "dt")
-  data_tab_mod_Server("data_tab")
+    data_tab_mod_Server("data_tab")
   })
-
-
+  
+  
   
   ###################################################.
   # REACTIVE DATASETS ----
   ###################################################.
-
+  
   # 1. MAIN DATASET FILTERED BY PROFILE
   # searches for the abbreviated name of the selected profile across the 3 profile columns in the main dataset
   # note: there are 3 profile columns because some indicators belong to more than 1 profile 
@@ -226,13 +239,13 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
   # this dataset is passed to the trends tab module
   # it's also used to create a smaller dataset which further filters by selected areatype
   profile_data <- reactive({
-
+    
     if(input$profile_choices == "All Indicators") {
-    main_dataset
+      main_dataset
     } else {
       prepare_profile_data( #function from global script
         dataset = main_dataset,
-        selected_profile = input$profile_choices
+        selected_profile_short = selected_profile()$short_name
       )
     }
   })
@@ -248,36 +261,35 @@ lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(prof
   })
   
   
-
-
+  
+  
   # 3. DEPRIVATION DATASET
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
-      prepare_profile_data(
+    prepare_profile_data(
       dataset = simd_dataset,
-      selected_profile = input$profile_choices,
+      selected_profile_short = selected_profile()$short_name,
       selected_areatype = geo_selections()$areatype,
       selected_areaname = geo_selections()$areaname
     )
   })
-
-
-
+  
+  
+  
   # 4. POPULATION GROUPS DATASET
   # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
   popgroup_data <- reactive({
-
-     prepare_profile_data(
+    
+    prepare_profile_data(
       dataset = popgroup_dataset,
-      selected_profile = input$profile_choices,
+      selected_profile_short = selected_profile()$short_name,
       selected_areatype = geo_selections()$areatype,
       selected_areaname = geo_selections()$areaname
     )
   })
-  
-  
 
 
+  
 } # close main server function
 
 ##END

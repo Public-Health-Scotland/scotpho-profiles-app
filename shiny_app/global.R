@@ -308,7 +308,7 @@ chart_controls_icon <- function(size = "2em") {
 
 # function to prepare datasets to be used for each sub-tab in the dashboard (called in server script when generating reactive datasets)
 prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp) that must be supplied when calling function 
-                                 selected_profile, #reactive object created in server script contains name of selected profile
+                                 selected_profile_short, # reactive object created in server script contains short name of selected profile
                                  selected_areaname = NULL, 
                                  selected_areatype = NULL){
   
@@ -324,25 +324,21 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
     dt <- dt[areaname == selected_areaname]
   }
   
+  
   # within the technical document indicator can be assigned to one or more profile
   # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]]$short_name |
-             substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]]$short_name |
-             substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]$short_name]
+dt <- dt[substr(profile_domain1, 1, 3) == selected_profile_short |
+             substr(profile_domain2, 1, 3) == selected_profile_short |
+             substr(profile_domain3, 1, 3) == selected_profile_short]
 
   #create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
   # is assigned to more than one profile (and therefore more than one domain)
-  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]]$short_name,
+  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == selected_profile_short,
                              substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                             fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]]$short_name,
+                             fifelse(substr(profile_domain2, 1, 3) == selected_profile_short,
                                      substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
                                      substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
-  
-dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
-  
+ 
 }
-
-
-
 
   

@@ -25,7 +25,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       # filter data by selected geography to get available indicators for selected profile
       dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
-      if(selected_profile() == "All Indicators"){
+      if(selected_profile()$full_name == "All Indicators"){
         choices <- unique(dt$indicator)
       } else {
       
@@ -42,8 +42,8 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       # (i.e. the domain_order is not NULL in the 'profiles_list' from the global script)
       # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
       # in the indicator filter, whilst also ensuring that 'archived' indicators are always at the bottom
-        if(!is.null(profiles_list[[selected_profile()]]$domain_order)){
-          dt$domain<- factor(dt$domain, levels = c(profiles_list[[selected_profile()]]$domain_order, "Archived indicators"))
+        if(!is.null(selected_profile()$domain_order)){
+          dt$domain<- factor(dt$domain, levels = c(selected_profile()$domain_order, "Archived indicators"))
         } else {
           dt$domain<- factor(dt$domain, levels = c(setdiff(unique(dt$domain), "Archived indicators"), "Archived indicators"))
         }
