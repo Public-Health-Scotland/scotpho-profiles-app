@@ -207,6 +207,11 @@ profiles_list <- list(
   )
 )
 
+# store the names of active profiles
+# this is used in the UI to create the choices for the profile filter
+# and in the server to run the server logic for what happens when a user clicks an profile button on landing page
+active_profiles <- names(Filter(function(x) x$active == TRUE, profiles_list))
+
 
   
 # archived indicators - for removing from the summary tab and separating indicators 

@@ -29,7 +29,7 @@ function(input, output, session) {
   
   # this code runs the server function that matches the UI function that creates the profile buttons on the landing page
   # for any profiles that are 'active' (i.e. active = TRUE in the profiles_list in the global script)
-  lapply(names(Filter(function(x) x$active == TRUE, profiles_list)), function(profile) {
+  lapply(active_profiles, function(profile) {
     profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
   })
   
