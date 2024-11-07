@@ -401,14 +401,14 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     })
     
     
-
+    # store what has been selected from popovers
+    popover_selections <- chart_controls_Server("controls")
     
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
     trend_data <- reactive({
       req(indicator_filtered_data())
-      req(popover_selections())
-      
+
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(
           (areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) | # filter by global geography selection
@@ -473,10 +473,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     #############################################.
     # Charts/tables ----
     #############################################.
-    
-    popover_selections <- chart_controls_Server("controls")
 
-    
+
     # trend chart
     output$trend_chart <- renderHighchart({
       req(trend_data())
