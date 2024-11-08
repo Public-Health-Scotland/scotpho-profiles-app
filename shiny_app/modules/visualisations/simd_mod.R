@@ -100,14 +100,7 @@ simd_navpanel_ui <- function(id) {
             
             # Popover with filters
             nav_item(
-              popover(
-                title = "Filters",
-                trigger = chart_controls_icon(),
-                checkboxInput(ns("left_ci_switch"), label = " include confidence intervals", FALSE),
-                checkboxInput(ns("left_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
-                checkboxInput(ns("left_average_switch"), label = "Include averages", FALSE)
-                
-              )
+              chart_controls_mod_UI(ns("left_chart_controls"), ci_switch = TRUE, yaxis_switch = TRUE, average_switch = TRUE)
             ),
             
             # card footer with download buttons (note this is a module)
@@ -149,13 +142,7 @@ simd_navpanel_ui <- function(id) {
             
             # popover with filters
             nav_item(
-              popover(
-                title = "Filters",
-                trigger = chart_controls_icon(),
-                checkboxInput(ns("right_ci_switch"), label = " include confidence intervals", FALSE),
-                checkboxInput(ns("right_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
-                checkboxInput(ns("right_average_switch"), label = "Include averages", FALSE)
-              )
+              chart_controls_mod_UI(ns("right_chart_controls"), ci_switch = TRUE, yaxis_switch = TRUE, average_switch = TRUE)
             ),
             
             # card footer with download buttons
@@ -194,13 +181,13 @@ simd_navpanel_ui <- function(id) {
     # has been selected as there are no CIs for these 2 charts
     observeEvent(input$depr_measures, {
       if(input$depr_measures == "Potential for improvement"){
-        updateCheckboxInput(session, "left_ci_switch", value = FALSE)
-        updateCheckboxInput(session, "right_ci_switch", value = FALSE)
-        shinyjs::hide("left_ci_switch")
-        shinyjs::hide("right_ci_switch")
+        updateCheckboxInput(session, "left_chart_controls-ci_switch", value = FALSE)
+        updateCheckboxInput(session, "right_chart_controls-ci_switch", value = FALSE)
+        shinyjs::hide("left_chart_controls-ci_switch")
+        shinyjs::hide("right_chart_controls-ci_switch")
       } else{
-        shinyjs::show("left_ci_switch")
-        shinyjs::show("right_ci_switch")
+        shinyjs::show("left_chart_controls-ci_switch")
+        shinyjs::show("right_chart_controls-ci_switch")
       }
     })
     
@@ -209,11 +196,11 @@ simd_navpanel_ui <- function(id) {
     # and have it pre-set to be switched on, otherwise turn the switch off and hide it
     observeEvent(input$depr_measures, {
       if(input$depr_measures == "Inequality gap"){
-        shinyjs::show("left_zero_axis_switch")
-        updateCheckboxInput(session, "left_zero_axis_switch", value = TRUE)
+        shinyjs::show("left_chart_controls-yaxis_switch")
+        updateCheckboxInput(session, "left_chart_controls-yaxis_switch", value = TRUE)
       } else{
-        updateCheckboxInput(session, "left_zero_axis_switch", value = FALSE)
-        shinyjs::hide("left_zero_axis_switch")
+        updateCheckboxInput(session, "left_chart_controls-yaxis_switch", value = FALSE)
+        shinyjs::hide("left_chart_controls-yaxis_switch")
       }
     })
     
@@ -222,13 +209,13 @@ simd_navpanel_ui <- function(id) {
     # and have it pre-set to be switched off, otherwise turn the switch off and hide it
     observeEvent(input$depr_measures, {
       if(input$depr_measures == "Patterns of inequality"){
-        shinyjs::show("left_average_switch")
-        shinyjs::show("right_average_switch")
+        shinyjs::show("left_chart_controls-average_switch")
+        shinyjs::show("right_chart_controls-average_switch")
       } else{
-        updateCheckboxInput(session, "left_average_switch", value = FALSE)
-        updateCheckboxInput(session, "right_average_switch", value = FALSE)
-        shinyjs::hide("left_average_switch")
-        shinyjs::hide("right_average_switch")
+        updateCheckboxInput(session, "left_chart_controls-average_switch", value = FALSE)
+        updateCheckboxInput(session, "right_chart_controls-average_switch", value = FALSE)
+        shinyjs::hide("left_chart_controls-average_switch")
+        shinyjs::hide("right_chart_controls-average_switch")
       }
     })
     
@@ -311,6 +298,9 @@ simd_navpanel_ui <- function(id) {
     # and return the selected indicator
     selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections, selected_profile)
     
+    # returns what has been selected from chart controls in popovers
+    left_popover_selections <- chart_controls_mod_Server("left_chart_controls")
+    right_popover_selections <- chart_controls_mod_Server("right_chart_controls")
     
     # filter data passed to the module by the selected indicator and selected area
     # and further filter by quint type
@@ -625,8 +615,8 @@ simd_navpanel_ui <- function(id) {
                    "Patterns of inequality" = create_bar_chart(data = simd_measures_data()$left_data,
                                                                xaxis_col = "quintile",
                                                                yaxis_col = "measure",
-                                                               include_average = input$left_average_switch,
-                                                               include_confidence_intervals = input$left_ci_switch,
+                                                               include_average = left_popover_selections$average_switch(),
+                                                               include_confidence_intervals = left_popover_selections$ci_switch(),
                                                                colour_palette = "simd"),
                    
                    # SII trend chart
@@ -636,8 +626,8 @@ simd_navpanel_ui <- function(id) {
                      upci_col = "upci_sii",
                      lowci_col = "lowci_sii",
                      reduce_xaxis_labels = TRUE,
-                     zero_yaxis = input$left_zero_axis_switch, # filter returns TRUE/FALSE
-                     include_confidence_intervals = input$left_ci_switch), # filter returns TRUE/FALSE
+                     zero_yaxis = left_popover_selections$yaxis_switch(), # filter returns TRUE/FALSE
+                     include_confidence_intervals = left_popover_selections$ci_switch()), # filter returns TRUE/FALSE
 
                    
                    # attributable to inequality bar chart
@@ -692,9 +682,9 @@ simd_navpanel_ui <- function(id) {
         legend_position = "bottom",
         reduce_xaxis_labels = TRUE,
         colour_palette = "simd",
-        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-        include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
-        include_average = input$right_average_switch # filter returns TRUE/FALSE
+        zero_yaxis = right_popover_selections$yaxis_switch(), # filter returns TRUE/FALSE
+        include_confidence_intervals = right_popover_selections$ci_switch(), # filter returns TRUE/FALSE
+        include_average = right_popover_selections$average_switch() # filter returns TRUE/FALSE
         ),
       
       # RII trend chart
@@ -704,8 +694,8 @@ simd_navpanel_ui <- function(id) {
         upci_col = "upci_rii_int",
         lowci_col = "lowci_rii_int",
         reduce_xaxis_labels = TRUE,
-        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-        include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
+        zero_yaxis = right_popover_selections$yaxis_switch(), # filter returns TRUE/FALSE
+        include_confidence_intervals = right_popover_selections$ci_switch()), # filter returns TRUE/FALSE
       
       
       # PAR trend chart
@@ -714,7 +704,7 @@ simd_navpanel_ui <- function(id) {
         yaxis_col = "par", 
         reduce_xaxis_labels = TRUE,
         include_confidence_intervals = FALSE,
-        zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
+        zero_yaxis = right_popover_selections$yaxis_switch()) # filter returns TRUE/FALSE
       )
       
       # add options for downloaded version only

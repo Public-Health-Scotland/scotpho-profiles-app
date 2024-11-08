@@ -110,7 +110,7 @@ trend_mod_ui <- function(id) {
         
         # popover with extra controls for trend chart
         bslib::nav_item(
-          chart_controls_UI(ns("controls"), ci_switch = TRUE, yaxis_switch = TRUE, measure_switch = TRUE)
+          chart_controls_mod_UI(ns("controls"), ci_switch = TRUE, yaxis_switch = TRUE, measure_switch = TRUE)
         ),
         
         # footer with download buttons (note this is a module)
@@ -400,7 +400,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     
     # store what has been selected from popovers
-    popover_selections <- chart_controls_Server("controls")
+    popover_selections <- chart_controls_mod_Server("controls")
     
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
@@ -432,8 +432,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
       # create a y-axis column depending on whether user selects numerator or rate
       df <- df |>
-        mutate(y = case_when(popover_selections()$measure_switch == "Numerator" ~ numerator,
-                             popover_selections()$measure_switch == "Rate" ~ measure)) |>
+        mutate(y = case_when(popover_selections$measure_switch() == "Numerator" ~ numerator,
+                             popover_selections$measure_switch() == "Rate" ~ measure)) |>
         
         # arrange data by year
         arrange(year)
@@ -477,7 +477,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     output$trend_chart <- renderHighchart({
       req(trend_data())
       
-      type_definition <- ifelse(popover_selections()$measure_switch == "Numerator", "Number",
+      type_definition <- ifelse(popover_selections$measure_switch() == "Numerator", "Number",
         paste0(unique(trend_data()$type_definition))
         )
       
@@ -519,7 +519,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
       
       # add confidence intervals if box is checked
-      if(popover_selections()$ci_switch == TRUE) {
+      if(popover_selections$ci_switch() == TRUE) {
         
         chart <- chart |>
           hc_add_series(
@@ -540,7 +540,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       }
       
       # constrain y-axis to include zero if box is checked
-      if(popover_selections()$yaxis_switch == TRUE) {
+      if(popover_selections$yaxis_switch() == TRUE) {
         
         chart <- chart |>
           hc_yAxis(min=0) 

@@ -101,11 +101,7 @@ rank_mod_ui <- function(id) {
             nav_spacer(),
             nav_item(
               div(id = ns("rank_popover"),
-              bslib::popover(
-                title = "Filters",
-                chart_controls_icon(),
-                checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
-              )
+              chart_controls_mod_UI(ns("chart_controls"))
             )
             ),
             card_footer_buttons_UI(ns("downloads"))
@@ -164,15 +160,13 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) 
     })
     
 
-    # disable confidence interval checkbox when time selected as comparator
+    # # disable confidence interval checkbox when time selected as comparator
     observe({
       if (input$comparator_switch == TRUE & input$comparator_type == "Time") {
-        shinyjs::disable("ci_switch")
+        shinyjs::disable("chart_controls-ci_switch")
       } else {
-        enable("ci_switch")
+        enable("chart_controls-ci_switch")
       }
-      
-      
     })
     
     # update choices in area filter if 'area' selected as comparator
@@ -210,6 +204,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) 
                                                       profile_data, geo_selections, selected_profile)
     
 
+    
+    # chart control selections 
+   popover_selections <- chart_controls_mod_Server(id = "chart_controls")
     
     # prepares data to be plotted --------------------------------------------
     rank_data <- reactive({
@@ -469,7 +466,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
         
         
         # include confidence intervals when ci switch is turned on on
-        if(input$ci_switch == TRUE) {
+        if(popover_selections$ci_switch() == TRUE) {
           x <- x |>
             hc_add_series(rank_data(), "errorbar", hcaes(x = areaname, low = lowci, high = upci), zIndex = 10)
         }

@@ -64,7 +64,7 @@ pop_groups_ui <- function(id) {
             
             # extra controls for bar chart 
             bslib::nav_item(
-              chart_controls_UI(ns("bar_chart_controls"), ci_switch = TRUE, year_filter = TRUE)
+              chart_controls_mod_UI(ns("bar_chart_controls"), ci_switch = TRUE, year_filter = TRUE)
             ),
             
             # card footer - download buttons
@@ -96,7 +96,7 @@ pop_groups_ui <- function(id) {
             
             # extra controls for filters
             bslib::nav_item(
-              chart_controls_UI(ns("trend_chart_controls"), ci_switch = TRUE, yaxis_switch = TRUE)
+              chart_controls_mod_UI(ns("trend_chart_controls"), ci_switch = TRUE, yaxis_switch = TRUE)
             ),
             # card footer - download buttons
             card_footer_buttons_UI(ns("trend_chart_downloads"))
@@ -163,14 +163,14 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     # create single year data for the bar chart 
     pop_rank_data <- reactive({
       pop_trend_data() |>
-        filter(def_period == bar_chart_popovers()$year_filter) |>
+        filter(def_period == bar_chart_popovers$year_filter()) |>
         mutate(colour_pal = case_when(grepl("All", split_value) ~ phs_colors("phs-blue"), TRUE ~ phs_colors("phs-blue-50")))
     })
     
     
     # store what has been selected from popovers
-    trend_chart_popovers <- chart_controls_Server("trend_chart_controls")
-    bar_chart_popovers <- chart_controls_Server("bar_chart_controls", indicator_data)
+    trend_chart_popovers <- chart_controls_mod_Server("trend_chart_controls")
+    bar_chart_popovers <- chart_controls_mod_Server("bar_chart_controls", indicator_data)
     
     
     #######################################################.
@@ -241,7 +241,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       
       
       
-      if(bar_chart_popovers()$ci_switch) {
+      if(bar_chart_popovers$ci_switch()) {
         x <- x |>
           hc_add_series(pop_rank_data(), "errorbar", hcaes(x = split_value, low = lowci, high = upci), zIndex = 10)
       }
@@ -306,7 +306,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       
       
       # if the confidence interval switch turned on, plot cis
-      if(trend_chart_popovers()$ci_switch){
+      if(trend_chart_popovers$ci_switch()){
         
         x <- x |>
           hc_add_series(pop_trend_data(), 
@@ -324,7 +324,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       }
       
       # constrain y-axis to include zero if box is checked
-      if(trend_chart_popovers()$yaxis_switch) {
+      if(trend_chart_popovers$yaxis_switch()) {
         
         x <- x |>
           hc_yAxis(min=0) 
