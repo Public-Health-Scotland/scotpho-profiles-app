@@ -2,6 +2,7 @@
 #'
 #' @description A button that when clicked on, navigates to a particular tab.
 #' 
+#' # navigation_button_modUI
 #' This function creates the UI for the Shiny module. It is a button.
 #'
 #' @param button_id A unique identifier for the module.
@@ -23,8 +24,7 @@ navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, cl
 
 
 
-#' My Shiny Module Server function
-#'
+#' navigation_button_modSERVER
 #' This function creates the Server for the module. It navigates to a different tab when the button is clicked.
 #'
 #' @param id A unique identifier for the module.

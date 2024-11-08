@@ -3,6 +3,7 @@
 #' @description A bslib card footer with two download buttons that allow users to save a highchart or download a reactive dataset. 
 #' Note that both buttons are individual shiny modules that are being nested in one module
 #' 
+#' # card_footer_buttons_UI
 #' This function creates the UI for the Shiny module. It is a card footer with two download buttons.
 #'
 #' @param id A unique identifier for the module.
@@ -21,8 +22,7 @@ card_footer_buttons_UI <- function(id) {
 }
 
 
-#' My Shiny Module Server function
-#'
+#' card_footer_buttons_Server
 #' This function creates the Server for the module. It triggers the charts/data to download when the buttons are clicked
 #'
 #' @param id A unique identifier for the module.
