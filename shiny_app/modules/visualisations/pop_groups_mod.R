@@ -36,11 +36,6 @@ pop_groups_ui <- function(id) {
         
         # Bar chart card ----
 
-        # footer with download buttons
-        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
-        # package maintainers are aware and working on a fix
-        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
-        suppressWarnings(
           bslib::navset_card_pill(
             height = 600,
             full_screen = TRUE,
@@ -73,15 +68,11 @@ pop_groups_ui <- function(id) {
             ),
             
             # card footer - download buttons
-            card_footer(class = "d-flex justify-content-left",
-                        download_chart_mod_ui(ns("save_pop_rankchart")),
-                        download_data_btns_ui(ns("pop_rank_download")))
-          )), # close bar chart card
+            card_footer_buttons_UI(ns("bar_chart_downloads"))
+          ), # close bar chart card
         
         
         ######  based on deprivation trend card addeded "pop_" to distinguish the two
-
-        suppressWarnings(
           bslib::navset_card_pill(
             height = 600,
             full_screen = TRUE,
@@ -108,10 +99,8 @@ pop_groups_ui <- function(id) {
               chart_controls_UI(ns("trend_chart_controls"), ci_switch = TRUE, yaxis_switch = TRUE)
             ),
             # card footer - download buttons
-            card_footer(class = "d-flex justify-content-left",
-                        download_chart_mod_ui(ns("save_pop_trendchart")),
-                        download_data_btns_ui(ns("pop_trend_download")))
-          )
+            card_footer_buttons_UI(ns("trend_chart_downloads"))
+          
         ) # close trend card
       ) # close layout column wrap
       
@@ -405,11 +394,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     ############################################.
     # Downloads  ----
     ############################################.
-    download_chart_mod_server(id = "save_pop_rankchart", chart_id = ns("pop_rank_chart"))
-    download_data_btns_server(id = "pop_rank_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
-    
-    download_chart_mod_server(id = "save_pop_trendchart", chart_id = ns("pop_trend_chart"))
-    download_data_btns_server(id = "pop_trend_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
+    card_footer_buttons_Server(id = "bar_chart_downloads", chart_id = ns("pop_rank_chart"), data = pop_rank_data, file_name = "popgroups_scotpho_data_extract")
+    card_footer_buttons_Server(id = "trend_chart_downloads", chart_id = ns("pop_trend_chart"), data = pop_trend_data, file_name = "popgroups_scotpho_data_extract")
+
   } # module server
   )# module server
 } # pop groups server

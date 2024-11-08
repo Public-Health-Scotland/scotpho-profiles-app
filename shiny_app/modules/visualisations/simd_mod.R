@@ -59,7 +59,6 @@ simd_navpanel_ui <- function(id) {
       # Left hand side card 
       layout_column_wrap(
         1/2,
-        suppressWarnings(
           navset_card_pill(
             id = ns("left_card"),
             height = 650,
@@ -111,16 +110,11 @@ simd_navpanel_ui <- function(id) {
               )
             ),
             
-            # card footer with download buttons
-            card_footer(
-              class = "d-flex justify-content-left",
-              download_chart_mod_ui(ns("save_left_chart")),
-              download_data_btns_ui(ns("save_left_data")))
-          )
-        ),
+            # card footer with download buttons (note this is a module)
+            card_footer_buttons_UI(ns("left_downloads"))
+          ),
         
         # right hand side card 
-        suppressWarnings(
           navset_card_pill(
             id = ns("right_card"),
             height = 650,
@@ -165,12 +159,8 @@ simd_navpanel_ui <- function(id) {
             ),
             
             # card footer with download buttons
-            card_footer(
-              class = "d-flex justify-content-left",
-              download_chart_mod_ui(ns("save_right_chart")),
-              download_data_btns_ui(ns("save_right_data")))
+            card_footer_buttons_UI(ns("right_downloads"))
           )
-        )
       )
     )
   )
@@ -783,14 +773,9 @@ simd_navpanel_ui <- function(id) {
     # DOWNLOADS ----
     ###############################.
     
-    # chart downloads (note these are modules)
-    download_chart_mod_server(id = "save_left_chart", chart_id = ns("left_chart"))
-    download_chart_mod_server(id = "save_right_chart", chart_id = ns("right_chart"))
-    
-    # data downloads (note these are modules)
-    download_data_btns_server(id = "save_left_data", data = simd_measures_data()$left_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
-    download_data_btns_server(id = "save_right_data", data = simd_measures_data()$right_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
-    
+    card_footer_buttons_Server(id = "left_downloads", chart_id = ns("left_chart"), data = simd_measures_data()$left_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
+    card_footer_buttons_Server(id = "right_downloads", chart_id = ns("right_chart"), data = simd_measures_data()$right_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
+
     
   }) #close moduleServer
 } # close server function

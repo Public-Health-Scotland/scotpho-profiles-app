@@ -113,10 +113,8 @@ trend_mod_ui <- function(id) {
           chart_controls_UI(ns("controls"), ci_switch = TRUE, yaxis_switch = TRUE, measure_switch = TRUE)
         ),
         
-        # footer with download buttons
-        card_footer(class = "d-flex justify-content-left",
-                    div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
-                    div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
+        # footer with download buttons (note this is a module)
+        card_footer_buttons_UI(ns("downloads"))
       )) # close navset card pill
     ) # close layout sidebar
   ) # close taglist
@@ -588,24 +586,15 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     ###################################.
     
     # server for chart and data downloads
-    download_chart_mod_server(id = "download_trends_chart", chart_id = ns("trend_chart"))
-      
-    download_data_btns_server(id = "download_trends_data", 
-                              data = trend_data, 
-                              file_name = "Trends_ScotPHO_data_extract", 
-                              selected_columns = c("code", 
-                                                   "areatype", 
-                                                   "areaname", 
-                                                   "indicator", 
-                                                   "type_definition", 
-                                                   "definition_period" = "def_period",
-                                                   "trend_axis",
-                                                   "numerator", 
-                                                   "measure", 
-                                                  "upper_confidence_interval" = "upci", # rename column 
-                                                  "lower_confidence_interval" = "lowci")) # rename column 
-    
-      
+    card_footer_buttons_Server(id = "downloads", 
+                               chart_id = ns("trend_chart"), 
+                               data = trend_data, 
+                               file_name = "trends_scotpho_data_extract",
+                               selected_columns = c("code", "areatype", "areaname", "indicator", "type_definition", 
+                                                    "definition_period" = "def_period", "trend_axis", "numerator", 
+                                                    "measure", "upper_confidence_interval" = "upci", # rename column 
+                                                    "lower_confidence_interval" = "lowci"))
+
     ###########################################.
     # Guided tour ----
     ###########################################.

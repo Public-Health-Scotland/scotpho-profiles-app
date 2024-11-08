@@ -71,10 +71,6 @@ rank_mod_ui <- function(id) {
       
       layout_column_wrap(
         # bar chart card ----------------------
-        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
-        # package maintainers are aware and working on a fix
-        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
-        suppressWarnings(
           navset_card_pill(
             id = ns("rank_navset_card_pill"),
             full_screen = TRUE,
@@ -112,10 +108,8 @@ rank_mod_ui <- function(id) {
               )
             )
             ),
-            card_footer(class = "d-flex justify-content-left",
-                        div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
-                        div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
-          )),
+            card_footer_buttons_UI(ns("downloads"))
+          ),
        
         # map card -------------------
         
@@ -597,28 +591,16 @@ Not all profiles have available indicators for all geography types. The drugs pr
      ######################################.
      
      # note these are both modules 
-     download_chart_mod_server(id = "save_rank_chart", 
-                               chart_id = ns("rank_chart"), 
-                               height = if(geo_selections()$areatype == "Intermediate zone") {
-                              1200 } else if(geo_selections()$areatype %in% c("Health board", "Police division")) {
-                               600 } else if(geo_selections()$areatype %in% c("Council area", "HSC partnership", "Alcohol & drug partnership", "HSC locality")) {
-                               700 } else {
-                                 500
-                               }) # save chart as png
-     
-     download_data_btns_server(id = "rank_download", 
-                               data = rank_data, 
-                               file_name = "Rank_ScotPHO_data_extract",
-                               selected_columns = c("code", 
-                                                    "areatype", 
-                                                    "areaname", 
-                                                    "indicator", 
-                                                    "type_definition", 
-                                                    "definition_period" = "def_period",
-                                                    "numerator", 
-                                                    "measure", 
-                                                    "upper_confidence_interval" = "upci", 
-                                                    "lower_confidence_interval" = "lowci"))
+    
+    card_footer_buttons_Server(id = "downloads", chart_id = ns("rank_chart"), 
+                               data = rank_data, file_name = "rank_scotpho_data_extract",
+                               height = if(nrow(rank_data()) <= 5) {
+                                 500} else if(nrow(rank_data()) > 6 & nrow(rank_data()) <15) {
+                                 600 } else if(nrow(rank_data()) > 15 & nrow(rank_data()) <= 35){
+                                   700} else {1200
+                                     }
+                               )
+
      
      
      ############################################.
