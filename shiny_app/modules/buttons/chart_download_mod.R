@@ -1,9 +1,9 @@
-#' download_chart_mod UI function
+#' download_chart module
 #'
 #' @description A button that when clicked, saves a highchart as a PNG using the 'exportChart' function from JS highcharts.
 # see https://www.highcharts.com/docs/export-module/export-module-overview  for more details
 #' 
-#' This function creates the UI for the Shiny module. It creates a single 'save chart' button.
+#' This function creates the UI for the Shiny module. It creates a 'save chart' button.
 #'
 #' @param id A unique identifier for the module.
 
@@ -33,9 +33,9 @@ download_chart_mod_ui <- function(id) {
 }
 
 
-#' download_data_btns UI function
+#' download_data_btns Server function
 #'
-#' This function creates the Server function for the module. It triggers the chart to be saves as a png when the button is clicked
+#' This function creates the Server function for the module. It triggers the chart to be saved as a png when the button is clicked
 #'
 #' @param id A unique identifier for the module.
 #' @param input, output, session Standard Shiny server arguments.
