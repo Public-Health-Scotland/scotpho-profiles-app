@@ -42,7 +42,7 @@ pop_groups_ui <- function(id) {
             
             # tab 1: bar chart 
             bslib::nav_panel("Chart",
-                             uiOutput(ns("pop_rank_title")), # title 
+                             chart_headers_mod_UI(ns("rank_headers")),
                              highchartOutput(ns("pop_rank_chart"))|> # chart 
                                withSpinner() |> (\(x) {
                                  x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
@@ -79,7 +79,7 @@ pop_groups_ui <- function(id) {
             
             # tab 1: trend chart 
             bslib::nav_panel("Chart",
-                             uiOutput(ns("pop_trend_title")), # title
+                             chart_headers_mod_UI(ns("trend_headers")),
                              highchartOutput(ns("pop_trend_chart")) |> # chart
                                # issue described here: https://github.com/daattali/shinycssloaders/issues/76 
                                # solution posted here: https://stackoverflow.com/questions/77184183/how-to-use-shinycssloaders-withspinner-with-a-plot-output-in-a-bslib-card 
@@ -177,36 +177,8 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     ## dynamic text  ----
     #######################################################.
     
-    output$pop_rank_title <- renderUI({
-      # ensure there is data available, otherwise show message instead
-      shiny::validate(
-        need( nrow(pop_trend_data()) > 0, "No indicators available")
-      )
-      
-      # if data is available display chart title
-      div(
-        tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
-        tags$h6(pop_rank_data()$trend_axis[1]), # time period 
-        tags$p(pop_rank_data()$type_definition[1]) # measure type
-      )
-    })
-    
-    # need to add pop-trend title stuff
-    
-    output$pop_trend_title <- renderUI({
-      
-      # ensure there is data available, otherwise show message instead
-      shiny::validate(
-        need( nrow(pop_trend_data()) > 3, "There are insufficent data points for this indicator to create a trend chart")
-      )
-      
-      # if data is available display chart title
-      div(
-        tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
-        tags$h6(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis)), # time period 
-        tags$p(pop_trend_data()$type_definition[1]) # measure type
-      )
-    })
+    chart_headers_mod_Server("trend_headers", data = pop_trend_data, main_header_extra = reactive({input$split_filter}))
+    chart_headers_mod_Server("rank_headers", data = pop_rank_data, main_header_extra = reactive({input$split_filter}))
     
     ############################################.
     # charts -----

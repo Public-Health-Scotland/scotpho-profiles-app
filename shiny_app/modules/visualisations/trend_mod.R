@@ -89,7 +89,7 @@ trend_mod_ui <- function(id) {
         # charts tab -----------------------
         nav_panel("Charts",
                   value = ns("trend_chart_tab"), #id for guided tour
-                  uiOutput(ns("trend_title")), # title 
+                  chart_headers_mod_UI(ns("headers")),
                   highchartOutput(outputId = ns("trend_chart")) # chart
         ), 
         
@@ -449,23 +449,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     ## Dynamic text  ----
     #######################################################.
     
-    output$trend_title <- renderUI({
-      req(trend_data())
-      
-      # create dynamic text if no indicators available for selected profile
-      # and geography
-      shiny::validate(
-        need( nrow(trend_data()) > 0, "No indicators available for this profile and area type. Please select another.")
-      )
-      
-      # display 3 x titles
-      div(
-        tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
-        tags$h6(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)), # time range
-        tags$p(trend_data()$type_definition[1]) # type definiton
-      )
-      
-    })
+    chart_headers_mod_Server("headers", data = trend_data)
     
 
     #############################################.
