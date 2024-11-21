@@ -269,12 +269,16 @@ function(input, output, session) {
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
     req(input$profile_choices != "")
+    
+    if(input$profile_choices == "All Indicators") {
+      simd_dataset
+    } else {
     prepare_profile_data(
       dataset = simd_dataset,
       selected_profile = input$profile_choices,
       selected_areatype = input$areatype,
       selected_areaname = input$areaname
-    )
+    )}
   })
   
   
