@@ -29,15 +29,16 @@ function(input, output, session) {
   
   # this code runs the server function that matches the UI function that creates the profile buttons on the landing page
   # for any profiles that are 'active' (i.e. active = TRUE in the profiles_list in the global script)
+  # it ensures when a user clicks a button, a user is taken to the profiles tab and the profiles filter
+  # is updated to reflect the profile selected.
   lapply(active_profiles, function(profile) {
     profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
   })
   
   
-  # these modules corresponding to the 3 buttons in the banner at the top of the landing page
+  # these modules corresponding to the 2 buttons in the banner at the top of the landing page
   # they controll the opening of About ScotPHO, About ScotPHO and Explore Indicators pages
   navigation_button_modSERVER("about_us", nav_id="about_scotpho", parent_session = session)
-  navigation_button_modSERVER("about_profiles", nav_id="about_profiles", parent_session = session)
   navigation_button_modSERVER("explore_indicators", nav_id="definitions", parent_session = session)
   
   
@@ -104,11 +105,11 @@ function(input, output, session) {
   # this object stores info about the selected profile by taking relevant bits of info
   # from the profiles_list in the global script. The object is used for various different things
   # 1. storing subtabs to be shown for the selected profile to determine which tabs should be hidden/shown
-  # 2. storing the short name of the selected profile to filter the datasets that create the visualisations
-  # 3. storing a domain order for the selected profile. This is passed to each of the large visualisation modules
+  # 2. storing a domain order for the selected profile. This is passed to each of the large visualisation modules
   # so that the indicator filter modules which are nested inside these larger modules can access it. This ensures
-  # the indicators
-  
+  # the indicators are ordered correctly by domain in the indicator filters.
+  # 3. storing full and short name of the selected profile ( Currently, this particular info is only being used in the 
+  # trend module to ensure that police divisions only appear as a filter if mental health is selected)
   selected_profile <- reactive({
     list(
       full_name = input$profile_choices, 
@@ -156,8 +157,7 @@ function(input, output, session) {
     updateSelectizeInput(session, "areaname", choices = sort(area_choices))
   }, ignoreInit = TRUE)
   
-  
-  
+
   # when a user clicks the 'change profile' filter, toggle the hidden profile filter to make it visible
   observeEvent(input$show_profile_filter, {
     toggle("prof_filter_hidden")
@@ -205,11 +205,11 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
-  trend_mod_server("trends", profile_data, geo_selections, selected_profile)
-  rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
-  summary_table_server("summary", geo_selections, selected_profile, areatype_data)
-  simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
-  pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
+   trend_mod_server("trends", profile_data, geo_selections, selected_profile)
+   rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
+   summary_table_server("summary", geo_selections, selected_profile, areatype_data)
+   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
+   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
   
   
   
@@ -221,6 +221,8 @@ function(input, output, session) {
   definitions_tab_Server("metadata")
   
   # data tab server logic
+  # note: temporarily wrapped in observe event so it doesn't run when app launches
+  # as it is slow - code to be revisited and amended
   observeEvent(input$nav, {
     req(input$nav == "dt")
     data_tab_mod_Server("data_tab")
@@ -239,13 +241,13 @@ function(input, output, session) {
   # this dataset is passed to the trends tab module
   # it's also used to create a smaller dataset which further filters by selected areatype
   profile_data <- reactive({
-    
+    req(input$profile_choices != "")
     if(input$profile_choices == "All Indicators") {
       main_dataset
     } else {
       prepare_profile_data( #function from global script
         dataset = main_dataset,
-        selected_profile_short = selected_profile()$short_name
+        selected_profile = input$profile_choices
       )
     }
   })
@@ -253,11 +255,11 @@ function(input, output, session) {
   
   
   # 2. MAIN DATASET FILTERED BY BOTH PROFILE AND AREATYPE
-  # used for rank/deprivation/summary tabs 
+  # used for rank/summary tabs 
   areatype_data <- reactive({
     req(profile_data())
     profile_data() |>
-      filter(areatype == geo_selections()$areatype | areatype == "Scotland")
+      filter(areatype == input$areatype | areatype == "Scotland")
   })
   
   
@@ -266,11 +268,12 @@ function(input, output, session) {
   # 3. DEPRIVATION DATASET
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
+    req(input$profile_choices != "")
     prepare_profile_data(
       dataset = simd_dataset,
-      selected_profile_short = selected_profile()$short_name,
-      selected_areatype = geo_selections()$areatype,
-      selected_areaname = geo_selections()$areaname
+      selected_profile = input$profile_choices,
+      selected_areatype = input$areatype,
+      selected_areaname = input$areaname
     )
   })
   
@@ -279,12 +282,12 @@ function(input, output, session) {
   # 4. POPULATION GROUPS DATASET
   # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
   popgroup_data <- reactive({
-    
+    req(input$profile_choices != "")
     prepare_profile_data(
       dataset = popgroup_dataset,
-      selected_profile_short = selected_profile()$short_name,
-      selected_areatype = geo_selections()$areatype,
-      selected_areaname = geo_selections()$areaname
+      selected_profile = input$profile_choices,
+      selected_areatype = input$areatype,
+      selected_areaname = input$areaname
     )
   })
 
