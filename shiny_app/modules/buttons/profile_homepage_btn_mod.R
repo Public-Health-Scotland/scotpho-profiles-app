@@ -36,7 +36,7 @@ profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, de
 profile_homepage_btn_modSERVER <- function(id, profile_name, parent_session) {
   moduleServer(id, function(input, output, session) {
     
-    ns <- session$ns
+    #ns <- session$ns
     
     # when user clicks button: - 
     observeEvent(input$profile_nav, {

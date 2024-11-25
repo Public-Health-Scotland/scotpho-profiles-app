@@ -22,7 +22,7 @@ navigation_button_modUI <- function(button_id, button_name, button_icon=NULL, cl
 
 #module server function ----
 
-navigation_button_modSERVER <- function(id, nav_id, parent_session, profile_name = NULL, selected_profile = NULL) {
+navigation_button_modSERVER <- function(id, nav_id, parent_session) {
   shiny::moduleServer(id, function(input, output, session) {
     
     shiny::observeEvent(input$button_nav, {
@@ -32,17 +32,6 @@ navigation_button_modSERVER <- function(id, nav_id, parent_session, profile_name
                  selected = nav_id,
                  session = parent_session)
       
-      # if navigating from the 'about profiles' tab to the profiles tab, also update the profile filter
-      if(!is.null(profile_name)){
-        updateSelectizeInput(inputId = "profile_choices", selected = profile_name, session = parent_session)
-      }
-      
-      # if navigating from the profiles tab to the 'about profiles tab' also open the correct accordion panel
-      if(!is.null(selected_profile)){
-      accordion_panel_open(id = "profiles_accordion", values = selected_profile(), session = parent_session)
-      }
-      
-
       }) 
   }) #close moduleServer
 } #close server

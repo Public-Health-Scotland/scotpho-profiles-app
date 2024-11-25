@@ -1,9 +1,9 @@
 # ScotPHO Online Profiles Tool
 
-In this respository you can find the code used to produce [ScotPHO Online Profiles Tool](https://scotland.shinyapps.io/ScotPHO_profiles_tool/).
+In this repository you can find the code used to produce [ScotPHO Online Profiles Tool](https://scotland.shinyapps.io/ScotPHO_profiles_tool/).
 
 October 2024 : A new version of the ScotPHO profile tool design was launched. The redesign involved significant re-factoring of app code and creation of this new Git repository.
-The historic profiles tool repo can be found [Hisotric ScotPHO Prfile Tool repo](https://github.com/Public-Health-Scotland/scotpho-profiles-tool)
+The historic profiles tool repo can be found here: [Historic ScotPHO Profile Tool repo](https://github.com/Public-Health-Scotland/scotpho-profiles-tool)
 
 The changes to app design: 
 -content changes introducing information presented by different demographic splits (e.g. age/sex/gender/ethnicity)

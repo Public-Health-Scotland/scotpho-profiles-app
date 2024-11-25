@@ -69,8 +69,7 @@ simd_navpanel_ui <- function(id) {
             nav_panel(
               title = "Chart",
               div(
-                uiOutput(ns("left_chart_header")), # chart header 
-                actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
+                uiOutput(ns("left_chart_header")) # chart header 
               ),
               highchartOutput(ns("left_chart")) |> # chart
                 # note this is the recommended way to add a chart spinner 
@@ -131,8 +130,7 @@ simd_navpanel_ui <- function(id) {
             nav_panel(
               title = "Chart",
               div(
-                uiOutput(ns("right_chart_header")),
-                actionLink(ns("right_chart_info_link"), label = "Learn more")
+                uiOutput(ns("right_chart_header"))
               ),
               highchartOutput(ns("right_chart")) |>
                 # note this is the recommended way to add a chart spinner 
@@ -342,11 +340,7 @@ simd_navpanel_ui <- function(id) {
         dt <- dt |>
           filter(quint_type != "sc_quin")
       }
-      
-      # step carried out in data prep - but retaining code chunk whilst we look at 
-      # # fill NA balus with 'total' - temporary step should be done in data prep?
-      # dt$sex[is.na(dt$sex)] <- "Total"
-      
+
       dt
     })
     
@@ -555,13 +549,14 @@ simd_navpanel_ui <- function(id) {
              ),
              
              
-             # Prepare the 8 bits of text for if potential for improvement is selected
+             # Prepare the 9 bits of text for if potential for improvement is selected
              "Potential for improvement" = list(
                
                # potential for improvement bar chart titles/subtitles/interpretation/filename
                left_chart_narrative = about_par,
                left_chart_title = paste0("Attributable to inequality; ", simd_measures_data()$left_data$trend_axis[1]),
-               left_chart_subtitle_1 = paste0("The proportion of ", selected_indicator(), " which could be attributed to socioeconomic inequalities."),
+               left_chart_subtitle_1 = paste0("The portion of ", selected_indicator(), " which could be attributed to socioeconomic inequalities."),
+               left_chart_subtitle_2 = paste0(simd_measures_data()$left_data$type_definition[1]),
                left_chart_filename = paste0("ScotPHO Attributable to inequality chart - ", selected_indicator()),
                
                right_chart_narrative = about_par_trend,
@@ -580,34 +575,40 @@ simd_navpanel_ui <- function(id) {
     
     # render the title and subtitle for the left hand side card
     output$left_chart_header <- renderUI({
-      shiny::validate(need(nrow(indicator_data()) > 0, "No indicators available")) # display custom message if no data available
-      div(
+
+      if(nrow(indicator_data()) > 0) {
+        div(
         h5(chart_text()$left_chart_title, class = "chart-header"),
         h6(chart_text()$left_chart_subtitle_1),
-        p(chart_text()$left_chart_subtitle_2)
+        p(chart_text()$left_chart_subtitle_2),
+        actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
       )
+      }
     })
     
     # render the title and subtitle for the right hand side card
     output$right_chart_header <- renderUI({
-      shiny::validate(need(nrow(indicator_data()) > 0, "No indicators available")) # display custom message if no data available
-      div(
+  
+      if(nrow(indicator_data()) > 0) {
+        div(
         h5(chart_text()$right_chart_title, class = "chart-header"),
         h6(chart_text()$right_chart_subtitle_1),
-        p(chart_text()$right_chart_subtitle_2)
+        p(chart_text()$right_chart_subtitle_2),
+        actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
       )
+      }
     })
     
     
-    # render the narrative for left cards interpretation tab 
+    # render the narrative for left cards interpretation tab
     output$left_chart_narrative <- renderUI({
-      chart_text()$left_chart_narrative
+        chart_text()$left_chart_narrative
     })
-    
+
     # render the narrative for the right cards interpretation tab
     output$right_chart_narrative <- renderUI({
-      chart_text()$right_chart_narrative
-    }) 
+        chart_text()$right_chart_narrative
+    })
     
     
     #######################################.
@@ -619,9 +620,12 @@ simd_navpanel_ui <- function(id) {
     output$left_chart <- renderHighchart({
       
       # only create charts if there is data available to plot
+      # validation message suggests the other two area types the user might try (although dep data aren't necessarily available at the lower geog: should the message only suggest available geogs?)
       shiny::validate(
         need(nrow(indicator_data()) > 0,
-             paste0("SIMD data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+             paste0("Deprivation data are not available at ", geo_selections()$areatype, " level in this profile. Please try a different geography, of either ", 
+                    paste(setdiff(c("Scotland", "Health board", "Council area"), geo_selections()$areatype), collapse = " or "), 
+                    "."))
       )
       
       
@@ -683,7 +687,9 @@ simd_navpanel_ui <- function(id) {
       # only create charts if there is data available to plot
       shiny::validate(
         need(nrow(indicator_data()) > 0,
-             paste0("SIMD data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+             paste0("Deprivation data are not available at ", geo_selections()$areatype, " level in this profile. Please try a different geography, of either ", 
+                    paste(setdiff(c("Scotland", "Health board", "Council area"), geo_selections()$areatype), collapse = " or "), 
+                    "."))
       )
       
       

@@ -63,7 +63,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
     # store selected indicator as reactive value
     return(
       reactive({
-        list(indicator = input$indicator_filter)
+        input$indicator_filter
       })
     )
     

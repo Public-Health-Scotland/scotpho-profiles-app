@@ -19,10 +19,6 @@ trend_mod_ui <- function(id) {
     bslib::layout_sidebar(
       full_screen = FALSE,
       height = "80%",
-
-      # enable guided tour
-     #use_cicerone(),
-      
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         accordion(

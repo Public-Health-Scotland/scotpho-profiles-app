@@ -94,7 +94,7 @@ all_subtabs <- c("summary_tab",
 # subtabs = the subtabs you want to include for the profile - either pass 'all_subtabs' from vector above to include all, or select individual subtabs
 # note: to add a new profile to the tool, just add a new section to the list
 profiles_list <- list(
-  
+ 
   # Health and wellbeing info
   "Health & Wellbeing" = list(
     short_name = "HWB",
