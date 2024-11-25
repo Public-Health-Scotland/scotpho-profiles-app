@@ -242,7 +242,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # hide the pd filter if any profile other than 'mental health' has been selected
       # as police divisions are only available for a small subset of MH indicators
       # If MH profile has been selected and 'Police division' is available for selected indicator, enable pd_filter, otherwise disable it
-      if(selected_profile() != "Mental Health"){
+      if(selected_profile()$full_name != "Mental Health"){
         hide("pd_panel")
       } else {
         show("pd_panel")
