@@ -95,7 +95,7 @@ all_subtabs <- c("summary_tab",
 # note: to add a new profile to the tool, just add a new section to the list
 profiles_list <- list(
  
-  # Health and wellbeing info
+  # Health & wellbeing info
   "Health & Wellbeing" = list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
@@ -104,8 +104,7 @@ profiles_list <- list(
     active = TRUE
   ),
 
-  
-  # Care and wellbeing info 
+  # Care & wellbeing portfolio info 
   "Care & Wellbeing Portfolio" = list(
     short_name = "CWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
@@ -115,7 +114,7 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # Mental health info
+  # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",
     homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."),
@@ -125,12 +124,12 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # Children and young people info
-  "Children & Young People" = list(
-    short_name = "CYP",
-    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
-    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+  # Tobacco info
+  "Tobacco" = list(
+    short_name = "TOB",
+    homepage_description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**"),
+    domain_order = NULL,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
     active = TRUE
   ),
   
@@ -152,12 +151,12 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # Tobacco info
-  "Tobacco" = list(
-    short_name = "TOB",
-    homepage_description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**"),
-    domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
+  # Children and young people info
+  "Children & Young People" = list(
+    short_name = "CYP",
+    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
+    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
     active = TRUE
   ),
   
@@ -170,7 +169,7 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # All indicaors info
+  # All indicators info
   "All Indicators" = list(
     short_name = "ALL",
     homepage_description = markdown("View **all indicators** in this tool from across every profile."),
@@ -179,7 +178,7 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # All indicaors info
+  # Physical Activity info
   "Physical Activity" = list(
     short_name = "PHY",
     homepage_description = markdown("Under development - not yet available"),
@@ -188,7 +187,7 @@ profiles_list <- list(
     active = FALSE
   ),
   
-  # # All indicaors info
+  # # Child poverty - (not yet confirmed)
   # "Child Poverty" = list(
   #   short_name = "CPP",
   #   homepage_description = markdown("Under development - not yet available"),
@@ -198,7 +197,7 @@ profiles_list <- list(
   # ),
   # 
   
-  # All indicaors info
+  # All Child Mental Health info
   "Child Mental Health" = list(
     short_name = "CMH",
     homepage_description = markdown("Under development - not yet available"),
