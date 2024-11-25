@@ -229,11 +229,11 @@ page_navbar(
                        # note there is only text for the 5 profiles listed below at the moment
                        nav_panel(title = "About this profile", value = "about_profile_tab",
                                  br(),
-                                 conditionalPanel("input.profile_choices == 'Health and Wellbeing'", about_hwb_text),
-                                 conditionalPanel("input.profile_choices == 'Care and Wellbeing'", about_cwb_text),
-                                 conditionalPanel("input.profile_choices == 'Mental Health'", about_men_text),
+                                 conditionalPanel("input.profile_choices == 'Health & Wellbeing'", about_hwb_text),
+                                 conditionalPanel("input.profile_choices == 'Care & Wellbeing Portfolio'", about_cwb_text),
+                                 conditionalPanel("input.profile_choices == 'Adult Mental Health'", about_men_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
-                                 conditionalPanel("input.profile_choices == 'Children and Young People'", about_cyp_text)
+                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text)
                        )
 
                        
