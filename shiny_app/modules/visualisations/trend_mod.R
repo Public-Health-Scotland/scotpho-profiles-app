@@ -259,30 +259,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
 
     
-    # remove globally selected areaname from available areas in dropdowns
-    observe({
-      if(geo_selections()$areatype == "Health board"){
-        updateSelectizeInput(session, "hb_filter", choices = hb_list[hb_list!=geo_selections()$areaname])
-      }
-      else if(geo_selections()$areatype == "Council area"){
-        updateSelectizeInput(session, "ca_filter", choices = ca_list[ca_list!=geo_selections()$areaname])
-      }
-      else if(geo_selections()$areatype == "HSC partnership"){
-        updateSelectizeInput(session, "hscp_filter", choices = hscp_list[hscp_list!=geo_selections()$areaname])
-      }
-      else if(geo_selections()$areatype == "Alcohol & drug partnership"){
-        updateSelectizeInput(session, "adp_filter", choices = adp_list[adp_list!=geo_selections()$areaname])
-      }
-      else if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")){
-        updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
-      }
-      else if(geo_selections()$areatype == "Police division"){
-        updateSelectizeInput(session, "pd_filter", choices = pd_list[pd_list!=geo_selections()$areaname])
-      }
-      
-    })
-    
-    
     # Clear what was previously selected from the filters if a user changes selection from geography filter (otherwise they remain selected)
     observeEvent(geo_selections(), {
       
