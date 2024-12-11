@@ -133,10 +133,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       
       # if the selected profile has a particular order the domains should appear in the table
-      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # (i.e. the selected profile's domain order isn't NULL in the 'profiles_list' from the global script)
       # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
-      if(selected_profile() %in% names(profile_domain_order)){
-        chosen_area <- chosen_area[, domain := factor(domain, levels = profile_domain_order[[selected_profile()]])]
+      if(!is.null(selected_profile()$domain_order)){
+        dt <- dt[, domain := factor(domain, levels = selected_profile()$domain_order)]
       }
       
       chosen_area <- setorder(chosen_area, domain)
@@ -247,10 +247,10 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
 
       # if the selected profile has a particular order the domains should appear in the table
-      # (i.e. the selected profile exists in the list called 'profile_domain_order' from the global script)
+      # (i.e. the selected profile's domain order isn't NULL in the 'profiles_list' from the global script)
       # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
-      if(selected_profile() %in% names(profile_domain_order)){
-        dt <- dt[, domain := factor(domain, levels = profile_domain_order[[selected_profile()]])]
+      if(!is.null(selected_profile()$domain_order)){
+        dt <- dt[, domain := factor(domain, levels = selected_profile()$domain_order)]
       }
       
       dt <- setorder(dt, domain)
@@ -622,7 +622,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       
       # name of file when downloaded
       filename = function() {
-        paste(selected_profile(), "-summary-", selected_geo()$areaname, ".pdf", sep="")
+        paste(selected_profile()$full_name, "-summary-", selected_geo()$areaname, ".pdf", sep="")
       },
       
       content = function(file) {
@@ -646,7 +646,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
           local_summary()
         },
          chosen_area = selected_geo()$areaname,
-         chosen_profile = selected_profile(),
+         chosen_profile = selected_profile()$full_name,
          chosen_geography_level = selected_geo()$areatype
         )
         
