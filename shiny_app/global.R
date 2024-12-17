@@ -74,36 +74,144 @@ pd_bound <- sf::st_as_sf(pd_bound)
 
 # 4. lists ----------------------------------------------------------
 
-# profile names list - used for:
-# - creating choices for the profile filter
-# - filtering the dataset using the abbreviated profile name 
+# the unique id for all the possible sub-tabs that can be displayed for a profile in the app
+# these match the ids assigned to each sub-tab in the UI script (using the 'value' argument in nav_panel())
+# this vector is used in the server script to determine which sub-tabs should be hidden/shown for a selected profile
+# i.e. by going through each id and checking if it exists in the profiles_list below for the selected profile
+all_subtabs <- c("summary_tab",
+                 "trends_tab",
+                 "rank_tab", 
+                 "simd_tab", 
+                 "pop_groups_tab", 
+                 "about_profile_tab")
+
+
+# this list contains information on each profile within the tool:
+# - the name of the profile (this should be spelled how you want it to appear on the landing page button/profile filter)
+# short_name =  3 letter profile abbreviation (as assigned in the tech doc) - this is used for filtering data by selected profile
+# homepage_description = sentence or 2 to include in the homepage button (wrap specific words in ** **  if you want them to be purple)
+# domain_order = use if there's a particular order domains should appear in the indicator filter/summary table (leave as NULL if no order required)
+# active = either TRUE or FALSE. Set to FALSE if you want the homepage button to be disabled. Set to TRUE to make profile active for users to explore.
+# subtabs = the subtabs you want to include for the profile - either pass 'all_subtabs' from vector above to include all, or select individual subtabs
+# note: to add a new profile to the tool, just add a new section to the list
 profiles_list <- list(
-  "Health and Wellbeing" = "HWB",
-  "Care and Wellbeing" = "CWB",
-  "Mental Health" = "MEN",
-  "Tobacco" = "TOB",
-  "Alcohol" = "ALC",
-  "Drugs" = "DRG",
-  "Children and Young People" = "CYP",
-  "Population" = "POP",
-  "All Indicators" = "ALL"
+ 
+  # Health & wellbeing info
+  "Health & Wellbeing" = list(
+    short_name = "HWB",
+    homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
+    domain_order = NULL,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
+  ),
+
+  # Care & wellbeing portfolio info 
+  "Care & Wellbeing Portfolio" = list(
+    short_name = "CWB",
+    homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
+    domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
+                     "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
+    subtabs = all_subtabs,
+    active = TRUE
+  ),
+  
+  # Adult Mental health info
+  "Adult Mental Health" = list(
+    short_name = "MEN",
+    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."),
+    domain_order = c("Mental health outcomes", "Individual determinants",
+                     "Community determinants", "Structural determinants"),
+    subtabs = all_subtabs,
+    active = TRUE
+  ),
+  
+  # Tobacco info
+  "Tobacco" = list(
+    short_name = "TOB",
+    homepage_description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**"),
+    domain_order = NULL,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
+    active = TRUE
+  ),
+  
+  # Alcohol info
+  "Alcohol" = list(
+    short_name = "ALC",
+    homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
+    domain_order = NULL,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
+  ),
+  
+  # Drugs info
+  "Drugs" = list(
+    short_name = "DRG",
+    homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
+    domain_order = NULL,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
+    active = TRUE
+  ),
+  
+  # Children and young people info
+  "Children & Young People" = list(
+    short_name = "CYP",
+    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
+    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
+  ),
+  
+  # Population info
+  "Population" = list(
+    short_name = "POP",
+    homepage_description = markdown("View **population estimates** for different age groups."),
+    domain_order = NULL,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab"),
+    active = TRUE
+  ),
+  
+  # All indicators info
+  "All Indicators" = list(
+    short_name = "ALL",
+    homepage_description = markdown("View **all indicators** in this tool from across every profile."),
+    domain_order = NULL,
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+    active = TRUE
+  ),
+  
+  # Physical Activity info
+  "Physical Activity" = list(
+    short_name = "PHY",
+    homepage_description = markdown("Under development - not yet available"),
+    domain_order = NULL,
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+    active = FALSE
+  ),
+  
+  # # Child poverty - (not yet confirmed)
+  # "Child Poverty" = list(
+  #   short_name = "CPP",
+  #   homepage_description = markdown("Under development - not yet available"),
+  #   domain_order = NULL,
+  #   subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+  #   active = FALSE
+  # ),
+  # 
+  
+  # All Child Mental Health info
+  "Child Mental Health" = list(
+    short_name = "CMH",
+    homepage_description = markdown("Under development - not yet available"),
+    domain_order = NULL,
+    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+    active = FALSE
   )
-
-
-# there are some profiles where the domains should be ordered in a particular way 
-# e.g. CWB profile should start with 'overarching indicators'
-# to add a specified order for a profile domains all that should be required is to add to the list below. 
-# The order specified will add (non-select-able) domains to the indicator filter dropdown and dictate the order of 
-# domains wihtin profile summary table and within the indicator filter.
-# If a profile does not have an domain ordering supplied domains and indicators will sort alphbetically.
-
-profile_domain_order <- list(
-  "Care and Wellbeing" = c("Over-arching indicators","Early years","Education","Work","Living standards",
-                           "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
-  "Mental Health" =  c("Mental health outcomes", "Individual determinants",
-                       "Community determinants", "Structural determinants"),
-  "Children and Young People" =  c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included")
 )
+
+# store the names of active profiles
+# this is used in the UI to create the choices for the profile filter
+# and in the server to run the server logic for what happens when a user clicks an profile button on landing page
+active_profiles <- names(Filter(function(x) x$active == TRUE, profiles_list))
 
 
   
@@ -178,6 +286,7 @@ phs_theme <- bs_theme(
       ".btn-download {color:white; background-color:$phs-blue; border:$phs-blue;}", # data download buttons for card footers
       ".card-footer .btn-download {border:none; text-decoration:underline; color:$phs-blue; background-color:white}", # data download buttons for card footers
       ".btn-download:hover {background-color: #e0e0e0; color:black; border:#e0e0e0;}", # data download buttons on hover
+      ".profile-btn-disabled {background-color:#F4F4F4}",
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # 2 x landing page hero buttons
       ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # hover colour for landing page profile buttons
       ".btn-apply-geo-filter {margin-top:20px; background-color: orange; font-weight: bold; border: none; border-radius: 0;}", # orange apply geographies button
@@ -205,7 +314,8 @@ chart_controls_icon <- function(size = "2em") {
 
 # function to prepare datasets to be used for each sub-tab in the dashboard (called in server script when generating reactive datasets)
 prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp) that must be supplied when calling function 
-                                 selected_profile, #reactive object created in server script contains name of selected profile
+                                 selected_profile, # reactive object created in server script contains short name of selected profile
+                                 list = profiles_list,
                                  selected_areaname = NULL, 
                                  selected_areatype = NULL){
   
@@ -221,25 +331,24 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
     dt <- dt[areaname == selected_areaname]
   }
   
+  # get short name of the selected profile from the profiles list
+  profile <- pluck(list, selected_profile, "short_name")
+  
+  
   # within the technical document indicator can be assigned to one or more profile
   # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]] |
-             substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]] |
-             substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]]
+dt <- dt[substr(profile_domain1, 1, 3) == profile |
+             substr(profile_domain2, 1, 3) == profile |
+             substr(profile_domain3, 1, 3) == profile]
 
   #create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
   # is assigned to more than one profile (and therefore more than one domain)
-  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]],
+  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profile,
                              substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                             fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]],
+                             fifelse(substr(profile_domain2, 1, 3) == profile,
                                      substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
                                      substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
-  
-dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
-  
+ 
 }
-
-
-
 
   
