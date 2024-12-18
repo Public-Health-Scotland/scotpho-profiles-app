@@ -46,7 +46,10 @@ TEST_no_missing_metadata <- function(data) {
   
   assert_that(nrow(data) == 0, 
               msg = paste0("\n Metdata was not successfully joined for the following indicator(s) \n",
-                           paste(paste0("• ", data$indicator), collapse = "\n"))
+                           paste(paste0("• ", unique(data$ind_id)), collapse = "\n"),
+                           "This could be because an indicator has been made inactive in the technical document, but the file
+                           has not been removed from the shiny folder. If so, move the file(s) to the following folder: /PHI_conf/ScotPHO/Profiles/Data/Backups/Inactive Data/"
+                           )
   )
   
 }
