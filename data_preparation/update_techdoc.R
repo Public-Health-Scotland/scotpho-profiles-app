@@ -67,8 +67,9 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   technical_doc <<- technical_doc |>
     select(
       ind_id, indicator_name, type_id, interpret, supression,
-      supress_less_than, type_definition, profile_domain1,
-      profile_domain2, profile_domain3, label_inequality
+      supress_less_than, type_definition, 
+     # profile_domain1, profile_domain2, profile_domain3, 
+      label_inequality, profile_list
     )
   
   
