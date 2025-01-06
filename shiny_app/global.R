@@ -98,7 +98,7 @@ profiles_list <- list(
 # If a profile does not have an domain ordering supplied domains and indicators will sort alphbetically.
 
 profile_domain_order <- list(
-  "Care and Wellbeing" = c("Over-arching indicators","Early years","Education","Work","Living standards",
+  "Care and Wellbeing" = c("Overarching indicators","Early years","Education","Work","Living standards",
                            "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
   "Mental Health" =  c("Mental health outcomes", "Individual determinants",
                        "Community determinants", "Structural determinants"),
