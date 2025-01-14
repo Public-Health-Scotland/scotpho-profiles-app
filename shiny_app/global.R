@@ -222,25 +222,16 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
   }
   
   # within the technical document indicator can be assigned to one or more profile
-  # # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-  # dt <- dt[substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]] |
-  #            substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]] |
-  #            substr(profile_domain3, 1, 3) == profiles_list[[selected_profile]]]
-  # NEW: filter if the XXX profile code is found in the profiles_list column
-  dt <- dt[grepl(paste0(profiles_list[[selected_profile]], "-"), profile_list)]
+  #  filter if the 3-letter profile abbreviation is found in the profile_domain column
+  dt <- dt[grepl(paste0(profiles_list[[selected_profile]], "-"), profile_domain)]
   
 
-  #create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-  # is assigned to more than one profile (and therefore more than one domain)
-  # dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profiles_list[[selected_profile]],
-  #                            substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-  #                            fifelse(substr(profile_domain2, 1, 3) == profiles_list[[selected_profile]],
-  #                                    substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-  #                                    substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
-  # NEW: This code extracts the relevant profile and domain (it looks for the text after the XXX profile code and stops if a character that isn't a letter or a space is encountered, e.g., a ";")
-  dt <- dt[, domain := regmatches(profile_list, 
+  # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+  # This code extracts the relevant profile and domain (it looks for the text after the XXX profile code and stops 
+  # if a character that isn't a letter or a space is encountered, e.g., a ";")
+  dt <- dt[, domain := regmatches(profile_domain, 
                                   regexpr(paste0(profiles_list[[selected_profile]], "-([a-zA-Z*[[:blank:]]]*)*"), 
-                                          profile_list))
+                                          profile_domain))
   ][, domain := substr(domain, 5, nchar(domain))] # gets rid of the XXX profile code
   
 dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
