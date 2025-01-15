@@ -74,8 +74,7 @@ definitions_tab_Server <- function(id) {
         # filter by profile if 'all' not selected (all selected by default)
         if(input$profile_search != "All"){
           x <- x |>
-            filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% profiles_list[input$profile_search]))
+            filter(grepl(profiles_list[input$profile_search], profile_domain))
         }
         
         x
@@ -245,6 +244,7 @@ definitions_tab_Server <- function(id) {
             profile_domain1 = colDef(show = F),
             profile_domain2 = colDef(show = F),
             profile_domain3 = colDef(show = F),
+            profile_domain = colDef(show = F),
             active = colDef(show = F),
             covid_impact = colDef(show = F),
             days_since_update = colDef(show = F),

@@ -309,9 +309,7 @@ data_tab_mod_Server <- function(id) {
         if (!is.null(input$profile_selector) && input$profile_selector != "") {
           
           profile_filtered_data <- data |>
-            filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name")))
-          
+            filter(grepl(paste(input$profile_selector, collapse = "|"), profile_domain))
           
           available_indicators <- unique(profile_filtered_data$indicator)
           

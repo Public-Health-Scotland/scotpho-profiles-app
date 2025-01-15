@@ -16,7 +16,8 @@ download_data_btns_ui <- function(id, size = "sm") {
     label = "Download data", icon = icon("download"), circle = FALSE, status = 'download', size = size,
     shiny::downloadLink(ns("downloadCSV"), label = "as CSV"),
     shiny::downloadLink(ns("downloadRDS"), label = "as RDS"),
-    shiny::downloadLink(ns("downloadJSON"), label = "as JSON")
+    shiny::downloadLink(ns("downloadJSON"), label = "as JSON"),
+    shiny::downloadLink(ns("downloadParquet"), label = "as Parquet")
   )
 }
 
@@ -72,6 +73,15 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
         jsonlite::write_json(as.list(dataset()), file)
       }
     )
+    
+    # download as parquet
+    output$downloadParquet <- downloadHandler(
+      filename = paste0(file_name, "_", Sys.Date(), ".parquet"),
+      content = function(file) {
+        nanoparquet::write_parquet(dataset(), file)
+      }
+    )
+    
     
   })
 }

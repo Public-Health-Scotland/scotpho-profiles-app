@@ -29,6 +29,7 @@ library(cicerone) #for guided tours of tabs
 library(sf)
 library(DT)
 library(tidyr) # for pivot longer used in meta data tab
+library(nanoparquet) # to allow download of parquet files
 
 
 # 2. Sourcing modules, narrative text and highchart functions  ------------------------
@@ -108,7 +109,7 @@ profiles_list <- list(
   "Care & Wellbeing Portfolio" = list(
     short_name = "CWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
-    domain_order = c("Over-arching indicators","Early years","Education","Work","Living standards",
+    domain_order = c("Over arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism"),
     subtabs = all_subtabs,
     active = TRUE
@@ -205,7 +206,7 @@ profiles_list <- list(
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
   )
-)
+
 
 # store the names of active profiles
 # this is used in the UI to create the choices for the profile filter
@@ -314,7 +315,6 @@ chart_controls_icon <- function(size = "2em") {
 # function to prepare datasets to be used for each sub-tab in the dashboard (called in server script when generating reactive datasets)
 prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp) that must be supplied when calling function 
                                  selected_profile, # reactive object created in server script contains short name of selected profile
-                                 list = profiles_list,
                                  selected_areaname = NULL, 
                                  selected_areatype = NULL){
   
@@ -331,23 +331,24 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
   }
   
   # get short name of the selected profile from the profiles list
-  profile <- pluck(list, selected_profile, "short_name")
+  profile <- pluck(profiles_list, selected_profile, "short_name")
   
   
   # within the technical document indicator can be assigned to one or more profile
-  # filter rows where profile abbreviation exists in one of the 3 profile_domain columns in the technical document
-dt <- dt[substr(profile_domain1, 1, 3) == profile |
-             substr(profile_domain2, 1, 3) == profile |
-             substr(profile_domain3, 1, 3) == profile]
+  #  filter if the 3-letter profile abbreviation is found in the profile_domain column
+  dt <- dt[grepl(paste0(profiles_list[[selected_profile]], "-"), profile_domain)]
+  
 
-  #create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-  # is assigned to more than one profile (and therefore more than one domain)
-  dt <- dt[, domain := fifelse(substr(profile_domain1, 1, 3) == profile,
-                             substr(profile_domain1, 5, nchar(as.vector(profile_domain1))),
-                             fifelse(substr(profile_domain2, 1, 3) == profile,
-                                     substr(profile_domain2, 5, nchar(as.vector(profile_domain2))),
-                                     substr(profile_domain3, 5, nchar(as.vector(profile_domain3)))))]
- 
+  # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
+  # This code extracts the relevant profile and domain (it looks for the text after the XXX profile code and stops 
+  # if a character that isn't a letter or a space is encountered, e.g., a ";")
+  dt <- dt[, domain := regmatches(profile_domain, 
+                                  regexpr(paste0(profiles_list[[selected_profile]], "-([a-zA-Z*[[:blank:]]]*)*"), 
+                                          profile_domain))
+  ][, domain := substr(domain, 5, nchar(domain))] # gets rid of the XXX profile code
+  
+dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
+
 }
 
   

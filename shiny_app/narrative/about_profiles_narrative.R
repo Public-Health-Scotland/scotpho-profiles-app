@@ -169,7 +169,13 @@ about_men_text <-  navset_pill_list(
     tags$li("9 ", tags$b("individual-level determinants")), 
     tags$li("11 ", tags$b("community-level determinants")), 
     tags$li("25 ", tags$b("structural-level determinants")), 
-  p("Some indicators currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. "),
+  br(),
+  p("Some indicators identified as being important currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. These are:"),
+  tags$li(tags$b("Mental health outcomes:"), " Adult drug use disorders."), 
+  tags$li(tags$b("Individual-level determinants:"), " Sleep behaviour, Supportive family unit/relationships, Social media, Spirituality."), 
+  tags$li(tags$b("Community-level determinants:"), " Institutional trust."), 
+  tags$li(tags$b("Structural-level determinants:"), " Racism, Stigma around mental health, Climate change."),
+  br(),
   p("Adults are defined as individuals aged 16 years and over, unless otherwise stated."),
   br()
   ),
@@ -184,7 +190,7 @@ about_men_text <-  navset_pill_list(
   tags$li("7 ", tags$b("determinants related to the learning environment")), 
   tags$li("5 ", tags$b("community-level determinants")), 
   tags$li("18 ", tags$b("structural-level determinants")), 
-  p("Some indicators currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. "),
+  p("Some indicators identified as being important currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. "),
   p("The indicators cover different periods of childhood, from pre-birth to early adulthood."),
   br()
   )
