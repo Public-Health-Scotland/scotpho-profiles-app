@@ -187,17 +187,7 @@ profiles_list <- list(
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
   ),
-  
-  # # Child poverty - (not yet confirmed)
-  # "Child Poverty" = list(
-  #   short_name = "CPP",
-  #   homepage_description = markdown("Under development - not yet available"),
-  #   domain_order = NULL,
-  #   subtabs = c("trends_tab", "rank_tab", "simd_tab"),
-  #   active = FALSE
-  # ),
-  # 
-  
+
   # All Child Mental Health info
   "Child Mental Health" = list(
     short_name = "CMH",
@@ -206,6 +196,8 @@ profiles_list <- list(
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
   )
+  
+)
 
 
 # store the names of active profiles
@@ -257,8 +249,6 @@ phs_theme <- bs_theme(
   bootswatch = "shiny", # use default shiny theme
   primary = "#0078D4", # make primary colour blue - this will change i.e. active pill colour
   "form-label-font-weight" = "550"#, # font-weight for filter labels
-  #"nav-tabs-link-active-bg" = phs_colours(colourname = "phs-magenta-10"), # multi-tab cards colour when selected
-  #"nav-tabs-link-active-color" = "black" # multi-tab cards font colour when selected
   ) |>
   # create colour variables to use below
   bs_add_variables(
@@ -336,14 +326,14 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
   
   # within the technical document indicator can be assigned to one or more profile
   #  filter if the 3-letter profile abbreviation is found in the profile_domain column
-  dt <- dt[grepl(paste0(profiles_list[[selected_profile]], "-"), profile_domain)]
+  dt <- dt[grepl(profile, profile_domain)]
   
 
   # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
   # This code extracts the relevant profile and domain (it looks for the text after the XXX profile code and stops 
   # if a character that isn't a letter or a space is encountered, e.g., a ";")
   dt <- dt[, domain := regmatches(profile_domain, 
-                                  regexpr(paste0(profiles_list[[selected_profile]], "-([a-zA-Z*[[:blank:]]]*)*"), 
+                                  regexpr(paste0(profile, "-([a-zA-Z*[[:blank:]]]*)*"), 
                                           profile_domain))
   ][, domain := substr(domain, 5, nchar(domain))] # gets rid of the XXX profile code
   
