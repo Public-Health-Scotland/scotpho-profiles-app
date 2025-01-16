@@ -183,15 +183,16 @@ page_navbar(
                        # summary sub-tab
                        nav_panel(title = "Summary", value = "summary_tab",
                                  
-                                 # only display this card when Care and Wellbeing selected
-                                 conditionalPanel(condition = "input.profile_choices == 'Care and Wellbeing'",
-                                                  br(),
-                                                  card(max_height = 150,
-                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Indicator set in development",class = "info-box-header"),
-                                                       p("The Care and Wellbeing indicator set will be further developed following user feedback. If you have any feedback please contact us at",
-                                                         tags$a("phs.scotpho@phs.scot.", href = "mailto:phs.scotpho@phs.scot?subject=Care%20and%20Wellbeing%20Indicator%20Feedback"))
-                                                       )
-                                                  ),
+                                 # Display message at top of summary tab for specific profiles only
+                                 # commenting out Jan 2025 but leaving script as placeholder as new text may come along 
+                                 # conditionalPanel(condition = "input.profile_choices == 'Care and Wellbeing'",
+                                 #                  br(),
+                                 #                  card(max_height = 150,
+                                 #                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Indicator set in development",class = "info-box-header"),
+                                 #                       p("The Care and Wellbeing indicator set will be further developed following user feedback. If you have any feedback please contact us at",
+                                 #                         tags$a("phs.scotpho@phs.scot.", href = "mailto:phs.scotpho@phs.scot?subject=Care%20and%20Wellbeing%20Indicator%20Feedback"))
+                                 #                       )
+                                 #                  ),
                                  # only display this card when Mental Health profile selected
                                  conditionalPanel(condition = "input.profile_choices == 'Mental Health'",
                                                   br(),
