@@ -74,6 +74,14 @@ page_navbar(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
+                          # Correction of Emergency admissions, aged 65+ years indicator
+                          div(
+                            h4("23/01/2025 : Correction of emergency admissions, aged 65+ years indicator", class = "profile-header"),
+                            p("We have recently identified an issue with code calculating emergency admissions, aged 65+ years figures. A correction has been made and revised figures are now available in this tool.
+                            Previously published indicator data underestimated both indicator numerators and rates across all geographies and over the full time series.
+                            If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                          ),
+                          hr(),
                 # Profiles tool re-design info
                 div(
                   h4("Profiles Tool Redesign", class = "profile-header"),
