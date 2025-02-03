@@ -85,9 +85,7 @@ rank_mod_ui <- function(id) {
                       value = ns("rank_chart_tab"), #id for guided tour
                       uiOutput(ns("rank_title")), # title
                       highchartOutput(ns("rank_chart")) |> # chart
-                        withSpinner() |> (\(x) {
-                          x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-                          x})()
+                        withSpinner() |> bslib::as_fill_carrier()
             ),
             
             # data tab
@@ -124,9 +122,7 @@ rank_mod_ui <- function(id) {
           height = 600,
           full_screen = TRUE,
           leafletOutput(ns("rank_map")) |> # map
-            withSpinner() |> (\(x) {
-              x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-              x})()
+            withSpinner() |> bslib::as_fill_carrier()
         ))
         
       ) # close layout column wrap

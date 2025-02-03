@@ -74,9 +74,7 @@ simd_navpanel_ui <- function(id) {
               highchartOutput(ns("left_chart")) |> # chart
                 # note this is the recommended way to add a chart spinner 
                 # to a chart being held inside a bslib card
-                withSpinner() |> (\(x) {
-                  x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-                  x})()
+                withSpinner() |> bslib::as_fill_carrier()
             ),
             
             # Data tab 
@@ -135,9 +133,7 @@ simd_navpanel_ui <- function(id) {
               highchartOutput(ns("right_chart")) |>
                 # note this is the recommended way to add a chart spinner 
                 # to a chart being held inside a bslib card
-                withSpinner() |> (\(x) {
-                  x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-                  x})()
+                withSpinner() |> bslib::as_fill_carrier()
             ),
             
             # data tab 
