@@ -55,19 +55,20 @@ page_navbar(
                            navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info"), class = "btn-hero"),
                            navigation_button_modUI(button_id="explore_indicators", button_name = "About indicators/updates", button_icon = icon("circle-info"), class = "btn-hero")
                          ),
+                         
                          # buttons to navigate to profile tabs
+                         # this piece of code goes through the named profiles list from the global script, and for each profile,
+                         # generates a profile button using the name of the profile and the homepage description 
+                         # note: setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
                          profile_buttons = layout_column_wrap(
                            style = "padding: 15px;", width = 1/3,
-                             profile_homepage_btn_modUI(id = "hwb_nav", profile_name = "Health and Wellbeing", description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**.")),
-                             profile_homepage_btn_modUI(id = "cwb_nav", profile_name = "Care and Wellbeing Portfolio", description = markdown("View indicators relating to **Population health**, **Inequalities** and **Wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio).")),
-                             profile_homepage_btn_modUI(id = "men_nav", profile_name = "Adult Mental Health", description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people.")),
-                             profile_homepage_btn_modUI(id = "tob_nav", profile_name = "Tobacco Control", description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**")),
-                             profile_homepage_btn_modUI(id = "alc_nav", profile_name = "Alcohol", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
-                             profile_homepage_btn_modUI(id = "drg_nav", profile_name = "Drugs", description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**.")),
-                             profile_homepage_btn_modUI(id = "cyp_nav", profile_name = "Children and Young People", description = markdown("View indicators relating to the **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured** domains.")),
-                             profile_homepage_btn_modUI(id = "pop_nav", profile_name = "Population", description = markdown("View **population estimates** for different age groups.")),
-                             profile_homepage_btn_modUI(id = "all_nav", profile_name = "All Indicators", description = markdown("View **all indicators** in this tool from across every profile."))
-                           ),
+                           !!!lapply(names(profiles_list), function(profile) {
+                             profile_homepage_btn_modUI(id = profile, 
+                                                        profile_name = profile, 
+                                                        description = profiles_list[[profile]]$homepage_description,
+                                                        class = ifelse(profiles_list[[profile]]$active == TRUE, "profile-btn", "profile-btn-disabled"))
+                           })
+                         ),
 
             whats_new = layout_columns(
               width = 1,
@@ -133,7 +134,7 @@ page_navbar(
                 hidden(div(id = "prof_filter_hidden",
                       selectizeInput(inputId = "profile_choices", 
                                      label = "", 
-                                     choices = names(profiles_list),  # manually written list declared in global script
+                                     choices =  active_profiles, #declared in global script
                                      options = list(onInitialize = I('function() { this.setValue(""); }')))
                     )),
               # geography header with button
@@ -236,11 +237,11 @@ page_navbar(
                        # note there is only text for the 5 profiles listed below at the moment
                        nav_panel(title = "About this profile", value = "about_profile_tab",
                                  br(),
-                                 conditionalPanel("input.profile_choices == 'Health and Wellbeing'", about_hwb_text),
-                                 conditionalPanel("input.profile_choices == 'Care and Wellbeing'", about_cwb_text),
-                                 conditionalPanel("input.profile_choices == 'Mental Health'", about_men_text),
+                                 conditionalPanel("input.profile_choices == 'Health & Wellbeing'", about_hwb_text),
+                                 conditionalPanel("input.profile_choices == 'Care & Wellbeing Portfolio'", about_cwb_text),
+                                 conditionalPanel("input.profile_choices == 'Adult Mental Health'", about_men_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
-                                 conditionalPanel("input.profile_choices == 'Children and Young People'", about_cyp_text)
+                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text)
                        )
 
                        

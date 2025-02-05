@@ -15,10 +15,10 @@
 
 # module ui function
 # icon and description of the profile are optional arguments
-profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, description = NULL){
+profile_homepage_btn_modUI <- function(id, profile_icon = NULL, profile_name, description = NULL, class = NULL){
   ns <- NS(id)
   tagList(
-    bslib::card(class = "profile-btn",
+    bslib::card(class = class,
       full_screen = FALSE,
       bslib::card_body(
         actionLink(inputId = ns("profile_nav"), style = "text-decoration: none; color: black;",
