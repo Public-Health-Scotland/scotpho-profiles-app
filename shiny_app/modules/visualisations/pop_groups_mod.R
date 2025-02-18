@@ -43,9 +43,8 @@ pop_groups_ui <- function(id) {
             bslib::nav_panel("Chart",
                              uiOutput(ns("pop_rank_title")), # title 
                              highchartOutput(ns("pop_rank_chart")) |> # chart 
-                               withSpinner() |> (\(x) {
-                                 x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-                                 x})()
+                               withSpinner() |> 
+                               bslib::as_fill_carrier() 
             ),
             
             # tab 2: data table
@@ -89,9 +88,9 @@ pop_groups_ui <- function(id) {
             bslib::nav_panel("Chart",
                              uiOutput(ns("pop_trend_title")), # title
                              highchartOutput(ns("pop_trend_chart")) |> # chart
-                               withSpinner() |> (\(x) {
-                                 x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-                                 x})()
+                               withSpinner() |> 
+                               bslib::as_fill_carrier() 
+
             ),
             # tab 2: data table 
             bslib::nav_panel("Table",

@@ -92,9 +92,8 @@ trend_mod_ui <- function(id) {
                   uiOutput(ns("trend_title")), # title 
                   uiOutput(ns("trend_caveats")), # caveats
                   highchartOutput(outputId = ns("trend_chart")) |> # chart
-                    withSpinner() |> (\(x) {
-                      x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
-                      x})()
+                    withSpinner() |> 
+                    bslib::as_fill_carrier() 
         ), 
         
         # data tab ------------------
