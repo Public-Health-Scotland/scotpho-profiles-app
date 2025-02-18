@@ -16,6 +16,7 @@ simd_navpanel_ui <- function(id) {
       
       # sidebar for filters -----
       sidebar = sidebar(width = 300,
+                        open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                         
                         # indicator filter (note this is a module)
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),

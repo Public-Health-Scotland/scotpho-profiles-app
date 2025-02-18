@@ -21,6 +21,7 @@ trend_mod_ui <- function(id) {
       height = "80%",
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
+                        open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                         accordion(
                           open = c("indicator_filter_panel", "geo_filter_panel"), # guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
