@@ -14,10 +14,12 @@ page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
-  collapsible = TRUE, # collapse tabs on smaller screens
   lang = "en",
-  bg = phs_colours(colourname = "phs-purple"), # background navbar colour
   theme = phs_theme, # dashboard theme - defined in global script
+  navbar_options = navbar_options(
+    bg = phs_colours(colourname = "phs-purple"), # background navbar colour
+    collapsible = TRUE # collapse tabs on smaller screens
+  ),
   # place external scripts in footer argument to avoid warnings as recommended by package developers
   header = tags$head(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
