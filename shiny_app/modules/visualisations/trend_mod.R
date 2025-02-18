@@ -91,7 +91,10 @@ trend_mod_ui <- function(id) {
                   value = ns("trend_chart_tab"), #id for guided tour
                   uiOutput(ns("trend_title")), # title 
                   uiOutput(ns("trend_caveats")), # caveats
-                  highchartOutput(outputId = ns("trend_chart")) # chart
+                  highchartOutput(outputId = ns("trend_chart")) |> # chart
+                    withSpinner() |> (\(x) {
+                      x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                      x})()
         ), 
         
         # data tab ------------------
@@ -126,10 +129,11 @@ trend_mod_ui <- function(id) {
         ),
         
         # footer with download buttons
-        card_footer(class = "d-flex justify-content-left",
+        footer = card_footer(class = "d-flex justify-content-left",
                     div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
                     div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
-      )) # close navset card pill
+      )
+      ) # close navset card pill
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 

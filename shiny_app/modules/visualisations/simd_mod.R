@@ -59,7 +59,6 @@ simd_navpanel_ui <- function(id) {
       # Left hand side card 
       layout_column_wrap(
         1/2,
-        suppressWarnings(
           navset_card_pill(
             id = ns("left_card"),
             height = 650,
@@ -74,7 +73,9 @@ simd_navpanel_ui <- function(id) {
               highchartOutput(ns("left_chart")) |> # chart
                 # note this is the recommended way to add a chart spinner 
                 # to a chart being held inside a bslib card
-                withSpinner() |> bslib::as_fill_carrier()
+                withSpinner() |> (\(x) {
+                  x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                  x})()
             ),
             
             # Data tab 
@@ -110,15 +111,13 @@ simd_navpanel_ui <- function(id) {
             ),
             
             # card footer with download buttons
-            card_footer(
+            footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_left_chart")),
               download_data_btns_ui(ns("save_left_data")))
-          )
-        ),
+          ),
         
         # right hand side card 
-        suppressWarnings(
           navset_card_pill(
             id = ns("right_card"),
             height = 650,
@@ -133,7 +132,9 @@ simd_navpanel_ui <- function(id) {
               highchartOutput(ns("right_chart")) |>
                 # note this is the recommended way to add a chart spinner 
                 # to a chart being held inside a bslib card
-                withSpinner() |> bslib::as_fill_carrier()
+                withSpinner() |> (\(x) {
+                  x[[4]] <- x[[4]] |> bslib::as_fill_carrier() 
+                  x})()
             ),
             
             # data tab 
@@ -161,12 +162,11 @@ simd_navpanel_ui <- function(id) {
             ),
             
             # card footer with download buttons
-            card_footer(
+            footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_right_chart")),
               download_data_btns_ui(ns("save_right_data")))
           )
-        )
       )
     )
   )
