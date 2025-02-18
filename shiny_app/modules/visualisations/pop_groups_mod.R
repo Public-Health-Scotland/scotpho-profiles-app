@@ -32,7 +32,7 @@ pop_groups_ui <- function(id) {
       
       
       layout_column_wrap(
-        1/2,
+        width = 1/2,
         
         # Bar chart card ----
           bslib::navset_card_pill(

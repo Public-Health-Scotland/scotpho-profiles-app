@@ -58,7 +58,7 @@ simd_navpanel_ui <- function(id) {
       
       # Left hand side card 
       layout_column_wrap(
-        1/2,
+        width = 1/2,
           navset_card_pill(
             id = ns("left_card"),
             height = 650,
