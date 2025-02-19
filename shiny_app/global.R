@@ -28,7 +28,7 @@ library(cicerone) #for guided tours of tabs
 library(sf)
 library(DT)
 library(tidyr) # for pivot longer used in meta data tab
-library(nanoparquet) # to allow download of parquet files
+library(nanoparquet) # reading/writing parquet files
 
 
 # 2. Sourcing modules, narrative text and highchart functions  ------------------------
