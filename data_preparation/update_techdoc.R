@@ -19,7 +19,7 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   # Save back needs to occur before column selections/data manipulations applied. 
   if (create_backup==TRUE){
     ## Optional - generate a techdoc backup - suggested to run only when deploying live shiny app otherwise this line can be skipped
-    write_parquet(technical_doc_raw, paste0(backups, "techdoc-", Sys.Date())) # version for backups folder
+    write_parquet(technical_doc_raw, paste0(backups, "techdoc-", Sys.Date(), ".parquet"), compression = "zstd") # version for backups folder
   } 
   
   
@@ -47,7 +47,7 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   
   
   ## Save file -----
-  write_parquet(technical_doc, "shiny_app/data/techdoc") # version for local shiny app
+  write_parquet(technical_doc, "shiny_app/data/techdoc.parquet", compression = "zstd") # version for local shiny app
   
   
   ## DO WE USE PROFILE LOOKUP ANYWHERE? -COULD IT SAVE processing in the shiny app?
