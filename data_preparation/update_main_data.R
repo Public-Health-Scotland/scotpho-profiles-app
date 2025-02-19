@@ -143,7 +143,7 @@ main_dataset <- create_geography_path_column(main_dataset)
 main_dataset <<- main_dataset
 
 ## save final file to local repo
-write_parquet(main_dataset, "shiny_app/data/main_dataset.parquet", compression = "zstd")
+write_parquet(main_dataset, "shiny_app/data/main_dataset", compression = "zstd")
 
 ## Optional: Create backup of from local repo -----
 ## Usually would only want to create a backup if you intend to update live tool

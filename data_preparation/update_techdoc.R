@@ -19,7 +19,7 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   # Save back needs to occur before column selections/data manipulations applied. 
   if (create_backup==TRUE){
     ## Optional - generate a techdoc backup - suggested to run only when deploying live shiny app otherwise this line can be skipped
-    write_parquet(technical_doc_raw, paste0(backups, "techdoc-", Sys.Date(), ".parquet"), compression = "zstd") # version for backups folder
+    write_parquet(technical_doc_raw, paste0(backups, "techdoc-", Sys.Date()), compression = "zstd") # version for backups folder
   } 
   
   

@@ -79,7 +79,7 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   popgroup_dataset <<- popgroup_dataset
   
   ## save final file to local repo
-  write_parquet(popgroup_dataset, "shiny_app/data/popgroup_dataset.parquet", compression = "zstd")
+  write_parquet(popgroup_dataset, "shiny_app/data/popgroup_dataset", compression = "zstd")
   
   ## Optional: Create backup of from local repo -----
   ## Usually would only want to create a backup if you intend to update live tool
