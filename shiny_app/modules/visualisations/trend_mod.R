@@ -21,6 +21,7 @@ trend_mod_ui <- function(id) {
       height = "80%",
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
+                        open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                         accordion(
                           open = c("indicator_filter_panel", "geo_filter_panel"), # guided tour panel closed by default
                           multiple = TRUE, # allow multiple panels to be open at once
@@ -91,7 +92,9 @@ trend_mod_ui <- function(id) {
                   value = ns("trend_chart_tab"), #id for guided tour
                   uiOutput(ns("trend_title")), # title 
                   uiOutput(ns("trend_caveats")), # caveats
-                  highchartOutput(outputId = ns("trend_chart")) # chart
+                  highchartOutput(outputId = ns("trend_chart")) |> # chart
+                    withSpinner() |> 
+                    bslib::as_fill_carrier() 
         ), 
         
         # data tab ------------------
@@ -126,10 +129,11 @@ trend_mod_ui <- function(id) {
         ),
         
         # footer with download buttons
-        card_footer(class = "d-flex justify-content-left",
+        footer = card_footer(class = "d-flex justify-content-left",
                     div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
                     div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
-      )) # close navset card pill
+      )
+      ) # close navset card pill
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 
@@ -233,7 +237,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Intermediate zone' is available, enable the filter otherwise disable it
       if("Intermediate zone" %in% available_areatypes){
         shinyjs::enable("iz_filter")
-        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections())
+        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections(), server = TRUE)
       } else {
         updateSelectizeInput(session, "iz_filter", options = list(placeholder = "Unavailable"), selected = character(0))
         shinyjs::disable("iz_filter")

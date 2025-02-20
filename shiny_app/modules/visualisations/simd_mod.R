@@ -16,6 +16,7 @@ simd_navpanel_ui <- function(id) {
       
       # sidebar for filters -----
       sidebar = sidebar(width = 300,
+                        open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                         
                         # indicator filter (note this is a module)
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
@@ -58,8 +59,7 @@ simd_navpanel_ui <- function(id) {
       
       # Left hand side card 
       layout_column_wrap(
-        1/2,
-        suppressWarnings(
+        width = 1/2,
           navset_card_pill(
             id = ns("left_card"),
             height = 650,
@@ -72,9 +72,8 @@ simd_navpanel_ui <- function(id) {
                 uiOutput(ns("left_chart_header")) # chart header 
               ),
               highchartOutput(ns("left_chart")) |> # chart
-                # note this is the recommended way to add a chart spinner 
-                # to a chart being held inside a bslib card
-                withSpinner() |> bslib::as_fill_carrier()
+                withSpinner() |> 
+                bslib::as_fill_carrier() 
             ),
             
             # Data tab 
@@ -110,15 +109,13 @@ simd_navpanel_ui <- function(id) {
             ),
             
             # card footer with download buttons
-            card_footer(
+            footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_left_chart")),
               download_data_btns_ui(ns("save_left_data")))
-          )
-        ),
+          ),
         
         # right hand side card 
-        suppressWarnings(
           navset_card_pill(
             id = ns("right_card"),
             height = 650,
@@ -131,9 +128,8 @@ simd_navpanel_ui <- function(id) {
                 uiOutput(ns("right_chart_header"))
               ),
               highchartOutput(ns("right_chart")) |>
-                # note this is the recommended way to add a chart spinner 
-                # to a chart being held inside a bslib card
-                withSpinner() |> bslib::as_fill_carrier()
+                withSpinner() |> 
+                bslib::as_fill_carrier() 
             ),
             
             # data tab 
@@ -161,12 +157,11 @@ simd_navpanel_ui <- function(id) {
             ),
             
             # card footer with download buttons
-            card_footer(
+            footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_right_chart")),
               download_data_btns_ui(ns("save_right_data")))
           )
-        )
       )
     )
   )

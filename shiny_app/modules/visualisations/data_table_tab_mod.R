@@ -15,6 +15,8 @@ data_tab_modUI <- function(id) {
   tagList(
     page_sidebar(padding = 20, gap = 20,
                        sidebar = sidebar(width = 300, padding = 20,
+                                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
+                                         
                                          # clear filters button
                                          actionButton(ns("clear_table_filters"),
                                                       label = "Clear all filters",
