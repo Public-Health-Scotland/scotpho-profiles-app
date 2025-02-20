@@ -251,7 +251,7 @@ function(input, output, session) {
     }
   }) |>
     # cache the filtered dataset
-    # this results in improved performance if there's than 1 user looking at the same profile 
+    # this results in improved performance if there's more than 1 user looking at the same profile 
     bindCache(input$profile_choices)  
   
   
