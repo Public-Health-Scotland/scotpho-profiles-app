@@ -28,7 +28,7 @@ library(openxlsx) # for reading in technical document / converting excel dates
 library(readr) # for reading csv files
 library(data.table) # for quickly combining multiple files
 #library(scales) # for re-scaling measures
-library(arrow) # for writing parquet files
+library(nanoparquet) # for writing parquet files
 library(janitor) # for cleaning column names
 library(assertthat) # for data validation tests
 library(purrr) # for copying multiple files at once
