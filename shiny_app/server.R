@@ -235,8 +235,7 @@ function(input, output, session) {
   ###################################################.
   
   # 1. MAIN DATASET FILTERED BY PROFILE
-  # searches for the abbreviated name of the selected profile across the 3 profile columns in the main dataset
-  # note: there are 3 profile columns because some indicators belong to more than 1 profile 
+  # searches for the abbreviated name of the selected profile across the profile_domain column
   # if 'all indicators' is selected then entire dataset is used instead
   # this dataset is passed to the trends tab module
   # it's also used to create a smaller dataset which further filters by selected areatype
@@ -250,7 +249,10 @@ function(input, output, session) {
         selected_profile = input$profile_choices
       )
     }
-  })
+  }) |>
+    # cache the filtered dataset
+    # this results in improved performance if there's than 1 user looking at the same profile 
+    bindCache(input$profile_choices)  
   
   
   
