@@ -89,7 +89,7 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   
  
   #write parquet file to shiny app data folder
-  write_parquet(deprivation_dataset, "shiny_app/data/deprivation_dataset")
+  write_parquet(deprivation_dataset, "shiny_app/data/deprivation_dataset", compression = "zstd")
   
   
   ## Optional: Create backup of from local repo -----
