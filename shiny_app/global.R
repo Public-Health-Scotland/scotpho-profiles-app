@@ -12,7 +12,6 @@ library(phsstyles) # for phs colour palette
 library(shinyjs) # for various functions to expand/collapse geography filters 
 library(htmltools) # for landing page template to read
 library(purrr) # needed for sourcing modules with map
-library(arrow) # for reading parquet files
 library(reactable) # data tables
 library(highcharter) # visualisations
 library(data.table) # faster data wrangling
