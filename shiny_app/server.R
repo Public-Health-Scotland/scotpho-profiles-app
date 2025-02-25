@@ -261,7 +261,7 @@ function(input, output, session) {
   areatype_data <- reactive({
     req(profile_data())
     profile_data() |>
-      filter(areatype == input$areatype | areatype == "Scotland")
+      filter(areatype == geo_selections()$areatype | areatype == "Scotland")
   })
   
   
@@ -278,8 +278,8 @@ function(input, output, session) {
     prepare_profile_data(
       dataset = simd_dataset,
       selected_profile = input$profile_choices,
-      selected_areatype = input$areatype,
-      selected_areaname = input$areaname
+      selected_areatype = geo_selections()$areatype,
+      selected_areaname = geo_selections()$areaname
     )}
   })
   
@@ -292,8 +292,8 @@ function(input, output, session) {
     prepare_profile_data(
       dataset = popgroup_dataset,
       selected_profile = input$profile_choices,
-      selected_areatype = input$areatype,
-      selected_areaname = input$areaname
+      selected_areatype = geo_selections()$areatype,
+      selected_areaname = geo_selections()$areaname
     )
   })
 
