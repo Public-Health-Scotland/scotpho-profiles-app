@@ -7,7 +7,6 @@
 
 about_cwb_text <- navset_pill_list(
   widths = c(3, 9),
-  br(),
   nav_panel("Overview",
   h3("Overview"),
   p("The Care & Wellbeing Profile is one source of data and intelligence to support the ambitions of the ",
@@ -62,7 +61,6 @@ about_cwb_text <- navset_pill_list(
 
 about_hwb_text <- navset_pill_list(
   widths = c(3, 9),
-  br(),
 nav_panel("Overview",
 h3("Overview"),
 p("The ScotPHO Health and Wellbeing profiles are designed to provide a broad picture of health in Scotland, highlight health and social inequalities and aim
@@ -88,7 +86,6 @@ br()
 
 about_cyp_text <- navset_pill_list(
   widths = c(3, 9),
-  br(),
   nav_panel("Overview",
   h5("Overview"),
   p("The Scottish Public Health Observatory (ScotPHO) Children and Young People’s Profile presents a wide range of data at national, local authority, NHS board, health & social care partnership and, where available, intermediate zone level.
@@ -123,7 +120,6 @@ about_cyp_text <- navset_pill_list(
 
 about_alc_text <- navset_pill_list(
   widths = c(3, 9),
-  br(),
   nav_panel("Overview",
   h3("Overview"),
   p("The Scottish Public Health Observatory (ScotPHO) Alcohol Profile presents a range of data at national, local authority, NHS board, health & social care partnership and, where available, intermediate zone level.
@@ -145,7 +141,6 @@ about_alc_text <- navset_pill_list(
 
 about_men_text <-  navset_pill_list(
   widths = c(3, 9),
-  br(),
   nav_panel("Overview",
   h3("Overview"),
   p("The Mental Health Profile is the result of Public Health Scotland's ",
@@ -180,7 +175,7 @@ about_men_text <-  navset_pill_list(
   br()
   ),
   nav_panel("Mental Health Profile for Children and Young People",
-  h5("Mental Health Profile for Children and Young People"),
+  h3("Mental Health Profile for Children and Young People"),
   p("The ",
     tags$a("children and young people's mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/children-and-young-people-mental-health-indicators/", target="_blank"),
     "includes 70 indicators grouped into six high-level \"domains\":"),

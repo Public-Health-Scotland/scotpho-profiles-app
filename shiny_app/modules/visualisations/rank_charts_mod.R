@@ -23,6 +23,7 @@ rank_mod_ui <- function(id) {
 
       # sidebar for filters ------------------
       sidebar = sidebar(width = 300,
+                        open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                         
 
                         # indicator filter (note this is a module)
@@ -71,10 +72,6 @@ rank_mod_ui <- function(id) {
       
       layout_column_wrap(
         # bar chart card ----------------------
-        # NOTE: the 'footer' argument for navset_card_pill() is currently not working
-        # package maintainers are aware and working on a fix
-        # using the card_footer argument for card() in the meantime and suppressing warnings until bug fixed
-        suppressWarnings(
           navset_card_pill(
             id = ns("rank_navset_card_pill"),
             full_screen = TRUE,
@@ -85,7 +82,8 @@ rank_mod_ui <- function(id) {
                       value = ns("rank_chart_tab"), #id for guided tour
                       uiOutput(ns("rank_title")), # title
                       highchartOutput(ns("rank_chart")) |> # chart
-                        withSpinner() |> bslib::as_fill_carrier()
+                        withSpinner() |> 
+                        bslib::as_fill_carrier() 
             ),
             
             # data tab
@@ -110,10 +108,10 @@ rank_mod_ui <- function(id) {
               )
             )
             ),
-            card_footer(class = "d-flex justify-content-left",
+            footer = card_footer(class = "d-flex justify-content-left",
                         div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
                         div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
-          )),
+          ),
        
         # map card -------------------
         
@@ -122,7 +120,8 @@ rank_mod_ui <- function(id) {
           height = 600,
           full_screen = TRUE,
           leafletOutput(ns("rank_map")) |> # map
-            withSpinner() |> bslib::as_fill_carrier()
+            withSpinner() |> 
+            bslib::as_fill_carrier() 
         ))
         
       ) # close layout column wrap
