@@ -47,7 +47,7 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
   
   
   ## Save file -----
-  write_parquet(technical_doc, "shiny_app/data/techdoc.parquet", compression = "zstd") # version for local shiny app
+  write_parquet(technical_doc, "shiny_app/data/techdoc", compression = "zstd") # version for local shiny app
   
   
   ## DO WE USE PROFILE LOOKUP ANYWHERE? -COULD IT SAVE processing in the shiny app?
