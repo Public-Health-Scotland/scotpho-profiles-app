@@ -41,7 +41,7 @@ TEST_no_missing_indicators <- function(data) {
 ## Test 3: Ensure there are no indicators with missing metadata
 TEST_no_missing_metadata <- function(data) {
   
-  data <- main_dataset |>
+  data <- data |>
     filter(is.na(indicator))
   
   assert_that(nrow(data) == 0, 
