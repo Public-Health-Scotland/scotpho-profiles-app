@@ -41,12 +41,12 @@ TEST_no_missing_indicators <- function(data) {
 ## Test 3: Ensure there are no indicators with missing metadata
 TEST_no_missing_metadata <- function(data) {
   
-  data <- data |>
+  data <- main_dataset |>
     filter(is.na(indicator))
   
   assert_that(nrow(data) == 0, 
               msg = paste0("\n Metdata was not successfully joined for the following indicator(s) \n",
-                           paste(paste0("• ", data$indicator), collapse = "\n"))
+                           paste(paste0("• ", unique(data$ind_id)), collapse = "\n"))
   )
   
 }
