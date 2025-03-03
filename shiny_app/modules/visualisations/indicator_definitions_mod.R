@@ -33,15 +33,13 @@ definitions_tab_UI <- function(id) {
       selectizeInput(ns("profile_search"), 
                      label = "Filter by profile", 
                      multiple = TRUE,
-                     choices = as.list(c("All", names(profiles_list))),
-                     selected = "All",
+                     choices = setdiff(active_profiles, "All indicators"),
                      options = list(placeholder = 'Select a profile')
       ),
       # geography level filter 
       selectizeInput(ns("geo_search"), 
                      label = "Filter by geography level",
-                     choices = areatype_list,
-                     selected = "Scotland",
+                     choices = setdiff(areatype_list, "Scotland"),
                      multiple = TRUE,
                      options = list(placeholder = 'Select geography level(s)'))
     ),
@@ -67,17 +65,28 @@ definitions_tab_Server <- function(id) {
       # Reactive data to be used in table
       tech_info <- reactive({
         
-        # filter by selected geography (scotland by default unless user changes)
-        x <- techdoc |>
-          filter(grepl(paste(input$geo_search, collapse="|"), available_geographies))
-        
-        # filter by profile if 'all' not selected (all selected by default)
-        if(input$profile_search != "All"){
-          x <- x |>
-            filter(grepl(profiles_list[input$profile_search], profile_domain))
+        # if no profile has been selected, then select all indicators 
+        if(is.null(input$profile_search)){
+          x <- techdoc 
+        } else {
+          x <- techdoc |>
+            filter(grepl(pluck(profiles_list, input$profile_search)$short_name, profile_domain))
         }
         
-        x
+        
+        # if no geography has been selected, then select all indicators
+        # within selected profile (if any selected)
+        if(is.null(input$geo_search)){
+          x
+        } else {
+          x <- x |>
+            filter(grepl(paste(input$geo_search, collapse="|"), available_geographies))
+        }
+        
+        
+        # arrange alphabetically by indicator name
+        x <- x |>
+          arrange(indicator_name)
         
       })
       
