@@ -57,8 +57,9 @@ combine_files <- function(file_list) {
     # add column that includes filename
     data$file_name <- basename(x)
     
-    # make numerator column class numeric
-    data$numerator <- as.numeric(data$numerator)
+    # make some columns numeric 
+    data <- data |>
+      mutate(across(c("numerator", "denominator", "year"), ~ as.numeric(.)))
     
     #rename column
     colnames(data)[colnames(data) == 'rate'] <- 'measure'
