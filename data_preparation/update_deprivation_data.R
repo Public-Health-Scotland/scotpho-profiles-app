@@ -84,7 +84,6 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   # Make dataset visible outside of function
   deprivation_dataset <<- deprivation_dataset %>%
     select(-c("file_name", "parent_area", # deselect columns not required in shiny app
-              #"areaname_full" #areaname_full required to make validation test work
               "supression", "supress_less_than")) # additional columns need to be removed to make the validation test work for ineq data
   
  

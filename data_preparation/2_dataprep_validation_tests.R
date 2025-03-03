@@ -56,7 +56,7 @@ TEST_no_missing_metadata <- function(data) {
 TEST_no_missing_geography_info <- function(data) {
   
   data <- data |>
-    filter(is.na(areaname_full))
+    filter(is.na(areaname))
   
   assert_that(nrow(data) == 0, 
               msg = paste0("\n The following geography code(s) were not found in the geography lookup, either because they are invalid OR because they are 'old' codes no longer in use\n",

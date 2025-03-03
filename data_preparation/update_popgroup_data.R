@@ -67,7 +67,7 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
   #rename and select columns required for shiny file
   popgroup_dataset <- popgroup_dataset |>
   rename(indicator = indicator_name) |>
-    select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
+    select(-c(supression, supress_less_than, type_id, file_name, label_inequality, areaname_full))
   
   # create a new column which contains the full geography path
   # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
