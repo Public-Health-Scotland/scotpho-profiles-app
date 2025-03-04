@@ -28,17 +28,19 @@ profile_select <- "CWB" #you can manually change the profile you're interested i
 
 main_summary <- main_dataset |>
   #select only indicators that are present in selected profile
-  filter(grepl(paste0(profile_select,"-"),profile_list)) |>
+  filter(grepl(paste0(profile_select,"-"),profile_domain)) |>
   #extract the correct domain based on the profiles selected
-  mutate(domain=regmatches(profile_list, regexpr(paste0(profile_select, "-([a-zA-Z*[[:blank:]]]*)*"),profile_list))) |>
-  group_by(domain,areatype,indicator) |>
+  mutate(domain=regmatches(profile_domain, regexpr(paste0(profile_select, "-([a-zA-Z*[[:blank:]]]*)*"),profile_domain))) |>
+  group_by(ind_id) |>
+  mutate(max_year = def_period [which.max(year)]) |> # determine latest time period loaded for each indicator 
+  ungroup () |>
+  group_by(domain,areatype,indicator, max_year) |>
   summarise(count=n()) |>
-  mutate(count=case_when(count>0 ~ "Y", TRUE ~ "")) |>
+  mutate(count=case_when(count>0 ~ "Y", TRUE ~ ""))|>
   arrange(areatype)|>
-  ungroup() |>
+  ungroup()|>
   pivot_wider(names_from = areatype, values_from = count) |>
   arrange(domain, indicator)
-
 
 write_csv(main_summary, file = paste0(data_folder, "Data to be checked/Main Summary_",profile_select,Sys.Date(),".csv"), na="")  
 
@@ -49,10 +51,9 @@ write_csv(main_summary, file = paste0(data_folder, "Data to be checked/Main Summ
 
 popgroup_summary <- popgroup_dataset |>
   #select only indicators that are present in selected profile
-  filter(grepl(paste0(profile_select,"-"),profile_list)) |>
+  filter(grepl(paste0(profile_select,"-"),profile_domain)) |>
   #extract the correct domain based on the profiles selected
-  mutate(domain=regmatches(profile_list, regexpr(paste0(profile_select, "-([a-zA-Z*[[:blank:]]]*)*"),profile_list))) |>
-  #     domain2=paste0(profile_select,"-",substr(domain, 5,nchar(domain))))
+  mutate(domain=regmatches(profile_domain, regexpr(paste0(profile_select, "-([a-zA-Z*[[:blank:]]]*)*"),profile_domain))) |>
   #some splits can be grouped to make easier to track
   mutate(split_name2=case_when(split_name=="Gender" ~"Sex",
                                split_name=="Disability of household member(s)" ~"Disability",
@@ -80,9 +81,9 @@ write_csv(popgroup_summary, file = paste0(data_folder, "Data to be checked/Pop G
 
 dep_summary <- simd_dataset |>
   #select only indicators that are present in selected profile
-  filter(grepl(paste0(profile_select,"-"),profile_list)) |>
+  filter(grepl(paste0(profile_select,"-"),profile_domain)) |>
   #extract the correct domain based on the profiles selected
-  mutate(domain=regmatches(profile_list, regexpr(paste0(profile_select, "-([a-zA-Z*[[:blank:]]]*)*"),profile_list))) |>
+  mutate(domain=regmatches(profile_domain, regexpr(paste0(profile_select, "-([a-zA-Z*[[:blank:]]]*)*"),profile_domain))) |>
   group_by(domain,areatype,indicator) |>
   summarise(count=n()) |>
   mutate(count=case_when(count>0 ~ "Y", TRUE ~ "")) |>
