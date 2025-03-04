@@ -107,7 +107,7 @@ profiles_list <- list(
   # Care & wellbeing portfolio info 
   "Care & Wellbeing Portfolio" = list(
     short_name = "CWB",
-    homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
+    homepage_description = markdown("View indicators relating to **Population health**, **Inequalities** and **Wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio)."),
     domain_order = c("Over arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism", "Environmental sustainability and health equity"),
     subtabs = all_subtabs,
