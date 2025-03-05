@@ -79,7 +79,7 @@ write_csv(popgroup_summary, file = paste0(data_folder, "Data to be checked/Pop G
 # DEPRIVATION DATA  ----
 ######################################.
 
-dep_summary <- simd_dataset |>
+dep_summary <- deprivation_dataset |>
   #select only indicators that are present in selected profile
   filter(grepl(paste0(profile_select,"-"),profile_domain)) |>
   #extract the correct domain based on the profiles selected
