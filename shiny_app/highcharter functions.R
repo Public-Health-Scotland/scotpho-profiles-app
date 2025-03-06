@@ -249,21 +249,40 @@ create_bar_chart <- function(data,
                              lowci_col = "lowci",
                              horizontal = TRUE,
                              colour_palette = c("simd", "single")){
-  
-  
-  # create colour palette 
-    colours <- if(colour_palette == "simd"){
-    c("#0078D4", "#948DA3", "#F4F4F6", "#DFDDE3", "#9B4393")
 
-  } else {
-    c("#0078D4")
-  }
-  
+
+  if(colour_palette == "simd"){
+    
+    # create simd colour palette
+    simd_colours <- c("1 - most deprived" = "#0078D4",
+                      "2" = "#DFDDE3",
+                      "3" = "#DFDDE3",
+                      "4" = "#DFDDE3",
+                      "5 - least deprived" = "#9B4393",
+                      "10 - least deprived" = "#9B4393")
+    
   hc <- hchart(data, 
                type = ifelse(horizontal == TRUE, "column", "bar"), 
-               hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]], color = c("#0078D4", "#DFDDE3", "#DFDDE3", "#DFDDE3", "#9B4393"))) |>
+               hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]]), colorByPoint = TRUE) |>
     hc_xAxis(title = list(text = "")) |>
-    hc_yAxis(title = list(text = ""))
+    hc_yAxis(title = list(text = "")) |>
+    hc_plotOptions(
+      column = list(
+        colors = unname(simd_colours[data$quintile])
+      )
+    )
+  
+  } else {
+    
+    hc <- hchart(data, 
+                 type = ifelse(horizontal == TRUE, "column", "bar"), 
+                 hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]]), color = "#0078D4") |>
+      hc_xAxis(title = list(text = "")) |>
+      hc_yAxis(title = list(text = ""))
+    
+    
+    
+  }
   
   if(include_confidence_intervals == TRUE){
     hc <- hc |>
