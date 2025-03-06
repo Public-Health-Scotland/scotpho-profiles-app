@@ -40,12 +40,16 @@ create_multi_line_trend_chart <- function(data,
                                           colour_palette = c("multi", "simd", "single")) {
   
   
-  # create colour palette 
+  # create colour palette
   if(colour_palette == "multi"){
-  phs_palette <- unname(unlist(phs_colours()))
-  colours <- head(phs_palette, length(unique(data[[grouping_col]])))
+    colours <- head(unname(phs_colours()), length(unique(data[[grouping_col]])))
   } else if(colour_palette == "simd"){
-    colours <- c(phs_colors("phs-blue"), rep(phs_colors("phs-graphite-30"), 3), phs_colors("phs-magenta"))
+    simd_colours <-  c("1 - most deprived" = "#0078D4",
+                       "2" = "#DFDDE3",
+                       "3" = "#DFDDE3",
+                       "4" = "#DFDDE3",
+                       "5 - least deprived" = "#9B4393")
+    colours <- unname(simd_colours[names(simd_colours) %in% data[[grouping_col]]])
   } else {
     colours <- c(phs_colors("phs-blue"))
   }
@@ -258,8 +262,7 @@ create_bar_chart <- function(data,
                       "2" = "#DFDDE3",
                       "3" = "#DFDDE3",
                       "4" = "#DFDDE3",
-                      "5 - least deprived" = "#9B4393",
-                      "10 - least deprived" = "#9B4393")
+                      "5 - least deprived" = "#9B4393")
     
   hc <- hchart(data, 
                type = ifelse(horizontal == TRUE, "column", "bar"), 
