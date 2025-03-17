@@ -171,18 +171,22 @@ data_tab_mod_Server <- function(id) {
         # if profile selected (but indicators have not been)
         # then filter by selected profiles only 
         if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
+          if("All Indicators" %in% input$profile_selector) {
+            data } else {
+          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
+          
           data <- data |>
-            filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name")))
+            filter(grepl(profile_short_names, profile_domain))
+            }
           
           
           # if a profile has been selected (and some indicators too)
           # then filter by profile and indicator
         } else if(isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
+          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
           
           data <- data |>
-            filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name"))) |>
+            filter(grepl(profile_short_names, profile_domain)) |>
             filter(indicator %in% input$indicator_selector)
           
           
