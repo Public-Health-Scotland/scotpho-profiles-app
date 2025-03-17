@@ -237,7 +237,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Intermediate zone' is available, enable the filter otherwise disable it
       if("Intermediate zone" %in% available_areatypes){
         shinyjs::enable("iz_filter")
-        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections(), server = TRUE)
+        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections())
       } else {
         updateSelectizeInput(session, "iz_filter", options = list(placeholder = "Unavailable"), selected = character(0))
         shinyjs::disable("iz_filter")
