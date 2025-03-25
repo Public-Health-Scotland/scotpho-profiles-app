@@ -44,12 +44,16 @@ source("highcharter functions.R")
 main_dataset <- setDT(read_parquet("data/main_dataset")) # main dataset (to do: rename optdata file in data prep script)
 simd_dataset <- setDT(read_parquet("data/deprivation_dataset")) # dataset behind simd panel
 popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset")) # dataset behind popgroup panel
+climate_main_dataset <- setDT(read_parquet("data/climate_main_dataset")) # main dataset 
+
+climate_main_dataset <- climate_main_dataset |>
+  rename(indicator = indicator_name)
 
 # lookups
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc") # technical document
-
+climate_techdoc <- read_parquet("data/climate_techdoc") # technical document
 
 
 # shapefiles (for map) 
@@ -194,8 +198,16 @@ profiles_list <- list(
     domain_order = NULL,
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
-  )
+  ),
   
+  # All Climate info
+  "Climate" = list(
+    short_name = "CLI",
+    homepage_description = markdown("View indicators relating to **Climate**"),
+    domain_order = NULL,
+    subtabs = c("about_profile_tab", "trends_tab", "climate_trends_tab"),
+    active = TRUE
+  )
 )
 
 

@@ -190,3 +190,24 @@ about_men_text <-  navset_pill_list(
   br()
   )
 )
+
+###########################################.
+### Climate----
+
+about_cli_text <- navset_pill_list(
+  widths = c(3, 9),
+  br(),
+  nav_panel("About this profile",
+            h3("About this profile"),
+            p("Climate Text Overview"),
+br()
+  ),
+nav_panel("Further Information",
+          h3("Further Information"),
+          p("We have used the Met Office’s Environmental Public Health Surveillance System (EPHSS) to provide climate context data. 
+            This includes daily maximum temperature, daily minimum temperature, relative humidity and windspeed. 
+            We have data for every weather station in Scotland, enabling us to match the nearest weather station to given intermediate zones 
+            for a more precise estimate of temperatures experienced by patients from these geographies. "),
+br()
+)
+)

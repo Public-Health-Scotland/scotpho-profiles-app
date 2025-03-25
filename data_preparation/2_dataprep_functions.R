@@ -14,7 +14,9 @@
 combine_files <- function(file_list) {
   
   # Determine the file type in list of files passed to function
-  file_type <- if (grepl("\\.csv$", file_list[1])) 'csv' else 'rds'
+  file_type <- if (grepl("\\.csv$", file_list[1])) 'csv' 
+  else if (grepl("\\.rds$", file_list[1])) 'rds'
+  else 'parquet'
   
   
   # Define expected columns 
@@ -23,7 +25,7 @@ combine_files <- function(file_list) {
     # opt data mandatory columns 
     c("code", "ind_id", "year", "numerator", "rate", 
       "upci", "lowci", "def_period", "trend_axis")
-  } else {
+  } else if (file_type == 'rds') {
     
     # inequalities data mandatory columns 
     c("year",  "code",  "quintile",  "quint_type", 
@@ -32,7 +34,9 @@ combine_files <- function(file_list) {
       "lowci_rii", "upci_rii", "rii_int", "lowci_rii_int", 
       "upci_rii_int", "par", "abs_range", "rel_range", "ind_id"   
     )
-  }
+  } else
+    c("ind_id", "code", "year", "trend_axis", "def_period", "numerator", "rate",
+      "lowci", "upci")
   
   check_columns <- function(data, expected_cols, file_name) {
     
@@ -49,7 +53,9 @@ combine_files <- function(file_list) {
   combined_data <- rbindlist(lapply(file_list, function(x) {
     
     # read in datafile
-    data <- if (file_type == 'rds') readRDS(x) else fread(x)
+    data <- if (file_type == 'rds') readRDS(x) 
+    else if (file_type == 'csv') fread(x)
+    else read_parquet(x)
     
     # check columns 
     check_columns(data, expected_cols, x)

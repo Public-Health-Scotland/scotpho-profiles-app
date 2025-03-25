@@ -215,6 +215,9 @@ page_navbar(
                        # trends sub-tab
                        nav_panel(title = "Trends", value = "trends_tab", trend_mod_ui("trends")),
                        
+                       # trends sub-tab
+                       nav_panel(title = "Trends", value = "climate_trends_tab", climate_trend_mod_ui("climate_trends")),
+                       
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
                        
@@ -233,7 +236,8 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Care & Wellbeing Portfolio'", about_cwb_text),
                                  conditionalPanel("input.profile_choices == 'Adult Mental Health'", about_men_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
-                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text)
+                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text),
+                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text)
                        )
 
                        

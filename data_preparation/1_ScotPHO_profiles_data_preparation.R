@@ -55,6 +55,8 @@ source("data_preparation/update_deprivation_data.R") # script to read in & forma
 source("data_preparation/update_main_data.R") # script to read in and forma main data
 source("data_preparation/update_popgroup_data.R") # script to read in and forma main data
 
+source("data_preparation/update_climate_techdoc.R")
+source("data_preparation/update_climate_main_data.R") # script to read in and forma main data
 
 ###################################################.
 ## Update technical document ----
@@ -66,7 +68,7 @@ source("data_preparation/update_popgroup_data.R") # script to read in and forma 
 # Option:  to save a backup version of techdoc (set create_backup to TRUE)
 # Option: to include indicators data labelled as test indicators in techdoc (set load test indicators to TRUE)
 
-update_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
+update_climate_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
 
 # PLANNING ON UPDATING INDICATORS AND DEPLOYING THE APP? consider generating backup of techdoc. 
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
@@ -100,7 +102,7 @@ geography_lookup <- readRDS(
 # switch to TRUE if including test indicators (note that you will also need to load test indicators in the update_techdoc function)
 # create_backup - switch to true if deploying the live app with updated indicator datasets 
 
-update_main_data(load_test_indicators = FALSE, create_backup = FALSE)
+update_climate_main_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 # run validation tests one by one 
 # when a test is finished running, if it's passed 'TRUE' will print in the console
@@ -169,6 +171,27 @@ TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indic
 update_popgroup_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 # no validation tests currently written for population data.
+
+
+########################################################################.
+## Update Climate data  ----
+## save climate technical doc, combining climate data files and saving climate data set
+########################################################################.
+
+
+# Generates techdoc parquet file within shiny app data folder
+# Also makes technical_doc visible in data pane
+# which are required for processing the indicator data files below.
+# Option:  to save a backup version of techdoc (set create_backup to TRUE)
+# Option: to include indicators data labelled as test indicators in techdoc (set load test indicators to TRUE)
+
+update_climate_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
+
+# PLANNING ON UPDATING INDICATORS AND DEPLOYING THE APP? consider generating backup of techdoc. 
+# update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
+
+
+
 
 
 ############################################################.
