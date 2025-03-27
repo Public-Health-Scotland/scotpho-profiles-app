@@ -10,7 +10,7 @@
 #######################################################.
 
 
-climate_trend_mod_ui <- function(id) {
+climate2_trend_mod_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
@@ -45,9 +45,37 @@ climate_trend_mod_ui <- function(id) {
                                 # all other geography filters
                                 # note these filters are enabled/disabled in the server function based on selected indicator
                                 layout_columns(
-                                  selectizeInput(inputId = ns("hb_filter"), label = "Health Boards:", choices = hb_list, multiple = TRUE)
+                                  selectizeInput(inputId = ns("hb_filter"), label = "Health Boards:", choices = hb_list, multiple = TRUE),
+                                  div(id = ns("ca_panel"), selectizeInput(inputId = ns("ca_filter"), label = "Council areas:", choices = ca_list, multiple = TRUE)
+                                ),
+                                
+                                # police division filter (hidden unless mental health profile is selected)
+                                div(id = ns("pd_panel"),
+                                    selectizeInput(inputId = ns("pd_filter"), label = "Police divisions:", choices = pd_list, multiple = TRUE)
+                                ),
+                                
+                                
+                                
+                                layout_columns(
+                                  div(id = ns("hscp_panel"),
+                                  selectizeInput(inputId = ns("hscp_filter"), label = "Health and Social Care Partnerships:", choices = hscp_list, multiple = TRUE)),
+                                  div(id = ns("adp_panel"),
+                                    selectizeInput(inputId = ns("adp_filter"), label = "Alcohol and Drugs Partnerships:", choices = adp_list, multiple = TRUE))
+                                ),
+                                
+                                div(id = ns("hscp2_panel"),
+                                selectizeInput(inputId = ns("hscp_filter_2"), label = "To select a locality or intermediate zone, first select a HSC partnership:", choices = hscp_list),
+                                ),
+                                layout_columns(
+                                  div(id = ns("locality_panel"),
+                                  selectizeInput(inputId = ns("locality_filter"), label = "HSC localities:", choices = character(0), multiple = TRUE)),
+                                  div(id = ns("iz_panel"),
+                                  selectizeInput(inputId = ns("iz_filter"), label = "Intermediate zones:", choices = character(0), multiple = TRUE))
                                 )
-                            )),
+                                
+                                
+                            ))),
+                                
                           accordion_panel(
                             value = "help_panel",
                             title = "Get help", icon = icon("info-circle"),
@@ -126,7 +154,7 @@ climate_trend_mod_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile from main server script
 
 
-climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
+climate2_trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -145,6 +173,16 @@ climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected
       available_areatypes <- indicator_filtered_data() |>
         pull(unique(areatype))
       
+      # stores available HSC localities depending on what parent area was selected
+      available_localities <- indicator_filtered_data() |>
+        filter(areatype == "HSC locality" & parent_area == input$hscp_filter_2) |>
+        pull(unique(areaname))
+      
+      # stores available Intermediate zones depending on what parent area was selected
+      available_izs <- indicator_filtered_data() |>
+        filter(areatype == "Intermediate zone" & parent_area == input$hscp_filter_2) |>
+        pull(unique(areaname))
+      
       
       # If 'Health board' is available, enable hb_filter, otherwise disable it
       if("Health board" %in% available_areatypes) {
@@ -153,6 +191,80 @@ climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected
       } else {
         shinyjs::disable("hb_filter")
         updateSelectizeInput(session, "hb_filter", options = list(placeholder = "Unavailable"))
+      }
+      
+      # If 'Council area' is available, enable ca_filter, otherwise disable it
+      if("Council area" %in% available_areatypes) {
+        shinyjs::enable("ca_filter")
+        updateSelectizeInput(session, "ca_filter", options = list(placeholder = NULL), selected = ca_selections())        
+      } else {
+        shinyjs::disable("ca_filter")
+        updateSelectizeInput(session, "ca_filter", options = list(placeholder = "Unavailable"))
+      }
+      
+      # If 'HSC partnership' is available, enable hscp_filter, otherwise disable it
+      if("HSC partnership" %in% available_areatypes) {
+        shinyjs::enable("hscp_filter")
+        updateSelectizeInput(session, "hscp_filter", options = list(placeholder = NULL), selected = hscp_selections())
+      } else {
+        updateSelectizeInput(session, "hscp_filter", options = list(placeholder = "Unavailable"))
+        shinyjs::disable("hscp_filter")
+      }
+      
+      # If 'Alcohol & drug partnership' is available, enable adp_filter, otherwise disable it
+      if("Alcohol & drug partnership" %in% available_areatypes) {
+        shinyjs::enable("adp_filter")
+        updateSelectizeInput(session, "adp_filter", options = list(placeholder = NULL), selected = adp_selections())
+      } else {
+        shinyjs::disable("adp_filter")
+        updateSelectizeInput(session, "adp_filter", options = list(placeholder = "Unavailable"))
+      }
+      
+      # If 'HSC Locality' or 'Intermediate zone' is available, enable parent area filter (hscp_filter_2), otherwise disable it
+      if("HSC locality" %in% available_areatypes | "Intermediate zone" %in% available_areatypes) {
+        shinyjs::enable("hscp_filter_2")
+        updateSelectizeInput(session, "hscp_filter_2", label = "To select a locality or intermediate zone, first select an HSC partnership:")
+        
+      } else{
+        shinyjs::disable("hscp_filter_2")
+      }
+      
+      # If 'HSC Locality' is available, enable the filter otherwise disable it
+      if("HSC locality" %in% available_areatypes){
+        shinyjs::enable("locality_filter")
+        updateSelectizeInput(session, "locality_filter", choices = available_localities, options = list(placeholder = NULL), selected = locality_selections())
+      } else {
+        updateSelectizeInput(session, "locality_filter", options = list(placeholder = "Unavailable"), selected = character(0))
+        shinyjs::disable("locality_filter")
+      }
+      
+      # If 'Intermediate zone' is available, enable the filter otherwise disable it
+      if("Intermediate zone" %in% available_areatypes){
+        shinyjs::enable("iz_filter")
+        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections(), server = TRUE)
+      } else {
+        updateSelectizeInput(session, "iz_filter", options = list(placeholder = "Unavailable"), selected = character(0))
+        shinyjs::disable("iz_filter")
+      }
+      
+      # hide the pd filter if any profile other than 'mental health' has been selected
+      # as police divisions are only available for a small subset of MH indicators
+      # If MH profile has been selected and 'Police division' is available for selected indicator, enable pd_filter, otherwise disable it
+      if(selected_profile()$full_name != "Mental Health"){
+        hide("pd_panel")
+      } else {
+        show("pd_panel")
+        if("Police division" %in% available_areatypes) {
+          shinyjs::enable("pd_filter")
+          updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections())
+        } else {
+          shinyjs::disable("pd_filter")
+          updateSelectizeInput(session, "pd_filter", options = list(placeholder = "Unavailable"))
+        }
+      }
+    
+      if(selected_profile()$full_name == "Climate"){
+        hide("adp_panel") & hide("hscp_panel") & hide("hscp2_panel") & hide("locality_panel") & hide("iz_panel")
       }
       
     })
@@ -164,11 +276,23 @@ climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected
       
       # clear the filters
       updateSelectizeInput(session, "hb_filter", selected = character(0))
-
+      updateSelectizeInput(session, "ca_filter", selected = character(0))
+      updateSelectizeInput(session, "hscp_filter", selected = character(0))
+      updateSelectizeInput(session, "adp_filter", selected = character(0))
+      updateSelectizeInput(session, "iz_filter", selected = character(0))
+      updateSelectizeInput(session, "locality_filter", selected = character(0))
+      updateSelectizeInput(session, "pd_filter", selected = character(0))
+      
       
       # clear the reactive vals
       hb_selections(NULL)
-
+      ca_selections(NULL)
+      hscp_selections(NULL)
+      adp_selections(NULL)
+      locality_selections(NULL)
+      iz_selections(NULL)
+      pd_selections(NULL)
+      
       
     })
     
@@ -225,7 +349,12 @@ climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected
     
     # create reactive objects to store selected geographies
     hb_selections <- reactiveVal()
-
+    ca_selections <- reactiveVal()
+    hscp_selections <- reactiveVal()
+    adp_selections <- reactiveVal()
+    locality_selections <- reactiveVal()
+    iz_selections <- reactiveVal()
+    pd_selections <- reactiveVal()
     
     
     # update the reactive objects whenever selections are made
@@ -234,7 +363,30 @@ climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected
       hb_selections(input$hb_filter)
     }, ignoreNULL = FALSE)
     
- 
+    observeEvent(input$ca_filter, {
+      ca_selections(input$ca_filter)
+    }, ignoreNULL = FALSE)
+    
+    observeEvent(input$hscp_filter, {
+      hscp_selections(input$hscp_filter)
+    }, ignoreNULL = FALSE)
+    
+    observeEvent(input$adp_filter, {
+      adp_selections(input$adp_filter)
+    }, ignoreNULL = FALSE)
+    
+    observeEvent(input$locality_filter, {
+      locality_selections(input$locality_filter)
+    }, ignoreNULL = FALSE)
+    
+    observeEvent(input$iz_filter, {
+      iz_selections(input$iz_filter)
+    }, ignoreNULL = FALSE)
+    
+    observeEvent(input$pd_filter, {
+      pd_selections(input$pd_filter)
+    }, ignoreNULL = FALSE)
+    
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
                                                       filtered_data,
@@ -259,8 +411,14 @@ climate_trend_mod_server <- function(id, filtered_data, geo_selections, selected
       df <- indicator_filtered_data() |> # take reactive df already filtered by selected indicator
         filter(
           (areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) | # filter by global geography selection
-            (areaname %in% input$hb_filter & areatype == "Health board"))  # filter by selected health boards
-
+            (areaname %in% input$hb_filter & areatype == "Health board")|  # filter by selected health boards
+            (areaname %in% input$ca_filter & areatype == "Council area")| # filter by selected council areas
+            (areaname %in% input$adp_filter & areatype == "Alcohol & drug partnership") |# filter by selected adps
+            (areaname %in% input$hscp_filter & areatype == "HSC partnership")| #filter by selected hscps
+            (areaname %in% input$iz_filter & areatype == "Intermediate zone" & parent_area == input$hscp_filter_2)| # filter by selected IZs
+            (areaname %in% input$locality_filter & areatype == "HSC locality" & parent_area == input$hscp_filter_2)| # filter by selected HSC localities
+            (areaname %in% input$pd_filter & areatype == "Police division") # filter by selected police divisions
+        )
       
       # if scotland is selected from the global geography filter OR the scotland checkbox has been ticked
       # also filter by scotland

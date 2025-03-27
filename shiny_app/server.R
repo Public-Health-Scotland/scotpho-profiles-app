@@ -207,6 +207,7 @@ function(input, output, session) {
   # running modules for each sub-tab
    trend_mod_server("trends", profile_data, geo_selections, selected_profile)
    climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile)
+   climate2_trend_mod_server("climate_trends2", profile_data, geo_selections, selected_profile)
    rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
