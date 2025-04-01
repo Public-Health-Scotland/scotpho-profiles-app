@@ -129,7 +129,7 @@ profiles_list <- list(
     short_name = "CMH",
     homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Family and friends**, **Learning environment**, **Community** and **Structural**  determinants."),
     domain_order = c("Mental health outcomes", "Individual determinants",
-                     "Family and friends determinants", "Learning environment determinants",
+                     "Family and friends", "Learning environment",
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
     active = TRUE
