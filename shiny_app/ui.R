@@ -68,7 +68,7 @@ page_navbar(
                 card_body(gap = 0,
                           # CYP Mental Health profile info
                           div(
-                            h4("March 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
+                            h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
                             p("The Mental Health Profile for Children & Young People is the result of Public Health Scotland's", 
                               tags$a("Mental Health Indicators project.", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
                               target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
