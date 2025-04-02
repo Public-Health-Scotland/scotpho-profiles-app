@@ -205,11 +205,11 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
-   trend_mod_server("trends", profile_data, geo_selections, selected_profile)
-   rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
+   trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
+   rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session)
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
-   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
-   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
+   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
+   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
   
   
   
