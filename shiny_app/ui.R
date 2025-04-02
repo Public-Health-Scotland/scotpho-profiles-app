@@ -66,6 +66,15 @@ page_navbar(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
+                          # CYP Mental Health profile info
+                          div(
+                            h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
+                            p("The Mental Health Profile for Children & Young People is the result of Public Health Scotland's", 
+                              tags$a("Mental Health Indicators project.", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
+                              target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
+                              of interconnected determinants (risk factors and protective factors) of these outcomes. This profile follows ScotPHO's publication of the adult mental health profile in late 2024.")
+                          ),
+                          hr(),
                           # Correction of Emergency admissions, aged 65+ years indicator
                           div(
                             h4("23/01/2025 : Correction of emergency admissions, aged 65+ years indicator", class = "profile-header"),
@@ -84,9 +93,9 @@ page_navbar(
                      " of the new features and additional user guidance are available.")
                 ),
               hr(),
-              # Mental Health profile info
+              # Adult Mental Health profile info
               div(
-                h4("New Mental Health Profile for Adults", class = "profile-header"),
+                h4("October 2024 : New Mental Health Profile for Adults", class = "profile-header"),
                 p("The Mental Health Profile for Adults is the result of Public Health Scotland's", tags$a("Mental Health Indicators project.", 
                   href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
                   target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
@@ -194,19 +203,15 @@ page_navbar(
                                  #                       )
                                  #                  ),
                                  # only display this card when Mental Health profile selected
-                                 conditionalPanel(condition = "input.profile_choices == 'Mental Health'",
+                                 conditionalPanel(condition = "input.profile_choices == 'Children & Young People Mental Health'",
                                                   br(),
                                                   card(max_height = 150,
                                                        card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development",class = "info-box-header"),
-                                                       p("October 2024: The Mental Health profile currently contains ", 
-                                                       tags$a("indicators for adults", 
-                                                              href = "https://publichealthscotland.scot/publications/adult-mental-health-indicator-resources/",
-                                                              target = "_blank"), 
-                                                       " only.",
-                                                       tags$a("Indicators for children and young people", 
+                                                       p("March 2025: Additional ",
+                                                       tags$a("mental health indicators for children and young people", 
                                                               href = "https://www.publichealthscotland.scot/publications/children-and-young-people-mental-health-indicator-resources/",
                                                               target = "_blank"),
-                                                       " will be added in 2025")
+                                                       " will be added as they become available.")
                                                   )
                                  ),
                                  summary_table_ui("summary")
@@ -232,6 +237,7 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Health & Wellbeing'", about_hwb_text),
                                  conditionalPanel("input.profile_choices == 'Care & Wellbeing Portfolio'", about_cwb_text),
                                  conditionalPanel("input.profile_choices == 'Adult Mental Health'", about_men_text),
+                                 conditionalPanel("input.profile_choices == 'Children & Young People Mental Health'", about_cmh_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
                                  conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text)
                        )
