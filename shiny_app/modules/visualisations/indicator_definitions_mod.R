@@ -86,7 +86,9 @@ definitions_tab_Server <- function(id) {
         
         # arrange alphabetically by indicator name
         x <- x |>
-          arrange(indicator_name)
+          arrange(indicator_name) |>
+          rowwise() |>
+          mutate(across(c("supporting_information", "related_publications", "scotpho_web_link"), ~ markdown(.)))
         
       })
       
@@ -212,6 +214,24 @@ definitions_tab_Server <- function(id) {
                      <div>
                      <h4 class = 'metadata-header'>Notes and caveats</h4>
                      ${rowInfo.values['notes_caveats']}
+                     </div>
+                     
+                     <br>
+                     <div>
+                     <h4 class = 'metadata-header'>ScotPHO website links</h4>
+                     ${rowInfo.values['scotpho_web_link']}
+                     </div>
+                     
+                     <br>
+                     <div>
+                     <h4 class = 'metadata-header'>Related publications</h4>
+                     ${rowInfo.values['related_publications']}
+                     </div>
+                     
+                     <br>
+                     <div>
+                     <h4 class = 'metadata-header'>Supporting information</h4>
+                     ${rowInfo.values['supporting_information']}
                      </div>`}")),
             
             # 2 x update dates columns 
@@ -263,7 +283,8 @@ definitions_tab_Server <- function(id) {
             indicator_author = colDef(show = F),
             interpretation = colDef(show = F),
             scotpho_profiles = colDef(show = F),
-            pop_group_splits = colDef(show = F)
+            pop_group_splits = colDef(show = F),
+            scotpho_web_link = colDef(show = F)
           ) # close columns list
         ) # close reactable 
       }) # close render reactable
