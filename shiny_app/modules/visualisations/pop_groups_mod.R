@@ -6,7 +6,7 @@
 
 #######################################################.
 ## MODULE UI ----
-#######################################################.
+################################################Fse#######.
 
 # id = unique id 
 pop_groups_ui <- function(id) {
@@ -21,6 +21,9 @@ pop_groups_ui <- function(id) {
                         
                         # indicator filter (note this is a module)
                         indicator_filter_mod_ui(ns("indicator_filter")),
+                        
+                        # button to scroll to metadata
+                        metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")),
                         
                         # filter to select pop split (set choices to NULL 
                         # as they are updated dynamically on the server side, depending on selected indicator)
@@ -53,13 +56,7 @@ pop_groups_ui <- function(id) {
             bslib::nav_panel("Table",
                              reactableOutput(ns("pop_rank_table")) # table
             ),
-            
-            # tab 3: indicator metadata
-            bslib::nav_panel("Metadata",
-                             metadata_table_mod_UI(ns("indicator_metadata"))
-            ),
-            
-            
+
             bslib::nav_spacer(),
             
             # extra controls for bar chart 
@@ -117,7 +114,10 @@ pop_groups_ui <- function(id) {
                         download_chart_mod_ui(ns("save_pop_trendchart")),
                         download_data_btns_ui(ns("pop_trend_download")))
           )# close trend card
-      ) # close layout column wrap
+      ), # close layout column wrap
+      
+      # accordion panel with metadata table 
+      div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
       
     ) # close sidebar layout
   ) # close taglist
@@ -130,7 +130,7 @@ pop_groups_ui <- function(id) {
 #######################################################.
 
 
-pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
+pop_groups_server <- function(id, dataset, geo_selections, selected_profile, root_session) {
   moduleServer(id, function(input, output, session) {
     
     # required for chart downloads
@@ -402,9 +402,14 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     })
     
     
+    #########################.
+    # Metadata ----
+    #########################.
+    indicator_metadata <- filter_metadata_Server("metadata", r_indicator = selected_indicator) # techdoc filtered by selected indicator 
+    btn_click <- metadata_scroll_button_Server("scroll_btn") # tracking when metadata scroll button clicked 
+    metadata_panel_Server("metadata_table", r_event = btn_click, r_metadata = indicator_metadata, parent_session = root_session) # panel with metadata table
     
-    # metadata table
-    metadata_table_mod_Server("indicator_metadata", selected_indicator)
+    
     
     ### need to create pop trend table
     
