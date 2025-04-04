@@ -270,16 +270,12 @@ simd_navpanel_ui <- function(id) {
     })
     
     
-    # only show the sex filter if a user selects an indicator where there
-    # are more options than just 'Total' (i.e. total, males, females)
-    # otherwise hide it
-    observeEvent(selected_indicator(), {
+    # sex filter choices 
+    observeEvent(indicator_data(), {
       req(indicator_data())
-      if(length(unique(indicator_data()$sex)) == 1){
-        shinyjs::hide("sex_filter")
-      } else {
-        shinyjs::show("sex_filter")
-      }
+      choices <- unique(indicator_data()$sex)
+      selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total"
+      updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection)
     })
     
     
@@ -315,11 +311,10 @@ simd_navpanel_ui <- function(id) {
     
     # filter data passed to the module by the selected indicator and selected area
     # and further filter by quint type
-    indicator_data<- reactive({
-      req(simd_data())
+    indicator_data <- reactive({
+      req(selected_indicator())
       
       dt <- simd_data() |>
-        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         filter(indicator == selected_indicator()) |>
         mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
       
@@ -344,8 +339,7 @@ simd_navpanel_ui <- function(id) {
     # this is because each selection results in 2 different charts being displayed
     # It will therefore create a 'left_data' (i.e. data for the left-hand chart) and a 'right_data' (data for the right hand chart)
     simd_measures_data <- reactive({
-      req(indicator_data())
-      
+
       data <- switch(input$depr_measures,
                      
                      
@@ -495,8 +489,7 @@ simd_navpanel_ui <- function(id) {
     # c . the 2 x charts subtitle to display (i.e. stored under 'left_chart_subtitle_1 and left_chart_subtitle_2)
     # d. the filename of the chart if saved as a png (i.e. stored under 'left_chart_filename')
     chart_text <- reactive({
-      req(simd_measures_data())
-      
+
       switch(input$depr_measures,
              
              
@@ -567,27 +560,25 @@ simd_navpanel_ui <- function(id) {
     # render the title and subtitle for the left hand side card
     output$left_chart_header <- renderUI({
 
-      if(nrow(indicator_data()) > 0) {
         div(
         h5(chart_text()$left_chart_title, class = "chart-header"),
         h6(chart_text()$left_chart_subtitle_1),
         p(chart_text()$left_chart_subtitle_2),
         actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
       )
-      }
+      
     })
     
     # render the title and subtitle for the right hand side card
     output$right_chart_header <- renderUI({
-  
-      if(nrow(indicator_data()) > 0) {
+
         div(
         h5(chart_text()$right_chart_title, class = "chart-header"),
         h6(chart_text()$right_chart_subtitle_1),
         p(chart_text()$right_chart_subtitle_2),
         actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
       )
-      }
+      
     })
     
     
@@ -609,7 +600,7 @@ simd_navpanel_ui <- function(id) {
     # render the chart to display on left-hand side (conditional depending on which measure was selected)
     # using the data stored within simd_measures_data()$left_data (which is also conditional depending on what measure was selected)
     output$left_chart <- renderHighchart({
-      
+      req(nrow(simd_measures_data()$left_data) > 0)
       # only create charts if there is data available to plot
       # validation message suggests the other two area types the user might try (although dep data aren't necessarily available at the lower geog: should the message only suggest available geogs?)
       shiny::validate(
@@ -674,7 +665,8 @@ simd_navpanel_ui <- function(id) {
     # render the chart to display on right-hand side (conditional depending on which measure was selected)
     # using the data stored within simd_measures_data()$right_data (which is also conditional depending on what measure was selected)
     output$right_chart <- renderHighchart({
-      
+      req(nrow(simd_measures_data()$right_data) > 0)
+
       # only create charts if there is data available to plot
       shiny::validate(
         need(nrow(indicator_data()) > 0,
@@ -737,7 +729,8 @@ simd_navpanel_ui <- function(id) {
     
     # render the data to be displayed on the left
     output$left_table <- renderReactable({
-      
+      req(nrow(simd_measures_data()$left_data) > 0)
+
       reactable(simd_measures_data()$left_data,
                 defaultExpanded = T,
                 defaultPageSize = nrow(simd_measures_data()$left_data),
@@ -749,6 +742,8 @@ simd_navpanel_ui <- function(id) {
     
     # render the data to be displayed on the left
     output$right_table <- renderReactable({
+      req(nrow(simd_measures_data()$right_data) > 0)
+
       reactable(simd_measures_data()$right_data,
                 defaultExpanded = T,
                 defaultPageSize = nrow(simd_measures_data()$right_data),
