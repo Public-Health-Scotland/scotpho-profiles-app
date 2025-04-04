@@ -23,10 +23,12 @@ simd_navpanel_ui <- function(id) {
                         
                         # sex filter (for the mental health profile only as some SIMD indicators have sex splits)
                         # it will be hidden for all other profiles
-                        selectizeInput(inputId = ns("sex_filter"), 
+                        shinyjs::hidden(
+                          selectizeInput(inputId = ns("sex_filter"), 
                                        label = "Select sex:", 
                                        choices = c("Total", "Male", "Female"), 
-                                       selected = "Total"),
+                                       selected = "Total")
+                          ),
                         
                         # measure filter
                         radioButtons(
@@ -236,15 +238,12 @@ simd_navpanel_ui <- function(id) {
     
     # determining which quint types are available
     # and enabling/disabling quint type filter accordingly
-    observe({
+    observeEvent(indicator_data(), {
+      req(indicator_data())
       
       # if local quintiles are not available for the selected indicator and geography
       # then set selected quintile to "Scotland" and disable the filter
-      
-      available_quints <- simd_data() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
-        select(quint_type) |>
-        unique()
+      available_quints <- unique(indicator_data()$quint_type)
       
       # If Scotland is selected, only scotland-level quintiles are appropriate (disable the radio buttons)
       # If another geography is selected but local-level quintiles aren't available do the same:
@@ -270,12 +269,22 @@ simd_navpanel_ui <- function(id) {
     })
     
     
-    # sex filter choices 
+    # update sex filter choices depending on what splits are available for the selected indicator
+    # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it 
     observeEvent(indicator_data(), {
       req(indicator_data())
-      choices <- unique(indicator_data()$sex)
-      selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total"
-      updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection)
+      
+      # update filter choices 
+      choices <- unique(indicator_data()$sex) # get choices 
+      selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
+      updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices 
+      
+      # show/hide filter 
+      if(length(choices) == 1){
+        shinyjs::hide("sex_filter")
+      } else {
+        shinyjs::show("sex_filter")
+      }
     })
     
     
@@ -313,6 +322,7 @@ simd_navpanel_ui <- function(id) {
     # and further filter by quint type
     indicator_data <- reactive({
       req(selected_indicator())
+      req(simd_data())
       
       dt <- simd_data() |>
         filter(indicator == selected_indicator()) |>
@@ -339,6 +349,7 @@ simd_navpanel_ui <- function(id) {
     # this is because each selection results in 2 different charts being displayed
     # It will therefore create a 'left_data' (i.e. data for the left-hand chart) and a 'right_data' (data for the right hand chart)
     simd_measures_data <- reactive({
+      req(indicator_data())
 
       data <- switch(input$depr_measures,
                      
@@ -489,6 +500,8 @@ simd_navpanel_ui <- function(id) {
     # c . the 2 x charts subtitle to display (i.e. stored under 'left_chart_subtitle_1 and left_chart_subtitle_2)
     # d. the filename of the chart if saved as a png (i.e. stored under 'left_chart_filename')
     chart_text <- reactive({
+      req(nrow(simd_measures_data()$left_data) > 0)
+      req(nrow(simd_measures_data()$right_data) > 0)
 
       switch(input$depr_measures,
              
