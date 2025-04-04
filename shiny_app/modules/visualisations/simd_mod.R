@@ -241,30 +241,24 @@ simd_navpanel_ui <- function(id) {
     observeEvent(indicator_data(), {
       req(indicator_data())
       
-      # if local quintiles are not available for the selected indicator and geography
-      # then set selected quintile to "Scotland" and disable the filter
+      # check what quint types are available for selected indicator 
       available_quints <- unique(indicator_data()$quint_type)
       
-      # If Scotland is selected, only scotland-level quintiles are appropriate (disable the radio buttons)
-      # If another geography is selected but local-level quintiles aren't available do the same:
-      if (length(available_quints)==1 & "sc_quin" %in% available_quints){
-        updateRadioButtons(session, "quint_type", selected = "Scotland")
-        shinyjs::disable("quint_type")
-        
-        # otherwise, if the areatype is local set the quintile to "Local" by default
-      } else if (geo_selections()$areatype != "Scotland"){
-        updateRadioButtons(session, "quint_type", selected = "Local")
-        
-        if(selected_indicator() %in% c("Mortality amenable to healthcare",
-                                       "Repeat emergency hospitalisation in the same year",
-                                       "Preventable emergency hospitalisation for a chronic condition",
-                                       "Life expectancy, females",
-                                       "Life expectancy, males")) {
-          
-          shinyjs::disable("quint_type")
+      # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
+      # then disable filter and default to the 1 that is available 
+      if (length(available_quints)==1){
+        if("sc_quin" %in% available_quints){
+          updateRadioButtons(session, "quint_type", selected = "Scotland")
         } else {
-          shinyjs::enable("quint_type")
-        } 
+          updateRadioButtons(session, "quint_type", selected = "Local") 
+        }
+        shinyjs::disable("quint_type")
+      } else {
+        
+        # otherwise if both local and scottish quintiles available then enable filter so 
+        # users can toggle between the two options (default to Scotland)
+        shinyjs::enable("quint_type")
+        updateRadioButtons(session, "quint_type", selected = "Scotland")
       }
     })
     
