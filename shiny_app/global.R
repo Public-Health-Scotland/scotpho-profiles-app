@@ -205,7 +205,7 @@ profiles_list <- list(
     short_name = "CLI",
     homepage_description = markdown("View indicators relating to **Climate**"),
     domain_order = NULL,
-    subtabs = c("about_profile_tab", "trends_tab", "climate_trends_tab", "climate_trends_tab2"),
+    subtabs = c("about_profile_tab", "climate_trends_tab"),
     active = TRUE
   )
 )

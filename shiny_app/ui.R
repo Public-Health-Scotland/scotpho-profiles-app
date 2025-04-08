@@ -218,9 +218,6 @@ page_navbar(
                        # climate trends sub-tab
                        nav_panel(title = "Climate Trends", value = "climate_trends_tab", climate_trend_mod_ui("climate_trends")),
                        
-                       # climate trends sub-tab 2
-                       nav_panel(title = "Climate Trends 2", value = "climate_trends_tab2", climate2_trend_mod_ui("climate_trends2")),
-                       
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
                        

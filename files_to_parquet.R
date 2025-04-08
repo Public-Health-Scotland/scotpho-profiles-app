@@ -12,7 +12,9 @@ climate_action <- readRDS("/PHI_conf/ScotPHO/Profiles/Data/Climate Data/climate_
 
 climate_problem <- readRDS("/PHI_conf/ScotPHO/Profiles/Data/Climate Data/climate_problem_shiny.rds")
 
-maxtemp_annual <- readRDS("/PHI_conf/ScotPHO/Profiles/Data/Climate Data/maxtemp_annual_shiny.rds")
+summer_maxtemp_annual <- readRDS("/PHI_conf/ScotPHO/Profiles/Data/Climate Data/summer_maxtemp_annual_shiny.rds")
+
+heatdays_annual <- readRDS("/PHI_conf/ScotPHO/Profiles/Data/Climate Data/heatdays_annual_shiny.rds")
 
 # change maxtemp_annual ind_id column type to number
 maxtemp_annual <- maxtemp_annual |>
@@ -26,4 +28,6 @@ write_parquet(climate_action, "/PHI_conf/ScotPHO/Profiles/Data/Climate Data/clim
 
 write_parquet(climate_problem, "/PHI_conf/ScotPHO/Profiles/Data/Climate Data/climate_problem_shiny.parquet")
 
-write_parquet(maxtemp_annual, "/PHI_conf/ScotPHO/Profiles/Data/Climate Data/maxtemp_annual_shiny.parquet")
+write_parquet(summer_maxtemp_annual, "/PHI_conf/ScotPHO/Profiles/Data/Climate Data/summer_maxtemp_annual_shiny.parquet")
+
+write_parquet(heatdays_annual, "/PHI_conf/ScotPHO/Profiles/Data/Climate Data/heatdays_annual_shiny.parquet")
