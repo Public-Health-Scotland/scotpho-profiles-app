@@ -53,7 +53,7 @@ create_multi_line_trend_chart <- function(data,
                        "5 - least deprived" = "#9B4393")
     colours <- unname(simd_colours[names(simd_colours) %in% data[[grouping_col]]])
   } else {
-    colours <- c(phs_colors("phs-blue"))
+    colours <- c(phs_colors("phs-blue-50"))
   }
   
   
@@ -282,7 +282,7 @@ create_bar_chart <- function(data,
     
     hc <- hchart(data, 
                  type = ifelse(horizontal == TRUE, "column", "bar"), 
-                 hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]]), color = "#0078D4") |>
+                 hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]]), color = phs_colors("phs-blue-50")) |>
       hc_xAxis(title = list(text = "")) |>
       hc_yAxis(title = list(text = ""))
     
