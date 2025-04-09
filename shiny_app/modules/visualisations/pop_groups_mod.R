@@ -67,6 +67,7 @@ pop_groups_ui <- function(id) {
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
+                checkboxInput(ns("rank_avg_switch"), label = "Include average", FALSE),
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
                 selectInput(ns("pop_years_filter"), label = "select year", choices = NULL)
               )
@@ -106,6 +107,8 @@ pop_groups_ui <- function(id) {
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
+                # add average line
+                checkboxInput(ns("trend_avg_switch"), label = "Include average", FALSE),
                 # constrain y-axis to start at zero
                 checkboxInput(ns("zero_popgp"), label = "y-axis should include zero", value = TRUE),
                 # too many CI for age split, removed at this stage
@@ -180,14 +183,19 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       dataset() |>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
         filter(indicator == selected_indicator() & split_name == input$split_filter) |> # filter by selected indicator and selected split
+        # create total column
+        group_by(year) |>
+        mutate(total = ifelse(any(split_value == "Total"), measure[split_value == "Total"], NA)) |>
+        #mutate(total = measure[split_value == "Total"])|>
+        ungroup() |>
+        filter(split_value != "Total") |>
         arrange(year)
     })
     
     # create single year data for the bar chart 
     pop_rank_data <- reactive({
       pop_trend_data() |>
-        filter(def_period == input$pop_years_filter) |>
-        mutate(colour_pal = case_when(grepl("All", split_value) ~ phs_colors("phs-blue"), TRUE ~ phs_colors("phs-blue-50")))
+        filter(def_period == input$pop_years_filter)
     })
     
     #######################################################.
@@ -246,7 +254,8 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         upci_col = "upci",
         lowci_col = "lowci",
         horizontal = TRUE,
-        colour_palette = "single"
+        colour_palette = "single",
+        include_average = input$rank_avg_switch
       ) |>
 
         # add extra bits to chart for downloaded version
@@ -255,7 +264,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
           chartOptions = list(
             title = list(text = paste0(selected_indicator(), " split by ", input$split_filter)),
             subtitle = list(text = paste0(pop_rank_data()$trend_axis[1])),
-            yAxis = list(title = list(text = paste0(pop_rank_data()$rate_type[1])))
+            yAxis = list(title = list(text = paste0(pop_rank_data()$type_definition[1])))
           )
         )
       
@@ -277,7 +286,8 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         zero_yaxis = input$zero_popgp,
         include_confidence_intervals = input$trend_ci_switch,
         chart_theme = theme,
-        colour_palette = "multi"
+        colour_palette = "single",
+        include_average = input$trend_avg_switch
       ) |>
      
         # add extra bits to chart for downloaded version
@@ -286,7 +296,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
           chartOptions = list(
             title = list(text = paste0(selected_indicator(), " split by ", input$split_filter)),
             subtitle = list(text = paste0(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis))),
-            yAxis = list(title = list(text = paste0(pop_trend_data()$rate_type[1])))
+            yAxis = list(title = list(text = paste0(pop_trend_data()$type_definition[1])))
           )
         )
       
