@@ -171,8 +171,6 @@ simd_navpanel_ui <- function(id) {
 }
 
 
-
-
 #######################################################.
 ## MODULE SERVER----
 #######################################################.
@@ -183,7 +181,7 @@ simd_navpanel_ui <- function(id) {
 # selected_profile = name of reactive value stores selected profile from main server script
 
 
-  simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile){
+simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -236,50 +234,48 @@ simd_navpanel_ui <- function(id) {
     })
     
     
-    # determining which quint types are available
-    # and enabling/disabling quint type filter accordingly
-    observeEvent(indicator_data(), {
-      req(indicator_data())
-      
-      # check what quint types are available for selected indicator 
-      available_quints <- unique(indicator_data()$quint_type)
-      
-      # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
-      # then disable filter and default to the 1 that is available 
-      if (length(available_quints)==1){
-        if("sc_quin" %in% available_quints){
-          updateRadioButtons(session, "quint_type", selected = "Scotland")
-        } else {
-          updateRadioButtons(session, "quint_type", selected = "Local") 
-        }
-        shinyjs::disable("quint_type")
-      } else {
-        
-        # otherwise if both local and scottish quintiles available then enable filter so 
-        # users can toggle between the two options (default to Scotland)
-        shinyjs::enable("quint_type")
-        updateRadioButtons(session, "quint_type", selected = "Scotland")
-      }
-    })
+        # determining which quint types are available
+        # and enabling/disabling quint type filter accordingly
+        observeEvent(indicator_data(), {
+
+          # check what quint types are available for selected indicator
+          available_quints <- unique(indicator_data()$quint_type)
+
+          # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
+          # then disable filter and default to the 1 that is available
+          if (length(available_quints)==1){
+            if("sc_quin" %in% available_quints){
+              updateRadioButtons(session, "quint_type", selected = "Scotland")
+            } else {
+              updateRadioButtons(session, "quint_type", selected = "Local")
+            }
+            shinyjs::disable("quint_type")
+          } else {
+
+            # otherwise if both local and scottish quintiles available then enable filter so
+            # users can toggle between the two options (default to Scotland)
+            shinyjs::enable("quint_type")
+            updateRadioButtons(session, "quint_type", selected = "Scotland")
+          }
+        })
     
     
-    # update sex filter choices depending on what splits are available for the selected indicator
-    # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it 
-    observeEvent(indicator_data(), {
-      req(indicator_data())
-      
-      # update filter choices 
-      choices <- unique(indicator_data()$sex) # get choices 
-      selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
-      updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices 
-      
-      # show/hide filter 
-      if(length(choices) == 1){
-        shinyjs::hide("sex_filter")
-      } else {
-        shinyjs::show("sex_filter")
-      }
-    })
+        # update sex filter choices depending on what splits are available for the selected indicator
+        # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it
+        observeEvent(indicator_data(), {
+
+          # update filter choices
+          choices <- unique(indicator_data()$sex) # get choices
+          selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
+          updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices
+
+          # show/hide filter
+          if(length(choices) == 1){
+            shinyjs::hide("sex_filter")
+          } else {
+            shinyjs::show("sex_filter")
+          }
+        }, ignoreNULL = TRUE)
     
     
     
@@ -314,11 +310,11 @@ simd_navpanel_ui <- function(id) {
     
     # filter data passed to the module by the selected indicator and selected area
     # and further filter by quint type
-    indicator_data <- reactive({
-      req(selected_indicator())
+    indicator_data<- reactive({
       req(simd_data())
       
       dt <- simd_data() |>
+        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         filter(indicator == selected_indicator()) |>
         mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
       
@@ -330,7 +326,7 @@ simd_navpanel_ui <- function(id) {
         dt <- dt |>
           filter(quint_type != "sc_quin")
       }
-
+      
       dt
     })
     
@@ -344,7 +340,7 @@ simd_navpanel_ui <- function(id) {
     # It will therefore create a 'left_data' (i.e. data for the left-hand chart) and a 'right_data' (data for the right hand chart)
     simd_measures_data <- reactive({
       req(indicator_data())
-
+      
       data <- switch(input$depr_measures,
                      
                      
@@ -494,9 +490,8 @@ simd_navpanel_ui <- function(id) {
     # c . the 2 x charts subtitle to display (i.e. stored under 'left_chart_subtitle_1 and left_chart_subtitle_2)
     # d. the filename of the chart if saved as a png (i.e. stored under 'left_chart_filename')
     chart_text <- reactive({
-      req(nrow(simd_measures_data()$left_data) > 0)
-      req(nrow(simd_measures_data()$right_data) > 0)
-
+      req(simd_measures_data())
+      
       switch(input$depr_measures,
              
              
@@ -566,37 +561,39 @@ simd_navpanel_ui <- function(id) {
     
     # render the title and subtitle for the left hand side card
     output$left_chart_header <- renderUI({
-
-        div(
-        h5(chart_text()$left_chart_title, class = "chart-header"),
-        h6(chart_text()$left_chart_subtitle_1),
-        p(chart_text()$left_chart_subtitle_2),
-        actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
-      )
       
+      if(nrow(indicator_data()) > 0) {
+        div(
+          h5(chart_text()$left_chart_title, class = "chart-header"),
+          h6(chart_text()$left_chart_subtitle_1),
+          p(chart_text()$left_chart_subtitle_2),
+          actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
+        )
+      }
     })
     
     # render the title and subtitle for the right hand side card
     output$right_chart_header <- renderUI({
-
-        div(
-        h5(chart_text()$right_chart_title, class = "chart-header"),
-        h6(chart_text()$right_chart_subtitle_1),
-        p(chart_text()$right_chart_subtitle_2),
-        actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
-      )
       
+      if(nrow(indicator_data()) > 0) {
+        div(
+          h5(chart_text()$right_chart_title, class = "chart-header"),
+          h6(chart_text()$right_chart_subtitle_1),
+          p(chart_text()$right_chart_subtitle_2),
+          actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
+        )
+      }
     })
     
     
     # render the narrative for left cards interpretation tab
     output$left_chart_narrative <- renderUI({
-        chart_text()$left_chart_narrative
+      chart_text()$left_chart_narrative
     })
-
+    
     # render the narrative for the right cards interpretation tab
     output$right_chart_narrative <- renderUI({
-        chart_text()$right_chart_narrative
+      chart_text()$right_chart_narrative
     })
     
     
@@ -607,7 +604,7 @@ simd_navpanel_ui <- function(id) {
     # render the chart to display on left-hand side (conditional depending on which measure was selected)
     # using the data stored within simd_measures_data()$left_data (which is also conditional depending on what measure was selected)
     output$left_chart <- renderHighchart({
-      req(nrow(simd_measures_data()$left_data) > 0)
+      
       # only create charts if there is data available to plot
       # validation message suggests the other two area types the user might try (although dep data aren't necessarily available at the lower geog: should the message only suggest available geogs?)
       shiny::validate(
@@ -637,7 +634,7 @@ simd_navpanel_ui <- function(id) {
                      reduce_xaxis_labels = TRUE,
                      zero_yaxis = input$left_zero_axis_switch, # filter returns TRUE/FALSE
                      include_confidence_intervals = input$left_ci_switch), # filter returns TRUE/FALSE
-
+                   
                    
                    # attributable to inequality bar chart
                    # note there is no custom function yet for stacked bar charts
@@ -672,8 +669,7 @@ simd_navpanel_ui <- function(id) {
     # render the chart to display on right-hand side (conditional depending on which measure was selected)
     # using the data stored within simd_measures_data()$right_data (which is also conditional depending on what measure was selected)
     output$right_chart <- renderHighchart({
-      req(nrow(simd_measures_data()$right_data) > 0)
-
+      
       # only create charts if there is data available to plot
       shiny::validate(
         need(nrow(indicator_data()) > 0,
@@ -684,37 +680,37 @@ simd_navpanel_ui <- function(id) {
       
       
       hc <- switch(input$depr_measures,
-      
-       # SIMD trend chart                        
-      "Patterns of inequality" = create_multi_line_trend_chart(
-        data = simd_measures_data()$right_data, 
-        grouping_col = "quintile", 
-        legend_position = "bottom",
-        reduce_xaxis_labels = TRUE,
-        colour_palette = "simd",
-        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-        include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
-        include_average = input$right_average_switch # filter returns TRUE/FALSE
-        ),
-      
-      # RII trend chart
-      "Inequality gap" = create_single_line_trend_chart(
-        data = simd_measures_data()$right_data, 
-        yaxis_col = "rii_int", 
-        upci_col = "upci_rii_int",
-        lowci_col = "lowci_rii_int",
-        reduce_xaxis_labels = TRUE,
-        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-        include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
-      
-      
-      # PAR trend chart
-      "Potential for improvement" =  create_single_line_trend_chart(
-        data = simd_measures_data()$right_data, 
-        yaxis_col = "par", 
-        reduce_xaxis_labels = TRUE,
-        include_confidence_intervals = FALSE,
-        zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
+                   
+                   # SIMD trend chart                        
+                   "Patterns of inequality" = create_multi_line_trend_chart(
+                     data = simd_measures_data()$right_data, 
+                     grouping_col = "quintile", 
+                     legend_position = "bottom",
+                     reduce_xaxis_labels = TRUE,
+                     colour_palette = "simd",
+                     zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
+                     include_average = input$right_average_switch # filter returns TRUE/FALSE
+                   ),
+                   
+                   # RII trend chart
+                   "Inequality gap" = create_single_line_trend_chart(
+                     data = simd_measures_data()$right_data, 
+                     yaxis_col = "rii_int", 
+                     upci_col = "upci_rii_int",
+                     lowci_col = "lowci_rii_int",
+                     reduce_xaxis_labels = TRUE,
+                     zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
+                   
+                   
+                   # PAR trend chart
+                   "Potential for improvement" =  create_single_line_trend_chart(
+                     data = simd_measures_data()$right_data, 
+                     yaxis_col = "par", 
+                     reduce_xaxis_labels = TRUE,
+                     include_confidence_intervals = FALSE,
+                     zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
       )
       
       # add options for downloaded version only
@@ -731,13 +727,12 @@ simd_navpanel_ui <- function(id) {
       hc
     })
     
-
+    
     
     
     # render the data to be displayed on the left
     output$left_table <- renderReactable({
-      req(nrow(simd_measures_data()$left_data) > 0)
-
+      
       reactable(simd_measures_data()$left_data,
                 defaultExpanded = T,
                 defaultPageSize = nrow(simd_measures_data()$left_data),
@@ -749,8 +744,6 @@ simd_navpanel_ui <- function(id) {
     
     # render the data to be displayed on the left
     output$right_table <- renderReactable({
-      req(nrow(simd_measures_data()$right_data) > 0)
-
       reactable(simd_measures_data()$right_data,
                 defaultExpanded = T,
                 defaultPageSize = nrow(simd_measures_data()$right_data),
