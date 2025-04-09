@@ -430,35 +430,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       type_definition <- case_when(
         input$numerator_button_trends == "Numerator" ~ "Number",
         input$numerator_button_trends == "Rate" ~ paste0(unique(trend_data()$type_definition)))
-      
-      
-      # create vector of colours - needs to be the same length as the 
-      # number of lines that need to be plotted otherwise CI colours
-      # wont match up properly
-      colours <- head(phs_palette, length(unique(trend_data()$areaname)))
-      
-      # create highchart object
-      chart <- hchart(trend_data(), 
-                      "line", 
-                      hcaes(x = trend_axis, y = y, group = areaname),
-                      marker = list(enabled = TRUE)
-                      ) |>
-        hc_plotOptions(series=list(animation=FALSE,
-                                   connectNulls=TRUE)) |>
-        hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
-        hc_yAxis(title = list(text = type_definition)) |>
-        hc_xAxis(categories = unique(trend_data()$trend_axis), title = "") |>
-        hc_legend(align = "left", verticalAlign = "top") |>
-        hc_chart(backgroundColor = 'white') |>
 
-        
-        # format tooltip
-        hc_tooltip(headerFormat = "",
-                   crosshairs = TRUE,
-                   shared = TRUE) |>
-        
-        
-        # title for downloaded version
+      create_multi_line_trend_chart(
+        data = trend_data(),
+        xaxis_col = "trend_axis", 
+        yaxis_col = "y", 
+        upci_col = "upci",
+        lowci_col = "lowci",
+        grouping_col = "areaname",
+        legend_position = "top",
+        zero_yaxis = input$zero_trend,
+        include_confidence_intervals = input$ci_switch_trends,
+        colour_palette = "multi"
+      ) |>
         hc_exporting(
           filename = paste0("ScotPHO trend - ", selected_indicator()),
           chartOptions = list(
@@ -466,43 +450,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
             subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)))
           )
         )
-      
-      
-      # add confidence intervals if box is checked
-      if(input$ci_switch_trends == TRUE) {
-        
-        chart <- chart |>
-          hc_add_series(
-            trend_data(),
-            type = "arearange",
-            name = "95% confidence interval",
-            linked_to = ":previous",
-            hcaes(x = trend_axis, low = lowci, high = upci, group = areaname),
-            fillOpacity = 0.2,
-            enableMouseTracking = FALSE, # removes from tooltip
-            showInLegend = FALSE, # don't need CI labels in legend
-            zIndex = -1, # plots the CI series behind the line series
-            marker = list(enabled = FALSE, # removes the markers for the CI series
-                          states = list(
-                            hover = list(
-                              enabled = FALSE)))) 
-        
-      }
-      
-      # constrain y-axis to include zero if box is checked
-      if(input$zero_trend == TRUE) {
-        
-        chart <- chart |>
-          hc_yAxis(min=0) 
-        
-      }
-      
-      # add phs colours
-      chart <- chart |>
-        hc_colors(colours)
-      
-      
-      chart 
     })
     
     

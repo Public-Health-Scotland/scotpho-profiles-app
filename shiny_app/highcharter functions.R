@@ -67,7 +67,7 @@ create_multi_line_trend_chart <- function(data,
     hc_xAxis(title = "") |>
     hc_yAxis(title = "") |>
     hc_chart(marginRight = 15) |>
-    hc_legend(verticalAlign = legend_position) |>
+    hc_legend(verticalAlign = legend_position, align = "left") |>
     hc_tooltip(headerFormat = "", crosshairs = TRUE, shared = TRUE)
   
   

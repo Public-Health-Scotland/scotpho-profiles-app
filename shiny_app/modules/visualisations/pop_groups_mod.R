@@ -236,16 +236,19 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
       shiny::validate(
         need( nrow(pop_rank_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
       )
-
       
-      x <- hchart(pop_rank_data(), 
-                  type = "column", hcaes(x = split_value, y = measure, color = colour_pal)) %>%
-        hc_yAxis(gridLineWidth = 0) %>%
-        hc_chart(backgroundColor = 'white') %>%
-        hc_xAxis(title = list(text = "")) %>%
-        hc_yAxis(title = list(text = "")) %>%
-        hc_plotOptions(series = list(animation = FALSE),
-                       column = list(groupPadding = 0))|>
+      
+      create_bar_chart(
+        data = pop_rank_data(),
+        xaxis_col = "split_value",
+        yaxis_col = "measure",
+        include_confidence_intervals = input$ci_switch,
+        upci_col = "upci",
+        lowci_col = "lowci",
+        horizontal = TRUE,
+        colour_palette = "single"
+      ) |>
+
         # add extra bits to chart for downloaded version
         hc_exporting(
           filename = paste0("ScotPHO ", selected_indicator(), " split by ", input$split_filter),
@@ -257,15 +260,6 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         )
       
       
-      
-      if(input$ci_switch) {
-        x <- x |>
-          hc_add_series(pop_rank_data(), "errorbar", hcaes(x = split_value, low = lowci, high = upci), zIndex = 10)
-      }
-      
-      x
-
-      
     }) # end pop_rank_chart
     
     # pop trend bar chart  ---------------
@@ -273,42 +267,19 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
     output$pop_trend_chart <- renderHighchart({
       
       
-      # create vector of colours - needs to be the same length as the 
-      # number of lines that need to be plotted otherwise CI colours (the lighter colour plotted behind the main line)
-      # wont match up properly
-      purple_and_blues <- unname(phs_colours()[grepl("blue|purple", names(phs_colours()))])
-      colours <- head(purple_and_blues, length(unique(pop_trend_data()$split_value)))
-      
-      
-      x <- hchart(pop_trend_data(), 
-                  "line",
-                  hcaes(x = trend_axis, y = measure, group = split_value)) |>
-        hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
-        hc_xAxis(title = list(text = "")) |>
-        hc_xAxis(categories = unique(pop_trend_data()$trend_axis)) |>
-        hc_yAxis(title = list(text = "")) |>
-        # style xaxis labels - keeping only first and last label
-        hc_xAxis(labels = list(
-          rotation = 0,
-          style = list(
-            whiteSpace = 'nowrap',
-            textOverflow = 'none'
-          ),
-          formatter = JS("function() {
-               if (this.isFirst || this.isLast) {
-                 return this.value;
-               } else {
-                 return '';
-               }
-             }"))) |>
-        hc_chart(backgroundColor = 'white') |>
-        hc_plotOptions(series = list(animation = FALSE,
-                                     connectNulls=TRUE)) |>
-        hc_tooltip(
-          crosshairs = TRUE,
-          borderWidth = 1,
-          table = TRUE
-        ) |>
+      create_multi_line_trend_chart(
+        data = pop_trend_data(),
+        xaxis_col = "trend_axis", 
+        yaxis_col = "measure", 
+        grouping_col = "split_value",
+        legend_position = "bottom",
+        reduce_xaxis_labels = TRUE,
+        zero_yaxis = input$zero_popgp,
+        include_confidence_intervals = input$trend_ci_switch,
+        chart_theme = theme,
+        colour_palette = "multi"
+      ) |>
+     
         # add extra bits to chart for downloaded version
         hc_exporting(
           filename = paste0("ScotPHO trend - ", selected_indicator(), " split by ", input$split_filter),
@@ -320,41 +291,6 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         )
       
 
-      
-      
-      # if the confidence interval switch turned on, plot cis
-      if(input$trend_ci_switch == TRUE){
-        
-        x <- x |>
-          hc_add_series(pop_trend_data(), 
-                        type = "arearange", 
-                        hcaes(x = trend_axis, low = lowci, high = upci, group = split_value),  
-                        color = hex_to_rgba("grey", 0.2), 
-                        linkedTo = ":previous",
-                        showInLegend = FALSE,
-                        enableMouseTracking = FALSE,
-                        zIndex = -1, # plots the CI series behind the line series
-                        marker = list(enabled = FALSE, # removes the markers for the CI series
-                                      states = list(
-                                        hover = list(
-                                          enabled = FALSE))))
-      }
-      
-      # constrain y-axis to include zero if box is checked
-      if(input$zero_popgp == TRUE) {
-        
-        x <- x |>
-          hc_yAxis(min=0) 
-        
-      }
-      
-      x <- x |>
-        # add phs colours
-        hc_colors(colours)
-      
-      x
-      
-      
     }) #end  pop trend chart
     
     
