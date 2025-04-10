@@ -314,7 +314,6 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
       req(simd_data())
       
       dt <- simd_data() |>
-        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         filter(indicator == selected_indicator()) |>
         mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
       
