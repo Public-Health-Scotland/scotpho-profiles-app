@@ -23,10 +23,12 @@ simd_navpanel_ui <- function(id) {
                         
                         # sex filter (for the mental health profile only as some SIMD indicators have sex splits)
                         # it will be hidden for all other profiles
-                        selectizeInput(inputId = ns("sex_filter"), 
+                        shinyjs::hidden(
+                          selectizeInput(inputId = ns("sex_filter"), 
                                        label = "Select sex:", 
                                        choices = c("Total", "Male", "Female"), 
-                                       selected = "Total"),
+                                       selected = "Total")
+                          ),
                         
                         # measure filter
                         radioButtons(
@@ -169,8 +171,6 @@ simd_navpanel_ui <- function(id) {
 }
 
 
-
-
 #######################################################.
 ## MODULE SERVER----
 #######################################################.
@@ -181,7 +181,7 @@ simd_navpanel_ui <- function(id) {
 # selected_profile = name of reactive value stores selected profile from main server script
 
 
-  simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile){
+simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -234,53 +234,48 @@ simd_navpanel_ui <- function(id) {
     })
     
     
-    # determining which quint types are available
-    # and enabling/disabling quint type filter accordingly
-    observe({
-      
-      # if local quintiles are not available for the selected indicator and geography
-      # then set selected quintile to "Scotland" and disable the filter
-      
-      available_quints <- simd_data() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
-        select(quint_type) |>
-        unique()
-      
-      # If Scotland is selected, only scotland-level quintiles are appropriate (disable the radio buttons)
-      # If another geography is selected but local-level quintiles aren't available do the same:
-      if (length(available_quints)==1 & "sc_quin" %in% available_quints){
-        updateRadioButtons(session, "quint_type", selected = "Scotland")
-        shinyjs::disable("quint_type")
-        
-        # otherwise, if the areatype is local set the quintile to "Local" by default
-      } else if (geo_selections()$areatype != "Scotland"){
-        updateRadioButtons(session, "quint_type", selected = "Local")
-        
-        if(selected_indicator() %in% c("Mortality amenable to healthcare",
-                                       "Repeat emergency hospitalisation in the same year",
-                                       "Preventable emergency hospitalisation for a chronic condition",
-                                       "Life expectancy, females",
-                                       "Life expectancy, males")) {
-          
-          shinyjs::disable("quint_type")
-        } else {
-          shinyjs::enable("quint_type")
-        } 
-      }
-    })
+        # determining which quint types are available
+        # and enabling/disabling quint type filter accordingly
+        observeEvent(indicator_data(), {
+
+          # check what quint types are available for selected indicator
+          available_quints <- unique(indicator_data()$quint_type)
+
+          # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
+          # then disable filter and default to the 1 that is available
+          if (length(available_quints)==1){
+            if(available_quints == "sc_quin"){
+              updateRadioButtons(session, "quint_type", selected = "Scotland")
+            } else {
+              updateRadioButtons(session, "quint_type", selected = "Local")
+            }
+            shinyjs::disable("quint_type")
+          } else {
+
+            # otherwise if both local and scottish quintiles available then enable filter so
+            # users can toggle between the two options (default to Scotland)
+            shinyjs::enable("quint_type")
+            updateRadioButtons(session, "quint_type", selected = "Scotland")
+          }
+        })
     
     
-    # only show the sex filter if a user selects an indicator where there
-    # are more options than just 'Total' (i.e. total, males, females)
-    # otherwise hide it
-    observeEvent(selected_indicator(), {
-      req(indicator_data())
-      if(length(unique(indicator_data()$sex)) == 1){
-        shinyjs::hide("sex_filter")
-      } else {
-        shinyjs::show("sex_filter")
-      }
-    })
+        # update sex filter choices depending on what splits are available for the selected indicator
+        # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it
+        observeEvent(indicator_data(), {
+
+          # update filter choices
+          choices <- unique(indicator_data()$sex) # get choices
+          selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
+          updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices
+
+          # show/hide filter
+          if(length(choices) == 1){
+            shinyjs::hide("sex_filter")
+          } else {
+            shinyjs::show("sex_filter")
+          }
+        }, ignoreNULL = TRUE)
     
     
     
@@ -319,20 +314,9 @@ simd_navpanel_ui <- function(id) {
       req(simd_data())
       
       dt <- simd_data() |>
-        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
         filter(indicator == selected_indicator()) |>
         mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
-      
-      # filter by quint type 
-      if(input$quint_type == "Scotland"){
-        dt <- dt |>
-          filter(quint_type == "sc_quin")
-      } else {
-        dt <- dt |>
-          filter(quint_type != "sc_quin")
-      }
 
-      dt
     })
     
     
@@ -346,6 +330,17 @@ simd_navpanel_ui <- function(id) {
     simd_measures_data <- reactive({
       req(indicator_data())
       
+      
+      # filter by quint type 
+      if(input$quint_type == "Scotland"){
+        dt <- indicator_data() |>
+          filter(quint_type == "sc_quin")
+      } else {
+        dt <- indicator_data() |>
+          filter(quint_type != "sc_quin")
+      }
+
+      
       data <- switch(input$depr_measures,
                      
                      
@@ -353,7 +348,7 @@ simd_navpanel_ui <- function(id) {
                      "Patterns of inequality" = list(
                        
                        # SIMD dataset - snapshot 
-                       left_data = indicator_data() |>
+                       left_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(year == max(year)) |>
                          mutate(total = measure[quintile == "Total"]) |>
@@ -361,7 +356,7 @@ simd_navpanel_ui <- function(id) {
                          select(indicator, type_definition, areaname, areatype, trend_axis, quintile, measure, total, upci, lowci),
                        
                        # SIMD dataset - trend 
-                       right_data = indicator_data() |>
+                       right_data = dt |>
                          filter(sex == input$sex_filter) |>
                          group_by(year) |>
                          mutate(total = measure[quintile == "Total"]) |>
@@ -404,13 +399,13 @@ simd_navpanel_ui <- function(id) {
                      "Inequality gap" = list(
                        
                        # SII trend dataset
-                       left_data = indicator_data() |>
+                       left_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(quintile == "Total") |>
                          select(indicator, type_definition, areaname, areatype, trend_axis, sii, upci_sii, lowci_sii),
                        
                        # RII trend dataset
-                       right_data = indicator_data() |>
+                       right_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(quintile == "Total") |>
                          select(indicator, type_definition, areaname, areatype, trend_axis, rii_int, upci_rii_int, lowci_rii_int),
@@ -443,7 +438,7 @@ simd_navpanel_ui <- function(id) {
                      "Potential for improvement" = list(
                        
                        # attributable to inequality -barchart dataset
-                       left_data = indicator_data() |>
+                       left_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(year == max(year) & quintile != "Total") |>
                          #add columns which allow columns behind PAF bar to be created
@@ -460,7 +455,7 @@ simd_navpanel_ui <- function(id) {
                          select(indicator, type_definition, areaname, areatype, trend_axis, quintile, measure_name, value),
                        
                        # PAR - trend dataset
-                       right_data = indicator_data() |>
+                       right_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(quintile == "Total") |>
                          select(indicator, type_definition, trend_axis, areaname, areatype, par),
@@ -566,39 +561,39 @@ simd_navpanel_ui <- function(id) {
     
     # render the title and subtitle for the left hand side card
     output$left_chart_header <- renderUI({
-
+      
       if(nrow(indicator_data()) > 0) {
         div(
-        h5(chart_text()$left_chart_title, class = "chart-header"),
-        h6(chart_text()$left_chart_subtitle_1),
-        p(chart_text()$left_chart_subtitle_2),
-        actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
-      )
+          h5(chart_text()$left_chart_title, class = "chart-header"),
+          h6(chart_text()$left_chart_subtitle_1),
+          p(chart_text()$left_chart_subtitle_2),
+          actionLink(ns("left_chart_info_link"), label = "Learn more") # link to interpretation tab 
+        )
       }
     })
     
     # render the title and subtitle for the right hand side card
     output$right_chart_header <- renderUI({
-  
+      
       if(nrow(indicator_data()) > 0) {
         div(
-        h5(chart_text()$right_chart_title, class = "chart-header"),
-        h6(chart_text()$right_chart_subtitle_1),
-        p(chart_text()$right_chart_subtitle_2),
-        actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
-      )
+          h5(chart_text()$right_chart_title, class = "chart-header"),
+          h6(chart_text()$right_chart_subtitle_1),
+          p(chart_text()$right_chart_subtitle_2),
+          actionLink(ns("right_chart_info_link"), label = "Learn more") # link to interpretation tab 
+        )
       }
     })
     
     
     # render the narrative for left cards interpretation tab
     output$left_chart_narrative <- renderUI({
-        chart_text()$left_chart_narrative
+      chart_text()$left_chart_narrative
     })
-
+    
     # render the narrative for the right cards interpretation tab
     output$right_chart_narrative <- renderUI({
-        chart_text()$right_chart_narrative
+      chart_text()$right_chart_narrative
     })
     
     
@@ -639,7 +634,7 @@ simd_navpanel_ui <- function(id) {
                      reduce_xaxis_labels = TRUE,
                      zero_yaxis = input$left_zero_axis_switch, # filter returns TRUE/FALSE
                      include_confidence_intervals = input$left_ci_switch), # filter returns TRUE/FALSE
-
+                   
                    
                    # attributable to inequality bar chart
                    # note there is no custom function yet for stacked bar charts
@@ -685,37 +680,37 @@ simd_navpanel_ui <- function(id) {
       
       
       hc <- switch(input$depr_measures,
-      
-       # SIMD trend chart                        
-      "Patterns of inequality" = create_multi_line_trend_chart(
-        data = simd_measures_data()$right_data, 
-        grouping_col = "quintile", 
-        legend_position = "bottom",
-        reduce_xaxis_labels = TRUE,
-        colour_palette = "simd",
-        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-        include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
-        include_average = input$right_average_switch # filter returns TRUE/FALSE
-        ),
-      
-      # RII trend chart
-      "Inequality gap" = create_single_line_trend_chart(
-        data = simd_measures_data()$right_data, 
-        yaxis_col = "rii_int", 
-        upci_col = "upci_rii_int",
-        lowci_col = "lowci_rii_int",
-        reduce_xaxis_labels = TRUE,
-        zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-        include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
-      
-      
-      # PAR trend chart
-      "Potential for improvement" =  create_single_line_trend_chart(
-        data = simd_measures_data()$right_data, 
-        yaxis_col = "par", 
-        reduce_xaxis_labels = TRUE,
-        include_confidence_intervals = FALSE,
-        zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
+                   
+                   # SIMD trend chart                        
+                   "Patterns of inequality" = create_multi_line_trend_chart(
+                     data = simd_measures_data()$right_data, 
+                     grouping_col = "quintile", 
+                     legend_position = "bottom",
+                     reduce_xaxis_labels = TRUE,
+                     colour_palette = "simd",
+                     zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
+                     include_average = input$right_average_switch # filter returns TRUE/FALSE
+                   ),
+                   
+                   # RII trend chart
+                   "Inequality gap" = create_single_line_trend_chart(
+                     data = simd_measures_data()$right_data, 
+                     yaxis_col = "rii_int", 
+                     upci_col = "upci_rii_int",
+                     lowci_col = "lowci_rii_int",
+                     reduce_xaxis_labels = TRUE,
+                     zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
+                   
+                   
+                   # PAR trend chart
+                   "Potential for improvement" =  create_single_line_trend_chart(
+                     data = simd_measures_data()$right_data, 
+                     yaxis_col = "par", 
+                     reduce_xaxis_labels = TRUE,
+                     include_confidence_intervals = FALSE,
+                     zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
       )
       
       # add options for downloaded version only
@@ -732,7 +727,7 @@ simd_navpanel_ui <- function(id) {
       hc
     })
     
-
+    
     
     
     # render the data to be displayed on the left

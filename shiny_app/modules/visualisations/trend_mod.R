@@ -162,8 +162,17 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
 
     # enable/ disable geography filters depending on the selected indicator
-    observe({
+    observeEvent(selected_indicator(), {
       req(indicator_filtered_data())
+      
+      # get current selections
+      hb_selections <- input$hb_filter
+      ca_selections <- input$ca_filter
+      hscp_selections <- input$hscp_filter
+      adp_selections <- input$adp_filter
+      locality_selections <- input$locality_filter
+      iz_selections <- input$iz_filter
+      pd_selections <- input$pd_filter
       
       # stores available areatypes, depending on what indicator was selected
       available_areatypes <- indicator_filtered_data() |>
@@ -183,7 +192,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Health board' is available, enable hb_filter, otherwise disable it
       if("Health board" %in% available_areatypes) {
         shinyjs::enable("hb_filter")
-        updateSelectizeInput(session, "hb_filter", options = list(placeholder = NULL), selected = hb_selections())
+        updateSelectizeInput(session, "hb_filter", options = list(placeholder = NULL), selected = hb_selections)
       } else {
         shinyjs::disable("hb_filter")
         updateSelectizeInput(session, "hb_filter", options = list(placeholder = "Unavailable"))
@@ -192,7 +201,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Council area' is available, enable ca_filter, otherwise disable it
       if("Council area" %in% available_areatypes) {
         shinyjs::enable("ca_filter")
-        updateSelectizeInput(session, "ca_filter", options = list(placeholder = NULL), selected = ca_selections())        
+        updateSelectizeInput(session, "ca_filter", options = list(placeholder = NULL), selected = ca_selections)        
       } else {
         shinyjs::disable("ca_filter")
         updateSelectizeInput(session, "ca_filter", options = list(placeholder = "Unavailable"))
@@ -201,7 +210,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'HSC partnership' is available, enable hscp_filter, otherwise disable it
       if("HSC partnership" %in% available_areatypes) {
         shinyjs::enable("hscp_filter")
-        updateSelectizeInput(session, "hscp_filter", options = list(placeholder = NULL), selected = hscp_selections())
+        updateSelectizeInput(session, "hscp_filter", options = list(placeholder = NULL), selected = hscp_selections)
       } else {
         updateSelectizeInput(session, "hscp_filter", options = list(placeholder = "Unavailable"))
         shinyjs::disable("hscp_filter")
@@ -210,7 +219,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Alcohol & drug partnership' is available, enable adp_filter, otherwise disable it
       if("Alcohol & drug partnership" %in% available_areatypes) {
         shinyjs::enable("adp_filter")
-        updateSelectizeInput(session, "adp_filter", options = list(placeholder = NULL), selected = adp_selections())
+        updateSelectizeInput(session, "adp_filter", options = list(placeholder = NULL), selected = adp_selections)
       } else {
         shinyjs::disable("adp_filter")
         updateSelectizeInput(session, "adp_filter", options = list(placeholder = "Unavailable"))
@@ -228,7 +237,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'HSC Locality' is available, enable the filter otherwise disable it
       if("HSC locality" %in% available_areatypes){
         shinyjs::enable("locality_filter")
-        updateSelectizeInput(session, "locality_filter", choices = available_localities, options = list(placeholder = NULL), selected = locality_selections())
+        updateSelectizeInput(session, "locality_filter", choices = available_localities, options = list(placeholder = NULL), selected = locality_selections)
       } else {
         updateSelectizeInput(session, "locality_filter", options = list(placeholder = "Unavailable"), selected = character(0))
         shinyjs::disable("locality_filter")
@@ -237,7 +246,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Intermediate zone' is available, enable the filter otherwise disable it
       if("Intermediate zone" %in% available_areatypes){
         shinyjs::enable("iz_filter")
-        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections())
+        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections)
       } else {
         updateSelectizeInput(session, "iz_filter", options = list(placeholder = "Unavailable"), selected = character(0))
         shinyjs::disable("iz_filter")
@@ -252,14 +261,14 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
         show("pd_panel")
       if("Police division" %in% available_areatypes) {
         shinyjs::enable("pd_filter")
-        updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections())
+        updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections)
       } else {
         shinyjs::disable("pd_filter")
         updateSelectizeInput(session, "pd_filter", options = list(placeholder = "Unavailable"))
       }
       }
 
-    })
+    }, ignoreNULL = TRUE)
     
 
     
@@ -274,18 +283,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       updateSelectizeInput(session, "iz_filter", selected = character(0))
       updateSelectizeInput(session, "locality_filter", selected = character(0))
       updateSelectizeInput(session, "pd_filter", selected = character(0))
-      
-      
-      # clear the reactive vals
-      hb_selections(NULL)
-      ca_selections(NULL)
-      hscp_selections(NULL)
-      adp_selections(NULL)
-      locality_selections(NULL)
-      iz_selections(NULL)
-      pd_selections(NULL)
-      
-      
+
     })
     
     
@@ -338,47 +336,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     #######################################################.
     ## Reactive data / values ----
     #######################################################.
-    
-    # create reactive objects to store selected geographies
-    hb_selections <- reactiveVal()
-    ca_selections <- reactiveVal()
-    hscp_selections <- reactiveVal()
-    adp_selections <- reactiveVal()
-    locality_selections <- reactiveVal()
-    iz_selections <- reactiveVal()
-    pd_selections <- reactiveVal()
-    
-    
-    # update the reactive objects whenever selections are made
-    # from each of the geography filters
-    observeEvent(input$hb_filter, {
-      hb_selections(input$hb_filter)
-    }, ignoreNULL = FALSE)
-    
-    observeEvent(input$ca_filter, {
-      ca_selections(input$ca_filter)
-    }, ignoreNULL = FALSE)
-    
-    observeEvent(input$hscp_filter, {
-      hscp_selections(input$hscp_filter)
-    }, ignoreNULL = FALSE)
-    
-    observeEvent(input$adp_filter, {
-      adp_selections(input$adp_filter)
-    }, ignoreNULL = FALSE)
-    
-    observeEvent(input$locality_filter, {
-      locality_selections(input$locality_filter)
-    }, ignoreNULL = FALSE)
-    
-    observeEvent(input$iz_filter, {
-      iz_selections(input$iz_filter)
-    }, ignoreNULL = FALSE)
-    
-    observeEvent(input$pd_filter, {
-      pd_selections(input$pd_filter)
-    }, ignoreNULL = FALSE)
-
+   
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
                                                       filtered_data,
@@ -472,35 +430,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       type_definition <- case_when(
         input$numerator_button_trends == "Numerator" ~ "Number",
         input$numerator_button_trends == "Rate" ~ paste0(unique(trend_data()$type_definition)))
-      
-      
-      # create vector of colours - needs to be the same length as the 
-      # number of lines that need to be plotted otherwise CI colours
-      # wont match up properly
-      colours <- head(phs_palette, length(unique(trend_data()$areaname)))
-      
-      # create highchart object
-      chart <- hchart(trend_data(), 
-                      "line", 
-                      hcaes(x = trend_axis, y = y, group = areaname),
-                      marker = list(enabled = TRUE)
-                      ) |>
-        hc_plotOptions(series=list(animation=FALSE,
-                                   connectNulls=TRUE)) |>
-        hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
-        hc_yAxis(title = list(text = type_definition)) |>
-        hc_xAxis(categories = unique(trend_data()$trend_axis), title = "") |>
-        hc_legend(align = "left", verticalAlign = "top") |>
-        hc_chart(backgroundColor = 'white') |>
 
-        
-        # format tooltip
-        hc_tooltip(headerFormat = "",
-                   crosshairs = TRUE,
-                   shared = TRUE) |>
-        
-        
-        # title for downloaded version
+      create_multi_line_trend_chart(
+        data = trend_data(),
+        xaxis_col = "trend_axis", 
+        yaxis_col = "y", 
+        upci_col = "upci",
+        lowci_col = "lowci",
+        grouping_col = "areaname",
+        legend_position = "top",
+        zero_yaxis = input$zero_trend,
+        include_confidence_intervals = input$ci_switch_trends,
+        colour_palette = "multi"
+      ) |>
         hc_exporting(
           filename = paste0("ScotPHO trend - ", selected_indicator()),
           chartOptions = list(
@@ -508,43 +450,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
             subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)))
           )
         )
-      
-      
-      # add confidence intervals if box is checked
-      if(input$ci_switch_trends == TRUE) {
-        
-        chart <- chart |>
-          hc_add_series(
-            trend_data(),
-            type = "arearange",
-            name = "95% confidence interval",
-            linked_to = ":previous",
-            hcaes(x = trend_axis, low = lowci, high = upci, group = areaname),
-            fillOpacity = 0.2,
-            enableMouseTracking = FALSE, # removes from tooltip
-            showInLegend = FALSE, # don't need CI labels in legend
-            zIndex = -1, # plots the CI series behind the line series
-            marker = list(enabled = FALSE, # removes the markers for the CI series
-                          states = list(
-                            hover = list(
-                              enabled = FALSE)))) 
-        
-      }
-      
-      # constrain y-axis to include zero if box is checked
-      if(input$zero_trend == TRUE) {
-        
-        chart <- chart |>
-          hc_yAxis(min=0) 
-        
-      }
-      
-      # add phs colours
-      chart <- chart |>
-        hc_colors(colours)
-      
-      
-      chart 
     })
     
     
