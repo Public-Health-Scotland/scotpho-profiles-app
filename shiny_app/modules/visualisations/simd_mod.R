@@ -244,7 +244,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
           # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
           # then disable filter and default to the 1 that is available
           if (length(available_quints)==1){
-            if("sc_quin" %in% available_quints){
+            if(available_quints == "sc_quin"){
               updateRadioButtons(session, "quint_type", selected = "Scotland")
             } else {
               updateRadioButtons(session, "quint_type", selected = "Local")
@@ -316,17 +316,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
       dt <- simd_data() |>
         filter(indicator == selected_indicator()) |>
         mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
-      
-      # filter by quint type 
-      if(input$quint_type == "Scotland"){
-        dt <- dt |>
-          filter(quint_type == "sc_quin")
-      } else {
-        dt <- dt |>
-          filter(quint_type != "sc_quin")
-      }
-      
-      dt
+
     })
     
     
@@ -340,6 +330,17 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     simd_measures_data <- reactive({
       req(indicator_data())
       
+      
+      # filter by quint type 
+      if(input$quint_type == "Scotland"){
+        dt <- indicator_data() |>
+          filter(quint_type == "sc_quin")
+      } else {
+        dt <- indicator_data() |>
+          filter(quint_type != "sc_quin")
+      }
+
+      
       data <- switch(input$depr_measures,
                      
                      
@@ -347,7 +348,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      "Patterns of inequality" = list(
                        
                        # SIMD dataset - snapshot 
-                       left_data = indicator_data() |>
+                       left_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(year == max(year)) |>
                          mutate(total = measure[quintile == "Total"]) |>
@@ -355,7 +356,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                          select(indicator, type_definition, areaname, areatype, trend_axis, quintile, measure, total, upci, lowci),
                        
                        # SIMD dataset - trend 
-                       right_data = indicator_data() |>
+                       right_data = dt |>
                          filter(sex == input$sex_filter) |>
                          group_by(year) |>
                          mutate(total = measure[quintile == "Total"]) |>
@@ -398,13 +399,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      "Inequality gap" = list(
                        
                        # SII trend dataset
-                       left_data = indicator_data() |>
+                       left_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(quintile == "Total") |>
                          select(indicator, type_definition, areaname, areatype, trend_axis, sii, upci_sii, lowci_sii),
                        
                        # RII trend dataset
-                       right_data = indicator_data() |>
+                       right_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(quintile == "Total") |>
                          select(indicator, type_definition, areaname, areatype, trend_axis, rii_int, upci_rii_int, lowci_rii_int),
@@ -437,7 +438,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      "Potential for improvement" = list(
                        
                        # attributable to inequality -barchart dataset
-                       left_data = indicator_data() |>
+                       left_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(year == max(year) & quintile != "Total") |>
                          #add columns which allow columns behind PAF bar to be created
@@ -454,7 +455,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                          select(indicator, type_definition, areaname, areatype, trend_axis, quintile, measure_name, value),
                        
                        # PAR - trend dataset
-                       right_data = indicator_data() |>
+                       right_data = dt |>
                          filter(sex == input$sex_filter) |>
                          filter(quintile == "Total") |>
                          select(indicator, type_definition, trend_axis, areaname, areatype, par),
