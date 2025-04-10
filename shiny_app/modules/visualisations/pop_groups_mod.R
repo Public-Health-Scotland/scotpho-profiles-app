@@ -286,7 +286,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile) {
         zero_yaxis = input$zero_popgp,
         include_confidence_intervals = input$trend_ci_switch,
         chart_theme = theme,
-        colour_palette = "single",
+        colour_palette = "multi",
         include_average = input$trend_avg_switch
       ) |>
      
