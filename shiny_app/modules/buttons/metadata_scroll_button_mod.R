@@ -39,8 +39,13 @@ metadata_scroll_button_Server <- function(id) {
     id,
     function(input, output, session) {
       # return results of input$go_to_metadata 
-      # note: value is initially 0/NULL by default, and increments by 1 each time link pressed
-      return(reactive({input$go_to_metadata}))
+      # note: the value is 0/NULL by default and increments by 1 each time clicked
+      # we set ignoreNULL = TRUE to only start tracking the button when it's actually been clicked
+      return(
+        eventReactive(input$go_to_metadata, {
+          input$go_to_metadata
+          }, ignoreNULL = TRUE)
+      )
     }
   )
 }
@@ -53,28 +58,45 @@ metadata_scroll_button_Server <- function(id) {
 
 
 
-# # ~~~~~~~~~~~~~~~~~
-# # example ----
-# # ~~~~~~~~~~~~~~~~~
-# 
+# ~~~~~~~~~~~~~~~~~
+# example ----
+# ~~~~~~~~~~~~~~~~~
+
 # library(shiny)
 # 
 # ui <- fluidPage(
-#   metadata_scroll_button_UI(id = "scroll", target_id = "my_div"),
+# 
+#   # modules UI function
+#   metadata_scroll_button_UI(
+#     id = "scroll", # the modules id
+#     target_id = "my_div" # the target to scroll to
+#     ),
+# 
+#   # to print the status of the button each time it's clicked
+#   # to demonstrate how action buttons work and what's returned on each click
 #   textOutput("button_status"),
+# 
+#   # a placeholder div
 #   div(style = "height: 1000px"),
+# 
+#   # the area of the app to scroll to when button is clicked (i.e. the target)
 #   div(id = "my_div", p("scroll to here!")),
 # )
 # 
 # server <- function(input, output, session) {
 # 
+#   # the modules server function
 #   btn_click <- metadata_scroll_button_Server(id = "scroll")
-#   output$button_status <- renderText({paste0("button status:",btn_click())})
+# 
+#   # the information that the module returns
+#   # notice how it doesn't show when the app is initially launched (due to use of ignoreNULL = TRUE)
+#   # but changes each time the button is clicked
+#   output$button_status <- renderText({paste0("button status:", btn_click())})
 # }
 # 
 # shinyApp(ui, server)
 # 
 # 
-
+# 
 
 
