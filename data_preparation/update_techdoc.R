@@ -46,6 +46,13 @@ update_techdoc <- function(load_test_indicators=FALSE, create_backup=FALSE) {
     select(-c(last_updated_temp, data_request_needed, if_so_who, r_script_name)) #remove unnecessary columns
   
   
+  # some columns contain links and we format them like an rmarkdown link in the techdoc e.g. [scotpho website](https://www.scotpho.org.uk/)
+  # for the shiny app to recognise it as a link the [] and () brackets can't have space between them - this code removes any space.
+  technical_doc <- technical_doc |>
+    mutate(across(c("scotpho_web_link", "related_publications", "supporting_information"), ~ gsub("\\]\\ \\(", "](", .)))
+  
+  
+  
   ## Save file -----
   write_parquet(technical_doc, "shiny_app/data/techdoc", compression = "zstd") # version for local shiny app
   

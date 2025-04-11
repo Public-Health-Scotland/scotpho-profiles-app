@@ -21,6 +21,9 @@ simd_navpanel_ui <- function(id) {
                         # indicator filter (note this is a module)
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
                         
+                        # button to scroll to metadata
+                        metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")),
+
                         # sex filter (for the mental health profile only as some SIMD indicators have sex splits)
                         # it will be hidden for all other profiles
                         shinyjs::hidden(
@@ -90,14 +93,8 @@ simd_navpanel_ui <- function(id) {
               uiOutput(ns("left_chart_narrative"))
             ),
             
-            # metadata tab
-            nav_panel(
-              title = "Metadata",
-              metadata_table_mod_UI(id = ns("metadata"))
-            ),
             nav_spacer(),
-            
-            
+
             # Popover with filters
             nav_item(
               popover(
@@ -164,9 +161,14 @@ simd_navpanel_ui <- function(id) {
               download_chart_mod_ui(ns("save_right_chart")),
               download_data_btns_ui(ns("save_right_data")))
           )
-      )
-    )
-  )
+      ), # close layout column wrap
+      
+      # accordion panel with metadata table 
+      div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
+          
+        ) # close layout sidebar
+      ) # close taglist
+
   
 }
 
@@ -181,7 +183,8 @@ simd_navpanel_ui <- function(id) {
 # selected_profile = name of reactive value stores selected profile from main server script
 
 
-simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile){
+
+  simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile, root_session){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -761,8 +764,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     })
     
     
-    # metdata for the metadata tab (note this is a module)
-    metadata_table_mod_Server(id = "metadata", selected_indicator)
+    #########################.
+    # Metadata ----
+    #########################.
+    indicator_metadata <- filter_metadata_Server("metadata", r_indicator = selected_indicator) # techdoc filtered by selected indicator 
+    btn_click <- metadata_scroll_button_Server("scroll_btn") # tracking when metadata scroll button clicked 
+    metadata_panel_Server("metadata_table", r_event = btn_click, r_metadata = indicator_metadata, parent_session = root_session) # panel with metadata table
+    
     
     
     ###############################.

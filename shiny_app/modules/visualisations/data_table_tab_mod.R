@@ -266,6 +266,13 @@ data_tab_mod_Server <- function(id) {
                        arrange(indicator, area_name, year)
                    }
         
+                  # add data source column
+                  techdoc <- techdoc |>
+                    select(indicator_name, data_source)
+                  
+                  data <- data |>
+                    left_join(techdoc, by = c("indicator" = "indicator_name"))
+        
       })
       
       
@@ -397,22 +404,22 @@ data_tab_mod_Server <- function(id) {
         
         # columns to hide in table
         if(input$dataset_selector == "Main Dataset") {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3, 9,10)))
+          cols_to_display = list(list(visible=FALSE, targets=c(0,3, 9,10, 11)))
           
         } else {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3,9,10,11)))
+          cols_to_display = list(list(visible=FALSE, targets=c(0,3,9,10,11, 12)))
         }
         
         
         
         # column names for table
         if(input$dataset_selector == "Main Dataset") {
-          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", 
-                        "Measure type", "Numerator", "Measure", "hidden", "hidden")
+          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Measure Type", 
+                        "Indicator", "Numerator", "Measure", "hidden", "hidden", "hidden")
           
         } else {
           col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", 
-                        "Quintile", "Measure", "Value", "hidden", "hidden", "hidden")
+                        "Quintile", "Measure", "Value", "hidden", "hidden", "hidden", "hidden")
         }
         
         
