@@ -117,8 +117,19 @@ profiles_list <- list(
   # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",
-    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."),
+    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural**  determinants."),
     domain_order = c("Mental health outcomes", "Individual determinants",
+                     "Community determinants", "Structural determinants"),
+    subtabs = all_subtabs,
+    active = TRUE
+  ),
+
+  # CYP Mental health info
+  "Children & Young People Mental Health" = list(
+    short_name = "CMH",
+    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Family and friends**, **Learning environment**, **Community** and **Structural**  determinants."),
+    domain_order = c("Mental health outcomes", "Individual determinants",
+                     "Family and friends", "Learning environment",
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
     active = TRUE
@@ -181,15 +192,6 @@ profiles_list <- list(
   # Physical Activity info
   "Physical Activity" = list(
     short_name = "PHY",
-    homepage_description = markdown("Under development - not yet available"),
-    domain_order = NULL,
-    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
-    active = FALSE
-  ),
-
-  # All Child Mental Health info
-  "Child Mental Health" = list(
-    short_name = "CMH",
     homepage_description = markdown("Under development - not yet available"),
     domain_order = NULL,
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),

@@ -136,7 +136,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       # (i.e. the selected profile's domain order isn't NULL in the 'profiles_list' from the global script)
       # then covert the domain column to factor and set levels to ensure the data is ordered accordingly
       if(!is.null(selected_profile()$domain_order)){
-        dt <- dt[, domain := factor(domain, levels = selected_profile()$domain_order)]
+        chosen_area <- chosen_area[, domain := factor(domain, levels = selected_profile()$domain_order)]
       }
       
       chosen_area <- setorder(chosen_area, domain)
