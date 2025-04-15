@@ -4,6 +4,7 @@
 
 #' @description an action link that when clicked on, scrolls to a particular object on the page and 
 #' returns the status of the button (i.e. when it has been clicked) 
+#' object on page can then react based on button status
 
 
 #' metadata_scroll_button_UI Function
@@ -23,7 +24,7 @@ metadata_scroll_button_UI <- function(id, target_id) {
       label = "Scroll to indicator metadata",
       icon = icon("arrow-down"),
       onclick = sprintf("document.getElementById('%s').scrollIntoView();", target_id)
-    )
+    ) #sprintf pastes together scrolling functionality and page object id
   )
 }
 
