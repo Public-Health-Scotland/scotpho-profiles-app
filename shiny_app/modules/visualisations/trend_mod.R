@@ -31,7 +31,9 @@ trend_mod_ui <- function(id) {
                             value = "indicator_filter_panel",
                             "Select an indicator", 
                                             #indicator filter (note this is a module)
-                            div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"), label = NULL))
+                            div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"), label = NULL)),
+                            
+                            metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))
 
                           ),
                           
@@ -103,12 +105,6 @@ trend_mod_ui <- function(id) {
                   reactableOutput(ns("trend_table")) # table
         ), 
         
-        # caveats/methodological info tab ----------------
-        nav_panel("Metadata",
-                  value = ns("trend_metadata_tab"), #id for guided tour
-                  metadata_table_mod_UI(ns("indicator_metadata"))
-        ),
-        
         # add space
         bslib::nav_spacer(),
         
@@ -133,8 +129,13 @@ trend_mod_ui <- function(id) {
                     div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
                     div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
       )
-      ) # close navset card pill
+      ), # close navset card pill
+      
+      # accordion panel with metadata table 
+      div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
     ) # close layout sidebar
+
+    
   ) # close taglist
 } # close ui function 
 
@@ -150,7 +151,7 @@ trend_mod_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile from main server script
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
+trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile, root_session) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -471,8 +472,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
     })
     
-    # table for metadata tab (note this is a module)
-    metadata_table_mod_Server("indicator_metadata", selected_indicator)
+    #########################.
+    # Metadata ----
+    #########################.
+    indicator_metadata <- filter_metadata_Server("metadata", r_indicator = selected_indicator) # techdoc filtered by selected indicator 
+    btn_click <- metadata_scroll_button_Server("scroll_btn") # tracking when metadata scroll button clicked 
+    metadata_panel_Server("metadata_table", r_event = btn_click, r_metadata = indicator_metadata, parent_session = root_session) # panel with metadata table
     
 
     
@@ -527,7 +532,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       step(
         ns("trend_navset_card_pill"), # tabs within the multi-tab card
         title = "Other tabs",
-        description = "You can switch between viewing the chart, the data or metadata for your selected indicator using the buttons highlighted."
+        description = "You can switch between viewing the chart or data for your selected indicator using the buttons highlighted."
       )$
       step(
         ns("trend_indicator_filter_wrapper"), #indicator filter
