@@ -100,7 +100,7 @@ profiles_list <- list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = all_subtabs,
     active = TRUE
   ),
 
@@ -149,7 +149,7 @@ profiles_list <- list(
     short_name = "ALC",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = all_subtabs,
     active = TRUE
   ),
   
