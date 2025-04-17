@@ -388,7 +388,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
                              input$numerator_button_trends == "Rate" ~ measure)) |>
         
         # arrange data by year
-        arrange(year)
+        arrange(year, areatype, areaname)
       
       
       df
