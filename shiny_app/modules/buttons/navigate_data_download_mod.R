@@ -7,24 +7,28 @@
 #' navigate_data_download_UI Function
 #'
 #' @param id unique id 
-#' @param target_id the id of the data download page 
+#' @param size size of the dropdown button 
 
 # UI function 
-navigate_data_download_UI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    shiny::actionLink(
-      inputId = ns("go_to_data_download"),
-      label = "Click here to build a bulk data download with multiple indicators or areas.",
-      icon = icon("download") 
-    ) 
+navigate_data_download_UI <- function(id, size = "sm") {
+  ns <- NS(id) #namespace
+  shinyWidgets::dropdownButton(
+    label = "More download options", icon =icon("download"), circle = FALSE, status = "download", size = size,
+    p(
+      "Data for multiple areas or indicators can be downloaded in the", #inline text
+    shiny::actionLink( #action link UI
+      inputId = ns("go_to_data_download"), #link ID
+      label = "data download tab"), ".")
   )
 }
+
+
 
 #' navigate_data_download_Server Function
 #'
 #' @param id unique id 
 #' @param target_id the id of the data download page 
+#' @param parent_session the main server session - not the nested modules
 
 
 # Server function
@@ -47,26 +51,26 @@ navigate_data_download_Server <- function(id, target_id, parent_session){
 # example ----
 # ~~~~~~~~~~~~~~~~~
 
-# library(shiny) #for base shiny functions
-# library(bslib) #for layout e.g. page_navbar, nav_panel
-# 
-# 
-# ui <- page_navbar(id = "nav",
-#                   title = "Click to download data in bulk",
-#                   nav_panel(title = "tab 1",
-#                             value = "t1",
-#                             p("Tab number 1"),
-#                             navigate_data_download_UI(id = "tab1_to_tab2")),
-#                   nav_panel(title = "tab 2",
-#                             value = "t2",
-#                             p("Tab number 2"))
-# )
-# 
-# server <- function(input, output, session) {
-#   navigate_data_download_Server(id = "tab1_to_tab2", target_id="t2", parent_session = session)
-# 
-# }
-# 
-# shinyApp(ui, server)
-# 
+library(shiny) #for base shiny functions
+library(bslib) #for layout e.g. page_navbar, nav_panel
+
+
+ui <- page_navbar(id = "nav",
+                  title = "Click to download data in bulk",
+                  nav_panel(title = "tab 1",
+                            value = "t1",
+                            p("Tab number 1"),
+                            navigate_data_download_UI(id = "tab1_to_tab2")),
+                  nav_panel(title = "tab 2",
+                            value = "t2",
+                            p("Tab number 2"))
+)
+
+server <- function(input, output, session) {
+  navigate_data_download_Server(id = "tab1_to_tab2", target_id="t2", parent_session = session)
+
+}
+
+shinyApp(ui, server)
+
 
