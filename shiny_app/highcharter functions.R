@@ -63,6 +63,7 @@ create_multi_line_trend_chart <- function(data,
     "line", 
     hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]], group = .data[[grouping_col]]), 
     marker = list(enabled = TRUE)) |>
+    hc_xAxis(categories = unique(data[[xaxis_col]]), title = "") |>
     hc_colors(colours) |>
     hc_xAxis(title = "") |>
     hc_yAxis(title = "") |>
