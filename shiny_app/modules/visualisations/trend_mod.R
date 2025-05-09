@@ -127,8 +127,9 @@ trend_mod_ui <- function(id) {
         # footer with download buttons
         footer = card_footer(class = "d-flex justify-content-left",
                     div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
-                    div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
-      )
+                    div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))),
+                    div(id = ns("trend_bulk_download"), navigate_data_download_UI(ns("trend_bulk_download_link"))))
+            )
       ), # close navset card pill
       
       # accordion panel with metadata table 
@@ -572,7 +573,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
                                                   "upper_confidence_interval" = "upci", # rename column 
                                                   "lower_confidence_interval" = "lowci")) # rename column 
     
-      
+    navigate_data_download_Server(id = ns("trend_data_download_link"), target_id = "dt", parent_session = root_session)
+    
     ###########################################.
     # Guided tour ----
     ###########################################.

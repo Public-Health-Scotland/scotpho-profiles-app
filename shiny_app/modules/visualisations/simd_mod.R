@@ -111,7 +111,8 @@ simd_navpanel_ui <- function(id) {
             footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_left_chart")),
-              download_data_btns_ui(ns("save_left_data")))
+              download_data_btns_ui(ns("save_left_data")),
+              navigate_data_download_UI(ns("depr_bulk_download_left")))
           ),
         
         # right hand side card 
@@ -159,7 +160,8 @@ simd_navpanel_ui <- function(id) {
             footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_right_chart")),
-              download_data_btns_ui(ns("save_right_data")))
+              download_data_btns_ui(ns("save_right_data")),
+              navigate_data_download_UI(ns("depr_bulk_download_left")))
           )
       ), # close layout column wrap
       
@@ -785,6 +787,10 @@ simd_navpanel_ui <- function(id) {
     download_data_btns_server(id = "save_left_data", data = simd_measures_data()$left_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
     download_data_btns_server(id = "save_right_data", data = simd_measures_data()$right_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
     
+    # link to data download tab (module)
+    navigate_data_download_Server(id = ns("depr_data_download_link_left"), target_id = "dt", parent_session = root_session)
+    navigate_data_download_Server(id = ns("depr_data_download_link_right"), target_id = "dt", parent_session = root_session)
+                                  
     
   }) #close moduleServer
 } # close server function
