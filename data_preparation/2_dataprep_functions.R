@@ -60,6 +60,9 @@ combine_files <- function(file_list) {
     # make numerator column class numeric
     data$numerator <- as.numeric(data$numerator)
     
+    # make ind id column class numeric 
+    data$ind_id <- as.numeric(data$ind_id)
+    
     #rename column
     colnames(data)[colnames(data) == 'rate'] <- 'measure'
     
