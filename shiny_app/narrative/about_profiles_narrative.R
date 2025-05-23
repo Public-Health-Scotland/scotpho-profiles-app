@@ -83,22 +83,22 @@ about_cwb_text <- navset_pill_list(
 
   tags$li(tags$a("Public Health Scotland (PHS).", href = "https://www.publichealthscotland.scot/", target = "_blank"),
           "publishes a wide range of statistics related to public health outcomes, as well as the health and social care system."),
-
+  br(),
   tags$li(tags$a("ScotPHO", href = "https://www.scotpho.org.uk/", target = "_blank"),
           ", as well as the Online Profiles Tool, publish a wide range of reports and analysis on their website. These cover
           a broad range of public health themes, including mental health, substance use, cardiovascular disease, children and young people’s health,
           environmental health, and health inequalities, among others. Together, these resources support evidence-informed decision-making and help
           monitor progress toward improving population health across Scotland."),
-
+  br(),
   tags$li("The ",tags$a("PHS Health & wellbeing Metadata Catalogue ", href = "https://scotland.shinyapps.io/phs-metadata-catalogue/", target = "_blank"),
           "tool provides metadata on easily accessible, publicly available health and wellbeing indicators for Scotland."),
-
+  br(),
   tags$li("The ", tags$a("Improvement Service (IS)",href = "https://www.improvementservice.org.uk/", target = "_blank"),
           " support local government improvement in Scotland providing performance management and benchmarking products and
           services to help councils assess and improve their own performance, and support decision-making in councils and community planning partnerships. This includes the ",
           tags$a("Improvement Service (IS)",href = "https://www.improvementservice.org.uk/benchmarking", target = "_blank"),
           " and ",
-          tags$a("Community Planning Outcomes Profile",href = "https://www.improvementservice.org.uk/products-and-services/data-intelligence-and-benchmarking/community-planning-outcomes-profile", target = "_blank")),
+          tags$a("Community Planning Outcomes Profile.",href = "https://www.improvementservice.org.uk/products-and-services/data-intelligence-and-benchmarking/community-planning-outcomes-profile", target = "_blank")),
   br()
   ),
   
@@ -116,20 +116,24 @@ about_cwb_text <- navset_pill_list(
                       ". This presents data on breastfeeding and early child development, including breakdowns for local areas.",
                       "The Scottish Government regularly gather data on the funded early learning and childcare (ELC) entitlement through the ELC census. This collects information on ELC provisions
                       from services that deliver this entitlement."),
+              br(),
               tags$li(tags$b("Education"),
                       "The Scottish Government publishes ",tags$a("school education statistics",href = "https://www.gov.scot/collections/school-education-statistics/", target = "_blank"),
                       " annually. These statistics provide detail on the annual including pupil and teacher characteristics, as well has attainment and qualification 
                       results. This is accompanied by various interactive dashboards that provide breakdowns for local areas."),
+              br(),
               tags$li(tags$b("Work"),
                       "The Scottish Government regularly publishes ",
                       tags$a("labour market statistics",href = "https://www.gov.scot/collections/labour-market-statistics/", target = "_blank"),
                       ". This includes Labour Force Survey data relating to employment, unemployment, and economic inactivity trends."),
+              br(),
               tags$li(tags$b("Living standards"),
                       "The Scottish Government regularly publish ",tags$a("poverty and income inequality",href = "https://www.gov.scot/collections/poverty-and-income-inequality-statistics/", target = "_blank")," statistics.",
                       "The Scottish Government also regularly publish data on ",tags$a("primary income account and Gross National Income",href = "https://data.gov.scot/primary-income-account/", target = "_blank"),".",
                       "The annual ",tags$a("Scottish Household Survey",href = "https://www.gov.scot/publications/scottish-household-survey-2022-key-findings/pages/5/", target = "_blank")," collects data on household finances.",
                       "The ",tags$a("Scottish House Condition Survey",href = "https://www.gov.scot/collections/scottish-house-condition-survey/", target = "_blank")," collects data on the the physical condition of Scotland’s
                       homes and the experiences of householders."),
+              br(),
               tags$li(tags$b("Healthy places"),
                       "The ",tags$a("Scottish Index of Multiple Deprivation",href = "https://simd.scot/#/simd2020/BTTTFTT/7.49077135520893/-4.0132/55.9875/", target = "_blank"),
                       " measures the relative levels of deprivation in specific geographical areas across Scotland. This is based on information collected by the Scottish Government.",
@@ -140,6 +144,7 @@ about_cwb_text <- navset_pill_list(
                       " were developed alongside the Place Standard tool, with relevant indicators identified to inform against the outcomes. ",
                       tags$a("Understanding Scotland’s Places (USP)",href = "https://www.usp.scot/", target = "_blank"),
                       "helps users to better understand the local areas in which people work and live. Deliberately designed to avoid a simplistic ranking of places as better or worse, USP focuses on the shared characteristics of towns."),
+              br(),
               tags$li(tags$b("Impact of ill-health prevention"),
                       "PHS regularly publish ",
                       tags$a("disease prevalence data and statistics",href = "https://publichealthscotland.scot/publications/general-practice-disease-prevalence-data-visualisation/general-practice-disease-prevalence-visualisation-27-june-2023/", target = "_blank"),
@@ -152,13 +157,13 @@ about_cwb_text <- navset_pill_list(
                       tags$a("cervical",href = "https://publichealthscotland.scot/publications/scottish-bowel-screening-programme-statistics/", target = "_blank")," screening.",
                       "The ", tags$a("Scottish Health Survey provides",href = "https://www.gov.scot/collections/scottish-health-survey/", target = "_blank"),
                       " a detailed picture of the health of the Scottish population, and is designed to make a major contribution to the monitoring of health in Scotland."),
-              
+              br(),
               tags$li(tags$b("Discrimination and racism"),
                       "The Scottish Government’s ",
                       tags$a("Equality Evidence Finder",href = "https://publichealthscotland.scot/publications/scottish-bowel-screening-programme-statistics/", target = "_blank"),
                       " brings together the latest statistics and research for Scotland across different equality characteristics. This includes age, disability, ethnicity, 
                       gender, religion, sexual orientation, socio-economic status, and transgender status."),
-              
+              br(),
               tags$li(tags$b("Environmental sustainability and health equity"),
                       "The Scottish Government regularly produces statistics on ",
                       tags$a("greenhouse gas emissions",href = "https://www.gov.scot/publications/scottish-greenhouse-gas-statistics-2022/", target = "_blank"),
