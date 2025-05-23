@@ -15,7 +15,7 @@ about_cwb_text <- navset_pill_list(
   p("The dashboard is also designed to support the Collaboration for Health Equity in Scotland (CHES). Public Health Scotland (PHS) have joined with the Institute for Health
     Equity (IHE) to strengthen and accelerate the action underway to improve Scotland’s health, increase wellbeing, and reduce health inequalities. IHE highlight that reducing 
     health inequity requires action on the “Marmot Eight” principles as laid out in their work on ", 
-    tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank")),
+    tags$a("Marmot Places.", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank")),
   p("The indicators on the dashboard have been developed through consultation with stakeholders to provide a strategic focus on a shared set of outcomes. The indicator set remains
     under development, and changes will be made in future as new data becomes available, and in response to feedback from users."),
   br()
@@ -37,7 +37,7 @@ about_cwb_text <- navset_pill_list(
             since the Christie Commission on Public Services in 2011. The evidence on forecasted burden of disease, rising service demand, and financial sustainability is clear that 
             prevention of poor health is required now more than ever."),
             p("The Framework is structured around four key ‘primary prevention drivers’ of health and wellbeing which align with the ",
-              tags$a("King’s Fund population health pillars", href = "https://www.kingsfund.org.uk/insight-and-analysis/reports/vision-population-health", target = "_blank"),
+              tags$a("King’s Fund population health pillars.", href = "https://www.kingsfund.org.uk/insight-and-analysis/reports/vision-population-health", target = "_blank"),
               "These population health pillars link to Sir Michael Marmot’s eight principles, which are the “building blocks” that form the structure of the dashboard. The indicators
               included on the dashboard are designed to reflect progress against the aims and priorities of the PHF."),
               br()
@@ -98,7 +98,9 @@ about_cwb_text <- navset_pill_list(
           services to help councils assess and improve their own performance, and support decision-making in councils and community planning partnerships. This includes the ",
           tags$a("Improvement Service (IS)",href = "https://www.improvementservice.org.uk/benchmarking", target = "_blank"),
           " and ",
-          tags$a("Community Planning Outcomes Profile",href = "https://www.improvementservice.org.uk/products-and-services/data-intelligence-and-benchmarking/community-planning-outcomes-profile", target = "_blank"))),
+          tags$a("Community Planning Outcomes Profile",href = "https://www.improvementservice.org.uk/products-and-services/data-intelligence-and-benchmarking/community-planning-outcomes-profile", target = "_blank")),
+  br()
+  ),
   
   nav_panel("Additional links",
             h3("Additional links"),
@@ -173,7 +175,8 @@ about_cwb_text <- navset_pill_list(
                       tags$a("Scottish Climate Survey",href = "https://www.gov.scot/collections/scottish-climate-survey/", target = "_blank"),
                       tags$a("climate change plan",href = "https://www.gov.scot/publications/securing-green-recovery-path-net-zero-update-climate-change-plan-20182032/", target = "_blank"),
                       ".")
-            ) #close ordered list
+            ), #close ordered list
+            br()
   ),#close nav panel
   
   nav_panel("Feedback",
