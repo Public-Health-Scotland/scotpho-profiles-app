@@ -186,7 +186,7 @@ profiles_list <- list(
     short_name = "ALL",
     homepage_description = markdown("View **all indicators** in this tool from across every profile."),
     domain_order = NULL,
-    subtabs = all_subtabs,
+    subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
     active = TRUE
   ),
   
