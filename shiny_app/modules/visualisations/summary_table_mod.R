@@ -108,7 +108,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       dt <- dt[areaname == selected_geo()$areaname & areatype == selected_geo()$areatype]
       
       # remove archived indicators
-      dt <- dt[!(ind_id %in% archived_indicators)]
+      dt <- dt[domain != "Archived indicators"]
 
       # get latest data for each indicator
       chosen_area <- dt[type_definition != "Number",
@@ -218,7 +218,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       dt <- dt[areaname == "Scotland" & type_definition != "number"]
       
       # remove archived indicators
-      dt <- dt[!(ind_id %in% archived_indicators)]
+      dt <- dt[domain != "Archived indicators"]
       
       # order the data before grouping
       setorder(dt, indicator, year)
