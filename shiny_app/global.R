@@ -49,7 +49,7 @@ popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset")) # dataset behin
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc") # technical document
-
+profile_lookup <- setDT(read_parquet("data/profile_lookup.parquet"))
 
 
 # shapefiles (for map) 
@@ -209,9 +209,9 @@ active_profiles <- names(Filter(function(x) x$active == TRUE, profiles_list))
 
 
   
-# archived indicators - for removing from the summary tab and separating indicators 
-# into 'active' and 'archived' in the indicator filters across the other tabs
-archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
+# # archived indicators - for removing from the summary tab and separating indicators 
+# # into 'active' and 'archived' in the indicator filters across the other tabs
+# archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
 
 
 
@@ -309,37 +309,31 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
                                  selected_profile, # reactive object created in server script contains short name of selected profile
                                  selected_areaname = NULL, 
                                  selected_areatype = NULL){
-  
-  dt <- dataset
-  
+
   # filter by areatype
   if(!is.null(selected_areatype)){
-    dt <- dt[areatype == selected_areatype]
+    dataset <- dataset[areatype == selected_areatype]
   }
   
   # filter by areaname
   if(!is.null(selected_areaname)){
-    dt <- dt[areaname == selected_areaname]
+    dataset <- dataset[areaname == selected_areaname]
   }
   
-  # get short name of the selected profile from the profiles list
-  profile <- pluck(profiles_list, selected_profile, "short_name")
+  # filter indicator lookup by selected profile 
+  lookup <- profile_lookup[profile_name == selected_profile]
   
   
-  # within the technical document indicator can be assigned to one or more profile
-  #  filter if the 3-letter profile abbreviation is found in the profile_domain column
-  dt <- dt[grepl(profile, profile_domain)]
+  # filter dataset on indicators in selected profile 
+  dataset <- dataset[indicator %in% lookup$indicator]
   
-
-  # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-  # This code extracts the relevant profile and domain (it looks for the text after the XXX profile code and stops 
-  # if a character that isn't a letter or a space is encountered, e.g., a ";")
-  dt <- dt[, domain := regmatches(profile_domain, 
-                                  regexpr(paste0(profile, "-([a-zA-Z*[[:blank:]]]*)*"), 
-                                          profile_domain))
-  ][, domain := substr(domain, 5, nchar(domain))] # gets rid of the XXX profile code
   
-dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
+  # add domain column 
+  dataset <- dataset[lookup, on = list(indicator, ind_id)]
+  
+  
+  # return filtered dataset
+  dataset
 
 }
 
