@@ -173,24 +173,20 @@ data_tab_mod_Server <- function(id) {
         if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
           if("All Indicators" %in% input$profile_selector) {
             data } else {
-          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
-          
-          data <- data |>
-            filter(grepl(profile_short_names, profile_domain))
+              profile_lookup <- profile_lookup[profile_name %in% input$profile_selector]
+
+           data <- data |>
+            filter(indicator %in% unique(profile_lookup$indicator))
             }
           
           
           # if a profile has been selected (and some indicators too)
           # then filter by profile and indicator
         } else if(isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
-          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
-          
+
           data <- data |>
-            filter(grepl(profile_short_names, profile_domain)) |>
             filter(indicator %in% input$indicator_selector)
-          
-          
-          
+
           # if no profile has been selected but some indicators have
           # then filter by indicators only 
         } else if(!isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
@@ -321,8 +317,10 @@ data_tab_mod_Server <- function(id) {
         # Further filter indicators if a profile is selected
         if (!is.null(input$profile_selector) && input$profile_selector != "") {
           
+          profile_lookup <- profile_lookup[profile_name %in% input$profile_selector]
+          
           profile_filtered_data <- data |>
-            filter(grepl(paste(input$profile_selector, collapse = "|"), profile_domain))
+            filter(indicator %in% profile_lookup$indicator)
           
           available_indicators <- unique(profile_filtered_data$indicator)
           
