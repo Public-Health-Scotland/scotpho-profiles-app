@@ -31,10 +31,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       
       # select columns and get unique rows
       dt <- unique(dt[, c("indicator", "ind_id", "domain")])
-      
-      # replace domain to be called 'Archive indicators' if indicator is in archived_indicators vector (in global script)
-      dt <- dt[ind_id %in% archived_indicators, domain := "Archived indicators"]
-      
+
       # arrange indicators alphabetically
       dt <- setorder(dt, indicator)
       
