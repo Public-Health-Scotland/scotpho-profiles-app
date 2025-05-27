@@ -91,6 +91,13 @@ geography_lookup <- readRDS(
 )
 
 
+###################################################.
+## Update profile lookup  ----
+###################################################.
+
+profiles_lookup <- update_profiles_lookup(techdoc)
+write_parquet(profiles_lookup, "shiny_app/data/profile_lookup.parquet")
+
 
 #########################################################################################.
 ## Update main dataset  ----
