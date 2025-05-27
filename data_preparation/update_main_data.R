@@ -130,7 +130,7 @@ main_dataset_validation <<- main_dataset
 
 # remove columns not required within shiny app
 main_dataset <- main_dataset |>
-  select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
+  select(-c(supression, supress_less_than, type_id, file_name, label_inequality, profile_domain))
 
 
 # create a new column which contains the full geography path
