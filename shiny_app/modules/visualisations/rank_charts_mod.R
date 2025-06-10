@@ -28,6 +28,9 @@ rank_mod_ui <- function(id) {
 
                         # indicator filter (note this is a module)
                         div(id = ns("rank_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
+                        
+                        # button to scroll to metadata
+                        metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")),
 
                         
                         # comparator switch filter 
@@ -91,12 +94,6 @@ rank_mod_ui <- function(id) {
                       value = ns("rank_data_tab"), #id for guided tour
                       reactableOutput(ns("rank_table")) # table
             ),
-            
-            # metadata tab
-            nav_panel("Metadata",
-                    value = ns("rank_metadata_tab"), #id for guided tour
-                    metadata_table_mod_UI(ns("indicator_metadata")) # metdata table
-          ),
      
             nav_spacer(),
             nav_item(
@@ -124,7 +121,10 @@ rank_mod_ui <- function(id) {
             bslib::as_fill_carrier() 
         ))
         
-      ) # close layout column wrap
+      ), # close layout column wrap
+      
+      # accordion panel with metadata table 
+      div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
     ) # close layout sidebar
   ) # close taglist
 } # close ui function 
@@ -139,7 +139,7 @@ rank_mod_ui <- function(id) {
 # geo_selections = reactive values in main server stores global geography selections
 # selected_profile = name of reactive value stores selected profile from main server script
 
-rank_mod_server <- function(id, profile_data, geo_selections, selected_profile) {
+rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, root_session) {
   moduleServer(id, function(input, output, session) {
     
 
@@ -580,8 +580,12 @@ Not all profiles have available indicators for all geography types. The drugs pr
     })
     
   
-    # metdata table (note this is a module)
-    metadata_table_mod_Server("indicator_metadata", selected_indicator)
+    #########################.
+    # Metadata ----
+    #########################.
+    indicator_metadata <- filter_metadata_Server("metadata", r_indicator = selected_indicator) # techdoc filtered by selected indicator 
+    btn_click <- metadata_scroll_button_Server("scroll_btn") # tracking when metadata scroll button clicked 
+    metadata_panel_Server("metadata_table", r_event = btn_click, r_metadata = indicator_metadata, parent_session = root_session) # panel with metadata table
     
     
      
@@ -639,7 +643,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
        step(
          ns("rank_navset_card_pill"), #table tab
          "Other views",
-         "You can switch between viewing the chart, the data or the metadata for your selectd indicator.",
+         "You can switch between viewing the chart for your selectd indicator.",
          position = "right"
        )$
        step(

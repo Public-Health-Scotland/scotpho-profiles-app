@@ -205,15 +205,15 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
-   trend_mod_server("trends", profile_data, geo_selections, selected_profile)
-   climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile)
-   rank_mod_server("rank", areatype_data, geo_selections, selected_profile)
-   climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
+   trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
+   rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session)
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
-   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile)
-   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile)
+   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
+   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
   
-  
+   # climate versions
+   climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile)
+   climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
   
   # # ############################################.
   # # # MODULES FOR THE ADDITIONAL INFO TABS ----
@@ -278,16 +278,17 @@ function(input, output, session) {
   # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
   simd_data <- reactive({
     req(input$profile_choices != "")
-    
-    if(input$profile_choices == "All Indicators") {
-      simd_dataset
+    if(input$profile_choices == "All Indicators"){
+      simd_dataset |>
+        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)
     } else {
     prepare_profile_data(
       dataset = simd_dataset,
       selected_profile = input$profile_choices,
       selected_areatype = geo_selections()$areatype,
       selected_areaname = geo_selections()$areaname
-    )}
+    )
+    }
   })
   
   

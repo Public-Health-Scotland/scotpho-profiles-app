@@ -31,7 +31,9 @@ trend_mod_ui <- function(id) {
                             value = "indicator_filter_panel",
                             "Select an indicator", 
                                             #indicator filter (note this is a module)
-                            div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"), label = NULL))
+                            div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"), label = NULL)),
+                            
+                            metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))
 
                           ),
                           
@@ -103,12 +105,6 @@ trend_mod_ui <- function(id) {
                   reactableOutput(ns("trend_table")) # table
         ), 
         
-        # caveats/methodological info tab ----------------
-        nav_panel("Metadata",
-                  value = ns("trend_metadata_tab"), #id for guided tour
-                  metadata_table_mod_UI(ns("indicator_metadata"))
-        ),
-        
         # add space
         bslib::nav_spacer(),
         
@@ -133,8 +129,13 @@ trend_mod_ui <- function(id) {
                     div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
                     div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
       )
-      ) # close navset card pill
+      ), # close navset card pill
+      
+      # accordion panel with metadata table 
+      div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
     ) # close layout sidebar
+
+    
   ) # close taglist
 } # close ui function 
 
@@ -150,7 +151,7 @@ trend_mod_ui <- function(id) {
 # selected_profile = name of reactive value storing selected profile from main server script
 
 
-trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile) {
+trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile, root_session) {
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -161,6 +162,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     #######################################################.
     
 
+    
     # enable/ disable geography filters depending on the selected indicator
     observe({
       req(indicator_filtered_data())
@@ -179,7 +181,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
         filter(areatype == "Intermediate zone" & parent_area == input$hscp_filter_2) |>
         pull(unique(areaname))
       
-
+      
       # If 'Health board' is available, enable hb_filter, otherwise disable it
       if("Health board" %in% available_areatypes) {
         shinyjs::enable("hb_filter")
@@ -237,7 +239,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # If 'Intermediate zone' is available, enable the filter otherwise disable it
       if("Intermediate zone" %in% available_areatypes){
         shinyjs::enable("iz_filter")
-        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections(), server = TRUE)
+        updateSelectizeInput(session, "iz_filter", choices = available_izs, options = list(placeholder = NULL), selected = iz_selections())
       } else {
         updateSelectizeInput(session, "iz_filter", options = list(placeholder = "Unavailable"), selected = character(0))
         shinyjs::disable("iz_filter")
@@ -250,18 +252,42 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
         hide("pd_panel")
       } else {
         show("pd_panel")
-      if("Police division" %in% available_areatypes) {
-        shinyjs::enable("pd_filter")
-        updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections())
-      } else {
-        shinyjs::disable("pd_filter")
-        updateSelectizeInput(session, "pd_filter", options = list(placeholder = "Unavailable"))
+        if("Police division" %in% available_areatypes) {
+          shinyjs::enable("pd_filter")
+          updateSelectizeInput(session, "pd_filter", options = list(placeholder = NULL), selected = pd_selections())
+        } else {
+          shinyjs::disable("pd_filter")
+          updateSelectizeInput(session, "pd_filter", options = list(placeholder = "Unavailable"))
+        }
       }
-      }
-
+      
     })
     
-
+    
+    
+    # remove globally selected areaname from available areas in dropdowns
+    observe({
+      if(geo_selections()$areatype == "Health board"){
+        updateSelectizeInput(session, "hb_filter", choices = hb_list[hb_list!=geo_selections()$areaname])
+      }
+      else if(geo_selections()$areatype == "Council area"){
+        updateSelectizeInput(session, "ca_filter", choices = ca_list[ca_list!=geo_selections()$areaname])
+      }
+      else if(geo_selections()$areatype == "HSC partnership"){
+        updateSelectizeInput(session, "hscp_filter", choices = hscp_list[hscp_list!=geo_selections()$areaname])
+      }
+      else if(geo_selections()$areatype == "Alcohol & drug partnership"){
+        updateSelectizeInput(session, "adp_filter", choices = adp_list[adp_list!=geo_selections()$areaname])
+      }
+      else if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")){
+        updateSelectizeInput(session, "hscp_filter_2", selected = geo_selections()$parent_area)
+      }
+      else if(geo_selections()$areatype == "Police division"){
+        updateSelectizeInput(session, "pd_filter", choices = pd_list[pd_list!=geo_selections()$areaname])
+      }
+      
+    })
+    
     
     # Clear what was previously selected from the filters if a user changes selection from geography filter (otherwise they remain selected)
     observeEvent(geo_selections(), {
@@ -300,13 +326,13 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       }
     })
     
-
+    
     
     
     # disable Scotland checkbox when Scotland already selected in global options
     #or when a geography with no available indicators is selected
     observe({
-     req(filtered_data())
+      req(filtered_data())
       if(geo_selections()$areaname == "Scotland" | !(geo_selections()$areatype %in% unique(filtered_data()$areatype))  ){
         shinyjs::hide("scot_switch_trends")
         updateCheckboxInput(session, "scot_switch_trends", value = FALSE)
@@ -320,7 +346,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # dynamically enabling/disabling the  numerator/rate radio buttons depending on selected indicator
     # this is required because for some indicators, we only publish the rate so numerator not always available
     observeEvent(selected_indicator(), {
-    req(indicator_filtered_data())
+      req(indicator_filtered_data())
       # check the first row of the data filtered by selected indicator
       # if the numerator column is empty ensure the selected option to plot in the trend chart is 'rate'
       # and disable the filter
@@ -378,7 +404,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     observeEvent(input$pd_filter, {
       pd_selections(input$pd_filter)
     }, ignoreNULL = FALSE)
-
+    
     
     selected_indicator <- indicator_filter_mod_server("trend_indicator_filter",
                                                       filtered_data,
@@ -393,7 +419,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     })
     
     
-
+    
     
     # create reactive dataset filtered by selected indicator and geography area
     # change y variable depending on whether rate/numerator is selected
@@ -436,7 +462,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
     })
     
-
+    
     
     #######################################################.
     ## Dynamic text  ----
@@ -472,35 +498,19 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       type_definition <- case_when(
         input$numerator_button_trends == "Numerator" ~ "Number",
         input$numerator_button_trends == "Rate" ~ paste0(unique(trend_data()$type_definition)))
-      
-      
-      # create vector of colours - needs to be the same length as the 
-      # number of lines that need to be plotted otherwise CI colours
-      # wont match up properly
-      colours <- head(phs_palette, length(unique(trend_data()$areaname)))
-      
-      # create highchart object
-      chart <- hchart(trend_data(), 
-                      "line", 
-                      hcaes(x = trend_axis, y = y, group = areaname),
-                      marker = list(enabled = TRUE)
-                      ) |>
-        hc_plotOptions(series=list(animation=FALSE,
-                                   connectNulls=TRUE)) |>
-        hc_yAxis(gridLineWidth = 0) |> # remove gridlines 
-        hc_yAxis(title = list(text = type_definition)) |>
-        hc_xAxis(categories = unique(trend_data()$trend_axis), title = "") |>
-        hc_legend(align = "left", verticalAlign = "top") |>
-        hc_chart(backgroundColor = 'white') |>
 
-        
-        # format tooltip
-        hc_tooltip(headerFormat = "",
-                   crosshairs = TRUE,
-                   shared = TRUE) |>
-        
-        
-        # title for downloaded version
+      create_multi_line_trend_chart(
+        data = trend_data(),
+        xaxis_col = "trend_axis", 
+        yaxis_col = "y", 
+        upci_col = "upci",
+        lowci_col = "lowci",
+        grouping_col = "areaname",
+        legend_position = "top",
+        zero_yaxis = input$zero_trend,
+        include_confidence_intervals = input$ci_switch_trends,
+        colour_palette = "multi"
+      ) |>
         hc_exporting(
           filename = paste0("ScotPHO trend - ", selected_indicator()),
           chartOptions = list(
@@ -508,43 +518,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
             subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)))
           )
         )
-      
-      
-      # add confidence intervals if box is checked
-      if(input$ci_switch_trends == TRUE) {
-        
-        chart <- chart |>
-          hc_add_series(
-            trend_data(),
-            type = "arearange",
-            name = "95% confidence interval",
-            linked_to = ":previous",
-            hcaes(x = trend_axis, low = lowci, high = upci, group = areaname),
-            fillOpacity = 0.2,
-            enableMouseTracking = FALSE, # removes from tooltip
-            showInLegend = FALSE, # don't need CI labels in legend
-            zIndex = -1, # plots the CI series behind the line series
-            marker = list(enabled = FALSE, # removes the markers for the CI series
-                          states = list(
-                            hover = list(
-                              enabled = FALSE)))) 
-        
-      }
-      
-      # constrain y-axis to include zero if box is checked
-      if(input$zero_trend == TRUE) {
-        
-        chart <- chart |>
-          hc_yAxis(min=0) 
-        
-      }
-      
-      # add phs colours
-      chart <- chart |>
-        hc_colors(colours)
-      
-      
-      chart 
     })
     
     
@@ -566,8 +539,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
     })
     
-    # table for metadata tab (note this is a module)
-    metadata_table_mod_Server("indicator_metadata", selected_indicator)
+    #########################.
+    # Metadata ----
+    #########################.
+    indicator_metadata <- filter_metadata_Server("metadata", r_indicator = selected_indicator) # techdoc filtered by selected indicator 
+    btn_click <- metadata_scroll_button_Server("scroll_btn") # tracking when metadata scroll button clicked 
+    metadata_panel_Server("metadata_table", r_event = btn_click, r_metadata = indicator_metadata, parent_session = root_session) # panel with metadata table
     
 
     
@@ -622,7 +599,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       step(
         ns("trend_navset_card_pill"), # tabs within the multi-tab card
         title = "Other tabs",
-        description = "You can switch between viewing the chart, the data or metadata for your selected indicator using the buttons highlighted."
+        description = "You can switch between viewing the chart or data for your selected indicator using the buttons highlighted."
       )$
       step(
         ns("trend_indicator_filter_wrapper"), #indicator filter

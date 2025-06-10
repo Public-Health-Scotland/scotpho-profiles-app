@@ -40,14 +40,20 @@ create_multi_line_trend_chart <- function(data,
                                           colour_palette = c("multi", "simd", "single")) {
   
   
-  # create colour palette 
+
+  
+  # create colour palette
   if(colour_palette == "multi"){
-  phs_palette <- unname(unlist(phs_colours()))
-  colours <- head(phs_palette, length(unique(data[[grouping_col]])))
+    colours <- head(unname(phs_colours()), length(unique(data[[grouping_col]])))
   } else if(colour_palette == "simd"){
-    colours <- c(phs_colors("phs-blue"), rep(phs_colors("phs-graphite-30"), 3), phs_colors("phs-magenta"))
+    simd_colours <-  c("1 - most deprived" = "#0078D4",
+                       "2" = "#DFDDE3",
+                       "3" = "#DFDDE3",
+                       "4" = "#DFDDE3",
+                       "5 - least deprived" = "#9B4393")
+    colours <- unname(simd_colours[names(simd_colours) %in% data[[grouping_col]]])
   } else {
-    colours <- c(phs_colors("phs-blue"))
+    colours <- c(phs_colors("phs-blue-50"))
   }
   
   
@@ -57,12 +63,14 @@ create_multi_line_trend_chart <- function(data,
     "line", 
     hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]], group = .data[[grouping_col]]), 
     marker = list(enabled = TRUE)) |>
+    hc_xAxis(categories = unique(data[[xaxis_col]]), title = "") |>
     hc_colors(colours) |>
     hc_xAxis(title = "") |>
     hc_yAxis(title = "") |>
     hc_chart(marginRight = 15) |>
-    hc_legend(verticalAlign = legend_position) |>
+    hc_legend(verticalAlign = legend_position, align = "left") |>
     hc_tooltip(headerFormat = "", crosshairs = TRUE, shared = TRUE)
+  
   
   
   # reduce axis labels
@@ -251,19 +259,37 @@ create_bar_chart <- function(data,
                              colour_palette = c("simd", "single")){
   
   
-  # create colour palette 
-    colours <- if(colour_palette == "simd"){
-    c("#0078D4", "#948DA3", "#F4F4F6", "#DFDDE3", "#9B4393")
-
+  if(colour_palette == "simd"){
+    
+    # create simd colour palette
+    simd_colours <- c("1 - most deprived" = "#0078D4",
+                      "2" = "#DFDDE3",
+                      "3" = "#DFDDE3",
+                      "4" = "#DFDDE3",
+                      "5 - least deprived" = "#9B4393")
+    
+    hc <- hchart(data, 
+                 type = ifelse(horizontal == TRUE, "column", "bar"), 
+                 hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]]), colorByPoint = TRUE) |>
+      hc_xAxis(title = list(text = "")) |>
+      hc_yAxis(title = list(text = "")) |>
+      hc_plotOptions(
+        column = list(
+          colors = unname(simd_colours[data$quintile])
+        )
+      )
+    
   } else {
-    c("#0078D4")
+    
+    hc <- hchart(data, 
+                 type = ifelse(horizontal == TRUE, "column", "bar"), 
+                 hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]]), color = phs_colors("phs-blue-50")) |>
+      hc_xAxis(title = list(text = "")) |>
+      hc_yAxis(title = list(text = ""))
+    
+    
+    
   }
-  
-  hc <- hchart(data, 
-               type = ifelse(horizontal == TRUE, "column", "bar"), 
-               hcaes(x = .data[[xaxis_col]], y = .data[[yaxis_col]], color = c("#0078D4", "#DFDDE3", "#DFDDE3", "#DFDDE3", "#9B4393"))) |>
-    hc_xAxis(title = list(text = "")) |>
-    hc_yAxis(title = list(text = ""))
   
   if(include_confidence_intervals == TRUE){
     hc <- hc |>

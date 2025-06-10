@@ -171,18 +171,22 @@ data_tab_mod_Server <- function(id) {
         # if profile selected (but indicators have not been)
         # then filter by selected profiles only 
         if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
+          if("All Indicators" %in% input$profile_selector) {
+            data } else {
+          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
+          
           data <- data |>
-            filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name")))
+            filter(grepl(profile_short_names, profile_domain))
+            }
           
           
           # if a profile has been selected (and some indicators too)
           # then filter by profile and indicator
         } else if(isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
+          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
           
           data <- data |>
-            filter(if_any(contains("profile_domain"),
-                          ~ substr(.x, 1, 3) %in% pluck(profiles_list, input$profile_selector, "short_name"))) |>
+            filter(grepl(profile_short_names, profile_domain)) |>
             filter(indicator %in% input$indicator_selector)
           
           
@@ -261,6 +265,13 @@ data_tab_mod_Server <- function(id) {
                               lower_confidence_interval, label_inequality) |>
                        arrange(indicator, area_name, year)
                    }
+        
+                  # add data source column
+                  techdoc <- techdoc |>
+                    select(indicator_name, data_source)
+                  
+                  data <- data |>
+                    left_join(techdoc, by = c("indicator" = "indicator_name"))
         
       })
       
@@ -393,22 +404,22 @@ data_tab_mod_Server <- function(id) {
         
         # columns to hide in table
         if(input$dataset_selector == "Main Dataset") {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3, 9,10)))
+          cols_to_display = list(list(visible=FALSE, targets=c(0,3, 9,10, 11)))
           
         } else {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3,9,10,11)))
+          cols_to_display = list(list(visible=FALSE, targets=c(0,3,9,10,11, 12)))
         }
         
         
         
         # column names for table
         if(input$dataset_selector == "Main Dataset") {
-          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", 
-                        "Measure type", "Numerator", "Measure", "hidden", "hidden")
+          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Measure Type", 
+                        "Indicator", "Numerator", "Measure", "hidden", "hidden", "hidden")
           
         } else {
           col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", 
-                        "Quintile", "Measure", "Value", "hidden", "hidden", "hidden")
+                        "Quintile", "Measure", "Value", "hidden", "hidden", "hidden", "hidden")
         }
         
         

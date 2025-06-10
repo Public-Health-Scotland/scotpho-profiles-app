@@ -104,14 +104,15 @@ profiles_list <- list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = all_subtabs,
     active = TRUE
   ),
 
   # Care & wellbeing portfolio info 
-  "Care & Wellbeing Portfolio" = list(
+  "Population Health" = list(
     short_name = "CWB",
-    homepage_description = markdown("View indicators relating to **Population health**, **Inequalities** and **Wider determinants** (part of the Scottish Government's Care and Wellbeing Portfolio)."),
+    homepage_description = markdown("View indicators through the lens of the **Marmot principles**. Supporting Scotland's **Population Health Framework**, and 
+                                    the **Collaboration for Health Equity in Scotland**"),
     domain_order = c("Over arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism", "Environmental sustainability and health equity"),
     subtabs = all_subtabs,
@@ -121,8 +122,19 @@ profiles_list <- list(
   # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",
-    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural determinants**  for adults. Forthcoming in 2025: indicators for children and young people."),
+    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural**  determinants."),
     domain_order = c("Mental health outcomes", "Individual determinants",
+                     "Community determinants", "Structural determinants"),
+    subtabs = all_subtabs,
+    active = TRUE
+  ),
+
+  # CYP Mental health info
+  "Children & Young People Mental Health" = list(
+    short_name = "CMH",
+    homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Family and friends**, **Learning environment**, **Community** and **Structural**  determinants."),
+    domain_order = c("Mental health outcomes", "Individual determinants",
+                     "Family and friends", "Learning environment",
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
     active = TRUE
@@ -142,7 +154,7 @@ profiles_list <- list(
     short_name = "ALC",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    subtabs = all_subtabs,
     active = TRUE
   ),
   
@@ -178,7 +190,7 @@ profiles_list <- list(
     short_name = "ALL",
     homepage_description = markdown("View **all indicators** in this tool from across every profile."),
     domain_order = NULL,
-    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+    subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
     active = TRUE
   ),
   
@@ -199,6 +211,7 @@ profiles_list <- list(
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
   ),
+
   
   # All Climate info
   "Climate" = list(
