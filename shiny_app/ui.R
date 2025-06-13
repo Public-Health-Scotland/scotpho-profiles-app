@@ -204,7 +204,8 @@ page_navbar(
                                                        p("The Population Health dashboard has been developed to support the ambitions of Scotland’s Population Health Framework, and the Collaboration 
                                                          for Health Equity in Scotland by providing access to the latest data on population health outcomes and inequalities. The indicators are structured 
                                                          around the “Marmot Eight” principles as laid out in the Institute of Health Equity’s work on ",
-                                                         tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ")
+                                                         tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ",
+                                                         "We are working with PHS to complete the indicator set and ensure each reflects the latest available data soon.")
                                                        )
                                                   ),
                                  # only display this card when Mental Health profile selected
