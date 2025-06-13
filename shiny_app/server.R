@@ -290,12 +290,17 @@ function(input, output, session) {
   # filters the population groups dataset by selected profile, filtered data then passed to the pop group visualisation module 
   popgroup_data <- reactive({
     req(input$profile_choices != "")
+    if(input$profile_choices == "All Indicators"){
+      popgroup_dataset |>
+        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)
+    } else {
     prepare_profile_data(
       dataset = popgroup_dataset,
       selected_profile = input$profile_choices,
       selected_areatype = geo_selections()$areatype,
       selected_areaname = geo_selections()$areaname
     )
+    }
   })
 
 
