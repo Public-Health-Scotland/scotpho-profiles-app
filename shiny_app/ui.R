@@ -75,14 +75,17 @@ page_navbar(
                               of interconnected determinants (risk factors and protective factors) of these outcomes. This profile follows ScotPHO's publication of the adult mental health profile in late 2024.")
                           ),
                           hr(),
-                          # Correction of Emergency admissions, aged 65+ years indicator
-                          div(
-                            h4("23/01/2025 : Correction of emergency admissions, aged 65+ years indicator", class = "profile-header"),
-                            p("We have recently identified an issue with code calculating emergency admissions, aged 65+ years figures. A correction has been made and revised figures are now available in this tool.
-                            Previously published indicator data underestimated both indicator numerators and rates across all geographies and over the full time series.
-                            If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
-                          ),
-                          hr(),
+                          
+                          #Comment out as warning not needed but leave script as an example should we need a similar message in future
+                          # # Correction of Emergency admissions, aged 65+ years indicator
+                          # div(
+                          #   h4("23/01/2025 : Correction of emergency admissions, aged 65+ years indicator", class = "profile-header"),
+                          #   p("We have recently identified an issue with code calculating emergency admissions, aged 65+ years figures. A correction has been made and revised figures are now available in this tool.
+                          #   Previously published indicator data underestimated both indicator numerators and rates across all geographies and over the full time series.
+                          #   If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                          # ),
+                          # hr(),
+                          
                 # Profiles tool re-design info
                 div(
                   h4("Profiles Tool Redesign", class = "profile-header"),
@@ -201,7 +204,8 @@ page_navbar(
                                                        p("The Population Health dashboard has been developed to support the ambitions of Scotland’s Population Health Framework, and the Collaboration 
                                                          for Health Equity in Scotland by providing access to the latest data on population health outcomes and inequalities. The indicators are structured 
                                                          around the “Marmot Eight” principles as laid out in the Institute of Health Equity’s work on ",
-                                                         tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ")
+                                                         tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ",
+                                                         "We are working with PHS to complete the indicator set and ensure each reflects the latest available data soon.")
                                                        )
                                                   ),
                                  # only display this card when Mental Health profile selected
