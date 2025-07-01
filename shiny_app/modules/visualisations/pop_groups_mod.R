@@ -161,7 +161,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     observe({
       
       available_years <- dataset() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>
+        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname & split_name == input$split_filter) |>
         arrange(desc(year)) |>
         pull(unique(def_period))
       
