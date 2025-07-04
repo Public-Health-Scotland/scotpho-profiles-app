@@ -45,24 +45,18 @@ update_climate_techdoc <- function(load_test_indicators=FALSE, create_backup=FAL
   #         case_when(!is.na(as.numeric(.)) ~ strftime(convertToDate(.), "%b-%Y"), TRUE ~ .)))) |>
   #   select(-c(last_updated_temp, data_request_needed, if_so_who, r_script_name)) #remove unnecessary columns
   # 
-technical_doc <- technical_doc_raw
+  
+  # some columns contain links and we format them like an rmarkdown link in the techdoc e.g. [scotpho website](https://www.scotpho.org.uk/)
+  # for the shiny app to recognise it as a link the [] and () brackets can't have space between them - this code removes any space.
+  technical_doc <- technical_doc_raw |>
+    mutate(across(c("scotpho_web_link", "related_publications", "supporting_information"), ~ gsub("\\]\\ \\(", "](", .)))
+  
+
 
   ## Save file -----
   write_parquet(technical_doc, "shiny_app/data/climate_techdoc", compression = "zstd") # version for local shiny app
   
-  
-  ## DO WE USE PROFILE LOOKUP ANYWHERE? -COULD IT SAVE processing in the shiny app?
-  # profile_lookup <<- technical_doc_raw |>
-  #   select(contains("profile_domain")) |> #select only columns containing 'profile'
-  #   pivot_longer(cols = everything(), values_to = "value") |>
-  #   filter(!is.na(value))|> #filterout any NA
-  #   transmute(profile = substr(value, 1, 3),
-  #             domain = substr(value, 5, nchar(value))) |>
-  #   distinct()
-  
-  #saveRDS(profile_lookup, "shiny_app/data/profile_lookup.rds") # commented out as a test to see if we really need this file
-  
-  
+
   ## Select columns which are required by main indicator dataset -----
   #' <<- makes dataframe available outside of function
   climate_technical_doc <<- technical_doc |>

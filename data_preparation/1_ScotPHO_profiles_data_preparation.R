@@ -194,7 +194,12 @@ update_climate_main_data(load_test_indicators = FALSE, create_backup = FALSE)
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
 
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# combine all techdocs 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# temporary step - combine techdocs
+techdoc <- bind_rows(techdoc, climate_techdoc)
 
 
 ############################################################.

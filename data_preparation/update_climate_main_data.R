@@ -74,6 +74,10 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
   climate_main_dataset <- climate_main_dataset |>
     select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
   
+  # rename indicator column 
+  climate_main_dataset <- climate_main_dataset |>
+    rename(indicator = indicator_name)
+  
   
   # create a new column which contains the full geography path
   # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'

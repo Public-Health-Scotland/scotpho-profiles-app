@@ -61,7 +61,7 @@ metadata_panel_Server <- function(id, r_event, r_metadata, parent_session) {
             Numerator = numerator, 
             Denominator = denominator, 
             Suppression = disclosure_control,
-            `ScotPHO website link` = scotpho_web_link,
+            #`ScotPHO website link` = scotpho_web_link,
             `Related publications`= related_publications,
             `Supporting information` = supporting_information
           ) |>

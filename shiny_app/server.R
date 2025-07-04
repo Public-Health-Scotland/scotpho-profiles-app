@@ -212,8 +212,8 @@ function(input, output, session) {
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
   
    # climate versions
-   climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile)
-   climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
+   climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile, session)
+   #climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
   
   # # ############################################.
   # # # MODULES FOR THE ADDITIONAL INFO TABS ----

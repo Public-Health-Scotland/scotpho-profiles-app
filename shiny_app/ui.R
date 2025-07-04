@@ -229,7 +229,7 @@ page_navbar(
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
                        
                        # climate rank sub-tab
-                       nav_panel(title = "Climate Rank", value = "climate_rank_tab", climate_rank_mod_ui("climate_rank")),
+                       #nav_panel(title = "Climate Rank", value = "climate_rank_tab", climate_rank_mod_ui("climate_rank")),
                        
                        # deprivation sub-tab 
                        nav_panel(title = "Deprivation", value = "simd_tab", simd_navpanel_ui("simd")),

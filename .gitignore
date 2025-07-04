@@ -17,7 +17,7 @@ testing.R
 
 # 'data' folder #
 data/
-archive/
+#archive/
 
 # Common text files that may contain data #
 *.[cC][sS][vV]
