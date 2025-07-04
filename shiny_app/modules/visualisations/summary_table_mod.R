@@ -131,6 +131,8 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
       chosen_area <- chosen_area[other_areas, on = c("ind_id", "year"),
                                  c("Q0", "Q100", "Q25", "Q75") := .(other_areas$Q0, other_areas$Q100 ,other_areas$Q25, other_areas$Q75)]
       
+      # arrange indicators alphabetically (before sorting by domain)
+      chosen_area <- setorder(chosen_area, indicator)
       
       # if the selected profile has a particular order the domains should appear in the table
       # (i.e. the selected profile's domain order isn't NULL in the 'profiles_list' from the global script)
