@@ -75,7 +75,9 @@ rank_mod_ui <- function(id) {
       
       layout_column_wrap(
         # bar chart card ----------------------
-          navset_card_pill(
+          
+        div(id = ns("rank_chart_wrapper"),
+        navset_card_pill(
             id = ns("rank_navset_card_pill"),
             full_screen = TRUE,
             height = 600,
@@ -108,7 +110,7 @@ rank_mod_ui <- function(id) {
             footer = card_footer(class = "d-flex justify-content-left",
                         div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
                         div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
-          ),
+          )),
        
         # map card -------------------
         
@@ -625,25 +627,26 @@ Not all profiles have available indicators for all geography types. The drugs pr
      guide_rank<- Cicerone$
        new()$
        step(
-         ns("rank_chart"), #chart tab
+         ns("rank_chart_wrapper"), #chart tab
          "Chart Tab",
          "These charts allow areas to be ranked against others of the same type.<br>
      You can also add a baseline comparator to assess whether each area in your chosen geography level is statistically significantly better or worse than your comparator.<br>
-     For example, you may want to assess whether each  is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular 
+     For example, you may want to assess whether each  is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular
      areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)",
-         position = "right",
-         tab_id = ns("rank_navset_card_pill"),
-         tab = ns("rank_chart_tab")
+         position = "right"
+         # ,
+         # tab_id = ns("rank_navset_card_pill"),
+         # tab = ns("rank_chart_tab")
        )$
        step(
          ns("rank_popover"), # popover icon
          "Adjust Chart Settings",
-         "Click here to add error bars the chart."
+         "Click here to add error bars to the chart."
        )$
        step(
          ns("rank_navset_card_pill"), #table tab
          "Other views",
-         "You can switch between viewing the chart for your selectd indicator.",
+         "You can switch between viewing the chart or data for your selected indicator using the buttons highlighted.",
          position = "right"
        )$
        step(
