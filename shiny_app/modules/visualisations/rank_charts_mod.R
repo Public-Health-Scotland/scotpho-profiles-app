@@ -634,9 +634,6 @@ Not all profiles have available indicators for all geography types. The drugs pr
      For example, you may want to assess whether each  is significantly higher or lower than a particular geographical area (for instance, the national average) or whether there are particular
      areas in your chosen geography level that are significantly higher or lower than they were at another point in time (e.g. a decade ago)",
          position = "right"
-         # ,
-         # tab_id = ns("rank_navset_card_pill"),
-         # tab = ns("rank_chart_tab")
        )$
        step(
          ns("rank_popover"), # popover icon
