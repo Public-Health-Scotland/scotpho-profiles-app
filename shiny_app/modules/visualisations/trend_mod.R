@@ -33,7 +33,7 @@ trend_mod_ui <- function(id) {
                                             #indicator filter (note this is a module)
                             div(id = ns("trend_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("trend_indicator_filter"), label = NULL)),
                             
-                            metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))
+                            div(id = ns("trend_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")))
 
                           ),
                           
@@ -608,6 +608,13 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
         The indicator list has been filtered based on profile and area type selected at the top of the page.<br>
         The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
         position = "bottom"
+      )$
+      step(
+        ns("trend_scroll_button"), #Scroll to metadata button
+        "Scroll to Metadata Button",
+        "Click here to scroll to the metadata panel below.<br>
+        It contains information about the selected indicator, including indicator definition, 
+        data source, notes and caveats and links to relevant publications and pages on the ScotPHO website. "
       )$
       step(
         ns("trend_geography_wrapper"), # all geography filters
