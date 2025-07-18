@@ -800,16 +800,12 @@ simd_navpanel_ui <- function(id) {
     guide_deprivation <- Cicerone$
       new()$
       step(
-        ns("chart_panels_highlight"), #left-hand bar chart tab
-        "Bar Chart",
-        "INSERT TEXT",
+        ns("chart_panels_highlight"), #both left and right hand chart panels
+        "Charts",
+        "These charts show various measures of deprivation for your selected indicator, 
+        including patterns of inequality, differences between the most and least deprived areas, 
+        and the percentage of variation in an indicator which can be attributed to socioeconomic inequalities.",
         position = "right",
-      # )$
-      # step(
-      #   ns("right_card_highlight"), #left-hand bar chart tab
-      #   "Line Chart",
-      #   "INSERT TEXT",
-      #   position = "left",
       )$
       step(
         ns("deprivation_popover_left"), #popover icon
@@ -823,7 +819,7 @@ simd_navpanel_ui <- function(id) {
         position = "right"
       )$
       step(
-        ns("deprivation_indicator_filter_wrapper"),
+        ns("deprivation_indicator_filter_wrapper"), #Indicator filter
         "Indicator Filter",
         "First select an indicator.<br>
      The list has been filtered based on profile and area type selected at the top of the page.<br>
@@ -831,29 +827,37 @@ simd_navpanel_ui <- function(id) {
         position = "bottom"
       )$
       step(
-        ns("deprivation_scroll_button"),
+        ns("deprivation_scroll_button"), #Metadata scroll button
         "Scroll to Metadata Button",
-        "Click here to scroll to the metadata panel below. It contains information about the selected indicator, including indicator definition, 
-        data source, notes and caveats and link to relevant publications and pages on the ScotPHO website. "
+        "Click here to scroll to the metadata panel below.<br>
+        It contains information about the selected indicator, including indicator definition, 
+        data source, notes and caveats and links to relevant publications and pages on the ScotPHO website. "
       )$
       step(
-        ns("depr_measures_wrapper"),
+        ns("depr_measures_wrapper"), #Measures of deprivation
         "Select Measure of Deprivation",
-        "INSERT TEXT"
+        "These options give an indication of inequality over time, 
+        health differences between the most and least deprived,
+        and to what extent socioeconomic inequalities influence the value of this indicator."
       )$
       step(
-        ns("deprivation_quintile_type_wrapper"),
+        ns("deprivation_quintile_type_wrapper"), #Quintile type
         "Select Quintile Type",
-        "INSERT TEXT"
+        "Click here to toggle between Scotland quintiles and local quintiles.<br> 
+        When local quintiles are selected, Quintile 1 will represent the 20% most 
+        deprived datazones in the selected region.<br>
+        When Scotland quintiles are selected, Quintile 1 will represent datazones 
+        in the selected region which are in the 20% most deprived 
+        across Scotland."
       )$
       step(
-        ns("deprivation_save_chart"),
+        ns("deprivation_save_chart"), #Save chart
         "Download Chart Button",
         "Click here to download this chart as a PNG.",
         position = "bottom"
       )$
       step(
-        ns("deprivation_save_data"),
+        ns("deprivation_save_data"), #Save data
         "Download Data Button",
         "Click here to download the selected data as a CSV, RDS or JSON file.",
         position = "left"
