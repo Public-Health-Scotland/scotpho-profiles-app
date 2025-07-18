@@ -30,7 +30,7 @@ rank_mod_ui <- function(id) {
                         div(id = ns("rank_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
                         
                         # button to scroll to metadata
-                        metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")),
+                        div(id = ns("rank_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
 
                         
                         # comparator switch filter 
@@ -647,7 +647,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
          position = "right"
        )$
        step(
-         ns("rank_map_wrapper"),
+         ns("rank_map_wrapper"), # map tab
          "Compare Areas Spatially",
          "This map allows spatial comparison of areas. Darker shading represents higher values for the selected indicator with lighter shading representing lower values.<br> 
      Hover over an area of the map to view the name of the area and its value.<br>
@@ -655,7 +655,7 @@ Not all profiles have available indicators for all geography types. The drugs pr
          position = "left"
        )$
        step(
-         ns("rank_indicator_filter_wrapper"), 
+         ns("rank_indicator_filter_wrapper"), #Select indicator
          "Indicator Filter",
          "First select an indicator.<br>
      The list has been filtered based on profile and area type selected at the top of the page.<br>
@@ -663,7 +663,14 @@ Not all profiles have available indicators for all geography types. The drugs pr
          position = "bottom"
        )$
        step(
-         ns("rank_comparator_wrapper"),
+         ns("rank_scroll_button"), #Scroll to metadata button
+         "Scroll to Metadata Button",
+         "Click here to scroll to the metadata panel below.<br>
+        It contains information about the selected indicator, including indicator definition, 
+        data source, notes and caveats and links to relevant publications and pages on the ScotPHO website. "
+       )$
+       step(
+         ns("rank_comparator_wrapper"), #Include comparator switch
          "Select a Comparator",
          "Select a comparator to see whether each area
     within your chosen geography level (e.g. health boards) is statistically significantly
@@ -671,13 +678,13 @@ Not all profiles have available indicators for all geography types. The drugs pr
          position = "bottom"
        )$
        step(
-         ns("rank_download_chart"),
+         ns("rank_download_chart"), #Download chart
          "Download Chart Button",
          "Click here to download this chart as a PNG.",
          position = "bottom"
        )$
        step(
-         ns("rank_download_data"),
+         ns("rank_download_data"), #Download data
          "Download Data Button",
          "Click here to download the selected data as a CSV, RDS or JSON file.",
          position = "left"

@@ -22,7 +22,7 @@ simd_navpanel_ui <- function(id) {
                         div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
                         
                         # button to scroll to metadata
-                        metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")),
+                        div(id = ns("deprivation_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
 
                         # sex filter (for the mental health profile only as some SIMD indicators have sex splits)
                         # it will be hidden for all other profiles
@@ -34,12 +34,13 @@ simd_navpanel_ui <- function(id) {
                           ),
                         
                         # measure filter
+                        div(id = ns("depr_measures_wrapper"),
                         radioButtons(
                           inputId = ns("depr_measures"),
                           label = "Explore data by:",
                           choices = c("Patterns of inequality", "Inequality gap", "Potential for improvement"),
                           selected = c("Patterns of inequality")
-                        ),
+                        )),
                         
                         # quint type filter 
                         div(id = ns("deprivation_quintile_type_wrapper"), 
@@ -63,7 +64,9 @@ simd_navpanel_ui <- function(id) {
       
       
       # Left hand side card 
+      div(id = ns("chart_panels_highlight"),  # Div for Cicerone tour
       layout_column_wrap(
+   
         width = 1/2,
           navset_card_pill(
             id = ns("left_card"),
@@ -97,25 +100,29 @@ simd_navpanel_ui <- function(id) {
 
             # Popover with filters
             nav_item(
+              div(id = ns("deprivation_popover_left"),
               popover(
                 title = "Filters",
                 trigger = chart_controls_icon(),
-                checkboxInput(ns("left_ci_switch"), label = " include confidence intervals", FALSE),
+                checkboxInput(ns("left_ci_switch"), label = " Include confidence intervals", FALSE),
                 checkboxInput(ns("left_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
                 checkboxInput(ns("left_average_switch"), label = "Include averages", FALSE)
                 
+                )
               )
             ),
             
             # card footer with download buttons
             footer = card_footer(
               class = "d-flex justify-content-left",
-              download_chart_mod_ui(ns("save_left_chart")),
-              download_data_btns_ui(ns("save_left_data")))
-          ),
+              div(id = ns("deprivation_save_chart"), download_chart_mod_ui(ns("save_left_chart"))),
+              div(id = ns("deprivation_save_data"), download_data_btns_ui(ns("save_left_data")))
+          )
+          
+            ), #close navset_card_pill
         
         # right hand side card 
-          navset_card_pill(
+        navset_card_pill(
             id = ns("right_card"),
             height = 650,
             full_screen = TRUE,
@@ -152,25 +159,26 @@ simd_navpanel_ui <- function(id) {
                 checkboxInput(ns("right_ci_switch"), label = " include confidence intervals", FALSE),
                 checkboxInput(ns("right_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
                 checkboxInput(ns("right_average_switch"), label = "Include averages", FALSE)
-              )
-            ),
+              ) 
+            )
+            ), #close navset_card_pill
             
             # card footer with download buttons
             footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_right_chart")),
               download_data_btns_ui(ns("save_right_data")))
-          )
-      ), # close layout column wrap
+  
+       ) # close layout column wrap
+      ), # close div for cicerone tour
       
       # accordion panel with metadata table 
       div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
-          
         ) # close layout sidebar
       ) # close taglist
 
   
-}
+} #close ui function
 
 
 #######################################################.
@@ -784,6 +792,84 @@ simd_navpanel_ui <- function(id) {
     # data downloads (note these are modules)
     download_data_btns_server(id = "save_left_data", data = simd_measures_data()$left_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
     download_data_btns_server(id = "save_right_data", data = simd_measures_data()$right_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
+    
+    ############################################.
+    # Guided tour ----
+    ############################################.
+    
+    guide_deprivation <- Cicerone$
+      new()$
+      step(
+        ns("chart_panels_highlight"), #both left and right hand chart panels
+        "Charts",
+        "These charts show various measures of deprivation for your selected indicator, 
+        including patterns of inequality, differences between the most and least deprived areas, 
+        and the percentage of variation in an indicator which can be attributed to socioeconomic inequalities.",
+        position = "right",
+      )$
+      step(
+        ns("deprivation_popover_left"), #popover icon
+        "Adjust Chart Settings",
+        "Click here to add confidence intervals and averages to the chart."
+      )$
+      step(
+        ns("left_card"), #Navigation for left hand card
+        "Other views",
+        "You can switch between showing the chart, data and help with interpretation for your selected indicator.",
+        position = "right"
+      )$
+      step(
+        ns("deprivation_indicator_filter_wrapper"), #Indicator filter
+        "Indicator Filter",
+        "First select an indicator.<br>
+     The list has been filtered based on profile and area type selected at the top of the page.<br>
+     The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
+        position = "bottom"
+      )$
+      step(
+        ns("deprivation_scroll_button"), #Metadata scroll button
+        "Scroll to Metadata Button",
+        "Click here to scroll to the metadata panel below.<br>
+        It contains information about the selected indicator, including indicator definition, 
+        data source, notes and caveats and links to relevant publications and pages on the ScotPHO website. "
+      )$
+      step(
+        ns("depr_measures_wrapper"), #Measures of deprivation
+        "Select Measure of Deprivation",
+        "These options give an indication of inequality over time, 
+        health differences between the most and least deprived,
+        and to what extent socioeconomic inequalities influence the value of this indicator."
+      )$
+      step(
+        ns("deprivation_quintile_type_wrapper"), #Quintile type
+        "Select Quintile Type",
+        "Click here to toggle between Scotland quintiles and local quintiles.<br> 
+        When local quintiles are selected, Quintile 1 will represent the 20% most 
+        deprived datazones in the selected region.<br>
+        When Scotland quintiles are selected, Quintile 1 will represent datazones 
+        in the selected region which are in the 20% most deprived 
+        across Scotland."
+      )$
+      step(
+        ns("deprivation_save_chart"), #Save chart
+        "Download Chart Button",
+        "Click here to download this chart as a PNG.",
+        position = "bottom"
+      )$
+      step(
+        ns("deprivation_save_data"), #Save data
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "left"
+      )
+
+    #initiate the guide
+    guide_deprivation$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$deprivation_tour_button, {
+      guide_deprivation$start()
+    })
     
     
   }) #close moduleServer

@@ -20,19 +20,25 @@ pop_groups_ui <- function(id) {
                         
                         
                         # indicator filter (note this is a module)
-                        indicator_filter_mod_ui(ns("indicator_filter")),
+                        div(id = ns("pop_groups_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
                         
                         # button to scroll to metadata
-                        metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section")),
+                        div(id = ns("pop_groups_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
                         
                         # filter to select pop split (set choices to NULL 
                         # as they are updated dynamically on the server side, depending on selected indicator)
-                        selectInput(
+                        div(id = ns("pop_groups_split_filter"), selectInput(
                           inputId = ns("split_filter"),
                           label = "Select equality split:",
                           selectize = TRUE,
                           choices = NULL
                         )
+                        ),
+                        
+                        #guided tour button
+                        actionLink(inputId = ns("pop_groups_tour_button"),
+                                   label = "Take a guided tour of this page")
+                        
       ), # close sidebar
       
       
@@ -40,9 +46,11 @@ pop_groups_ui <- function(id) {
         width = 1/2,
         
         # Bar chart card ----
-          bslib::navset_card_pill(
-            height = 600,
-            full_screen = TRUE,
+          div(id = ns("pop_bar_chart_wrapper"), 
+            bslib::navset_card_pill(
+              id = ns("pop_groups_bar_card"),
+              height = 600,
+              full_screen = TRUE,
             
             # tab 1: bar chart 
             bslib::nav_panel("Chart",
@@ -61,6 +69,7 @@ pop_groups_ui <- function(id) {
             
             # extra controls for bar chart 
             bslib::nav_item(
+              div(id = ns("pop_groups_popover_left"),
               bslib::popover(
                 title = "Filters",
                 chart_controls_icon(),
@@ -68,18 +77,21 @@ pop_groups_ui <- function(id) {
                 checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
                 selectInput(ns("pop_years_filter"), label = "select year", choices = NULL)
               )
+              )
             ),
             
             # card footer - download buttons
             footer = card_footer(class = "d-flex justify-content-left",
-                        download_chart_mod_ui(ns("save_pop_rankchart")),
-                        download_data_btns_ui(ns("pop_rank_download")))
+                        div(id = ns("pop_groups_save_chart"), download_chart_mod_ui(ns("save_pop_rankchart"))),
+                        div(id = ns("pop_groups_save_data"), download_data_btns_ui(ns("pop_rank_download"))))
 
-          ), # close bar chart card
+          ) # close bar chart card
+       ), #close bar chart card wrapper
         
         
         ######  based on deprivation trend card addeded "pop_" to distinguish the two
-
+          
+          div(id = ns("pop_line_chart_wrapper"),
           bslib::navset_card_pill(
             height = 600,
             full_screen = TRUE,
@@ -117,6 +129,7 @@ pop_groups_ui <- function(id) {
                         download_chart_mod_ui(ns("save_pop_trendchart")),
                         download_data_btns_ui(ns("pop_trend_download")))
           )# close trend card
+          )# close wrapper div for tour
       ), # close layout column wrap
       
       # accordion panel with metadata table 
@@ -367,6 +380,77 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     
     download_chart_mod_server(id = "save_pop_trendchart", chart_id = ns("pop_trend_chart"))
     download_data_btns_server(id = "pop_trend_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
+    
+    ############################################.
+    # Guided tour ----
+    ############################################.
+    
+    guide_pop_groups <- Cicerone$
+      new()$
+      step(
+        ns("pop_bar_chart_wrapper"), #left-hand bar chart tab
+        "Bar Chart",
+        "This chart shows how different population groups, split by age or sex for example, measure up for the selected indicator in the most recent year.",
+        position = "right",
+      )$
+      step(
+        ns("pop_line_chart_wrapper"), #right-hand line chart tab
+        "Trend Chart",
+        "This chart shows how the measure of the selected indicator has changed over time for each of the different population groups.",
+        position = "left",
+      )$
+      step(
+        ns("pop_groups_popover_left"), #popover icon
+        "Adjust Chart Settings",
+        "Click here to add confidence intervals to the chart and select year to plot."
+      )$
+      step(
+        ns("pop_groups_bar_card"), #Navigation for left hand card
+        "Other views",
+        "You can switch between showing the chart and data for your selected indicator.",
+        position = "right"
+      )$
+      step(
+        ns("pop_groups_indicator_filter_wrapper"), #Indicator filter
+        "Indicator Filter",
+        "First select an indicator.<br>
+     The list has been filtered based on profile and area type selected at the top of the page.<br>
+     The backspace can be used to remove the default selection. Indicators can then be searched by topic or name.",
+        position = "bottom"
+      )$
+      step(
+        ns("pop_groups_scroll_button"), #Scroll to metadata button
+        "Scroll to Metadata Button",
+        "Click here to scroll to the metadata panel below.<br>
+        It contains information about the selected indicator, including indicator definition, 
+        data source, notes and caveats and links to relevant publications and pages on the ScotPHO website. "
+      )$
+      step(
+        ns("pop_groups_split_filter"), #Split filter
+        "Select the population groups by which the data should be split.",
+        "You can split the data for the selected indicator into population groups such as age and sex."
+      )$
+      step(
+        ns("pop_groups_save_chart"), #Download chart button
+        "Download Chart Button",
+        "Click here to download this chart as a PNG.",
+        position = "bottom"
+      )$
+      step(
+        ns("pop_groups_save_data"), #Download data button
+        "Download Data Button",
+        "Click here to download the selected data as a CSV, RDS or JSON file.",
+        position = "left"
+      )
+    
+    #initiate the guide
+    guide_pop_groups$init()
+    
+    #when guided tour button is clicked, start the guide
+    observeEvent(input$pop_groups_tour_button, {
+      guide_pop_groups$start()
+    })
+    
   } # module server
   )# module server
 } # pop groups server
