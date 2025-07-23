@@ -52,8 +52,8 @@ simd_navpanel_ui <- function(id) {
                         
                         
                         #guided tour button
-                        # actionLink(inputId = ns("deprivation_tour_button"),
-                        #            label = "Take a guided tour of this page"),
+                        actionLink(inputId = ns("deprivation_tour_button"),
+                                   label = "Take a guided tour of this page"),
                         
                         # About SIMD button
                         actionLink(inputId = ns("simd_help"), 
