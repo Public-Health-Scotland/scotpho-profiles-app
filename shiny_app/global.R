@@ -7,6 +7,7 @@
 
 # 1. Required packages ----------------------------------------------------------
 library(shiny) # for shiny functions
+library(shinymanager)
 library(bslib) # app layout functions/theming
 library(phsstyles) # for phs colour palette
 library(shinyjs) # for various functions to expand/collapse geography filters 
@@ -29,6 +30,7 @@ library(sf)
 library(DT)
 library(tidyr) # for pivot longer used in meta data tab
 library(nanoparquet) # reading/writing parquet files
+
 
 
 # 2. Sourcing modules, narrative text and highchart functions  ------------------------

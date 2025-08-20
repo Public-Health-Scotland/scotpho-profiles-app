@@ -8,12 +8,19 @@
 
 function(input, output, session) {
   
-  # Keeps the shiny app from timing out quickly on Posit 
-  autoInvalidate <- reactiveTimer(10000)
-  observe({
-    autoInvalidate()
-    cat(".")
-  })
+  
+  # Import authentication credentials
+  credentials <- readRDS("admin/credentials.rds")
+  
+  #Apply shinymanager authentication
+  res_auth <- secure_server(check_credentials = check_credentials(credentials))
+  
+  # # Keeps the shiny app from timing out quickly on Posit 
+  # autoInvalidate <- reactiveTimer(10000)
+  # observe({
+  #   autoInvalidate()
+  #   cat(".")
+  # })
   
   
   
@@ -205,15 +212,17 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
-   trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
-   rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session)
-   summary_table_server("summary", geo_selections, selected_profile, areatype_data)
-   simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
-   pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
-  
-   # climate versions
-   climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile, session)
-   #climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
+  observeEvent(res_auth$user,{
+    trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
+    rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session)
+    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
+    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
+    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
+    
+    # climate versions
+    climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile, session)
+    #climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
+  })
   
   # # ############################################.
   # # # MODULES FOR THE ADDITIONAL INFO TABS ----
