@@ -55,8 +55,8 @@ source("data_preparation/update_deprivation_data.R") # script to read in & forma
 source("data_preparation/update_main_data.R") # script to read in and forma main data
 source("data_preparation/update_popgroup_data.R") # script to read in and forma main data
 
-source("data_preparation/update_climate_techdoc.R")
-source("data_preparation/update_climate_main_data.R") # script to read in and forma main data
+source("/PHI_conf/ScotPHO/1.Analysts_space/Echo/scotpho-profiles-app/data_preparation/update_climate_techdoc.R")
+source("/PHI_conf/ScotPHO/1.Analysts_space/Echo/scotpho-profiles-app/data_preparation/update_climate_main_data.R") # script to read in and forma main data
 
 ###################################################.
 ## Update technical document ----
