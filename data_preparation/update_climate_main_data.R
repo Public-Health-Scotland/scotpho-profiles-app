@@ -84,6 +84,10 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
   # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
   climate_main_dataset <- create_geography_path_column(climate_main_dataset)
   
+  # temporarily remove 2024 data 
+  climare_main_dataset <- climate_main_dataset |>
+    filter(year != 2024)
+  
   
   # make available in global environment for viewing what will be sent to shiny app
   climate_main_dataset <<- climate_main_dataset
