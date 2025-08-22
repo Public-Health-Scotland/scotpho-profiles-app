@@ -34,20 +34,25 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
     
     dataset <- reactive({
       
+      # get reactive dataset
+      df <- data()
+      
       # Convert data.table to data.frame
-      if ("data.table" %in% class(data())) {
-        data <- as.data.frame(data())
+      if ("data.table" %in% class(df)) {
+        df <- as.data.frame(df)
       }
       
       
       # Select (and rename columns) if selected_columns arg is in use
       # otherwise download entire df
       if(!is.null(selected_columns)){
-        data <- data |>
+        df <- df |>
           select(all_of(selected_columns))
-      } else {
-      data
       }
+      
+      # return data
+      df
+      
     })
     
     # download as csv

@@ -135,7 +135,7 @@ data_tab_mod_Server <- function(id) {
         if(input$dataset_selector == "Main Dataset") {
           main_data_geo_nodes # full list of geographies
         } else {
-          main_data_geo_nodes[c(1:3)] # scotland, hb and ca only 
+          main_data_geo_nodes[c(1,2,4)] # scotland, hb and ca only 
         }
       })
       
@@ -322,7 +322,8 @@ data_tab_mod_Server <- function(id) {
         if (!is.null(input$profile_selector) && input$profile_selector != "") {
           
           profile_filtered_data <- data |>
-            filter(grepl(paste(input$profile_selector, collapse = "|"), profile_domain))
+            filter(grepl(paste(profiles_list[[profile_selector]]$short_name, collapse = "|"), profile_domain))
+          
           
           available_indicators <- unique(profile_filtered_data$indicator)
           

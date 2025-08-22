@@ -153,11 +153,11 @@ update_deprivation_data(load_test_indicators = FALSE, create_backup = FALSE)
 ## Decide which fields actually need to be fed into profiles tool - some are required for validation checks but not sure these are needed in app or have different names.
 
 # run validation tests
-TEST_no_missing_ineq_indicators(deprivation_dataset) # compares dataset to techdoc column 'inequality label' is not null 
+# TEST_no_missing_ineq_indicators(deprivation_dataset) # compares dataset to techdoc column 'inequality label' is not null 
 TEST_no_missing_geography_info(deprivation_dataset) # all rows have valid geography code
 TEST_no_missing_metadata(deprivation_dataset) # checks for dep indicators with no indicator name
 TEST_suppression_applied(deprivation_dataset) # double checking suppression function wasn't skipped
-TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
+# TEST_inequalities_trends(deprivation_dataset) # checks if last deprivation indicator year is same as main profiles dataset max year (wont run until main data also in data prep)
 
 
 

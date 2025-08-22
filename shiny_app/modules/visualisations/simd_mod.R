@@ -160,14 +160,14 @@ simd_navpanel_ui <- function(id) {
                 checkboxInput(ns("right_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
                 checkboxInput(ns("right_average_switch"), label = "Include averages", FALSE)
               ) 
-            )
-            ), #close navset_card_pill
+            ),
             
             # card footer with download buttons
             footer = card_footer(
               class = "d-flex justify-content-left",
               download_chart_mod_ui(ns("save_right_chart")),
               download_data_btns_ui(ns("save_right_data")))
+        ) #close navset_card_pill
   
        ) # close layout column wrap
       ), # close div for cicerone tour
@@ -790,8 +790,8 @@ simd_navpanel_ui <- function(id) {
     download_chart_mod_server(id = "save_right_chart", chart_id = ns("right_chart"))
     
     # data downloads (note these are modules)
-    download_data_btns_server(id = "save_left_data", data = simd_measures_data()$left_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
-    download_data_btns_server(id = "save_right_data", data = simd_measures_data()$right_data, file_name = paste0("ScotPHO data - ", input$depr_measures))
+    download_data_btns_server(id = "save_left_data", data = reactive({simd_measures_data()$left_data}), file_name = paste0("ScotPHO data - ", input$depr_measures))
+    download_data_btns_server(id = "save_right_data", data = reactive({simd_measures_data()$right_data}), file_name = paste0("ScotPHO data - ", input$depr_measures))
     
     ############################################.
     # Guided tour ----
