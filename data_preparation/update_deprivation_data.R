@@ -78,6 +78,10 @@ update_deprivation_data <- function(load_test_indicators = FALSE, create_backup 
   # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
   deprivation_dataset <- create_geography_path_column(deprivation_dataset)
   
+  #exclude decile splits until tool ready to present this data and indicators assessed for robust/disclosure
+  deprivation_dataset <- deprivation_dataset |>
+    filter(quint_type != "sc_decile")
+  
   # make dataset available in global environment for validation tests
    deprivation_dataset_validation <<- deprivation_dataset 
 
