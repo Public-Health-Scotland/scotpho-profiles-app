@@ -34,6 +34,8 @@ library(assertthat) # for data validation tests
 library(purrr) # for copying multiple files at once
 library(tidyr) # for pivot longer
 library(sf)
+#library(shinymanager)
+
 
 
 ## Set file-paths
@@ -55,8 +57,9 @@ source("data_preparation/update_deprivation_data.R") # script to read in & forma
 source("data_preparation/update_main_data.R") # script to read in and forma main data
 source("data_preparation/update_popgroup_data.R") # script to read in and forma main data
 
-source("/PHI_conf/ScotPHO/1.Analysts_space/Echo/scotpho-profiles-app/data_preparation/update_climate_techdoc.R")
-source("/PHI_conf/ScotPHO/1.Analysts_space/Echo/scotpho-profiles-app/data_preparation/update_climate_main_data.R") # script to read in and forma main data
+source("data_preparation/update_climate_techdoc.R")
+source("data_preparation/update_climate_main_data.R") # script to read in and forma main data
+source("data_preparation/update_climate_popgroup_data.R") # script to read in and forma popgroup data
 
 ###################################################.
 ## Update technical document ----
@@ -189,6 +192,7 @@ update_popgroup_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 update_climate_techdoc(load_test_indicators = FALSE, create_backup = FALSE)
 update_climate_main_data(load_test_indicators = FALSE, create_backup = FALSE)
+update_climate_popgroup_data(load_test_indicators = FALSE, create_backup = FALSE)
 
 # PLANNING ON UPDATING INDICATORS AND DEPLOYING THE APP? consider generating backup of techdoc. 
 # update_techdoc(load_test_indicators = FALSE, create_backup = TRUE)
@@ -199,7 +203,7 @@ update_climate_main_data(load_test_indicators = FALSE, create_backup = FALSE)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # temporary step - combine techdocs
-techdoc <- bind_rows(techdoc, climate_techdoc)
+# techdoc <- bind_rows(techdoc, climate_techdoc)
 
 
 ############################################################.

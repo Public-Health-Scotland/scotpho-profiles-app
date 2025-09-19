@@ -1,66 +1,63 @@
-## FUNCTION: update_main_data.R ----
+## FUNCTION: update_popgroup_data.R ----
+
+## Creates a single RDS data file within local shiny app data folder that contains latest versions of indicators which populate
+## population group tab in shiny app (ie indicators split by variables such as age/sex/disability etc)
+
+## Caution: a number of these indicators may not have complete information i.e. some are available at Scotland level but not NHS board or LA.
+## Some indicators may cover different time periods for different geography levels e.g. annual figures at Scotland level but rolling year averages for sub national geographies
+## The data preparation script should accept these variances but if issues arise consider if the data structure could be a problem.
 
 
 ## PARAMETERS
 # load_test_indicators : (default is FALSE) option to set to TRUE which reads indicators from the test shiny folder
 # create_backup :  (default is FALSE ) option to set to TRUE when creating a distinct backup version desired e.g. when planning to deploy the app
 
-update_climate_main_data <- function(load_test_indicators = FALSE, create_backup = FALSE) {
-  
+update_climate_popgroup_data <- function(load_test_indicators = FALSE, create_backup = FALSE) {
   
   ## Find all separate indicator data files in the shiny data folder -----
-  indicator_data_files <- list.files(
+  popgroup_data_files <- list.files(
     path = "/PHI_conf/ScotPHO/Profiles/Data/Climate Data", 
-    pattern = "*_shiny.parquet", 
+    pattern = "*_shiny_popgrp.parquet", 
     full.names = TRUE
   )
   
-  
-  ## Combine into one dataset  -----
-  climate_main_dataset <- combine_files(indicator_data_files) %>% 
-      select ("ind_id", "code", "year", "trend_axis", "def_period", "numerator", "measure", "lowci", "upci", "file_name")
- 
+  ## Combine into one dataset  ----- 
+  climate_popgroup_dataset <- combine_files(popgroup_data_files) %>% 
+    select(-indicator_name)
   
   
   ## If test indicators are to be included then list files & combine files from test shiny folder
   if (load_test_indicators == TRUE){
     
     ## Find new indicators data files in the test shiny data folder -----
-    test_indicator_files <- list.files(
+    test_popgroup_data_files <- list.files(
       path = test_shiny_files, 
-      pattern = "*_shiny.parquet", 
+      pattern = "*_shiny_popgrp.csv", 
       full.names = TRUE
     )
     
+    
     ## Combine into one dataset  -----
-    test_indicator_dataset <- combine_files(test_indicator_files)
+    test_popgroup_dataset  <- combine_files(test_popgroup_data_files)
     
     ## Combine main dataset and test indicators
-    main_dataset <- bind_rows(main_dataset, test_indicator_dataset)
+    popgroup_dataset<- bind_rows(popgroup_dataset, test_popgroup_dataset)
   }
   
   
-  
-  
   ## Attach metadata from the technical doc lookup ----
-  climate_main_dataset <- left_join(x = climate_main_dataset, y = climate_technical_doc, by = "ind_id")
-  
+  climate_popgroup_dataset <- left_join(x =climate_popgroup_dataset, y = climate_technical_doc, by = "ind_id")
   
   ## Attach geography info from geography lookup--------
-  climate_main_dataset <- climate_main_dataset |> 
-    replace_old_geography_codes(col_name = "code") |>
+  climate_popgroup_dataset<- climate_popgroup_dataset |> 
     left_join(geography_lookup, by = "code")
   
-  
-  
   ## Apply suppression where required ---------
-  climate_main_dataset <- climate_main_dataset |>
+  climate_popgroup_dataset <- climate_popgroup_dataset |>
     apply_suppressions()
   
-  
-  
   ## convert some cols to numeric and round digits
-  climate_main_dataset <- climate_main_dataset |>
+  climate_popgroup_dataset <- climate_popgroup_dataset |>
     mutate(
       across(
         c("numerator", "measure", "upci", "lowci"),
@@ -68,32 +65,22 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
       )
     )
   
-  
-  # make dataset available in global environment for validation tests
-  main_dataset_validation <<- climate_main_dataset 
-  
-  # remove columns not required within shiny app
-  climate_main_dataset <- climate_main_dataset |>
+  #rename and select columns required for shiny file
+  climate_popgroup_dataset <- climate_popgroup_dataset |>
+    rename(indicator = indicator_name) |>
     select(-c(supression, supress_less_than, type_id, file_name, label_inequality))
-  
-  # rename indicator column 
-  climate_main_dataset <- climate_main_dataset |>
-    rename(indicator = indicator_name)
-  
   
   # create a new column which contains the full geography path
   # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
   # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
-  climate_main_dataset <- create_geography_path_column(climate_main_dataset)
+  climate_popgroup_dataset <- create_geography_path_column(popgroup_dataset)
   
-  # temporarily remove 2024 data 
-  climare_main_dataset <- climate_main_dataset |>
   
   # make available in global environment for viewing what will be sent to shiny app
-  climate_main_dataset <<- climate_main_dataset
+  climate_popgroup_dataset <<- climate_popgroup_dataset
   
   ## save final file to local repo
-  write_parquet(climate_main_dataset, "shiny_app/data/climate_main_dataset", compression = "zstd")
+  write_parquet(climate_popgroup_dataset, "shiny_app/data/climate_popgroup_dataset", compression = "zstd")
   
   ## Optional: Create backup of from local repo -----
   ## Usually would only want to create a backup if you intend to update live tool
@@ -101,8 +88,8 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
   if (create_backup == TRUE) {
     
     file.copy(
-      "shiny_app/data/climate_main_dataset", 
-      paste0(backups, "climate_main_dataset_", Sys.Date()), 
+      "shiny_app/data/climate_popgroup_dataset", 
+      paste0(backups, "climate_popgroup_dataset", Sys.Date()), 
       overwrite = TRUE
     )
   } 
@@ -110,9 +97,6 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
   
   
   
-}
+} #close function
 
-
-
-
-
+#END.
