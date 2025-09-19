@@ -30,6 +30,7 @@ library(sf)
 library(DT)
 library(tidyr) # for pivot longer used in meta data tab
 library(nanoparquet) # reading/writing parquet files
+library(shinymanager)
 
 
 

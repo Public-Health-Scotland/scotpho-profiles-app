@@ -8,7 +8,6 @@
 
 function(input, output, session) {
   
-  
   # Import authentication credentials
   credentials <- readRDS("admin/credentials.rds")
   
@@ -21,10 +20,6 @@ function(input, output, session) {
   #   autoInvalidate()
   #   cat(".")
   # })
-  
-  
-  
-  
   
   ###################################################.
   # NAVIGATION TO DIFFERENT TABS ----
@@ -223,7 +218,7 @@ function(input, output, session) {
     climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile, session)
     #climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
   })
-  
+
   # # ############################################.
   # # # MODULES FOR THE ADDITIONAL INFO TABS ----
   # # ############################################.
@@ -315,7 +310,7 @@ function(input, output, session) {
   })
 
 
-  
-} # close main server function
+  } # close main server function
 
 ##END
+
