@@ -201,7 +201,7 @@ page_navbar(
                                  conditionalPanel(condition = "input.profile_choices == 'Population Health'",
                                                   br(),
                                                   card(max_height = 150,
-                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Indicator set in development",class = "info-box-header"),
+                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"About this profile",class = "info-box-header"),
                                                        p("The Population Health dashboard has been developed to support the ambitions of Scotland’s Population Health Framework, and the Collaboration 
                                                          for Health Equity in Scotland by providing access to the latest data on population health outcomes and inequalities. The indicators are structured 
                                                          around the “Marmot Eight” principles as laid out in the Institute of Health Equity’s work on ",
