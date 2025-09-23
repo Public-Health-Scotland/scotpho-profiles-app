@@ -17,8 +17,8 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
   
   
   ## Combine into one dataset  -----
-  climate_main_dataset <- combine_files(indicator_data_files) %>% 
-      select ("ind_id", "code", "year", "trend_axis", "def_period", "numerator", "measure", "lowci", "upci", "file_name")
+  climate_main_dataset <- combine_files(indicator_data_files) |> 
+      select("ind_id", "code", "year", "trend_axis", "def_period", "numerator", "measure", "lowci", "upci", "file_name")
  
   
   
@@ -36,7 +36,7 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
     test_indicator_dataset <- combine_files(test_indicator_files)
     
     ## Combine main dataset and test indicators
-    main_dataset <- bind_rows(main_dataset, test_indicator_dataset)
+    climate_main_dataset <- bind_rows(climate_main_dataset, test_indicator_dataset)
   }
   
   
@@ -86,9 +86,7 @@ update_climate_main_data <- function(load_test_indicators = FALSE, create_backup
   # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
   climate_main_dataset <- create_geography_path_column(climate_main_dataset)
   
-  # temporarily remove 2024 data 
-  climare_main_dataset <- climate_main_dataset |>
-  
+
   # make available in global environment for viewing what will be sent to shiny app
   climate_main_dataset <<- climate_main_dataset
   

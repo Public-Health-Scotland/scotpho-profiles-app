@@ -41,7 +41,7 @@ update_climate_popgroup_data <- function(load_test_indicators = FALSE, create_ba
     test_popgroup_dataset  <- combine_files(test_popgroup_data_files)
     
     ## Combine main dataset and test indicators
-    popgroup_dataset<- bind_rows(popgroup_dataset, test_popgroup_dataset)
+    climate_popgroup_dataset<- bind_rows(climate_popgroup_dataset, test_popgroup_dataset)
   }
   
   
@@ -73,7 +73,7 @@ update_climate_popgroup_data <- function(load_test_indicators = FALSE, create_ba
   # create a new column which contains the full geography path
   # most geographies have 2 parts to their path i.e. 'Health Board/NHS Ayrshire & Arran'
   # with the exception of IZs/HSC Localities where a parent area is also included i.e. 'HSC Locality/Edinburgh City/Edinburgh North-East'
-  climate_popgroup_dataset <- create_geography_path_column(popgroup_dataset)
+  climate_popgroup_dataset <- create_geography_path_column(climate_popgroup_dataset)
   
   
   # make available in global environment for viewing what will be sent to shiny app

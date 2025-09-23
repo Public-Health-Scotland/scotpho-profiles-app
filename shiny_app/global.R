@@ -48,7 +48,7 @@ main_dataset <- setDT(read_parquet("data/main_dataset")) # main dataset (to do: 
 simd_dataset <- setDT(read_parquet("data/deprivation_dataset")) # dataset behind simd panel
 popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset")) # dataset behind popgroup panel
 climate_main_dataset <- setDT(read_parquet("data/climate_main_dataset")) # main dataset 
-
+climate_popgroup_dataset <- setDT(read_parquet("data/climate_popgroup_dataset"))
 
 # lookups
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
@@ -213,7 +213,7 @@ profiles_list <- list(
     short_name = "CLI",
     homepage_description = markdown("View indicators relating to **Climate**"),
     domain_order = NULL,
-    subtabs = c("about_profile_tab", "climate_trends_tab", "rank_tab"),
+    subtabs = c("about_profile_tab", "climate_trends_tab", "rank_tab", "pop_groups_tab"),
     active = TRUE
   )
 )
