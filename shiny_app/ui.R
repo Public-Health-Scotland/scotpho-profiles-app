@@ -264,7 +264,7 @@ page_navbar(
   ########################################.
   # Link to github repo  -------
   ########################################.
-  nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-app", target = "_blank")),
+  nav_item(tags$a(icon("github"), "Source Code", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-app", target = "_blank")),
   
   ########################################.
   # Menu with additional tabs  -------
