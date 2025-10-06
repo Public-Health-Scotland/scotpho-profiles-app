@@ -10,7 +10,7 @@
 
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
-secure_app(
+#secure_app(
  page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
@@ -25,8 +25,9 @@ secure_app(
   header = tags$head(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
     use_cicerone(), # required for guided tours
+    leafletjs,
     tags$script(src = "https://code.highcharts.com/highcharts.js"), # required for spinecharts
-    tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),# required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
+   # tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),# required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
     includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
     ),
 
@@ -67,6 +68,12 @@ secure_app(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
+                          # Climate profile info
+                          div(
+                            h4("October 2025: New Climate Impact profile", class = "profile-header"),
+                            p("placeholder")
+                          ),
+                          hr(),
                           # CYP Mental Health profile info
                           div(
                             h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
@@ -224,7 +231,7 @@ secure_app(
                        nav_panel(title = "Trends", value = "trends_tab", trend_mod_ui("trends")),
                        
                        # climate trends sub-tab
-                       nav_panel(title = "Climate Trends", value = "climate_trends_tab", climate_trend_mod_ui("climate_trends")),
+                      # nav_panel(title = "Climate Trends", value = "climate_trends_tab", climate_trend_mod_ui("climate_trends")),
                        
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
@@ -292,7 +299,7 @@ secure_app(
   ) # close nav menu
   
 ) #close main ui function
-)
+#)
 
 ### END
 
