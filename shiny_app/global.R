@@ -115,6 +115,16 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Climate Impact profile 
+  # <----- Note 06/10/2025 - to be completed  ----->
+  "Climate" = list(
+    short_name = "CLI",
+    homepage_description = markdown("View indicators relating to **Climate**"),
+    domain_order = NULL,
+    subtabs = c("about_profile_tab", "trends_tab", "rank_tab", "pop_groups_tab"),
+    active = TRUE
+  ),
+  
   # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",

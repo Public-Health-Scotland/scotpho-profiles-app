@@ -66,7 +66,7 @@ page_navbar(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
-                          # # Refresh of Male & Female Life Expectancy indicator trend data
+                         # Refresh of Male & Female Life Expectancy indicator trend data
                           # div(
                           #   h4("July 2025 : Refresh of Male & Female Life Expectancy indicator trend data", class = "profile-header"),
                           #   p("We have recently refreshed the male and female life expectancy indicator data to ensure that the full time series reflects latest figures published by NRS.
@@ -74,9 +74,17 @@ page_navbar(
                           # The issue resulted in some LE figures being matched to the incorrect geography label. A correction now been applied and revised figures are now available in this tool.
                           # If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
                           # ),
-                          # hr(),                          
+                          # hr(), 
+                         
+                         # Climate profile info
+                         # <----- Note 06/10/2025 - to be completed  ----->
+                         div(
+                           h4("October 2025: New Climate Impact profile", class = "profile-header"),
+                           p("placeholder")
+                         ),
+                         hr(),
                           
-                          
+                         
                           # CYP Mental Health profile info
                           div(
                             h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
@@ -246,7 +254,8 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Adult Mental Health'", about_men_text),
                                  conditionalPanel("input.profile_choices == 'Children & Young People Mental Health'", about_cmh_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
-                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text)
+                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text),
+                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text)
                        )
 
                        
