@@ -24,8 +24,8 @@ page_navbar(
   header = tags$head(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
     use_cicerone(), # required for guided tours
+    leafletjs, # required for leaflet maps (see js code in global scipt)
     tags$script(src = "https://code.highcharts.com/highcharts.js"), # required for spinecharts
-    tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),# required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
     includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
     ),
 
