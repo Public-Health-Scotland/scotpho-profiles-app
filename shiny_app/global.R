@@ -68,16 +68,10 @@ hscp_bound <- readRDS("data/HSCP_boundary.rds")# HSC Partnerships
 hscloc_bound <- readRDS("data/HSC_locality_boundary.rds") # HSC localities
 iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
 pd_bound <- readRDS("data/PD_boundary.rds") # Police divisions
+orkney_bound <- readRDS("data/Orkney_boundary.rds") # Orkney Island (shifted coordinates)
+shetland_bound <- readRDS("data/Shetland_boundary.rds") # Shetland Island (shifted coordinates)
 
 
-# transform shapefiles - needs to be done here or else app doesn't work?!
-# note: look into this at some point as wasn't required in old profiles tool
-ca_bound <- sf::st_as_sf(ca_bound)
-hb_bound <- sf::st_as_sf(hb_bound)
-hscp_bound <- sf::st_as_sf(hscp_bound)
-hscloc_bound <- sf::st_as_sf(hscloc_bound)
-iz_bound <- sf::st_as_sf(iz_bound)
-pd_bound <- sf::st_as_sf(pd_bound)
 
 
 # 4. lists ----------------------------------------------------------
@@ -145,6 +139,15 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # All Climate info
+  "Climate" = list(
+    short_name = "CLI",
+    homepage_description = markdown("View indicators relating to **Climate**"),
+    domain_order = NULL,
+    subtabs = c("about_profile_tab", "trends_tab", "rank_tab", "pop_groups_tab"),
+    active = TRUE
+  ),
+  
   # Tobacco info
   "Tobacco" = list(
     short_name = "TOB",
@@ -206,15 +209,6 @@ profiles_list <- list(
     domain_order = NULL,
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
-  ),
-
-  # All Climate info
-  "Climate" = list(
-    short_name = "CLI",
-    homepage_description = markdown("View indicators relating to **Climate**"),
-    domain_order = NULL,
-    subtabs = c("about_profile_tab", "climate_trends_tab", "rank_tab", "pop_groups_tab"),
-    active = TRUE
   )
 )
 
@@ -361,3 +355,72 @@ dt #returns a data table filtered to only contain indicators belonging to select
 }
 
   
+
+
+# helper function for choropleth map
+setShapeStyle <- function( map, data = getMapData(map), layerId,
+                           stroke = NULL, color = NULL,
+                           weight = NULL, opacity = NULL,
+                           fill = NULL, fillColor = NULL,
+                           fillOpacity = NULL, label = NULL){
+  
+  options <- c(list(layerId = layerId),
+               options,
+               filterNULL(list(stroke = stroke, color = color,
+                               weight = weight, opacity = opacity,
+                               fill = fill, fillColor = fillColor,
+                               fillOpacity = fillOpacity,label = label
+               )))
+  
+  options <- evalFormula(options, data = data)
+  options <- do.call(data.frame, c(options, list(stringsAsFactors=FALSE)))
+  
+  layerId <- options[[1]]
+  style <- options[-1]
+  if("label" %in% colnames(style)){
+    labelData = style[,"label", FALSE]
+    style = style[,-which(colnames(style)=="label"), FALSE]
+    leaflet::invokeMethod(map, data, "setLabel", "shape", layerId, label)
+  }
+  leaflet::invokeMethod(map, data, "setStyle", "shape", layerId, style);
+}
+
+
+
+# helper function in JS for choropleth map
+leafletjs <-  tags$head(
+  tags$script(HTML('
+  
+window.LeafletWidget.methods.setStyle = function(category, layerId, style){
+  var map = this;
+  if (!layerId){
+    return;
+  } else if (!(typeof(layerId) === "object" && layerId.length)){
+    layerId = [layerId];
+  }
+  style = HTMLWidgets.dataframeToD3(style);
+  layerId.forEach(function(d,i){
+    var layer = map.layerManager.getLayer(category, d);
+    if (layer){
+      layer.setStyle(style[i]);
+    }
+  });
+};
+window.LeafletWidget.methods.setLabel = function(category, layerId, label){
+  var map = this;
+  if (!layerId){
+    return;
+  } else if (!(typeof(layerId) === "object" && layerId.length)){
+    layerId = [layerId];
+  }
+  layerId.forEach(function(d,i){
+    var layer = map.layerManager.getLayer(category, d);
+    if (layer){
+      layer.unbindTooltip();
+      layer.bindTooltip(label[i])
+    }
+  });
+};
+'
+  ))
+)
