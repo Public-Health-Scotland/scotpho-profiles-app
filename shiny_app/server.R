@@ -9,10 +9,10 @@
 function(input, output, session) {
   
   # Import authentication credentials
- credentials <- readRDS("admin/credentials.rds")
+# credentials <- readRDS("admin/credentials.rds")
   
   #Apply shinymanager authentication
-  res_auth <- secure_server(check_credentials = check_credentials(credentials))
+ # res_auth <- secure_server(check_credentials = check_credentials(credentials))
   
   # # Keeps the shiny app from timing out quickly on Posit r
   # autoInvalidate <- reactiveTimer(10000)
@@ -207,7 +207,7 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
-  observeEvent(res_auth$user,{
+ # observeEvent(res_auth$user,{
     trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
     rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session)
     summary_table_server("summary", geo_selections, selected_profile, areatype_data)
@@ -215,9 +215,9 @@ function(input, output, session) {
     pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
     
     # climate versions
-    climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile, session)
+   # climate_trend_mod_server("climate_trends", profile_data, geo_selections, selected_profile, session)
     #climate_rank_mod_server("climate_rank", areatype_data, geo_selections, selected_profile)
-  })
+ # })
 
   # # ############################################.
   # # # MODULES FOR THE ADDITIONAL INFO TABS ----
@@ -271,8 +271,13 @@ function(input, output, session) {
   # used for rank/summary tabs 
   areatype_data <- reactive({
     req(profile_data())
-    profile_data() |>
-      filter(areatype == geo_selections()$areatype | areatype == "Scotland")
+    
+   profile_data() |>
+      filter(
+        areatype == geo_selections()$areatype | 
+          areatype == "Scotland"
+        )
+
   })
   
   
@@ -315,6 +320,31 @@ function(input, output, session) {
       selected_areaname = geo_selections()$areaname
     )
   })
+  
+  
+  
+      guide_test <- Cicerone$
+        new()$
+        step(
+          el = "show_geo_filters", # button id from UI (i.e. 'change area' button)
+          title = "Select areas to rank",
+          description = "You currently have Scotland selected as your geography level.
+          To populate the rank tab, first click the 'change area' button to select a different area type (e.g. Council areas) to rank all areas of that type.",
+          position = "right"
+        )
+
+
+      #initiate the guide
+      guide_test$init()
+
+      #when guided tour button is clicked, start the guide
+      observeEvent(input$sub_tabs, {
+        req(input$sub_tabs == "rank_tab")
+        req(geo_selections()$areatype == "Scotland")
+        
+        guide_test$start()
+      })
+
 
 
   } # close main server function
