@@ -354,3 +354,20 @@ dt #returns a data table filtered to only contain indicators belonging to select
 }
 
   
+
+# 6. guided tour -------------
+
+# guide for when a user still has 'Scotland' selected
+# as their areatype and has selected the rank tab
+rank_geo_guide <- Cicerone$
+  new()$
+  step(
+    el = "show_geo_filters", # inputId of button from UI (i.e. 'change area' button)
+    title = "Select areas to rank",
+    description = "You currently have Scotland selected as your geography level.
+                   To populate the rank tab, first click the 'change area' 
+                   button to select a different area type (e.g. Council areas) 
+                   to rank all areas of that type.",
+    position = "right"
+  )
+

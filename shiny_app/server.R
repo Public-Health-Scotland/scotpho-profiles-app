@@ -302,7 +302,27 @@ function(input, output, session) {
     )
     }
   })
-
+  
+  
+  
+  ###################################################.
+  #  USER GUIDES ----
+  ###################################################.
+  
+  # initiate guide for rank tab
+  rank_geo_guide$init()
+  
+  
+  # when user has Scotland selected
+  # and clicks on the rank tab start guided tour
+  # to explain they need to select a different geography type
+  observeEvent(input$sub_tabs, {
+    req(geo_selections()$areatype == "Scotland")
+    req(input$sub_tabs == "rank_tab")
+    
+    rank_geo_guide$start()
+  })
+  
 
   
 } # close main server function
