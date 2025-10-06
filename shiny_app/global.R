@@ -61,14 +61,6 @@ iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
 pd_bound <- readRDS("data/PD_boundary.rds") # Police divisions
 
 
-# transform shapefiles - needs to be done here or else app doesn't work?!
-# note: look into this at some point as wasn't required in old profiles tool
-ca_bound <- sf::st_as_sf(ca_bound)
-hb_bound <- sf::st_as_sf(hb_bound)
-hscp_bound <- sf::st_as_sf(hscp_bound)
-hscloc_bound <- sf::st_as_sf(hscloc_bound)
-iz_bound <- sf::st_as_sf(iz_bound)
-pd_bound <- sf::st_as_sf(pd_bound)
 
 
 # 4. lists ----------------------------------------------------------
