@@ -118,6 +118,15 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # All Climate info
+  "Climate" = list(
+    short_name = "CLI",
+    homepage_description = markdown("View indicators relating to **Climate**"),
+    domain_order = NULL,
+    subtabs = c("about_profile_tab", "trends_tab", "rank_tab", "pop_groups_tab"),
+    active = TRUE
+  ),
+  
   # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",
@@ -139,14 +148,6 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # All Climate info
-  "Climate" = list(
-    short_name = "CLI",
-    homepage_description = markdown("View indicators relating to **Climate**"),
-    domain_order = NULL,
-    subtabs = c("about_profile_tab", "trends_tab", "rank_tab", "pop_groups_tab"),
-    active = TRUE
-  ),
   
   # Tobacco info
   "Tobacco" = list(
@@ -357,19 +358,22 @@ dt #returns a data table filtered to only contain indicators belonging to select
   
 
 
-# helper function for choropleth map
+# helper function for choropleth animation
 setShapeStyle <- function( map, data = getMapData(map), layerId,
                            stroke = NULL, color = NULL,
                            weight = NULL, opacity = NULL,
                            fill = NULL, fillColor = NULL,
-                           fillOpacity = NULL, label = NULL){
+                           fillOpacity = NULL, dashArray = NULL,
+                           smoothFactor = NULL, noClip = NULL, label = NULL,
+                           options = NULL){
   
   options <- c(list(layerId = layerId),
                options,
                filterNULL(list(stroke = stroke, color = color,
                                weight = weight, opacity = opacity,
                                fill = fill, fillColor = fillColor,
-                               fillOpacity = fillOpacity,label = label
+                               fillOpacity = fillOpacity, dashArray = dashArray,
+                               smoothFactor = smoothFactor, noClip = noClip, label = label
                )))
   
   options <- evalFormula(options, data = data)
@@ -386,8 +390,12 @@ setShapeStyle <- function( map, data = getMapData(map), layerId,
 }
 
 
+# Error: Loop 0 edge 876 crosses loop 2 edge 5
+# Dumfries & Galloway IZs
+# Deaths, under 75 years
+#2021 to 202023 calendar years; 3-year aggregates
 
-# helper function in JS for choropleth map
+# helper function in JS for choropleth animation
 leafletjs <-  tags$head(
   tags$script(HTML('
   
