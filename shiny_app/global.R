@@ -108,11 +108,10 @@ profiles_list <- list(
   ),
   
   # Climate Impact profile 
-  # <----- Note 06/10/2025 - to be completed  ----->
   "Climate" = list(
     short_name = "CLI",
     homepage_description = markdown("View indicators relating to **Climate**"),
-    domain_order = NULL,
+    domain_order = c("Climate Health Impact", "Weather", "Air Quality", "Climate Attitude"),
     subtabs = c("about_profile_tab", "trends_tab", "rank_tab", "pop_groups_tab"),
     active = TRUE
   ),
