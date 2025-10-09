@@ -70,7 +70,7 @@ page_navbar(
                            div(
                              h4("9th Oct 2025 : Refresh of Deaths from suicide (16+ and 11-25 years) indicator trend data", class = "profile-header"),
                              p("We have recently identified and corrected an issue with the deaths from suicide indicator data uploaded at the end of September 2025.
-                           During our routine annual update rolling averages a new error was introduced resulting in corrected summing for some tmie periods and some sub-national regions (local authority and NHS boards). A correction now been applied and revised figures are now available in this tool.
+                           During the annual update a new error was introduced resulting in incorrect summing of rolling averages for some time periods and sub-national regions. A correction now been applied and revised figures are now available in this tool.
                            If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
                            ),
                            hr(),
