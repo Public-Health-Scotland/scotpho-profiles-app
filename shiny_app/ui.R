@@ -66,15 +66,14 @@ page_navbar(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
-                          # # Refresh of Male & Female Life Expectancy indicator trend data
-                          # div(
-                          #   h4("July 2025 : Refresh of Male & Female Life Expectancy indicator trend data", class = "profile-header"),
-                          #   p("We have recently refreshed the male and female life expectancy indicator data to ensure that the full time series reflects latest figures published by NRS.
-                          # During this refresh an issue was identified with some sub-national (local authority and NHS board) LE figures for the time periods 2020-2021 and 2021-2023 previously published by ScotPHO. 
-                          # The issue resulted in some LE figures being matched to the incorrect geography label. A correction now been applied and revised figures are now available in this tool.
-                          # If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
-                          # ),
-                          # hr(),                          
+                         # Refresh of Deaths from suicide (16+ and 11-25 year) indicator trend
+                           div(
+                             h4("9th Oct 2025 : Refresh of Deaths from suicide (16+ and 11-25 years) indicator trend data", class = "profile-header"),
+                             p("We have recently identified and corrected an issue with the deaths from suicide indicator data uploaded at the end of September 2025.
+                           During our routine annual update rolling averages a new error was introduced resulting in corrected summing for some tmie periods and some sub-national regions (local authority and NHS boards). A correction now been applied and revised figures are now available in this tool.
+                           If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                           ),
+                           hr(),
                           
                           
                           # CYP Mental Health profile info
