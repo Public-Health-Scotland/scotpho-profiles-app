@@ -137,6 +137,16 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Children and young people info
+  "Children & Young People" = list(
+    short_name = "CYP",
+    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
+    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
+  ),
+  
+  
   # Tobacco info
   "Tobacco" = list(
     short_name = "TOB",
@@ -164,30 +174,13 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # Children and young people info
-  "Children & Young People" = list(
-    short_name = "CYP",
-    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
-    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
-    active = TRUE
-  ),
-  
+
   # Population info
   "Population" = list(
     short_name = "POP",
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
     subtabs = c("summary_tab", "trends_tab", "rank_tab"),
-    active = TRUE
-  ),
-  
-  # All indicators info
-  "All Indicators" = list(
-    short_name = "ALL",
-    homepage_description = markdown("View **all indicators** in this tool from across every profile."),
-    domain_order = NULL,
-    subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
     active = TRUE
   ),
   
@@ -198,7 +191,17 @@ profiles_list <- list(
     domain_order = NULL,
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
+  ),
+  
+  # All indicators info
+  "All Indicators" = list(
+    short_name = "ALL",
+    homepage_description = markdown("View **all indicators** in this tool from across every profile."),
+    domain_order = NULL,
+    subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
+    active = TRUE
   )
+  
   
 )
 
