@@ -689,12 +689,12 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
       
       data <- rank_data() |>
         select(areaname, measure, upci, lowci) |>
-        arrange(Measure)
+        arrange(measure)
       
       reactable(data,
                 defaultExpanded = T,
                 defaultPageSize = nrow(data),
-                cols = list(
+                columns = list(
                   areaname = colDef(name = "Area name"),
                   measure = colDef(name = "Measure"),
                   upci = colDef(name = "Upper CI"),
