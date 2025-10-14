@@ -616,9 +616,8 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
         shp <- left_join(shp, rank_data(), by = "code")
         
         # create gradient colour palette (yellow-red)
-        gradient_palette <- colorNumeric(palette = "YlOrRd", domain = shp$measure)
-        
-        
+        palette <- colorNumeric(palette = "YlOrRd", domain = shp$measure)
+
         # create label for tooltips
         shp$label <- paste0(
           "<b>Area name: </b> ", shp$areaname,"<br>",
@@ -633,7 +632,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
             layerId = ~code,
             # switch between using the gradient colour pal defined above and the column called 'colour_pal' which
             # contains hex codes (orange, blue etc.) depending on whether figure better/worse than comparator figure
-            fillColor = if(input$comparator_switch) ~colour_pal else ~gradient_palette(measure),
+            fillColor = if (input$comparator_switch) ~colour_pal else ~palette(measure),
             fillOpacity = 0.7,
             opacity = 1,
             label = shp$label,
