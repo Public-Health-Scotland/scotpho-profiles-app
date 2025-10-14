@@ -615,12 +615,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
         # join data with shapefile
         shp <- left_join(shp, rank_data(), by = "code")
         
-        # create colour palette
-        palette <- if (input$comparator_switch) {
-          colorFactor(palette = unique(shp$colour_pal), domain = shp$colour_pal)
-        } else {
-          colorNumeric(palette = "YlOrRd", domain = shp$measure)
-        }
+        # create gradient colour palette (yellow-red)
+        gradient_palette <- colorNumeric(palette = "YlOrRd", domain = shp$measure)
+        
         
         # create label for tooltips
         shp$label <- paste0(
@@ -634,7 +631,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
           clearControls() |>
           setShapeStyle(
             layerId = ~code,
-            fillColor = ~palette(if (input$comparator_switch) colour_pal else measure),
+            # switch between using the gradient colour pal defined above and the column called 'colour_pal' which
+            # contains hex codes (orange, blue etc.) depending on whether figure better/worse than comparator figure
+            fillColor = if(input$comparator_switch) ~colour_pal else ~gradient_palette(measure),
             fillOpacity = 0.7,
             opacity = 1,
             label = shp$label,
