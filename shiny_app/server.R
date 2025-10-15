@@ -8,6 +8,14 @@
 
 function(input, output, session) {
   
+  
+  # TEMPORARY - FOR PRA 
+  
+  # Import authentication credentials
+  credentials <- readRDS("admin/credentials.rds")
+  # Apply shinymanager authentication
+  res_auth <- secure_server(check_credentials = check_credentials(credentials))
+  
 
   ###################################################.
   # NAVIGATION TO DIFFERENT TABS ----
@@ -207,11 +215,13 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
+   observeEvent(res_auth$user,{
    trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
    rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session, selected_subtab = reactive({input$sub_tabs}))
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
+   })
   
   
   

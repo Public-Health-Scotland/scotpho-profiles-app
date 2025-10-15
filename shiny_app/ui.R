@@ -10,6 +10,7 @@
 
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
+secure_app(
 page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
@@ -312,6 +313,7 @@ page_navbar(
   ) # close nav menu
   
 ) #close main ui function
+)
 
 ### END
 

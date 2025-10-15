@@ -28,6 +28,8 @@ library(cicerone) #for guided tours of tabs
 library(DT)
 library(tidyr) # for pivot longer used in meta data tab
 library(nanoparquet) # reading/writing parquet files
+library(sf) # for shapefiles
+library(shinymanager) # for PRA apps
 
 
 # 2. Sourcing modules, narrative text and highchart functions  ------------------------
