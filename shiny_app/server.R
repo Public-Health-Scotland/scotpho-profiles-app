@@ -57,7 +57,9 @@ function(input, output, session) {
   }, ignoreInit = TRUE)
   
   
-  
+  # navigate to the 'about this profile' tab 
+  # when on the climate profile and user clicks link
+  # on trends tab
   observeEvent(input$cli_about_link, {
     nav_select(
       id = "sub_tabs",
