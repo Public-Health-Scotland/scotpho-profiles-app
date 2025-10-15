@@ -68,8 +68,11 @@ about_cwb_text <- navset_pill_list(
               tags$a("Collaboration for Health Equity in Scotland (CHES)", href = "https://publichealthscotland.scot/population-health/environmental-health-impacts/collaboration-for-health-equity-in-scotland/", target = "_blank"),
               ". Working with Professor Sir Michael Marmot, the director of the Institute, this collaboration will strengthen and accelerate the action already underway to improve Scotland’s health, promote wellbeing, and address 
               health inequalities. The partnership between PHS and IHE is to support public service reform and will cover two key areas: ",
+              tags$ul(
               tags$li("Work at a national level to provide new insights into the most effective ways to progress health equity in Scotland through Marmot’s eight principles."), 
-              tags$li("Work in partnership with local authorities and NHS boards across Aberdeen City, North Ayrshire, and South Lanarkshire to develop and implement strategies to enhance health equity.")), 
+              tags$li("Work in partnership with local authorities and NHS boards across Aberdeen City, North Ayrshire, and South Lanarkshire to develop and implement strategies to enhance health equity.")
+              )
+              ), 
               p("The ultimate goal is to enable people to live longer, healthier lives by addressing the root causes of health inequalities and preventing illness before it starts. By creating conditions in which communities 
                 can thrive, the initiative seeks to drive lasting, positive change."),
               p("The Population Health dashboard provides a set of indicators structured around Marmot’s eight principles to inform progress towards this goal."),
@@ -295,16 +298,20 @@ about_men_text <-  navset_pill_list(
   p("The ",
     tags$a("adult mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/adult-mental-health-indicators/", target="_blank"),
     "includes 55 indicators grouped into four high-level \"domains\":"),
+  tags$ul(
     tags$li("10 ", tags$b("mental health outcomes")), 
     tags$li("9 ", tags$b("individual-level determinants")), 
     tags$li("11 ", tags$b("community-level determinants")), 
-    tags$li("25 ", tags$b("structural-level determinants")), 
+    tags$li("25 ", tags$b("structural-level determinants"))
+    ), 
   br(),
   p("Some indicators identified as being important currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. These are:"),
+  tags$ul(
   tags$li(tags$b("Mental health outcomes:"), " Adult drug use disorders."), 
   tags$li(tags$b("Individual-level determinants:"), " Sleep behaviour, Supportive family unit/relationships, Social media, Spirituality."), 
   tags$li(tags$b("Community-level determinants:"), " Institutional trust."), 
-  tags$li(tags$b("Structural-level determinants:"), " Racism, Stigma around mental health, Climate change."),
+  tags$li(tags$b("Structural-level determinants:"), " Racism, Stigma around mental health, Climate change.")
+  ),
   br(),
   p("Adults are defined as individuals aged 16 years and over, unless otherwise stated."),
   br()
@@ -335,12 +342,14 @@ about_cmh_text <-  navset_pill_list(
             p("The ",
               tags$a("children and young people's mental health indicator set", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/children-and-young-people-mental-health-indicators/", target="_blank"),
               "includes 70 indicators grouped into six high-level \"domains\":"),
+            tags$ul(
             tags$li("11 ", tags$b("mental health outcomes")), 
             tags$li("12 ", tags$b("individual-level determinants")), 
             tags$li("17 ", tags$b("determinants related to family and friends")), 
             tags$li("7 ", tags$b("determinants related to the learning environment")), 
             tags$li("5 ", tags$b("community-level determinants")), 
-            tags$li("18 ", tags$b("structural-level determinants")), 
+            tags$li("18 ", tags$b("structural-level determinants"))
+            ), 
             p("Some indicators identified as being important currently have no data, either because a suitable source has not been identified, or a suitable definition has not been developed. "),
             p("The indicators cover different periods of childhood, from pre-birth to early adulthood."),
             br()
@@ -353,22 +362,139 @@ about_cmh_text <-  navset_pill_list(
 ###########################################.
 ### Climate----
 
-# <----- Note 06/10/2025 - to be completed  ----->
 about_cli_text <- navset_pill_list(
   widths = c(3, 9),
-  nav_panel("About this profile",
-            h3("About this profile"),
-            p("Climate Text Overview"),
+  nav_panel(
+    title = "About this profile",
+    h3("About this profile"),
+    p("The Climate Profile is the home of indicators highlighting how our changing climate is impacting on population health. 
+    It contributes towards the PHS climate change and sustainability strategic approach 2023–2026 goal to “Develop our 
+    population health surveillance capacity, data and intelligence to understand, measure and monitor the direct and 
+    indirect population health and equity impacts of climate change in Scotland”."
+      ), 
+    
+    p("Public Health Scotland (PHS) published the", tags$a("PHS Climate Impact Indicators (CII) Feasibility Report", href = "https://publichealthscotland.scot/publications/phs-climate-impact-indicators-cii-feasibility-report/", target = "_blank"), " in September 2025 which scopes out the foundation 
+      for these indicators."
+      ),
+    
+    p("The release of the Climate Profile on ScotPHO coincided with the publication of the associated report ",
+     tags$a("‘Health Impacts from Heat: 2005-2024’", href = "[placeholder]", target = "_blank"), "."),
+      
+      p("To support stakeholders in identifying at risk groups and areas, there are 5 domains within the profile, each with their 
+      own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO. For more information about 
+      the new domains, please click on the sections in the left hand menu. The last three domains ‘Attitudes to climate’, ‘Air quality’ 
+      and ‘Demography’ contain indicators already existing in other ScotPHO profiles. They have been added to the Climate profile 
+      because of their links to Climate. A brief summary of each of the five domains is available below."
+        ),
+    
+    br(),
+    accordion(
+      open = FALSE,
+      accordion_panel(
+        title = "Climate Health Impacts",
+        p("Provides modelled estimates for the number and rate of deaths attributable to heat, based on PHS’ recent 
+        ‘Health Impacts from Heat: 2005-2024’ publication. It must be noted these indicators are our best estimate for the 
+        number of deaths and the rate of deaths per 100,000 population, not the observed number or crude rate.
+        Available at Scotland and Health Board Level. Age and Sex breakdowns available at Scotland level.")
+        ),
+      
+      accordion_panel(
+        title = "Weather",
+        p("To place climate health impacts in context, it is useful to understand the temperature trends around Scotland. 
+        We have therefore included two indicators for the mean and maximum summer temperatures. Additionally, in the 
+        ‘Health Impacts from Heat: 2005-2024’ publication, 22.6°C was identified as the threshold at which the population 
+        is at a 10% higher risk of death than at safe temperatures. As such, we have included an extra indicator of ‘Number of Days over 22.6°C’.
+        Available at Scotland, Health Board and Intermediate Zone level."
+          )
+        ),
+      
+      accordion_panel(
+        title = "Attitudes to climate",
+           p("Part of the Population Health profile on ScotPHO, this domain presents two key points from questions in the 
+           Scottish Household Survey 2023 relating to climate change and the environment. The first is 'Adults agreeing that 
+           climate change is an immediate and urgent problem’ which is the percentage of adults agreeing with the statement 
+           'Climate change is an immediate and urgent problem'. The second is ‘Adults who understand what action they should 
+           take to help tackle climate change’, which is the percentage of adults who 'strongly agree' or 'tend to agree' with 
+           the statement 'I understand what actions people like myself should take to help tackle climate change'. 
+           Both are available at Scotland and Local Authority Level."
+             )
+           ),
+      
+      accordion_panel(
+           title = "Air quality",
+          p("Part of the Population Health profile on ScotPHO, this domain shows the population-weighted annual mean concentrations 
+          (µg m-3) of fine particulate matter (PM2.5). Available at Scotland and Local Authority level."
+            )
+          ),
+      
+      accordion_panel(
+        title = "Demography",
+           p("In PHS’ recent ‘Health Impacts from Heat: 2005-2024’ publication, older people, aged 65 and over were identified as a 
+           vulnerable group with a higher rate of deaths attributable to heat than people under 65. To illustrate which regions and 
+           small areas have the highest percentage of older people, who are vulnerable to heat, we have included the pre-existing 
+           population indicator: Percentage of population aged 65 or over. Available at all geographic breakdowns."
+             )
+          )
+      ),
+    br()
+    ),
+  
+  nav_panel("Climate Health Impacts",
+            h3("Climate Health Impacts"),
+            p("The Climate Health Impacts domain includes indicators linked to PHS’ recent",
+              tags$a("‘Health Impacts from Heat: 2005-2024’", href = "[placeholder]", target = "_blank")," publication. They are part of a wider project to develop a full suite for the impacts of Climate on Health, and in the future will include the Health Impacts from cold and flooding. The feasibility of these indicators is explored 
+            in the ",
+              tags$a("PHS Climate Impact Indicators (CII) Feasibility Report", href = "https://publichealthscotland.scot/publications/phs-climate-impact-indicators-cii-feasibility-report/", target = "_blank"),
+            ". At present, there are two ScotPHO Climate indicators from this publication:"),
+            tags$ul(
+            tags$li("Modelled rate of deaths attributable to heat over the risk increase threshold (18.2°C)"),
+            tags$li("Modelled number of deaths attributable to heat over the risk increase threshold (18.2°C)")
+            ),
+            p("These are calculated using a Distributed Lag Non-linear model and are our best estimate for the number of deaths and the rate of deaths per 100,000 population. 
+              18.2°C has been identified in our publication as the ‘Risk Increase Threshold’, that is ‘the threshold at which the relative risk of death starts to increase significantly 
+              (i.e. the lower confidence interval for the relative risk of death is above 1). For detailed methodology, see ‘Health Impacts from Heat: 2005-2024’."),
             br()
   ),
-  nav_panel("Further Information",
-            h3("Further Information"),
-            p("We have used the Met Office’s Environmental Public Health Surveillance System (EPHSS) to provide climate context data. 
-            This includes daily maximum temperature, daily minimum temperature, relative humidity and windspeed. 
-            We have data for every weather station in Scotland, enabling us to match the nearest weather station to given intermediate zones 
-            for a more precise estimate of temperatures experienced by patients from these geographies. "),
-            br()
-  )
+  
+  nav_panel(
+    title = "Weather",
+    h3("Weather"),
+    p("To place the Climate health impacts in context, it is useful to understand the temperature trends around Scotland. 
+      With the recent publication on the impact of heat on health, we included three associated weather indicators."
+      ),
+      
+    div(
+      p("1) Summer mean of highest daily temperature (June to Sept)", style = "font-weight:bold;"),
+      p("This indicator looks at the daily maximum temperature by region and calculates the mean over the summer months, from June to September."),
+    ),
+    
+    br(),
+    
+    div(
+      p("2) Summer maximum of highest daily temperature", style = "font-weight:bold;"),
+      p("This indicator looks at the daily maximum temperature by region and calculates the maximum temperature observed that summer.")
+    ),
+    
+    br(),
+    
+    div(
+      p("3) Number of days over high-risk threshold (22.6°C)", style = "font-weight: bold;"),
+      p("In the ‘Health Impacts from Heat: 2005-2024’ publication, 22.6°C was identified as the High-Risk Threshold for deaths associated 
+    with heat. At this threshold, the population is at a 10% higher risk than it is at safe temperatures. This third indicator extracts 
+    the number of days for a given region that are above this temperature.Available at Scotland, Health Board and Intermediate Zone level.")
+    ),
+    br()
+    ),
+  
+  nav_panel(
+    title = "Contact us",
+    h3("Contact us"),
+    p("If you would like to contact the PHS Climate Analyst Team, please do so at",
+      tags$a("phs.climateanalysis@phs.scot", href = "mailto:phs.climateanalysis@phs.scot")),
+    br()
+    )
 )
+
+
 
   
