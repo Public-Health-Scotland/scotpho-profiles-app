@@ -87,7 +87,7 @@ rank_mod_ui <- function(id) {
         navset_card_pill(
             id = ns("rank_navset_card_pill"),
             full_screen = TRUE,
-            height = 600,
+            height = 700,
             
             # charts tab
             nav_panel("Charts",
@@ -123,7 +123,7 @@ rank_mod_ui <- function(id) {
         
         div(id = ns("rank_map_wrapper"),
         card(
-          height = 600,
+          height = 700,
           full_screen = TRUE,
           leafletOutput(ns("map")) |> # map
             withSpinner() |> 
@@ -466,14 +466,14 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
       req(rank_data())
       
       
-      # create dynamic text if no indicators available for selected profile
-      # and geography / if Scotland selected
+      # create dynamic text if no indicators available for selected profile and geography
       shiny::validate(
-        need(nrow(rank_data()) > 0, "Not all profiles have available indicators for all geography types. 
-              The drugs profile has no available indicators for intermediate zones and the mental health 
-              profile has no available indicators for intermediate zones or HSC localities. Please 
-              select another profile or geography type to continue.")
+        need(nrow(rank_data()) > 0, 
+        paste0("Not all profiles have available indicators for all geography types. ",
+              "The ", selected_profile()$full_name, " profile has no indicators at ", geo_selections()$areatype, " level. Please try another areatype.")
+        )
       )
+
       
       
       
@@ -605,7 +605,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
     # and whether comparator selected or not
     observe({
       req(shapefile())
-      selected_subtab()
+      req(selected_subtab() == "rank_tab")
 
       # if there is data to plot
       if(nrow(rank_data()) > 0) {
