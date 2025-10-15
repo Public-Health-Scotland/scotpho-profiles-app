@@ -139,7 +139,7 @@ page_navbar(
             
             # profile header with button
               div(class = "header-elements",
-                uiOutput("profile_header"),
+                tagAppendAttributes(class = "profile-header", h1(textOutput("profile_header"))),
                 actionButton(inputId = "show_profile_filter", label = "Change profile", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
             # hidden profile filter to display when button clicked 
@@ -151,8 +151,8 @@ page_navbar(
                     )),
               # geography header with button
                 div(class = "header-elements",
-                  uiOutput("geography_header"),
-                  actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
+                    tagAppendAttributes(class = "geography-header", h2(textOutput("geography_header"))),
+                    actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
@@ -217,6 +217,7 @@ page_navbar(
                                                          "We are working with PHS to complete the indicator set and ensure each reflects the latest available data soon.")
                                                        )
                                                   ),
+  
                                  # only display this card when Mental Health profile selected
                                  conditionalPanel(condition = "input.profile_choices == 'Children & Young People Mental Health'",
                                                   br(),
@@ -233,7 +234,20 @@ page_navbar(
                                  ),
                        
                        # trends sub-tab
-                       nav_panel(title = "Trends", value = "trends_tab", trend_mod_ui("trends")),
+                       nav_panel(title = "Trends", value = "trends_tab", 
+                                 
+                                 # only display this when Climate change is selected
+                                 # contains links to info about profile and related publication
+                                 conditionalPanel(condition = "input.profile_choices == 'Climate'",
+                                                  div(style = "padding: 10px; background-color: #F5ECF4;",
+                                                      p(bs_icon("info-circle-fill", size = "1.2em"), " Read more about the new",
+                                                        actionLink(inputId = "cli_about_link", label = "climate profile"), 
+                                                        " and access the associated report on the Public Health Scotland website:", 
+                                                        tags$a("‘Health Impacts from Heat: 2005-2024’", href = "placeholder", target = "_blank")
+                                                        )
+                                                      )
+                                                  ),
+                                 trend_mod_ui("trends")),
                        
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
