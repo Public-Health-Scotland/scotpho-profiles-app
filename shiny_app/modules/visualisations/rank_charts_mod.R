@@ -148,7 +148,7 @@ rank_mod_ui <- function(id) {
 # geo_selections = reactive values in main server stores global geography selections
 # selected_profile = name of reactive value stores selected profile from main server script
 
-rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, root_session) {
+rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, root_session, selected_subtab) {
   moduleServer(id, function(input, output, session) {
     
 
@@ -571,16 +571,16 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
     # ~~~~~~~~~~~~~~~~~~~~~~~
     # MAP -------
     # ~~~~~~~~~~~~~~~~~~~~~~~
-    
-  
+
+
 
     # create base map ----
     # This is only re-rendered when a user switches areatype or parent area
     # and a new shapefile needs to be plotted. It just creates the basic map without
-    # any data points 
+    # any data points
     output$map <- renderLeaflet({
       req(shapefile())
-      
+
       # create basic map using shapefile
       map <- leaflet(shapefile()) |>
         addPolygons(
@@ -588,33 +588,34 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
           group  = "areas",
           color = "white"
         )
-      
+
       # If small areas selected (IZ/locality) then add provider tiles
       # so that map is detailed with streets
       if(!geo_selections()$areatype %in% c("Council area", "Health board", "HSC partnership")){
         map <- map |>
           addProviderTiles(provider = providers[["OpenStreetMap"]])
       }
-      
+
       map
     })
-    
-    
+
+
 
     # update polygon fill and legend according to indicator selection
-    # and whether comparator selected or not 
-    observeEvent(rank_data(), {
+    # and whether comparator selected or not
+    observe({
       req(shapefile())
-      
+      selected_subtab()
+
       # if there is data to plot
       if(nrow(rank_data()) > 0) {
-        
+
         # get shapefile
         shp <- shapefile()
-        
+
         # join data with shapefile
         shp <- left_join(shp, rank_data(), by = "code")
-        
+
         # create gradient colour palette (yellow-red)
         palette <- colorNumeric(palette = "YlOrRd", domain = shp$measure)
 
@@ -623,7 +624,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
           "<b>Area name: </b> ", shp$areaname,"<br>",
           "<b>Measure type: </b>", shp$type_definition, "<br>",
           "<b>Rate: </b> ", format(shp$measure, nsmall=0, big.mark=","))
-        
+
         # update map
         map <- leafletProxy("map", data = shp) |>
           clearMarkers() |>
@@ -640,7 +641,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
             weight = 1.2,
             stroke = TRUE
           )
-        
+
         # legend if comparator selected
         if(input$comparator_switch){
           map <- map |>
@@ -658,10 +659,10 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
               values = ~measure,
               title = "Measure",
               opacity = 1
-            ) 
+            )
         }
-        
-        # if no data to plot then turn white 
+
+        # if no data to plot then turn white
       } else {
         map <- leafletProxy("map", data = shapefile()) |>
           clearMarkers() |>
@@ -670,17 +671,11 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
             layerId = ~code,
             fillColor = 'white'
           )
-        
+
       }
-    }, ignoreInit = FALSE)
-    
-    
-    # update map when geography type changes regardless of whether
-    # user on rank tab or not - ensures map is ready when user goes on tab.
-    outputOptions(output, "map", suspendWhenHidden = FALSE)
-    
-    
- 
+    })
+
+
     # ~~~~~~~~~~~~~~~~~~~~~
     # data table ----
     # ~~~~~~~~~~~~~~~~~~~~~
