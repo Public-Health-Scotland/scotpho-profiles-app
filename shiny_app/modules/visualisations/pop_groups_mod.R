@@ -223,7 +223,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
       
       # if data is available display chart title
       div(
-        tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
+        tags$h5(selected_indicator(), ";split by ", input$split_filter, class = "chart-header"),
         tags$h6(pop_rank_data()$trend_axis[1]), # time period 
         tags$p(pop_rank_data()$type_definition[1]) # measure type
       )
