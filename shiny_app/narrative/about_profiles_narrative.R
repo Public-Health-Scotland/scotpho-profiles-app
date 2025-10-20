@@ -489,7 +489,7 @@ about_cli_text <- navset_pill_list(
   nav_panel(
     title = "Contact us",
     h3("Contact us"),
-    p("If you would like to contact the PHS Climate Analyst Team, please do so at",
+    p("We welcome feedback on all aspects of the dashboard including the indicator content and presentation. Please send any feedback to ",
       tags$a("phs.climateanalysis@phs.scot", href = "mailto:phs.climateanalysis@phs.scot")),
     br()
     )
