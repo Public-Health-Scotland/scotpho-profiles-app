@@ -244,7 +244,7 @@ page_navbar(
                                                       p(bs_icon("info-circle-fill", size = "1.2em"), " Read more about the new",
                                                         actionLink(inputId = "cli_about_link", label = "climate profile"), 
                                                         " and access the associated report on the Public Health Scotland website:", 
-                                                        tags$a("‘Health Impacts from Heat: 2005-2024’", href = "placeholder", target = "_blank")
+                                                        tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "placeholder", target = "_blank")
                                                         )
                                                       )
                                                   ),
