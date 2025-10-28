@@ -78,10 +78,10 @@ page_navbar(
                           # hr(), 
                          
                          # Climate profile info
-                         # <----- Note 06/10/2025 - to be completed  ----->
+                         
                          div(
                            h4("October 2025: New Climate Impact profile", class = "profile-header"),
-                           p("placeholder")
+                           p("The Climate Profile is the home of indicators highlighting how our changing climate is impacting on population health. There are five domains within the profile each with their own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO.The Climate Health Impacts domain shows the impact of heat on mortality in Scotland at a national and Health Board level. Further impact indicators will be added in the future.")
                          ),
                          hr(),
                           

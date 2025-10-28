@@ -404,19 +404,13 @@ about_cli_text <- navset_pill_list(
         We have therefore included two indicators for the mean and maximum summer temperatures. Additionally, in the 
         ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication, 22.6°C was identified as the threshold at which the population 
         is at a 10% higher risk of death than at safe temperatures. As such, we have included an extra indicator of ‘Number of Days over 22.6°C’.
-        Available at Scotland, Health Board and Intermediate Zone level."
+        Available at Scotland, Health Board, Council Area and Intermediate Zone level."
           )
         ),
       
       accordion_panel(
         title = "Attitudes to climate",
-           p("Part of the Population Health profile on ScotPHO, this domain presents two key points from questions in the 
-           Scottish Household Survey 2023 relating to climate change and the environment. The first is 'Adults agreeing that 
-           climate change is an immediate and urgent problem’ which is the percentage of adults agreeing with the statement 
-           'Climate change is an immediate and urgent problem'. The second is ‘Adults who understand what action they should 
-           take to help tackle climate change’, which is the percentage of adults who 'strongly agree' or 'tend to agree' with 
-           the statement 'I understand what actions people like myself should take to help tackle climate change'. 
-           Both are available at Scotland and Local Authority Level."
+           p("Part of the Population Health profile on ScotPHO, this domain presents two key responses to questions in the Scottish Household Survey 2023 relating to climate change and the environment. The first is the percentage of adults agreeing with the statement 'Climate change is an immediate and urgent problem'. The second is the percentage of adults who 'strongly agree' or 'tend to agree' with the statement 'I understand what actions people like myself should take to help tackle climate change'. Both are available at Scotland and Council Area Level."
              )
            ),
       
