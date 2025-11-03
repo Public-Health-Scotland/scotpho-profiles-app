@@ -378,7 +378,7 @@ about_cli_text <- navset_pill_list(
       ),
     
     p("The release of the Climate Profile on ScotPHO coincided with the publication of the associated report ",
-     tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "[placeholder]", target = "_blank"), "."),
+     tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank"), "."),
       
       p("To support stakeholders in identifying at risk groups and areas, there are 5 domains within the profile, each with their 
       own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO. For more information about 
@@ -436,7 +436,7 @@ about_cli_text <- navset_pill_list(
   nav_panel("Climate Health Impacts",
             h3("Climate Health Impacts"),
             p("The Climate Health Impacts domain includes indicators linked to PHS’ recent",
-              tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "[placeholder]", target = "_blank")," publication. They are part of a wider project to develop a full suite for the impacts of Climate on Health, and in the future will include the Health Impacts from cold and flooding. The feasibility of these indicators is explored 
+              tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")," publication. They are part of a wider project to develop a full suite for the impacts of Climate on Health, and in the future will include the Health Impacts from cold and flooding. The feasibility of these indicators is explored 
             in the ",
               tags$a("PHS Climate Impact Indicators (CII) Feasibility Report", href = "https://publichealthscotland.scot/publications/phs-climate-impact-indicators-cii-feasibility-report/", target = "_blank"),
             ". At present, there are two ScotPHO Climate indicators from this publication:"),
@@ -473,7 +473,7 @@ about_cli_text <- navset_pill_list(
     
     div(
       p("3) Number of days over high-risk threshold (22.6°C)", style = "font-weight: bold;"),
-      p("In the ‘Health Impacts from Heat: 2005-2024’ publication, 22.6°C was identified as the High-Risk Threshold for deaths associated 
+      p("In the ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication, 22.6°C was identified as the High-Risk Threshold for deaths associated 
     with heat. At this threshold, the population is at a 10% higher risk than it is at safe temperatures. This third indicator extracts 
     the number of days for a given region that are above this temperature.Available at Scotland, Health Board and Intermediate Zone level.")
     ),

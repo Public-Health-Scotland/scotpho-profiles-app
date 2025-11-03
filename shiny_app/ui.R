@@ -10,7 +10,6 @@
 
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
-secure_app(
 page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
@@ -244,7 +243,7 @@ page_navbar(
                                                       p(bs_icon("info-circle-fill", size = "1.2em"), " Read more about the new",
                                                         actionLink(inputId = "cli_about_link", label = "climate profile"), 
                                                         " and access the associated report on the Public Health Scotland website:", 
-                                                        tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "placeholder", target = "_blank")
+                                                        tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")
                                                         )
                                                       )
                                                   ),
@@ -313,7 +312,7 @@ page_navbar(
   ) # close nav menu
   
 ) #close main ui function
-)
+
 
 ### END
 
