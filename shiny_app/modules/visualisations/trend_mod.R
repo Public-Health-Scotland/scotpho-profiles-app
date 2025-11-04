@@ -72,7 +72,7 @@ trend_mod_ui <- function(id) {
                             selectizeInput(inputId = ns("iz_filter"), label = "Intermediate zones:", choices = character(0), multiple = TRUE)
                             ),
                             
-                            actionLink("clear_geography_dropdowns", label = "Clear all selected areas")
+                            actionButton(ns("clear_geography_dropdowns"), label = "Clear all selected areas")
                             
                             )),
                           accordion_panel(
@@ -291,7 +291,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     
     # Clear what was previously selected from the filters if a user changes selection from geography filter (otherwise they remain selected)
-    observeEvent(geo_selections(), {
+    observeEvent(c(geo_selections(), input$clear_geography_dropdowns),{
       
       # clear the filters
       updateSelectizeInput(session, "hb_filter", selected = character(0))
@@ -478,28 +478,28 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     
     
-    # Clear all non-globally selected geography types in the filters when "Clear" button clicked
-    observeEvent(input$clear_geography_dropdowns, {
-      updateSelectizeInput(session, "hb_filter", selected = character(0))
-      updateSelectizeInput(session, "ca_filter", selected = character(0))
-      updateSelectizeInput(session, "hscp_filter", selected = character(0))
-      updateSelectizeInput(session, "adp_filter", selected = character(0))
-      updateSelectizeInput(session, "iz_filter", selected = character(0))
-      updateSelectizeInput(session, "locality_filter", selected = character(0))
-      updateSelectizeInput(session, "pd_filter", selected = character(0))
-      
-      
-      # clear the reactive vals
-      hb_selections(NULL)
-      ca_selections(NULL)
-      hscp_selections(NULL)
-      adp_selections(NULL)
-      locality_selections(NULL)
-      iz_selections(NULL)
-      pd_selections(NULL)
-      
-    })
-    
+    # # Clear all non-globally selected geography types in the filters when "Clear" button clicked
+    # observeEvent(input$clear_geography_dropdowns, {
+    #   updateSelectizeInput(session, "hb_filter", selected = character(0))
+    #   updateSelectizeInput(session, "ca_filter", selected = character(0))
+    #   updateSelectizeInput(session, "hscp_filter", selected = character(0))
+    #   updateSelectizeInput(session, "adp_filter", selected = character(0))
+    #   updateSelectizeInput(session, "iz_filter", selected = character(0))
+    #   updateSelectizeInput(session, "locality_filter", selected = character(0))
+    #   updateSelectizeInput(session, "pd_filter", selected = character(0))
+    #   
+    #   
+    #   # clear the reactive vals
+    #   hb_selections(NULL)
+    #   ca_selections(NULL)
+    #   hscp_selections(NULL)
+    #   adp_selections(NULL)
+    #   locality_selections(NULL)
+    #   iz_selections(NULL)
+    #   pd_selections(NULL)
+    #   
+    # })
+    # 
     
     
     
