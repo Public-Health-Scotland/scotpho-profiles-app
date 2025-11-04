@@ -315,19 +315,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
     })
     
-
-    # dropdown_ids <- c("hb_filter", "ca_filter", "hscp_filter", "adp_filter",
-    #                   "iz_filter", "locality_filter", "pd_filter")
-    # 
-    # # Apply namespacing
-    # ns_dropdown_ids <- vapply(dropdown_ids, ns, FUN.VALUE = character(1))
-    # 
-    # 
-    # clear_dropdown_server(
-    #   id = "clear_geography_dropdowns",
-    #   dropdown_id = ns_dropdown_ids,
-    #   parent_session = session)
-    
     
     # disable CI checkbox when numerator is selected
     observeEvent(input$numerator_button_trends, {
@@ -474,32 +461,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       df
       
     })
-    
-    
-    
-    
-    # # Clear all non-globally selected geography types in the filters when "Clear" button clicked
-    # observeEvent(input$clear_geography_dropdowns, {
-    #   updateSelectizeInput(session, "hb_filter", selected = character(0))
-    #   updateSelectizeInput(session, "ca_filter", selected = character(0))
-    #   updateSelectizeInput(session, "hscp_filter", selected = character(0))
-    #   updateSelectizeInput(session, "adp_filter", selected = character(0))
-    #   updateSelectizeInput(session, "iz_filter", selected = character(0))
-    #   updateSelectizeInput(session, "locality_filter", selected = character(0))
-    #   updateSelectizeInput(session, "pd_filter", selected = character(0))
-    #   
-    #   
-    #   # clear the reactive vals
-    #   hb_selections(NULL)
-    #   ca_selections(NULL)
-    #   hscp_selections(NULL)
-    #   adp_selections(NULL)
-    #   locality_selections(NULL)
-    #   iz_selections(NULL)
-    #   pd_selections(NULL)
-    #   
-    # })
-    # 
     
     
     
