@@ -72,7 +72,7 @@ trend_mod_ui <- function(id) {
                             selectizeInput(inputId = ns("iz_filter"), label = "Intermediate zones:", choices = character(0), multiple = TRUE)
                             ),
                             
-                            actionButton(ns("clear_geography_dropdowns"), label = "Clear all selected areas")
+                            actionLink(ns("clear_geography_dropdowns"), label = "Clear all selected areas")
                             
                             )),
                           accordion_panel(
