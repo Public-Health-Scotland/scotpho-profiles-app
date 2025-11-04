@@ -193,10 +193,10 @@ profiles_list <- list(
   # Physical Activity info
   "Physical Activity" = list(
     short_name = "PHY",
-    homepage_description = markdown("Under development - not yet available"),
+    homepage_description = markdown("Under development"),
     domain_order = NULL,
-    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
-    active = FALSE
+    subtabs = c("trends_tab", "rank_tab", "simd_tab", "pop_groups_tab"),
+    active = TRUE
   )
   
 )
