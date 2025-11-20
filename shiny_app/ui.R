@@ -66,6 +66,7 @@ page_navbar(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
+
                          # Refresh of Male & Female Life Expectancy indicator trend data
                           # div(
                           #   h4("July 2025 : Refresh of Male & Female Life Expectancy indicator trend data", class = "profile-header"),
@@ -83,8 +84,16 @@ page_navbar(
                            p("The Climate Profile is the home of indicators highlighting how our changing climate is impacting on population health. There are five domains within the profile each with their own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO.The Climate Health Impacts domain shows the impact of heat on mortality in Scotland at a national and Health Board level. Further impact indicators will be added in the future.")
                          ),
                          hr(),
-                          
-                         
+
+                          # Refresh of Deaths from suicide (16+ and 11-25 year) indicator trend
+                         #  div(
+                         #    h4("9th Oct 2025 : Refresh of Deaths from suicide (16+ and 11-25 years) indicator trend data", class = "profile-header"),
+                         #    p("We have recently identified and corrected an issue with the deaths from suicide indicator data uploaded at the end of September 2025.
+                         #  During the annual update a new error was introduced resulting in incorrect summing of rolling averages for some time periods and sub-national regions. A correction now been applied and revised figures are now available in this tool.
+                         #  If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                         #  ),
+                         #  hr(),                         
+                                              
                           # CYP Mental Health profile info
                           div(
                             h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
@@ -287,7 +296,7 @@ page_navbar(
   ########################################.
   # Link to github repo  -------
   ########################################.
-  nav_item(tags$a(icon("github"), "SourceCode", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-app", target = "_blank")),
+  nav_item(tags$a(icon("github"), "Source Code", href = "https://github.com/Public-Health-Scotland/scotpho-profiles-app", target = "_blank")),
   
   ########################################.
   # Menu with additional tabs  -------
