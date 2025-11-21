@@ -223,7 +223,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
       
       # if data is available display chart title
       div(
-        tags$h5(selected_indicator(), "; split by ", input$split_filter, class = "chart-header"),
+        tags$h5(selected_indicator(), ";split by ", input$split_filter, class = "chart-header"),
         tags$h6(pop_rank_data()$trend_axis[1]), # time period 
         tags$p(pop_rank_data()$type_definition[1]) # measure type
       )
@@ -326,7 +326,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     output$pop_rank_table <- renderReactable({
       
       data <- pop_rank_data() |>
-        select(def_period, split_value, measure)
+        select(def_period, split_value, measure, upci, lowci)
       
       reactable(data = data,
                 defaultExpanded = TRUE,
@@ -335,7 +335,9 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
                 columns = list(
                   def_period = colDef(name = "Time Period"),
                   split_value = colDef(name = "Population Group"),
-                  measure = colDef(name = "Measure")
+                  measure = colDef(name = "Measure"),
+                  upci = colDef(name = "Upper CI"),
+                  lowci = colDef(name = "Lower CI")
                 )
       )
     })

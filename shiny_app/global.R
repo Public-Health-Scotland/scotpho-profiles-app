@@ -25,10 +25,11 @@ library(jsTreeR) # for data tab geography filters
 library(shinyWidgets)
 library(bsicons) # for icons
 library(cicerone) #for guided tours of tabs
-library(sf)
 library(DT)
 library(tidyr) # for pivot longer used in meta data tab
 library(nanoparquet) # reading/writing parquet files
+library(sf) # for shapefiles
+#library(shinymanager) # for PRA apps
 
 
 # 2. Sourcing modules, narrative text and highchart functions  ------------------------
@@ -61,14 +62,6 @@ iz_bound <- readRDS("data/IZ_boundary.rds") # Intermediate zone
 pd_bound <- readRDS("data/PD_boundary.rds") # Police divisions
 
 
-# transform shapefiles - needs to be done here or else app doesn't work?!
-# note: look into this at some point as wasn't required in old profiles tool
-ca_bound <- sf::st_as_sf(ca_bound)
-hb_bound <- sf::st_as_sf(hb_bound)
-hscp_bound <- sf::st_as_sf(hscp_bound)
-hscloc_bound <- sf::st_as_sf(hscloc_bound)
-iz_bound <- sf::st_as_sf(iz_bound)
-pd_bound <- sf::st_as_sf(pd_bound)
 
 
 # 4. lists ----------------------------------------------------------
@@ -115,6 +108,15 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Climate Impact profile 
+  "Climate" = list(
+    short_name = "CLI",
+    homepage_description = markdown("View indicators relating to **Climate Health Impact**, **Weather**, **Air Quality**, **Climate Attitude** and **Demography**"),
+    domain_order = c("Climate Health Impact", "Weather", "Air Quality", "Climate Attitude", "Demography"),
+    subtabs = c("trends_tab", "rank_tab", "pop_groups_tab", "about_profile_tab"),
+    active = TRUE
+  ),
+  
   # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",
@@ -135,6 +137,16 @@ profiles_list <- list(
     subtabs = all_subtabs,
     active = TRUE
   ),
+  
+  # Children and young people info
+  "Children & Young People" = list(
+    short_name = "CYP",
+    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
+    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    active = TRUE
+  ),
+  
   
   # Tobacco info
   "Tobacco" = list(
@@ -163,30 +175,13 @@ profiles_list <- list(
     active = TRUE
   ),
   
-  # Children and young people info
-  "Children & Young People" = list(
-    short_name = "CYP",
-    homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
-    domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
-    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
-    active = TRUE
-  ),
-  
+
   # Population info
   "Population" = list(
     short_name = "POP",
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
     subtabs = c("summary_tab", "trends_tab", "rank_tab"),
-    active = TRUE
-  ),
-  
-  # All indicators info
-  "All Indicators" = list(
-    short_name = "ALL",
-    homepage_description = markdown("View **all indicators** in this tool from across every profile."),
-    domain_order = NULL,
-    subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
     active = TRUE
   ),
   
@@ -197,7 +192,17 @@ profiles_list <- list(
     domain_order = NULL,
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
     active = FALSE
+  ),
+  
+  # All indicators info
+  "All Indicators" = list(
+    short_name = "ALL",
+    homepage_description = markdown("View **all indicators** in this tool from across every profile."),
+    domain_order = NULL,
+    subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
+    active = TRUE
   )
+  
   
 )
 
@@ -344,3 +349,101 @@ dt #returns a data table filtered to only contain indicators belonging to select
 }
 
   
+
+# 6. guided tour -------------
+
+# guide for when a user still has 'Scotland' selected
+# as their areatype and has selected the rank tab
+rank_geo_guide <- Cicerone$
+  new()$
+  step(
+    el = "show_geo_filters", # inputId of button from UI (i.e. 'change area' button)
+    title = "Select areas to rank",
+    description = "You currently have Scotland selected as your geography level.
+                   To populate the rank tab, first click the 'change area' 
+                   button to select a different area type (e.g. Council areas) 
+                   to rank all areas of that type.",
+    position = "right"
+  )
+
+
+
+# 7. map functions -------
+
+# These functions let us alter characteristics of drawn polygons without having 
+# to re-render the map each time user input changes which is computationaly expensive. 
+# Currently no functions to do this in leaflet package. Functions taken from here:
+# https://towardsdatascience.com/eye-catching-animated-maps-in-r-a-simple-introduction-3559d8c33be1/
+# also found here: https://github.com/rstudio/leaflet/issues/496 
+
+# helper function for choropleth map
+setShapeStyle <- function( map, data = getMapData(map), layerId,
+                           stroke = NULL, color = NULL,
+                           weight = NULL, opacity = NULL,
+                           fill = NULL, fillColor = NULL,
+                           fillOpacity = NULL, dashArray = NULL,
+                           smoothFactor = NULL, noClip = NULL, label = NULL,
+                           options = NULL){
+  
+  options <- c(list(layerId = layerId),
+               options,
+               filterNULL(list(stroke = stroke, color = color,
+                               weight = weight, opacity = opacity,
+                               fill = fill, fillColor = fillColor,
+                               fillOpacity = fillOpacity, dashArray = dashArray,
+                               smoothFactor = smoothFactor, noClip = noClip, label = label
+               )))
+  
+  options <- evalFormula(options, data = data)
+  options <- do.call(data.frame, c(options, list(stringsAsFactors=FALSE)))
+  
+  layerId <- options[[1]]
+  style <- options[-1]
+  if("label" %in% colnames(style)){
+    labelData = style[,"label", FALSE]
+    style = style[,-which(colnames(style)=="label"), FALSE]
+    leaflet::invokeMethod(map, data, "setLabel", "shape", layerId, label)
+  }
+  leaflet::invokeMethod(map, data, "setStyle", "shape", layerId, style);
+}
+
+
+
+# helper function in JS for choropleth map
+leafletjs <-  tags$head(
+  tags$script(HTML('
+  
+window.LeafletWidget.methods.setStyle = function(category, layerId, style){
+  var map = this;
+  if (!layerId){
+    return;
+  } else if (!(typeof(layerId) === "object" && layerId.length)){
+    layerId = [layerId];
+  }
+  style = HTMLWidgets.dataframeToD3(style);
+  layerId.forEach(function(d,i){
+    var layer = map.layerManager.getLayer(category, d);
+    if (layer){
+      layer.setStyle(style[i]);
+    }
+  });
+};
+window.LeafletWidget.methods.setLabel = function(category, layerId, label){
+  var map = this;
+  if (!layerId){
+    return;
+  } else if (!(typeof(layerId) === "object" && layerId.length)){
+    layerId = [layerId];
+  }
+  layerId.forEach(function(d,i){
+    var layer = map.layerManager.getLayer(category, d);
+    if (layer){
+      layer.unbindTooltip();
+      layer.bindTooltip(label[i])
+    }
+  });
+};
+'
+  ))
+)
+

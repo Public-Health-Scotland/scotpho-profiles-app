@@ -7,18 +7,7 @@
 
 
 function(input, output, session) {
-  
-  # Keeps the shiny app from timing out quickly on Posit 
-  autoInvalidate <- reactiveTimer(10000)
-  observe({
-    autoInvalidate()
-    cat(".")
-  })
-  
-  
-  
-  
-  
+
   ###################################################.
   # NAVIGATION TO DIFFERENT TABS ----
   ###################################################.
@@ -50,24 +39,32 @@ function(input, output, session) {
     updateSelectizeInput(inputId = "profile_choices", selected = "All Indicators", session = session)
   })
   
-  
-  # reactive object to store selected sub-tab
-  selected_subtab <- reactiveVal(NULL)
-  
-  # update reactive object whenever a user changes sub-tab
-  observeEvent(input$sub_tabs, {
-    selected_subtab(input$sub_tabs)
-  })
-  
+
   # if a user switches profile and the tab they were on doesn't exist for the newly selected profile, then default to the
   # first available tab for that profile
   observeEvent(input$profile_choices, {
-    if (selected_subtab() %in% pluck(profiles_list, input$profile_choices, "subtabs")) {
-      nav_select(id = "sub_tabs", selected = selected_subtab())
-    } else {
-      nav_select(id = "sub_tabs", selected = pluck(profiles_list, input$profile_choices, "subtabs", 1))
-    }
+    
+    # check what navs to show for the selected profile 
+    navs_to_show <- pluck(profiles_list, input$profile_choices, "subtabs")
+    
+    # determine which nav to select
+    nav_selection <- if(input$sub_tabs %in% navs_to_show) input$sub_tabs else navs_to_show[1]
+    
+    # update selected nav
+    nav_select(id = "sub_tabs", selected = nav_selection)
+
   }, ignoreInit = TRUE)
+  
+  
+  # navigate to the 'about this profile' tab 
+  # when on the climate profile and user clicks link
+  # on trends tab
+  observeEvent(input$cli_about_link, {
+    nav_select(
+      id = "sub_tabs",
+      selected = "about_profile_tab"
+    )
+  })
   
   
   #####################################################.
@@ -129,20 +126,20 @@ function(input, output, session) {
   # these 2 bits of dynamic text form the part of the two headers at the top
   # of the profiles tab that state the selected profile and the selected geography
   
-  # 1. header showing selected profile
-  output$profile_header <- renderUI({
-    tags$h1("Profile:", input$profile_choices, class = "profile-header")
+  # # 1. header showing selected profile
+  output$profile_header <- renderText({
+    paste("Profile:", input$profile_choices)
   })
   
   
   # 2. header showing selected areatype and areaname
-  output$geography_header <- renderUI({
-    
+  output$geography_header <- renderText({
     if(geo_selections()$areatype == "Scotland") {
-      tags$h2("Scotland", class = "geography-header") 
+      "Scotland"
     } else {
-      tags$h2(geo_selections()$areatype, ": ", geo_selections()$areaname, class = "geography-header")
+      paste(geo_selections()$areatype, ":", geo_selections()$areaname)
     }
+    
   })
   
   
@@ -204,12 +201,17 @@ function(input, output, session) {
   }, ignoreInit = TRUE)
   
   
+  
+
+  
+  
   # running modules for each sub-tab
    trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
-   rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session)
+   rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session, selected_subtab = reactive({input$sub_tabs}))
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
+
   
   
   
@@ -302,7 +304,27 @@ function(input, output, session) {
     )
     }
   })
-
+  
+  
+  
+  ###################################################.
+  #  USER GUIDES ----
+  ###################################################.
+  
+  # initiate guide for rank tab
+  rank_geo_guide$init()
+  
+  
+  # when user has Scotland selected
+  # and clicks on the rank tab start guided tour
+  # to explain they need to select a different geography type
+  observeEvent(input$sub_tabs, {
+    req(geo_selections()$areatype == "Scotland")
+    req(input$sub_tabs == "rank_tab")
+    
+    rank_geo_guide$start()
+  })
+  
 
   
 } # close main server function

@@ -24,8 +24,8 @@ page_navbar(
   header = tags$head(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
     use_cicerone(), # required for guided tours
+    leafletjs, # required for leaflet maps (see js code in global scipt)
     tags$script(src = "https://code.highcharts.com/highcharts.js"), # required for spinecharts
-    tags$script(src = "https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"),# required for saving leaflet map as png (see this for more info: https://stackoverflow.com/questions/47343316/shiny-leaflet-easyprint-plugin)
     includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
     ),
 
@@ -66,16 +66,34 @@ page_navbar(
               card(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
-                         # Refresh of Deaths from suicide (16+ and 11-25 year) indicator trend
-                           div(
-                             h4("9th Oct 2025 : Refresh of Deaths from suicide (16+ and 11-25 years) indicator trend data", class = "profile-header"),
-                             p("We have recently identified and corrected an issue with the deaths from suicide indicator data uploaded at the end of September 2025.
-                           During the annual update a new error was introduced resulting in incorrect summing of rolling averages for some time periods and sub-national regions. A correction now been applied and revised figures are now available in this tool.
-                           If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
-                           ),
-                           hr(),
+
+                          #EXAMPLES OF TEXT USED WHEN ISSUES WITH PUBLISHED DATA ARE CORRECTED - JUST KEEPING SO THAT CAN EASILY EDIT IF SUCH A CORRECTION OCCURS IN FUTURE
+                          # Refresh of Male & Female Life Expectancy indicator trend data
+                          # div(
+                          #   h4("July 2025 : Refresh of Male & Female Life Expectancy indicator trend data", class = "profile-header"),
+                          #   p("We have recently refreshed the male and female life expectancy indicator data to ensure that the full time series reflects latest figures published by NRS.
+                          # During this refresh an issue was identified with some sub-national (local authority and NHS board) LE figures for the time periods 2020-2021 and 2021-2023 previously published by ScotPHO. 
+                          # The issue resulted in some LE figures being matched to the incorrect geography label. A correction now been applied and revised figures are now available in this tool.
+                          # If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                          # ),
+                          # hr(), 
+                         
+                          # Refresh of Deaths from suicide (16+ and 11-25 year) indicator trend
+                          #  div(
+                          #    h4("9th Oct 2025 : Refresh of Deaths from suicide (16+ and 11-25 years) indicator trend data", class = "profile-header"),
+                          #    p("We have recently identified and corrected an issue with the deaths from suicide indicator data uploaded at the end of September 2025.
+                          #  During the annual update a new error was introduced resulting in incorrect summing of rolling averages for some time periods and sub-national regions. A correction now been applied and revised figures are now available in this tool.
+                          #  If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                          #  ),
+                          #  hr(),     
                           
-                          
+                         # Climate profile info
+                         div(
+                           h4("October 2025 : New Climate Impact profile", class = "profile-header"),
+                           p("The Climate Profile is the home of indicators highlighting how our changing climate is impacting on population health. There are five domains within the profile each with their own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO.The Climate Health Impacts domain shows the impact of heat on mortality in Scotland at a national and Health Board level. Further impact indicators will be added in the future.")
+                         ),
+                         hr(),
+                                            
                           # CYP Mental Health profile info
                           div(
                             h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
@@ -130,7 +148,7 @@ page_navbar(
             
             # profile header with button
               div(class = "header-elements",
-                uiOutput("profile_header"),
+                tagAppendAttributes(class = "profile-header", h1(textOutput("profile_header"))),
                 actionButton(inputId = "show_profile_filter", label = "Change profile", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
             # hidden profile filter to display when button clicked 
@@ -142,8 +160,8 @@ page_navbar(
                     )),
               # geography header with button
                 div(class = "header-elements",
-                  uiOutput("geography_header"),
-                  actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
+                    tagAppendAttributes(class = "geography-header", h2(textOutput("geography_header"))),
+                    actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
@@ -208,6 +226,7 @@ page_navbar(
                                                          "We are working with PHS to complete the indicator set and ensure each reflects the latest available data soon.")
                                                        )
                                                   ),
+  
                                  # only display this card when Mental Health profile selected
                                  conditionalPanel(condition = "input.profile_choices == 'Children & Young People Mental Health'",
                                                   br(),
@@ -224,7 +243,20 @@ page_navbar(
                                  ),
                        
                        # trends sub-tab
-                       nav_panel(title = "Trends", value = "trends_tab", trend_mod_ui("trends")),
+                       nav_panel(title = "Trends", value = "trends_tab", 
+                                 
+                                 # only display this when Climate change is selected
+                                 # contains links to info about profile and related publication
+                                 conditionalPanel(condition = "input.profile_choices == 'Climate'",
+                                                  div(style = "padding: 10px; background-color: #F5ECF4;",
+                                                      p(bs_icon("info-circle-fill", size = "1.2em"), " Read more about the new",
+                                                        actionLink(inputId = "cli_about_link", label = "climate profile"), 
+                                                        " and access the associated report on the Public Health Scotland website:", 
+                                                        tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")
+                                                        )
+                                                      )
+                                                  ),
+                                 trend_mod_ui("trends")),
                        
                        # rank sub-tab 
                        nav_panel(title = "Rank", value = "rank_tab", rank_mod_ui("rank")),
@@ -245,7 +277,8 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Adult Mental Health'", about_men_text),
                                  conditionalPanel("input.profile_choices == 'Children & Young People Mental Health'", about_cmh_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
-                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text)
+                                 conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text),
+                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text)
                        )
 
                        
@@ -288,6 +321,7 @@ page_navbar(
   ) # close nav menu
   
 ) #close main ui function
+
 
 ### END
 

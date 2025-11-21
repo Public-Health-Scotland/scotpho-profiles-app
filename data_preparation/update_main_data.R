@@ -31,7 +31,8 @@ if (load_test_indicators == TRUE){
   )
   
   ## Combine into one dataset  -----
-  test_indicator_dataset <- combine_files(test_indicator_files)
+  test_indicator_dataset <- combine_files(test_indicator_files) |>
+    mutate(trend_axis=as.character(trend_axis))
   
   ## Combine main dataset and test indicators
   main_dataset <- bind_rows(main_dataset, test_indicator_dataset)

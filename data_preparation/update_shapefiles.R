@@ -15,24 +15,21 @@ iz_bound <- readRDS(paste0(shape_files,"IZ_boundary.rds")) # Intermediate zone
 pd_bound <- readRDS(paste0(shape_files,"PD_boundary.rds")) # # Police divisions (for mental health profile only)
 
 
-# transform so in right format to join to main dataset 
-# this should maybe  be done in LOOKUPS repo
+# transform shapefiles to sf object
+ca_bound <- st_as_sf(ca_bound)
+hb_bound <- st_as_sf(hb_bound)
+hscp_bound <- st_as_sf(hscp_bound)
+hscloc_bound <- st_as_sf(hscloc_bound)
+iz_bound <- st_as_sf(iz_bound)
+pd_bound <- st_as_sf(pd_bound)
 
-ca_bound <- sf::st_as_sf(ca_bound)
-hb_bound <- sf::st_as_sf(hb_bound)
-hscp_bound <- sf::st_as_sf(hscp_bound)
-hscloc_bound <- sf::st_as_sf(hscloc_bound)
-iz_bound <- sf::st_as_sf(iz_bound)
-#scot_bound <- sf::st_as_sf(scot_bound)
-pd_bound <- sf::st_as_sf(pd_bound)
-
-# 
-write_rds(ca_bound,"shiny_app/data/CA_boundary.rds")
-write_rds(hb_bound,"shiny_app/data/HB_boundary.rds")
-write_rds(hscp_bound,"shiny_app/data/HSCP_boundary.rds")
-write_rds(hscloc_bound,"shiny_app/data/HSC_locality_boundary.rds")
-write_rds(iz_bound,"shiny_app/data/IZ_boundary.rds")
-write_rds(pd_bound,"shiny_app/data/PD_boundary.rds")
+# save as RDS file
+saveRDS(ca_bound,"shiny_app/data/CA_boundary.rds")
+saveRDS(hb_bound,"shiny_app/data/HB_boundary.rds")
+saveRDS(hscp_bound,"shiny_app/data/HSCP_boundary.rds")
+saveRDS(hscloc_bound,"shiny_app/data/HSC_locality_boundary.rds")
+saveRDS(iz_bound,"shiny_app/data/IZ_boundary.rds")
+saveRDS(pd_bound,"shiny_app/data/PD_boundary.rds")
 
 }
 

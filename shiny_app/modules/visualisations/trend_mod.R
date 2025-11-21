@@ -526,14 +526,16 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       req(trend_data())
       
       data <- trend_data() |>
-        select(areatype, areaname, trend_axis, y)
+        select(areatype, areaname, trend_axis, y, upci, lowci)
 
       reactable(data,
                 columns = list(
                   areatype = colDef(name = "Area type"),
                   areaname = colDef(name = "Area name"),
                   trend_axis = colDef(name = "Period"),
-                  y = colDef(name = input$numerator_button_trends)
+                  y = colDef(name = input$numerator_button_trends),
+                  upci = colDef(name = "Upper CI"),
+                  lowci = colDef(name = "Lower CI")
                 )
                 )
       

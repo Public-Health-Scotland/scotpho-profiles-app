@@ -31,6 +31,13 @@ rank_mod_ui <- function(id) {
                         
                         # button to scroll to metadata
                         div(id = ns("rank_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
+                        
+                        # time period filter 
+                        selectizeInput(
+                          inputId = ns("period_filter"),
+                          label = "Select time period:",
+                          choices = NULL # choices dynamically updated in server depending on selected indicator
+                        ),
 
                         
                         # comparator switch filter 
@@ -80,7 +87,7 @@ rank_mod_ui <- function(id) {
         navset_card_pill(
             id = ns("rank_navset_card_pill"),
             full_screen = TRUE,
-            height = 600,
+            height = 700,
             
             # charts tab
             nav_panel("Charts",
@@ -116,9 +123,9 @@ rank_mod_ui <- function(id) {
         
         div(id = ns("rank_map_wrapper"),
         card(
-          height = 600,
+          height = 700,
           full_screen = TRUE,
-          leafletOutput(ns("rank_map")) |> # map
+          leafletOutput(ns("map")) |> # map
             withSpinner() |> 
             bslib::as_fill_carrier() 
         ))
@@ -141,32 +148,134 @@ rank_mod_ui <- function(id) {
 # geo_selections = reactive values in main server stores global geography selections
 # selected_profile = name of reactive value stores selected profile from main server script
 
-rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, root_session) {
+rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, root_session, selected_subtab) {
   moduleServer(id, function(input, output, session) {
     
 
     # permits compatibility between shiny and cicerone tours
-    # req(active_nav() == nav_id)
-
     ns <- session$ns
     
-    #######################################################.
-    # Dynamic filters ----
-    #######################################################.
     
-    # update choices in years filter if "time" selected as comparator
-    observe({
-      req(profile_data())
-      req(selected_indicator())
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Selected indicator -----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    selected_indicator <- indicator_filter_mod_server(
+      id = "indicator_filter",
+      profile_data, # data from app main server filtered by profile and areatype (+ Scotland)
+      geo_selections, # reactive vals from main server storing geography selections (areaname, areatype, parent_area)
+      selected_profile # reactive vals from main server storing details about selected profile
+    )
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Indicator data ----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    ind_data <- reactive({
+      # only run when Scotland not selected
+      # this prevents all other code in this module using ind_data() from being run.
+      req(geo_selections()$areatype != "Scotland")
       
-      x <- profile_data() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype)
+      profile_data() |>
+        filter(indicator == selected_indicator()) |>
+        arrange(desc(year))
       
-      updateSelectizeInput(session, inputId = "year_comparator",
-                        choices = unique(x$def_period))
     })
     
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # dynamic filters ----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # filter choices updated dynamically depending on the selected
+    # indicator. Take data filtered by indicator (ind_data) and find
+    # unique values from specific columns to set as choices
+    
+    
+    ## year filter ----
+    observeEvent(ind_data(), {
+      
+      # get available def periods for selected indicator AND selected area
+      # (important as e.g. Scotland may have more up to date data
+      # or have different level of aggregation than selected area)
+      choices <- unique(ind_data()$def_period[ind_data()$areaname == geo_selections()$areaname])
+      
+      # avoid transient invalid values while updating filter
+      shiny::freezeReactiveValue(input, "period_filter")
+      
+      # update filter choices
+      updateSelectizeInput(
+        session = session,
+        inputId = "period_filter",
+        choices = choices,
+        selected = if (length(choices)) choices[[1]] else NULL
+      )
+      
+    }, ignoreInit = FALSE)
+    
+    
+    
+    ## time comparator filter ----
+    observe({
+      
+      # only run code when comparator switch turned on and time selected as comparator
+      req(input$comparator_switch)
+      req(input$comparator_type == "Time")
+      
+      # get choices 
+      choices <- ind_data() |>
+        filter(areatype == geo_selections()$areatype &
+                 def_period != input$period_filter) |>
+        pull(unique(def_period))
+      
+      
+      # avoid transient invalid values while updating
+      shiny::freezeReactiveValue(input, "year_comparator")
+      
+      # update filter choices 
+      updateSelectizeInput(
+        session = session,
+        inputId = "year_comparator",
+        choices = choices,
+        selected = if (length(choices)) choices[[1]] else NULL
+      )
+      
+    })
+    
+    
+    
+    ## area comparator filter ----
+    observe({
+      
+      # only run code when comparator switch turned on and time selected as comparator
+      req(input$comparator_switch)
+      req(input$comparator_type == "Area")
+      
+      # get choices 
+      choices <- ind_data() |>
+        filter(def_period == input$period_filter) |>
+        filter(areaname != geo_selections()$areaname) |>
+        pull(unique(areaname))
+      
+      # avoid transient invalid values while updating
+      shiny::freezeReactiveValue(input, "area_comparator")
+      
+      # update filter choices
+      updateSelectizeInput(
+        session = session,
+        inputId = "area_comparator",
+        choices = choices,
+        selected = "Scotland"
+      )
+      
+    })
+    
+    
+    
 
+    
     # disable confidence interval checkbox when time selected as comparator
     observe({
       if (input$comparator_switch == TRUE & input$comparator_type == "Time") {
@@ -178,83 +287,54 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
       
     })
     
-    # update choices in area filter if 'area' selected as comparator
-    observe({
-      
-      req(profile_data())
-      req(selected_indicator())
-      
-      # get areanames that are applicable for that indicator
-      x <- profile_data() |>
-        filter(indicator == selected_indicator() & areatype %in% c("Scotland", "Health board", "HSC partnership", "Police division")) %>%
-        select(areatype, areaname) %>%
-        distinct() %>%
-        mutate(areatype = factor(areatype, # get factor levels sorted so Scotland appears first, and the areanames can be sorted within each areatype
-                                 levels = c("Scotland", "Health board", "HSC partnership", "Police division"),
-                                 labels = c("Scotland", "Health board", "HSC partnership", "Police division")))  %>%
-        arrange(areatype, areaname)
-      
-      rank_area_comparators_list <- x$areaname
-      
-      updateSelectizeInput(session, inputId = "area_comparator",
-                           choices = rank_area_comparators_list,
-                           selected = "Scotland")
-      
-    })
-    
-    
-    #######################################################.
-    ## Reactive data / values ----
-    #######################################################.
-    
-    # stores selected indicator ----------------------------------------------
-    # (note this is a module )
-    selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", 
-                                                      profile_data, geo_selections, selected_profile)
-    
 
     
-    # prepares data to be plotted --------------------------------------------
+    
+    
+    
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # visualisation data -----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     rank_data <- reactive({
-      req(profile_data())
-      req(selected_indicator())
       
-      profile_data <- setDT(profile_data()) # set profile data to data.table format
+      # set indicator data to data.table format
+      ind_data <- setDT(ind_data()) 
+      
       
       # filter by selected areatype
-      if(!(geo_selections()$areatype == "Scotland")){
-        dt <- profile_data[areatype == geo_selections()$areatype]
-      } 
-      else {
-        dt <- profile_data[areatype != "Scotland"][areatype == geo_selections()$areatype]
-      }
+      dt <- ind_data[areatype == geo_selections()$areatype]
       
       
       # additional filtering of parent area if IZ/HSCL selected
       if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")) {
         dt <- dt[parent_area == geo_selections()$parent_area]
       }
-      
-      # filter by selected indicator
-      dt <- dt[indicator == selected_indicator()]
-      
+    
+    
       # get comparator values (if required)
       comp_vals <- NULL
       if(input$comparator_switch == TRUE){
-        #if comparator is area then return one single value (the value of the chosen comparator area for the latest year)
+        
+        # if comparator is area then return one single value 
+        # (the value of the chosen comparator area for the latest year)
         if(input$comparator_type == "Area"){
-          comp_vals <- profile_data[indicator == selected_indicator() & areaname == input$area_comparator,
-                                    .SD[year == max(year)], by = indicator]$measure
+          comp_vals <- ind_data[areaname == input$area_comparator & def_period == input$period_filter]$measure
+          
+          # if comparator is time then return multiple values 
+          # (one for each area for selected time period)
         } else if(input$comparator_type == "Time"){
-          # if comparator is time then return a column with values (one for each area for selected time period)
-          comp_vals <- profile_data[indicator == selected_indicator() & areatype == geo_selections()$areatype & def_period == input$year_comparator]
+          comp_vals <- ind_data[areatype == geo_selections()$areatype & def_period == input$year_comparator]
           comp_vals <- comp_vals[,c("code", "measure")]
           comp_vals <- setnames(comp_vals, "measure", "comp_vals")
         }
       }
       
-      # filter by latest year
-      dt <- dt[year == max(year)]
+      
+      # filter by selected time period
+      dt <- dt[def_period == input$period_filter]
       
       
       # attach comparator values as a column
@@ -269,12 +349,14 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
         }
       }
       
+
+      
       # prepare colour palette if comparator is selected (i.e. orange, blue, grey, green)
       if(input$comparator_switch == TRUE) {
         
         dt <- dt[, colour_pal := fcase(interpret == "O", '#999966',
                                        is.na(lowci) | is.na(upci) | is.na(comp_vals) | is.na(measure) | measure == 0, '#999966',
-                                       lowci <= comp_vals & upci >= comp_vals, '#cccccc',
+                                       # lowci <= comp_vals & upci >= comp_vals, '#cccccc',
                                        (lowci > comp_vals & interpret == "H") |  (upci < comp_vals & interpret == "L"),'#4da6ff',
                                        (lowci > comp_vals & interpret == "L") | (upci < comp_vals & interpret == "H"), '#ffa64d',
                                        default = '#ccccff')]
@@ -285,57 +367,47 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
       # order by measure
       dt <- setorder(dt, measure)
       
-    })
-    
-    
-    
-    
-    # map data --------------------------------------
-    # dynamically selects shapefile and joins with map data
-    map_data <- reactive({
-      req(rank_data())
-      
-      # create dynamic text to explain map unavailability if ADP selected
-      shiny::validate(
-        need( !(geo_selections()$areatype == "Alcohol & drug partnership"), "Please note that the map is currently unavailable when Alcohol & drug partnership is selected.")
-      )
-      
-      # create dynamic text to explain map unavailability if Scotland selected
-      # brief message as accompanied by further detail in chart panel
-      shiny:: validate(
-        need( !(geo_selections()$areatype == "Scotland"), "Please note that map data is unavailable for Scotland.")
-      )
-      
-      # create dynamic text to explain map unavailability if no available indicators for selected geography and profile
-      # brief message as accompanied by further detail in chart panel
-      shiny:: validate(
-        need(nrow(rank_data()) > 0, "Map data unavailable.")
-      )
-      
-      # don't create map data if Alcohol & drug partnership selected in global filters
-      req(geo_selections()$areatype != "Alcohol & drug partnership")
-      
-      # get correct shapefile
-      x <- switch(geo_selections()$areatype,
-                  "Health board" = hb_bound,
-                  "Council area" = ca_bound,
-                  "HSC partnership" = hscp_bound,
-                  "HSC locality" = hscloc_bound,
-                  "Intermediate zone" = iz_bound,
-                  "Police division" = pd_bound
-      )
-      
-      # further filter if HSCL or IZ selected, 
-      if(geo_selections()$areatype %in% c("HSC locality", "Intermediate zone")){
-        x <- x |> filter(parent_area == geo_selections()$parent_area)
-      } else{ 
-        x
-      }
-      x <- x |> left_join(rank_data(), by = join_by(code))
+      dt
       
     })
-
+        
+        
      
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~
+    # get shapefile ----
+    # ~~~~~~~~~~~~~~~~~~~~~~~
+    
+    shapefile <- eventReactive(geo_selections(), {
+      
+      # dont run if areatype is Scotland or ADP - no shapefiles for these
+      req(!geo_selections()$areatype %in% c("Scotland", "Alcohol & drug partnership"))
+      
+      # get shapefile depending on selected areatype
+      shp <- switch(geo_selections()$areatype, 
+                    "Health board" = hb_bound,
+                    "Council area" = ca_bound,
+                    "HSC partnership" = hscp_bound,
+                    "HSC locality" = hscloc_bound,
+                    "Intermediate zone" = iz_bound,
+                    "Police division" = pd_bound
+      )
+      
+      # further filter shapefile by parent area if IZ/locality selected
+      if(geo_selections()$areatype %in% c("Intermediate zone", "HSC locality")){
+        shp <- shp |> 
+          filter(parent_area == geo_selections()$parent_area)
+      }
+      
+      shp
+      
+    }, ignoreInit = FALSE)
+    
+    
+    
+    
+    
+    
      #######################################################.
      ## Dynamic text  ----
      #######################################################.
@@ -347,7 +419,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
        # create dynamic text if no indicators available for selected profile
        # and geography / if Scotland selected
        shiny::validate(
-         need( nrow(rank_data()) > 0, "No indicators available for this profile and area type.")
+         need(nrow(rank_data()) > 0, "No indicators available for this profile and area type.")
        )
        
        # get definition period
@@ -366,12 +438,12 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
       # whether comparator included (and if so which comparator)
       chart_desc <- if(input$comparator_switch == TRUE){
         if(input$comparator_type == "Area"){
-          tags$p(paste(area,"comparison against",input$area_comparator, " - ", max_year))
+          tags$p(paste(area,"comparison against",input$area_comparator, " - ", input$period_filter))
         } else if(input$comparator_type == "Time"){
-          tags$p(area,"- ",max_year,"compared to ",input$year_comparator)
+          tags$p(area,"- ", input$period_filter,"compared to ",input$year_comparator)
         }
       } else {
-        tags$p(area, " - ", max_year)
+        tags$p(area, " - ",input$period_filter)
       }
      
         # display 3 x titles
@@ -385,22 +457,23 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
      })
       
 
-    #############################################.
-    # Visualisations / data tables  ----
-    #############################################.
+   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   # CHART  ----
+   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     # chart (barchart/dumbell chart)
     output$rank_chart <- renderHighchart({
       req(rank_data())
       
       
-      # create dynamic text if no indicators available for selected profile
-      # and geography / if Scotland selected
+      # create dynamic text if no indicators available for selected profile and geography
       shiny::validate(
-        need( nrow(rank_data()) > 0, "Please note that rank data is unavailable at Scotland-level for all profiles.
-          
-Not all profiles have available indicators for all geography types. The drugs profile has no available indicators for intermediate zones and the mental health profile has no available indicators for intermediate zones or HSC localities. Please select another profile or geography type to continue.")
+        need(nrow(rank_data()) > 0, 
+        paste0("Not all profiles have available indicators for all geography types. ",
+              "The ", selected_profile()$full_name, " profile has no indicators at ", geo_selections()$areatype, " level. Please try another areatype.")
+        )
       )
+
       
       
       
@@ -493,92 +566,136 @@ Not all profiles have available indicators for all geography types. The drugs pr
     })
     
     
-    # leaflet map -------
-    
-    # Global definition of value_palette
-    value_palette <- reactive({
-      req(map_data())
-      if(length(unique(map_data()$measure)) > 1) {
-        colorNumeric(palette = "Blues", domain = map_data()$measure)
-      } else {
-        function(x) { phs_colors(colourname = "phs-purple") }
-      }
-    })
     
     
-    
-    output$rank_map <- renderLeaflet({
-      req(map_data())
-      leaflet(map_data()) |>
-        addProviderTiles(provider = providers[["OpenStreetMap"]]) |>
-        addPolygons(data = map_data(), weight = 1, color = "black",
-                    fillColor = ~value_palette()(measure),
-                    fillOpacity = 0.5, 
-                    smoothFactor = 0.5, 
-                    opacity = 1, 
-                    label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
-                    highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) |>
-        addLegend(pal = value_palette(), values = ~measure) |>
-        # add option to save chart as png
-        onRender(
-          "function(el, x) {
-            L.easyPrint({
-              sizeModes: ['Current'],
-              filename: 'scotpho-map',
-              exportOnly: true,
-              hideControlContainer: false
-            }).addTo(this);
-            }"
+    # ~~~~~~~~~~~~~~~~~~~~~~~
+    # MAP -------
+    # ~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+    # create base map ----
+    # This is only re-rendered when a user switches areatype or parent area
+    # and a new shapefile needs to be plotted. It just creates the basic map without
+    # any data points
+    output$map <- renderLeaflet({
+      req(shapefile())
+
+      # create basic map using shapefile
+      map <- leaflet(shapefile()) |>
+        addPolygons(
+          layerId = ~code,
+          group  = "areas",
+          color = "white"
         )
+
+      # If small areas selected (IZ/locality) then add provider tiles
+      # so that map is detailed with streets
+      if(!geo_selections()$areatype %in% c("Council area", "Health board", "HSC partnership")){
+        map <- map |>
+          addProviderTiles(provider = providers[["OpenStreetMap"]])
+      }
+
+      map
     })
-    
-    # update map when comparator toggled on/off
+
+
+
+    # update polygon fill and legend according to indicator selection
+    # and whether comparator selected or not
     observe({
-      req(map_data())
-      if(input$comparator_switch == TRUE) {
-        leafletProxy("rank_map", session) |>
-          clearShapes() |>
+      req(shapefile())
+      req(selected_subtab() == "rank_tab")
+
+      # if there is data to plot
+      if(nrow(rank_data()) > 0) {
+
+        # get shapefile
+        shp <- shapefile()
+
+        # join data with shapefile
+        shp <- left_join(shp, rank_data(), by = "code")
+
+        # create gradient colour palette (yellow-red)
+        palette <- colorNumeric(palette = "YlOrRd", domain = shp$measure)
+
+        # create label for tooltips
+        shp$label <- paste0(
+          "<b>Area name: </b> ", shp$areaname,"<br>",
+          "<b>Measure type: </b>", shp$type_definition, "<br>",
+          "<b>Rate: </b> ", format(shp$measure, nsmall=0, big.mark=","))
+
+        # update map
+        map <- leafletProxy("map", data = shp) |>
+          clearMarkers() |>
           clearControls() |>
-          addPolygons(data = map_data(), 
-                      weight = 1, 
-                      color = "black", fill = TRUE, fillColor = ~colour_pal,
-                      fillOpacity = 0.5, smoothFactor = 0.5, opacity = 0.8,
-                      highlightOptions = highlightOptions(color = "white", weight = 2, opacity = 1, bringToFront = FALSE)) |>
-          addLegend(colors = c("#4da6ff",  "#ffa64d", "#ccccff", "#999966"),
-                    labels = c("better than comparator", "worse than comparator", "no difference", "N/A"))
-        
+          setShapeStyle(
+            layerId = ~code,
+            # switch between using the gradient colour pal defined above and the column called 'colour_pal' which
+            # contains hex codes (orange, blue etc.) depending on whether figure better/worse than comparator figure
+            fillColor = if (input$comparator_switch) ~colour_pal else ~palette(measure),
+            fillOpacity = 0.7,
+            opacity = 1,
+            label = shp$label,
+            color = "white",
+            weight = 1.2,
+            stroke = TRUE
+          )
+
+        # legend if comparator selected
+        if(input$comparator_switch){
+          map <- map |>
+            addLegend(
+              colors = c("#4da6ff",  "#ffa64d", "#ccccff", "#999966"),
+              labels = c("better than comparator", "worse than comparator", "no difference", "N/A"),
+              position = "bottomleft"
+            )
+          # legend if no comparator selected
+        } else {
+          map <- map |>
+            addLegend(
+              position = "bottomleft",
+              pal = palette,
+              values = ~measure,
+              title = "Measure",
+              opacity = 1
+            )
+        }
+
+        # if no data to plot then turn white
       } else {
-        leafletProxy("rank_map", session) |>
-          clearShapes() |>
+        map <- leafletProxy("map", data = shapefile()) |>
+          clearMarkers() |>
           clearControls() |>
-          addPolygons(data = map_data(), weight = 1, color = "black",
-                      fillColor = ~value_palette()(measure),
-                      fillOpacity = 0.5, 
-                      smoothFactor = 0.5, 
-                      opacity = 1, 
-                      label = ~paste0(map_data()$areaname, ": ", map_data()$measure),
-                      highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) |>
-          addLegend(pal = value_palette(), values = map_data()$measure)
+          setShapeStyle(
+            layerId = ~code,
+            fillColor = 'white'
+          )
+
       }
     })
-    
-    
-    
+
+
+    # ~~~~~~~~~~~~~~~~~~~~~
     # data table ----
+    # ~~~~~~~~~~~~~~~~~~~~~
     output$rank_table <- renderReactable({
       req(rank_data())
       
       data <- rank_data() |>
-        mutate(`Area name` = areaname,
-               Measure = measure,
-               `Upper CI` = upci,
-               `Lower CI` = lowci) |>
-        select(`Area name`, Measure, `Upper CI`, `Lower CI`) |>
-        arrange(Measure)
+        select(areaname, measure, upci, lowci) |>
+        arrange(measure)
       
       reactable(data,
                 defaultExpanded = T,
-                defaultPageSize = nrow(data))
+                defaultPageSize = nrow(data),
+                columns = list(
+                  areaname = colDef(name = "Area name"),
+                  measure = colDef(name = "Measure"),
+                  upci = colDef(name = "Upper CI"),
+                  lowci = colDef(name = "Lower CI")
+                  )
+                )
     })
     
   

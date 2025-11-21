@@ -37,7 +37,9 @@ update_popgroup_data <- function(load_test_indicators = FALSE, create_backup = F
     
     
     ## Combine into one dataset  -----
-    test_popgroup_dataset  <- combine_files(test_popgroup_data_files)
+    test_popgroup_dataset  <- combine_files(test_popgroup_data_files) |>
+      mutate(trend_axis=as.character(trend_axis),
+             def_period=as.character(def_period))
     
     ## Combine main dataset and test indicators
     popgroup_dataset<- bind_rows(popgroup_dataset, test_popgroup_dataset)
