@@ -41,14 +41,14 @@ list.files("narrative", full.names = TRUE, recursive = TRUE) |>
 source("highcharter functions.R")
 
 # 3. Required datafiles ------------------------------------------------------------
-main_dataset <- setDT(read_parquet("data/main_dataset")) # main dataset (to do: rename optdata file in data prep script)
-simd_dataset <- setDT(read_parquet("data/deprivation_dataset")) # dataset behind simd panel
-popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset")) # dataset behind popgroup panel
+main_dataset <- setDT(read_parquet("data/main_dataset.parquet")) # main dataset (to do: rename optdata file in data prep script)
+simd_dataset <- setDT(read_parquet("data/deprivation_dataset.parquet")) # dataset behind simd panel
+popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset.parquet")) # dataset behind popgroup panel
 
 # lookups
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
-techdoc <- read_parquet("data/techdoc") # technical document
+techdoc <- read_parquet("data/techdoc.parquet") # technical document
 
 
 
