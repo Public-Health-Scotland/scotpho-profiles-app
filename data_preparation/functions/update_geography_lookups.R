@@ -2,48 +2,35 @@
 # Update geography lookups ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# This script prepares 8 x files required to run the profiles tool
-# 2 x geography lookups and 6 x shapefiles
+# This script contains 3 functions which prepare geographic reference information required to run the profiles tool
+# 1x geography lookup (which feeds geography filters within shiny app & also used in data file preparation)
+# 1x geography hierachies - (used in data tab of shiny app to identify parent/child relationships of some geography levels)
+# x6 shape files (used to construct maps in rank tab)
 
-# It will save the files in a 'data' sub-folder WITHIN this project
-# ready to be read in via the 'Global.R' script of the shiny app
+# It will save the files in a 'data' sub-folder WITHIN your version of the shiny app project
+# These will then be ready to be read in via the 'Global.R' script of the shiny app
 
-# Only need to run this script if running the app for the first time
-# OR if there have been updates to any of these files (e.g. locality boundary changes etc.)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 1. Create geography lookup ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-## filepaths ----
-
-# sub-folder where lookups will be saved to
-project_folder <- "shiny_app/data"
-
-# create folder if doesn't already exists
-if (!dir.exists(project_folder)){
-  dir.create(project_folder)
-}
-
-# scotpho network area folder 
-scotpho_folder <- "/PHI_conf/ScotPHO/Profiles/Data"
-
-
-
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 1. geography lookup ----
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# This is the apps main geography lookup and is used
-# to generate choices for any geography filters within the app
+# This is the apps main geography lookup 
+# This look-up generate choices for any geography filters within the app
 # (i.e. filters on the 'trend' tab and the apps main geography filters)
 
 # It's also used within the data preparation script to 
 # join with indicator datasets in order to add extra geography columns to them
 
+create_geography_lookup <- function (folder){
+  
+  # check folder exists
+  if (!dir.exists(folder)){
+    cli_abort("{.val {folder}} does not exist.")
+  }
+
 # get lookup 
 geo_lookup <- readRDS(file.path(scotpho_folder, "Lookups/Geography/opt_geo_lookup.rds")) |>
   select(-areaname_full)
-
 
 # arrange areatypes
 geo_lookup <- geo_lookup |>
@@ -61,8 +48,6 @@ geo_lookup <- geo_lookup |>
     )
   )) |>
   arrange(areatype, parent_area, areaname)
-
-
 
 # add additional column to the lookup that 
 # contains the full geography path (e.g. Health board/NHS Ayrshire & Arran)
@@ -83,27 +68,28 @@ geo_lookup <- geo_lookup |>
     geo_path = sub("/NA$", "", geo_path)
   )
 
-
 saveRDS(geo_lookup, file.path(project_folder, "profiles_geo_lookup.rds"))
 
+# return geo_lookup outside of function
+geo_lookup<<-geo_lookup
 
+}
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 2. geography list -----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 # This lookup is used only on the data table tab of the app, in order
-# to create the heirarchical geography filter in the sidebar.
+# to create the hierarchical geography filter in the sidebar.
 # this code is lifted from the documentation for the 'jsTreeR' package 
 # (which is the package used to create the geography filter in the data table tab)
 # see examples here: https://www.rdocumentation.org/packages/jsTreeR/versions/1.1.0/topics/jstree-shiny 
 
+update_geography_hierachy <-function(folder){
 
 # get unique geographies from geo lookup
 leaves <- geo_lookup$geo_path 
-
 
 dfs <- lapply(strsplit(leaves, "/"), function(s){
   item <-Reduce(function(a,b) paste0(a,"/",b), s[-1], s[1], accumulate = TRUE)
@@ -147,16 +133,18 @@ f <- function(parent){
 geo_list <- lapply(dat$item[dat$parent == "root"], f)
 
 saveRDS(geo_list, file.path(project_folder, "main_dataset_geography_nodes.rds"))
-
-
+}
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 3. shapefiles -----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# These shapefiles are used to draw the maps on the 'rank' tab of the app
+# Update shapefiles used to draw the maps on the 'rank' tab of the app
+# This function copies shapefiles from network to local shiny project folder. 
 
+update_shapefiles <- function(folder){
+  
 shapefiles <- c("CA_boundary.rds", 
                 "HB_boundary.rds", 
                 "HSCP_boundary.rds",
@@ -164,17 +152,14 @@ shapefiles <- c("CA_boundary.rds",
                 "IZ_boundary.rds",
                 "PD_boundary.rds")
 
-
-
 purrr::walk(shapefiles, ~ {
   readRDS(file.path(scotpho_folder, "Shapefiles", .x)) |>
     sf::st_as_sf() |>
     readr::write_rds(file.path(project_folder, .x))
-  cli_alert_success("{.val {.x}} saved in `shiny_app/data` folder")
-})
-
+  cli_alert_success("{.val {.x}} saved in `shiny_app/data` folder") # each file copy accompanied by message indicating if transfer successful
+})}
 
 
 
 # clear global env
-rm(list = ls())
+#rm(list = ls())
