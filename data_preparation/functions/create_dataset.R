@@ -1,6 +1,7 @@
 #' `create_dataset` prepares the indicator datasets used in the shiny app
 #'
 #' @param folder folder where 'Shiny Data', 'Shiny Test Data' and 'Lookups' sub-folders are within  
+#' @param techdoc_name Unique name given to the technical document where profile indicators metadata found
 #' @param file_suffix pattern in filename of files to read in, including file extension.
 #' @param dataset one of `main`, `popgroup` or `deprivation`
 #' @param test_indicators whether to read in indicators from 'Shiny Test Data' folder. Set to `FALSE` by default.
@@ -20,6 +21,7 @@
 
 
 create_dataset <- function(folder,
+                           techdoc_name,
                            file_suffix, 
                            dataset = c("main", "deprivation", "popgroup"),
                            profile_filter = NULL,
@@ -176,9 +178,10 @@ create_dataset <- function(folder,
   # 2. Add metadata ----
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ 
   # get metadata 
   techdoc <- prepare_techdoc(
-    filepath = file.path(folder, "Lookups", "Technical_Document.xlsx"), 
+    filepath = file.path(folder, "Lookups", techdoc_name), 
     test_indicators = ifelse(test_indicators, TRUE, FALSE)
     )
   
