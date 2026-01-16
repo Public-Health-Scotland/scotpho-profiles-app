@@ -25,6 +25,10 @@ library(htmlwidgets)
 pop_lookup <- "/PHI_conf/ScotPHO/Profiles/Data/Lookups/Population/"
 geo_lookup <- "/PHI_conf/ScotPHO/Profiles/Data/Lookups/Geography/"
 
+saveRDS(population_breakdown, file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
+
+
+pops_file <- readRDS(file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
 
 # setting some parameters
 #create_pop(
