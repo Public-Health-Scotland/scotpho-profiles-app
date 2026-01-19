@@ -294,7 +294,8 @@ phs_theme <- bs_theme(
   fg = "#222", # make foreground darkgrey/black
   bootswatch = "shiny", # use default shiny theme
   primary = "#0078D4", # make primary colour blue - this will change i.e. active pill colour
-  "form-label-font-weight" = "550"#, # font-weight for filter labels
+  "form-label-font-weight" = "550", # font-weight for filter labels
+  "theme-colors" = "('phs-purple': #3F3685, 'phs-blue': #0078D4, 'phs-magenta': #9B4393, 'phs-green': #C1DD93)"
   ) |>
   # create colour variables to use below
   bs_add_variables(
