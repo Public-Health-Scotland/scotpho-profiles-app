@@ -50,14 +50,16 @@ page_navbar(
                          # buttons to navigate to profile tabs
                          # this piece of code goes through the named profiles list from the global script, and for each profile,
                          # generates a profile button using the name of the profile and the homepage description 
-                         # note: setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
                          profile_buttons = layout_column_wrap(
-                           style = "padding: 15px;", width = 1/3,
+                           width = 1/3, # setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
+                           gap = "2rem", # add space between boxes
+                           heights_equal = "row", # make boxes in each row same height (change to 'all' to make all boxes same height)
                            !!!lapply(names(profiles_list), function(profile) {
-                             profile_homepage_btn_modUI(id = profile, 
-                                                        profile_name = profile, 
+                             profile_homepage_btn_modUI(id = profile,
                                                         description = profiles_list[[profile]]$homepage_description,
-                                                        class = ifelse(profiles_list[[profile]]$active == TRUE, "profile-btn", "profile-btn-disabled"))
+                                                        active = profiles_list[[profile]]$active,
+                                                        new_badge = profiles_list[[profile]]$new
+                             )
                            })
                          ),
 
