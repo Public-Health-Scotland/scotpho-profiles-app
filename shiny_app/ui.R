@@ -154,8 +154,8 @@ page_navbar(
             # hidden profile filter to display when button clicked 
                 hidden(div(id = "prof_filter_hidden",
                       selectizeInput(inputId = "profile_choices", 
-                                     label = "", 
-                                     choices =  active_profiles, #declared in global script
+                                     label = NULL, 
+                                     choices = profile_filter_choices, #declared in global script
                                      options = list(onInitialize = I('function() { this.setValue(""); }')))
                     )),
               # geography header with button
