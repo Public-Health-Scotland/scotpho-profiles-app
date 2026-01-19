@@ -3,39 +3,28 @@
 /* section 1: the hero at top of homepage*/ 
 
 .hero{
-  /* Using "linear-gradient" to add gradient to the image. This will make the text easier to read */
-  background-image: linear-gradient(to bottom right, #0078d4, rgba(0, 0, 0, 0)), url("logo_scotpho_updated.png");
-
- /* Set a specific height/add padding */
-  height: 50%;
-  display: flex;
-  padding-left:45px;
-  padding-right:45px;
-  padding-top:20px;
-  padding-bottom:35px;
-
-  /* Position and center the image to scale nicely on all screens */
-  background-position: bottom;
-  background-repeat: no-repeat;
+  background-image: linear-gradient(to bottom right, #0078d4, rgba(0, 0, 0, 0)), url("logo_scotpho_updated.png"); 
+  color: white; 
+  padding: 30px 0; 
+  margin-bottom: 30px; 
+  background-position: bottom; 
+  background-repeat: no-repeat; 
   background-size: cover;
-  position: relative;
 }
+
 
 
 /* formatting the header within the hero*/
 .hero h1{
-  font-size: 36px;
-  font-weight: 700;
-  color:white;
+  font-size: 2.5rem;
+  font-weight: 650;
   }
   
   
 /* formatting the tagline within the hero*/
-.hero h2{
- font-size: 18px;
-    color: white;
-    margin-top: 5px;
-    margin-bottom: 15px;
+.hero p{
+ font-size: 1.2rem;
+
   }
 
 

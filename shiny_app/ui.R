@@ -44,6 +44,7 @@ page_navbar(
             htmlTemplate("landing-page.html", # sits in separate file in app folder
                          # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
                          additional_info_buttons = layout_columns(
+                           col_widths = c(3, 3, -6),
                            navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info"), class = "btn-hero"),
                            navigation_button_modUI(button_id="explore_indicators", button_name = "About indicators/updates", button_icon = icon("circle-info"), class = "btn-hero")
                          ),
