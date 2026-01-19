@@ -15,6 +15,7 @@ page_navbar(
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
   lang = "en",
+  gap = "2rem",
   theme = phs_theme, # dashboard theme - defined in global script
   navbar_options = navbar_options(
     bg = phs_colours(colourname = "phs-purple"), # background navbar colour
@@ -286,6 +287,24 @@ page_navbar(
                        
             ) # close subtabs
             ), # close entire profiles tab
+  
+  
+  ######################################.
+  # Health inequalities Menu ------
+  ######################################.
+  
+  # Menu for profiles focusing on health inequalities
+  # Currently only contains tab for a national profile 
+  # (which supplements the long-term monitoring of HE in Scotland report)
+  # but will eventually include local profiles
+  nav_menu(
+    title = "Health inequalities",
+    nav_panel(
+      title = "National profile",  
+      value = "shi_tab",
+      "placeholder"
+    )
+  ),
   
   nav_spacer(), # add space to navbar 
   
