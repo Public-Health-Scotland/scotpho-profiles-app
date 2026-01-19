@@ -57,7 +57,7 @@ profile_homepage_btn_modUI <- function(id,
         
         h4(id,
            class = "mb-0 text-phs-purple",
-           style = "font-size: 1.2rem;"
+           style = "font-size: 1.5rem;"
         ),
         
         if (new_badge) span(class = "badge rounded-pill text-bg-phs-green ms-auto", "New")

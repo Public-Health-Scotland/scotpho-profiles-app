@@ -43,8 +43,8 @@ page_navbar(
             style = "background-color:#F7F7F7;",
             htmlTemplate("landing-page.html", # sits in separate file in app folder
                          # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
-                         additional_info_buttons = layout_columns(
-                           col_widths = c(3, 3, -6),
+                         additional_info_buttons = div(
+                           class = "d-flex gap-3 flex-wrap",
                            navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info"), class = "btn-hero"),
                            navigation_button_modUI(button_id="explore_indicators", button_name = "About indicators/updates", button_icon = icon("circle-info"), class = "btn-hero")
                          ),
@@ -53,8 +53,9 @@ page_navbar(
                          # this piece of code goes through the named profiles list from the global script, and for each profile,
                          # generates a profile button using the name of the profile and the homepage description 
                          profile_buttons = layout_column_wrap(
-                           width = 1/3, # setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
+                         #  width = 1/3, # setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
                            gap = "2rem", # add space between boxes
+                           width = "20rem",
                            heights_equal = "row", # make boxes in each row same height (change to 'all' to make all boxes same height)
                            !!!lapply(names(profiles_list), function(profile) {
                              profile_homepage_btn_modUI(id = profile,
