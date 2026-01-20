@@ -304,7 +304,7 @@ page_navbar(
     nav_panel(
       title = "National profile",  
       value = "shi_tab",
-      "placeholder"
+      ltmhi_UI("ltmhi")
     )
   ),
   

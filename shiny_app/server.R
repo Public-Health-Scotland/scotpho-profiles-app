@@ -217,6 +217,8 @@ function(input, output, session) {
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
 
   
+   # running module for the long-term monitoring of HE tab
+   # ltmi_Server(id = "ltmhi")
   
   
   # # ############################################.
