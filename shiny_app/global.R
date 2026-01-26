@@ -228,7 +228,7 @@ profiles_list <- list(
     new = FALSE,
     active = TRUE
   ),
-  
+  # Scottish Health Inequalities (ie national level reporting on health inequalities)
   "Long-term Monitoring of Health Inequalities in Scotland" = list(
       short_name = "SHI",
       homepage_description = markdown("Under development - not yet available"),

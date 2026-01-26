@@ -57,6 +57,7 @@ page_navbar(
                            gap = "2rem", # add space between boxes
                            width = "20rem",
                            heights_equal = "row", # make boxes in each row same height (change to 'all' to make all boxes same height)
+                           #!!! notation required to ensure that parameter values not parameter names injected into functions
                            !!!lapply(names(profiles_list), function(profile) {
                              profile_homepage_btn_modUI(id = profile,
                                                         description = profiles_list[[profile]]$homepage_description,
