@@ -93,7 +93,17 @@ page_navbar(
                           #  ),
                           #  hr(),     
                           
-                         # Climate profile info
+                        # Change of source for children's PA indicator
+                          div(
+                            h4("February 2026 : Change of data source for children's physical activity indicator", class = "profile-header"),
+                            p("The indicator 'Children meeting physical activity guidelines' (part of the Children and Young People Mental Health Profile) is now sourced from the Scottish Health Survey, rather than the Health Behaviour in School-Aged Children survey.
+                            The new source covers a wider range of ages and is updated more frequently. The full time series back to 2008 has been updated. 
+                            Users may notice the percentages are markedly higher now: this is due to the younger ages included now (2 to 15y, compared with 11y+ previously) 
+                            and the more detailed way the indicator has been derived (from multiple questions answered by the child's parent (for 2 to 12 year olds) or the child (for 13 to 15 year olds), rather than from a single question asked to each child).")
+                          ),
+                          hr(),
+                            
+                        # Climate profile info
                          div(
                            h4("October 2025 : New Climate Impact profile", class = "profile-header"),
                            p("The Climate Profile is the home of indicators highlighting how our changing climate is impacting on population health. There are five domains within the profile each with their own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO.The Climate Health Impacts domain shows the impact of heat on mortality in Scotland at a national and Health Board level. Further impact indicators will be added in the future.")
@@ -300,14 +310,14 @@ page_navbar(
   # Currently only contains tab for a national profile 
   # (which supplements the long-term monitoring of HE in Scotland report)
   # but will eventually include local profiles
-  nav_menu(
-    title = "Health inequalities",
-    nav_panel(
-      title = "National profile",  
-      value = "shi_tab",
-      ltmhi_UI("ltmhi")
-    )
-  ),
+  # nav_menu(
+  #   title = "Health inequalities",
+  #   nav_panel(
+  #     title = "National profile",  
+  #     value = "shi_tab",
+  #     ltmhi_UI("ltmhi")
+  #   )
+  # ),
   
   nav_spacer(), # add space to navbar 
   
