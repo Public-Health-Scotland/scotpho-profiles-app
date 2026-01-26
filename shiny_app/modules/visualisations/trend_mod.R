@@ -70,8 +70,9 @@ trend_mod_ui <- function(id) {
                             layout_columns(
                             selectizeInput(inputId = ns("locality_filter"), label = "HSC localities:", choices = character(0), multiple = TRUE),
                             selectizeInput(inputId = ns("iz_filter"), label = "Intermediate zones:", choices = character(0), multiple = TRUE)
-                            )
+                            ),
                             
+                            actionLink(ns("clear_geography_dropdowns"), label = "Clear all selected areas")
                             
                             )),
                           accordion_panel(
@@ -290,7 +291,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     
     # Clear what was previously selected from the filters if a user changes selection from geography filter (otherwise they remain selected)
-    observeEvent(geo_selections(), {
+    observeEvent(c(geo_selections(), input$clear_geography_dropdowns),{
       
       # clear the filters
       updateSelectizeInput(session, "hb_filter", selected = character(0))
@@ -313,7 +314,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
       
     })
-    
     
     
     # disable CI checkbox when numerator is selected
