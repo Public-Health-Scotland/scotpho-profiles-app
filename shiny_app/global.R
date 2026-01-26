@@ -110,7 +110,7 @@ profiles_list <- list(
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism", "Environmental sustainability and health equity"),
     subtabs = all_subtabs,
     nav_id = "Profiles",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
   
@@ -133,7 +133,7 @@ profiles_list <- list(
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
     nav_id = "Profiles",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
 
@@ -146,7 +146,7 @@ profiles_list <- list(
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
     nav_id = "Profiles",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
   
@@ -227,17 +227,18 @@ profiles_list <- list(
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
-  ),
-  # Scottish Health Inequalities (ie national level reporting on health inequalities)
-  "Long-term Monitoring of Health Inequalities in Scotland" = list(
-      short_name = "SHI",
-      homepage_description = markdown("Under development - not yet available"),
-      domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assesed/self-reported", "Service-use"),
-      subtabs = NULL,
-      nav_id = "shi_tab",
-      new = FALSE,
-      active = FALSE
   )
+  #,
+  # Scottish Health Inequalities (ie national level reporting on health inequalities)
+  # "Long-term Monitoring of Health Inequalities in Scotland" = list(
+  #     short_name = "SHI",
+  #     homepage_description = markdown("Under development - not yet available"),
+  #     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assesed/self-reported", "Service-use"),
+  #     subtabs = NULL,
+  #     nav_id = "shi_tab",
+  #     new = FALSE,
+  #     active = FALSE
+  # )
 
 )
 
