@@ -25,7 +25,7 @@ library(htmlwidgets)
 pop_lookup <- "/PHI_conf/ScotPHO/Profiles/Data/Lookups/Population/"
 geo_lookup <- "/PHI_conf/ScotPHO/Profiles/Data/Lookups/Geography/"
 
-saveRDS(population_breakdown, file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
+#saveRDS(population_breakdown, file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
 
 
 pops_file <- readRDS(file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
@@ -108,12 +108,28 @@ x <-  hchart(object = data,
   hc_title(text = "Population Pyramid") |>
   hc_subtitle(text = "a subtitle - link to nrs?") |>
   hc_xAxis(reversed=FALSE, #reversing axis means that lower ages at the bottom rather than top
-    opposite=TRUE)|> #opposite means the axis label on right side of chart (not sure if we want left/right or both)
-  hc_xAxis(title = list(text = "")) |> #removes the 'age' as title of x-axis
+           opposite=TRUE, #opposite means the axis label on right side of chart (not sure if we want left/right or both)
+           title = list(text = "")) |> #removes the 'age' as title of x-axis
   hc_yAxis(title = list(text = "Percent of total population"),
            labels = list(
              # Use JavaScript Math.abs() to format labels so that male percentages show absolute numbers not negatives
              formatter = JS("function() { return Math.abs(this.value); }"))) |>
+  hc_legend(align = "left") |>
+  #hc_tooltip(crosshairs = TRUE, shared = TRUE) |> #ensures that both male & female values appear in the tooltip
+  hc_tooltip(
+    headerFormat = "<table>",
+    pointFormat = paste(
+      '<tr><th colspan="2"><p>{point.code}</p></th></tr>',
+      '<tr><th colspan="2"><p>{point.age}</p></th></tr>',
+      #"<tr><th>"test2"</td></tr>",
+      "<tr><th>{point.type_definition}</th><td>{point.percentage_Male}</td></tr>",
+      "<tr><th>{point.type_definition}</th><td>{point.population_Male}</td></tr>",
+      "<tr><th>{point.type_definition}</th><td>{point.percentage_Female}</td></tr>"
+    ),
+    footerFormat = "</table>",
+    useHTML = TRUE) |>
+  #hc_add_annotation()|>
+  #hc_legend()
   hc_plotOptions(
     bar = list(
       pointPadding = 0, # Controls padding around a single bar (0 = no gap, 1 = full gap)
@@ -122,8 +138,24 @@ x <-  hchart(object = data,
 x
            
            
-           ) |> #removes the 'age' as title of x-axis
+#try and make male% absolute rather than negative
   hc_yAxis(labels=format(abs()))
+
+
+
+
+hc_tooltip(
+  headerFormat = "<table>",
+  pointFormat = paste(
+    '<tr><th colspan="2"><p>{point.code}</p></th></tr>',
+    '<tr><th colspan="2"><p>{point.age}</p></th></tr>',
+    "<tr><th>{point.type_definition}</th><td>{point.percentage_Male}</td></tr>",
+    "<tr><th>{point.type_definition}</th><td>{point.population_Male}</td></tr>",
+    "<tr><th>{point.type_definition}</th><td>{point.percentage_Female}</td></tr>"
+  ),
+
+
+
 
 
 
