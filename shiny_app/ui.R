@@ -241,12 +241,11 @@ page_navbar(
                                  conditionalPanel(condition = "input.profile_choices == 'Children & Young People Mental Health'",
                                                   br(),
                                                   card(max_height = 150,
-                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development",class = "info-box-header"),
-                                                       p("March 2025: Additional ",
-                                                       tags$a("mental health indicators for children and young people", 
-                                                              href = "https://www.publichealthscotland.scot/publications/children-and-young-people-mental-health-indicator-resources/",
-                                                              target = "_blank"),
-                                                       " will be added as they become available.")
+                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Updates to this profile in Jan 2026:",class = "info-box-header"),
+                                                       p("Additional indicators about children's mental health outcomes have been added 
+                                                         (conduct problems, emotional symptoms, hyperactivity/inattention, prosocial behaviour, and peer relationship problems). 
+                                                         Also, the source of the data for 'children meeting physical activity guidelines' has changed, resulting in higher estimates. 
+                                                         See the indicator metadata for more information.")
                                                   )
                                  ),
                                  summary_table_ui("summary")
