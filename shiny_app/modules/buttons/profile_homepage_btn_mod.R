@@ -124,7 +124,9 @@ profile_homepage_btn_modSERVER <- function(id, nav_select, parent_session) {
 
 # Module Usage Example ----
 # uncomment code below to run example shiny app
-
+# library(shiny)
+# library(bslib)
+# 
 # shinyApp(
 #   ui = bslib::page_navbar(
 #     id = "nav",
@@ -132,7 +134,6 @@ profile_homepage_btn_modSERVER <- function(id, nav_select, parent_session) {
 #       title = "Home",
 #       profile_homepage_btn_modUI(
 #         id = "Tobacco",
-#         profile_name = "Tobacco",
 #         description = "Description of Tobacco profile",
 #         active = TRUE,
 #         new_badge = TRUE
@@ -148,7 +149,7 @@ profile_homepage_btn_modSERVER <- function(id, nav_select, parent_session) {
 #       )
 #     ),
 #   server = function(input, output, session) {
-#     
+# 
 #   profile_homepage_btn_modSERVER(
 #     id = "Tobacco",
 #     nav_select = "Profiles",
