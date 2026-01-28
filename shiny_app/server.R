@@ -17,13 +17,17 @@ function(input, output, session) {
   # below, there are various modules being called which control the server logic that determines what happens when a button is clicked:
   
   # this code runs the server function that matches the UI function that creates the profile buttons on the landing page
-  # for any profiles that are 'active' (i.e. active = TRUE in the profiles_list in the global script)
-  # it ensures when a user clicks a button, a user is taken to the profiles tab and the profiles filter
-  # is updated to reflect the profile selected.
-  lapply(active_profiles, function(profile) {
-    profile_homepage_btn_modSERVER(id = profile, profile_name = profile, parent_session = session)
+  # using iwalk() avoids code repetition by iterating over each profile in profiles_list (from global script)
+  # It then populates the arguments of the modules server function using certain elements from the list
+  # e.g. profile_homepage_btn_modSERVER(id = "Health & Wellbeing", nav_select = "Profiles", parent_session = session)
+  purrr::iwalk(profiles_list, ~ {
+    profile_homepage_btn_modSERVER(
+      id = .y, # name of the profile
+      nav_select = .x$nav_id, # nav_panel that the profile sits on (note: currently all but 1 sit on 'Profiles' tab)
+      parent_session = session
+    )
   })
-  
+
   
   # these modules corresponding to the 2 buttons in the banner at the top of the landing page
   # they controll the opening of About ScotPHO, About ScotPHO and Explore Indicators pages
@@ -213,6 +217,8 @@ function(input, output, session) {
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
 
   
+   # running module for the long-term monitoring of HE tab
+   # ltmi_Server(id = "ltmhi")
   
   
   # # ############################################.

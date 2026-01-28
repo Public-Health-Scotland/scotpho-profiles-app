@@ -15,6 +15,7 @@ page_navbar(
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
   lang = "en",
+  gap = "2rem",
   theme = phs_theme, # dashboard theme - defined in global script
   navbar_options = navbar_options(
     bg = phs_colours(colourname = "phs-purple"), # background navbar colour
@@ -42,7 +43,8 @@ page_navbar(
             style = "background-color:#F7F7F7;",
             htmlTemplate("landing-page.html", # sits in separate file in app folder
                          # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
-                         additional_info_buttons = layout_columns(
+                         additional_info_buttons = div(
+                           class = "d-flex gap-3 flex-wrap",
                            navigation_button_modUI(button_id="about_us", button_name = "About us", button_icon = icon("circle-info"), class = "btn-hero"),
                            navigation_button_modUI(button_id="explore_indicators", button_name = "About indicators/updates", button_icon = icon("circle-info"), class = "btn-hero")
                          ),
@@ -50,14 +52,18 @@ page_navbar(
                          # buttons to navigate to profile tabs
                          # this piece of code goes through the named profiles list from the global script, and for each profile,
                          # generates a profile button using the name of the profile and the homepage description 
-                         # note: setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
                          profile_buttons = layout_column_wrap(
-                           style = "padding: 15px;", width = 1/3,
+                         #  width = 1/3, # setting width = 1/3 inside layout_column_wrap lays out 3 profile buttons per row
+                           gap = "2rem", # add space between boxes
+                           width = "20rem",
+                           heights_equal = "row", # make boxes in each row same height (change to 'all' to make all boxes same height)
+                           #!!! notation required to ensure that parameter values not parameter names injected into functions
                            !!!lapply(names(profiles_list), function(profile) {
-                             profile_homepage_btn_modUI(id = profile, 
-                                                        profile_name = profile, 
+                             profile_homepage_btn_modUI(id = profile,
                                                         description = profiles_list[[profile]]$homepage_description,
-                                                        class = ifelse(profiles_list[[profile]]$active == TRUE, "profile-btn", "profile-btn-disabled"))
+                                                        active = profiles_list[[profile]]$active,
+                                                        new_badge = profiles_list[[profile]]$new
+                             )
                            })
                          ),
 
@@ -87,7 +93,17 @@ page_navbar(
                           #  ),
                           #  hr(),     
                           
-                         # Climate profile info
+                        # Change of source for children's PA indicator
+                          div(
+                            h4("February 2026 : Change of data source for children's physical activity indicator", class = "profile-header"),
+                            p("The indicator 'Children meeting physical activity guidelines' (part of the Children and Young People Mental Health Profile) is now sourced from the Scottish Health Survey, rather than the Health Behaviour in School-Aged Children survey.
+                            The new source covers a wider range of ages and is updated more frequently. The full time series back to 2008 has been updated. 
+                            Users may notice the percentages are markedly higher now: this is due to the younger ages included now (2 to 15y, compared with 11y+ previously) 
+                            and the more detailed way the indicator has been derived (from multiple questions answered by the child's parent (for 2 to 12 year olds) or the child (for 13 to 15 year olds), rather than from a single question asked to each child).")
+                          ),
+                          hr(),
+                            
+                        # Climate profile info
                          div(
                            h4("October 2025 : New Climate Impact profile", class = "profile-header"),
                            p("The Climate Profile is the home of indicators highlighting how our changing climate is impacting on population health. There are five domains within the profile each with their own indicators. The first two domains ‘Climate Health Impacts’ and ‘Weather’ are new to ScotPHO.The Climate Health Impacts domain shows the impact of heat on mortality in Scotland at a national and Health Board level. Further impact indicators will be added in the future.")
@@ -154,8 +170,8 @@ page_navbar(
             # hidden profile filter to display when button clicked 
                 hidden(div(id = "prof_filter_hidden",
                       selectizeInput(inputId = "profile_choices", 
-                                     label = "", 
-                                     choices =  active_profiles, #declared in global script
+                                     label = NULL, 
+                                     choices = profile_filter_choices, #declared in global script
                                      options = list(onInitialize = I('function() { this.setValue(""); }')))
                     )),
               # geography header with button
@@ -284,6 +300,24 @@ page_navbar(
                        
             ) # close subtabs
             ), # close entire profiles tab
+  
+  
+  ######################################.
+  # Health inequalities Menu ------
+  ######################################.
+  # uncomment below when we're ready to deploy new health inequalities reports 
+  # Menu for profiles focusing on health inequalities
+  # Currently only contains tab for a national profile 
+  # (which supplements the long-term monitoring of HE in Scotland report)
+  # but will eventually include local profiles
+  # nav_menu(
+  #   title = "Health inequalities",
+  #   nav_panel(
+  #     title = "National profile",  
+  #     value = "shi_tab",
+  #     ltmhi_UI("ltmhi")
+  #   )
+  # ),
   
   nav_spacer(), # add space to navbar 
   

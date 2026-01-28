@@ -85,6 +85,8 @@ all_subtabs <- c("summary_tab",
 # domain_order = use if there's a particular order domains should appear in the indicator filter/summary table (leave as NULL if no order required)
 # active = either TRUE or FALSE. Set to FALSE if you want the homepage button to be disabled. Set to TRUE to make profile active for users to explore.
 # subtabs = the subtabs you want to include for the profile - either pass 'all_subtabs' from vector above to include all, or select individual subtabs
+# new = either TRUE or FALSE. Set to TRUE to add a 'new' badge to the homepage button
+# nav_id = the id of the nav_panel that the profile sits on 
 # note: to add a new profile to the tool, just add a new section to the list
 profiles_list <- list(
  
@@ -94,6 +96,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
     subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
 
@@ -105,6 +109,8 @@ profiles_list <- list(
     domain_order = c("Over arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism", "Environmental sustainability and health equity"),
     subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -114,6 +120,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Climate Health Impact**, **Weather**, **Air Quality**, **Climate Attitude** and **Demography**"),
     domain_order = c("Climate Health Impact", "Weather", "Air Quality", "Climate Attitude", "Demography"),
     subtabs = c("trends_tab", "rank_tab", "pop_groups_tab", "about_profile_tab"),
+    nav_id = "Profiles",
+    new = TRUE,
     active = TRUE
   ),
   
@@ -124,6 +132,8 @@ profiles_list <- list(
     domain_order = c("Mental health outcomes", "Individual determinants",
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
 
@@ -135,6 +145,8 @@ profiles_list <- list(
                      "Family and friends", "Learning environment",
                      "Community determinants", "Structural determinants"),
     subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -144,6 +156,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Active**, **Healthy**, **Achieving**, **Safe** and **Nurtured**."),
     domain_order = c("Safe", "Healthy", "Achieving", "Nurtured", "Active", "Respected", "Responsible", "Included"),
     subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "about_profile_tab"),
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -154,6 +168,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Adult prevalence**, **Smoking during and post pregnancy**, **Smoking attributable deaths and diseases** and **Smoking cessation and services.**"),
     domain_order = NULL,
     subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -163,6 +179,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
     subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -172,6 +190,8 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
     subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab"),
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -182,6 +202,8 @@ profiles_list <- list(
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
     subtabs = c("summary_tab", "trends_tab", "rank_tab"),
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   ),
   
@@ -191,6 +213,8 @@ profiles_list <- list(
     homepage_description = markdown("Under development - not yet available"),
     domain_order = NULL,
     subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+    nav_id = "Profiles",
+    new = FALSE,
     active = FALSE
   ),
   
@@ -200,17 +224,34 @@ profiles_list <- list(
     homepage_description = markdown("View **all indicators** in this tool from across every profile."),
     domain_order = NULL,
     subtabs = c("trends_tab","rank_tab", "simd_tab", "pop_groups_tab"),
+    nav_id = "Profiles",
+    new = FALSE,
     active = TRUE
   )
-  
-  
+  #,
+  # Scottish Health Inequalities (ie national level reporting on health inequalities)
+  # to make visible uncomment below and also around line #310 in ui script which is linked to HI nav menu item
+  # "Long-term Monitoring of Health Inequalities in Scotland" = list(
+  #     short_name = "SHI",
+  #     homepage_description = markdown("Under development - not yet available"),
+  #     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assesed/self-reported", "Service-use"),
+  #     subtabs = NULL,
+  #     nav_id = "shi_tab",
+  #     new = FALSE,
+  #     active = FALSE
+  # )
+
 )
 
 
-# store the names of active profiles
-# this is used in the UI to create the choices for the profile filter
-# and in the server to run the server logic for what happens when a user clicks an profile button on landing page
+# store the name of all active profiles
+# (used within profile filters in the data table tab and indicator definitions tab)
 active_profiles <- names(Filter(function(x) x$active == TRUE, profiles_list))
+
+
+# store the names of any active profiles where content sits on the profiles tab
+# (used within the profile filter on the profiles tab)
+profile_filter_choices <- names(Filter(function(x) x$active == TRUE & x$nav_id == "Profiles", profiles_list))
 
 
   
@@ -255,7 +296,8 @@ phs_theme <- bs_theme(
   fg = "#222", # make foreground darkgrey/black
   bootswatch = "shiny", # use default shiny theme
   primary = "#0078D4", # make primary colour blue - this will change i.e. active pill colour
-  "form-label-font-weight" = "550"#, # font-weight for filter labels
+  "form-label-font-weight" = "550", # font-weight for filter labels
+  "theme-colors" = "('phs-purple': #3F3685, 'phs-blue': #0078D4, 'phs-magenta': #9B4393, 'phs-green': #C1DD93)"
   ) |>
   # create colour variables to use below
   bs_add_variables(
