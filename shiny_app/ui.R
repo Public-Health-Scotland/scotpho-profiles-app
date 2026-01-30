@@ -83,15 +83,16 @@ page_navbar(
                           # If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
                           # ),
                           # hr(), 
-                         
-                          # Refresh of Deaths from suicide (16+ and 11-25 year) indicator trend
-                          #  div(
-                          #    h4("9th Oct 2025 : Refresh of Deaths from suicide (16+ and 11-25 years) indicator trend data", class = "profile-header"),
-                          #    p("We have recently identified and corrected an issue with the deaths from suicide indicator data uploaded at the end of September 2025.
-                          #  During the annual update a new error was introduced resulting in incorrect summing of rolling averages for some time periods and sub-national regions. A correction now been applied and revised figures are now available in this tool.
-                          #  If you have any queries regarding this correction please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
-                          #  ),
-                          #  hr(),     
+                          
+                          # Updates
+                          div(
+                            h4("February 2026 : Indicator updating", class = "profile-header"),
+                            p("Indicator updates for 2024 or 2024/2025 are currently underway.  Delays in the publication of small area (intermediate zone, HSCP locality) population denominators
+                              mean for some indicators not all geography levels can currently be updated. Deprivation (SIMD) analysis for most recent years is also impacted. ScotPHO will populate any missing information
+                              once the required denominator is available.")
+                          ),
+                          hr(),                         
+
                           
                         # Change of source for children's PA indicator
                           div(
