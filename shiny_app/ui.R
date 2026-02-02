@@ -88,7 +88,7 @@ page_navbar(
                           div(
                             h4("February 2026 : Indicator updates", class = "profile-header"),
                             p("Our rolling indicator updates process is currently underway for data covering the period 2024 and 2024/2025.  Delays in the publication of small area (intermediate zone, HSCP locality) population denominators
-                              mean that for some indicators not all geography levels can currently be updated. Deprivation (SIMD) analysis for most recent year is also impacted. When denominator data becomes available we will look to complete these updates for all geography levels.")
+                              mean that for some indicators not all geography levels can currently be updated. Deprivation (SIMD) analysis for recent years is also impacted. When denominator data becomes available we will look to complete these updates for all geography levels.")
                           ),
                           hr(),                         
 
