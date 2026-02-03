@@ -115,33 +115,133 @@ x <-  hchart(object = data,
              # Use JavaScript Math.abs() to format labels so that male percentages show absolute numbers not negatives
              formatter = JS("function() { return Math.abs(this.value); }"))) |>
   hc_legend(align = "left") |>
-  #hc_tooltip(crosshairs = TRUE, shared = TRUE) |> #ensures that both male & female values appear in the tooltip
   hc_tooltip(
-    headerFormat = "<table>",
-    pointFormat = paste(
-      '<tr><th colspan="2"><p>{point.code}</p></th></tr>',
-      '<tr><th colspan="2"><p>{point.age}</p></th></tr>',
-      #"<tr><th>"test2"</td></tr>",
-      "<tr><th>{point.type_definition}</th><td>{point.percentage_Male}</td></tr>",
-      "<tr><th>{point.type_definition}</th><td>{point.population_Male}</td></tr>",
-      "<tr><th>{point.type_definition}</th><td>{point.percentage_Female}</td></tr>"
-    ),
-    footerFormat = "</table>",
-    useHTML = TRUE) |>
-  #hc_add_annotation()|>
+    pointFormat = "Male:<b>{point.population_Male:,.0f}</b> - (<b>{point.percentage_Male:.2f}%)</b> <br>
+                  Female:(<b>{point.percentage_Female:.2f}%)</b> "
+  )|>
+  
+#hc_add_annotation()|>
   #hc_legend()
+  # hc_tooltip(
+  #   pointFormat = "my title <br>
+  #   Male: {point.percentage_Male} <br>
+  #   Custom Footer Text"
+  # ) |>
   hc_plotOptions(
     bar = list(
       pointPadding = 0, # Controls padding around a single bar (0 = no gap, 1 = full gap)
       groupPadding = 0  # Controls padding around groups of bars (0 = no gap, 1 = full gap)
     ))
 x
+
+
+
+
+chart1 <-  hchart(object = data, 
+             type = "bar", hcaes(x = age, y = percentage_Male)) |>
+  hc_add_series(data, type = "bar", hcaes(x = age, y = percentage_Female))|>
+  hc_plotOptions(stacking = "normal",
+                 series = list(grouping = FALSE))|> # This allows the bars to overlap
+  hc_title(text = "Population Pyramid") |>
+  hc_subtitle(text = "a subtitle - link to nrs?") |>
+  hc_xAxis(reversed=FALSE, #reversing axis means that lower ages at the bottom rather than top
+           opposite=TRUE, #opposite means the axis label on right side of chart (not sure if we want left/right or both)
+           title = list(text = "")) |> #removes the 'age' as title of x-axis
+  hc_yAxis(title = list(text = "Percent of total population"),
+           labels = list(
+             # Use JavaScript Math.abs() to format labels so that male percentages show absolute numbers not negatives
+             formatter = JS("function() { return Math.abs(this.value); }"))) |>
+  hc_legend(align = "left") |>
+
+    # 3. ABSOLUTE + 2 DECIMALS: Tooltip
+  hc_tooltip(
+    shared = TRUE,
+    formatter = JS("function() {
+      var s = '<b>Age: ' + this.x + '</b>';
+      $.each(this.points, function(i, point) {
+        var absVal = Math.abs(point.y);
+        s += '<br/>' + point.series.name + ': ' + Highcharts.numberFormat(absVal, 2) + '%';
+      });
+      return s;
+    }")
+  ) %>%
+
+  # 4. ABSOLUTE + 2 DECIMALS: Data Labels (Numbers on bars)
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        formatter = JS("function() { return Highcharts.numberFormat(Math.abs(this.y), 2); }")
+      )
+    )
+  ) %>%
+  
+  # 5. ABSOLUTE: Y-Axis Labels (Scale at the bottom)
+  hc_yAxis(
+    labels = list(
+      formatter = JS("function() { return Math.abs(this.value); }")
+    ),
+    title = list(text = "Percentage of Population")
+  )
+
+chart1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tooltip: {
+  formatter() {
+    return `${this.series.name}: ${Math.abs(this.y)}
+
+
+
+
+pointFormat = "<b>{point.name}</b>: {point.percentage:.2f}%"
+
+
+
+
+
+#things i've copied to try out
+
+
            
+hc_tooltip(
+  pointFormat = "Value: {point.y}<br>Custom Footer Text"
+)
+pointFormat: '{point.percentage:.2f}%'
+
+
+pointFormat: "Value: {point.y:.2f} mm"
+
+hc_tooltip(formatter = JS("function() {
+  return  this.series.name + ': ' + Highcharts.numberFormat(this.y, 2) + '%';
+}"))
+
            
 #try and make male% absolute rather than negative
   hc_yAxis(labels=format(abs()))
 
-
+  tooltip: {
+    pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>Extra Text Here'
+  }
+  
 
 
 hc_tooltip(
