@@ -1,10 +1,10 @@
 ltmhi_UI <- function(id, ltmhi_dataset) {
   ns <- NS(id)
-  tagList(
+  page_fixed(
 
     # header and description
     div(
-      class = "p-2 mb-2",
+      class = "my-5", # add top and bottom margin
       h1("Long-term Monitoring of Health Inequalities in Scotland"),
       p("Description")
     ),
@@ -14,8 +14,32 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
 
 
     # sidebar navigaton menu with sub-sections
-    navset_pill_list(
-      widths = c(3,9),
+    layout_columns(
+      col_widths = c(3,9),
+      
+      
+      # left: contents menu 
+      div(
+        class = "sticky-top p-4", # sticky-top prevents menu from dissappearing out of view when scrolling through content
+        h4("Contents"),
+        shinyWidgets::radioGroupButtons(
+          inputId = ns("sections"),
+          label = NULL,
+          status = "primary",
+          choices = c("Key points", "Summary table", "Explore indicators", "About"),
+          direction = "vertical",
+          width = "100%"
+        ),
+        hr()
+      ),
+      
+      
+      # bslib navset_hidden is like conditionalPanel from shiny
+      # the nav_panel to display will then be updated, depending on what's selected
+      # from input above (input$sections)
+      navset_hidden(
+        id = ns("navs"),
+        
 
 
       # Key points section
@@ -42,7 +66,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         selectizeInput(
           inputId = ns("ind_filter"),
           label = NULL,
-          choices = split(ltmhi_info$domain, ltmhi_info$indicator)
+          choices = split(ltmhi_lookup$domain, ltmhi_lookup$indicator)
         )
       ),
 
@@ -52,16 +76,10 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         title = "About",
         class = "container",
         p("placeholder")
-      ),
-
-
-      # Report link
-      nav_menu(
-        title = "Read full report",
-        nav_item(tags$a("Report link", href = "placeholder", target = "_blank"))
       )
 
-    ) # close navset_pill_list
+    ) # close navset_hidden
+    ) # close layout columns 
 
   )
 }
@@ -70,6 +88,28 @@ ltmhi_Server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
+      
+      
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # navigation ------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      
+      observeEvent(input$sections, {
+        
+        section_ids <- c("Key points", "Summary table", "Explore indicators", "About")
+        
+        walk(section_ids, function(id) {
+          if(input$sections == id){
+            nav_show(id = "navs", target = id, select = TRUE)
+          } else {
+            nav_hide(id = "navs", target = id)
+          }
+        })
+      })
+      
+      
+      
       
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Summary table server code ----
@@ -143,7 +183,7 @@ ltmhi_Server <- function(id) {
                   # go to  'explore indicators' section and select indicator from filter
                   onclick = sprintf(
                     "Shiny.setInputValue('%s', %s, {priority:'event'});",
-                    input$indicator_clicked,
+                    session$ns("indicator_clicked"),
                     jsonlite::toJSON(value, auto_unbox = TRUE)
                   )
                   
@@ -204,6 +244,12 @@ ltmhi_Server <- function(id) {
       # update selection from indicator filter in 'explore indicators' section 
       # whenever link clicked in summary table (i.e. when input$indicator_clicked changes)
       observeEvent(input$indicator_clicked, {
+        
+        shinyWidgets::updateRadioGroupButtons(
+          inputId = "sections",
+          selected = "Explore indicators"
+        )
+          
         updateSelectizeInput(
           session = session,
           inputId = "ind_filter",
@@ -228,6 +274,7 @@ ltmhi_Server <- function(id) {
 # shinyApp(
 #   ui = page_navbar(
 #     nav_panel(
+#       class = "container-xxl",
 #       title = "National profile",
 #       ltmhi_UI("example")
 #       )
