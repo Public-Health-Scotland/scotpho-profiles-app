@@ -66,7 +66,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         selectizeInput(
           inputId = ns("ind_filter"),
           label = NULL,
-          choices = split(ltmhi_lookup$domain, ltmhi_lookup$indicator)
+          choices = split(ltmhi_lookup$indicator, ltmhi_lookup$domain)
         )
       ),
 
@@ -149,7 +149,7 @@ ltmhi_Server <- function(id) {
             domain = colDef(
               name = "Domain",
               cell = function(value, index) {
-                if (index > 1 && shi_lookup$domain[index] == shi_lookup$domain[index - 1]) {
+                if (index > 1 && ltmhi_lookup$domain[index] == ltmhi_lookup$domain[index - 1]) {
                   div(style = "visibility:hidden", value)
                 } else value
               }
@@ -163,7 +163,7 @@ ltmhi_Server <- function(id) {
               cell = function(value, index){
                 as.character(tooltip(
                   div(class = "badge rounded-pill ms-auto", style = "background-color: #adb5bd", value),
-                  paste(value, "in the least deprived quintile in", shi_lookup$comparison_period[index])
+                  paste(value, "in the least deprived quintile in", ltmhi_lookup$comparison_period[index])
                 ))
               }
             ),
@@ -200,7 +200,7 @@ ltmhi_Server <- function(id) {
               cell = function(value, index){
                 as.character(tooltip(
                   direction_icon(value),
-                  paste(value, "since", shi_lookup$rii_trend_period[index])
+                  paste(value, "since", ltmhi_lookup$rii_trend_period[index])
                 ))
               }
             ),
@@ -213,7 +213,7 @@ ltmhi_Server <- function(id) {
               cell = function(value, index){
                 as.character(tooltip(
                   direction_icon(value),
-                  paste(value, "since", shi_lookup$rii_trend_period[index])
+                  paste(value, "since", ltmhi_lookup$rii_trend_period[index])
                 ))
               }
             ),
