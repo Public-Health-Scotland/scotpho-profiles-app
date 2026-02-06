@@ -283,6 +283,9 @@ page_navbar(
                        # population groups sub-tab
                        nav_panel(title = "Population groups", value = "pop_groups_tab", pop_groups_ui("pop_groups")),
                        
+                       # demographics sub-tab
+                       nav_panel(title = "Demographics", value = "demographics_tab", demographics_mod_ui("demographics")),
+                       
                        # About this profile sub tab (text that appears is conditional depending on selected profile)
                        # the text for each profile is defined in the 'narrative' subfolder in the 'about_profiles_narrative.R' script
                        # note there is only text for the 5 profiles listed below at the moment

@@ -74,7 +74,8 @@ all_subtabs <- c("summary_tab",
                  "trends_tab",
                  "rank_tab", 
                  "simd_tab", 
-                 "pop_groups_tab", 
+                 "pop_groups_tab",
+                 "demographics_tab",
                  "about_profile_tab")
 
 

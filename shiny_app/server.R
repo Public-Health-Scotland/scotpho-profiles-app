@@ -216,7 +216,9 @@ function(input, output, session) {
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
 
-  
+   #need to add demo data
+   demographics_mod_server("demographics", geo_selections, selected_profile, session)
+   
    # running module for the long-term monitoring of HE tab
    # ltmi_Server(id = "ltmhi")
   
