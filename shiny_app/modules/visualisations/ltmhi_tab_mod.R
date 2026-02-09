@@ -36,10 +36,10 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         h4("Contents"),
         tags$ul(
           class = "list-group gap-3 list-unstyled",
-          tags$li(a(href = "#section-1", "Headline indicators")),
-          tags$li(a(href = "#section-2", "Summary table")),
-          tags$li(a(href = "#section-3", "Explore Indicators")),
-          tags$li(a(href = "#section-4", "About"))
+          tags$li(a(href = "#headline-indicators", "Headline indicators")),
+          tags$li(a(href = "#summary-table", "Summary table")),
+          tags$li(a(href = "#explore-indicators", "Explore Indicators")),
+          tags$li(a(href = "#about", "About"))
         ),
         hr()
       ), # close menu 
@@ -50,11 +50,12 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
      # ~~~~~~~~~~~~~~~~~~~~~
      # right:
       div(
-        class = "pt-4 gap-5", # add top padding and gap between each section 
+        class = "pt-4", # add top padding
      
       # Section 1: Headline indicators --------------
       div(
-        id = "section-1",
+        class = "mb-5", # add bottom margin
+        id = "headline-indicators",
         h4("Headline indicators", class = "mb-4"),
         layout_column_wrap(
           width = "20rem",
@@ -71,7 +72,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
 
       # Section 2: Summary table ----------------
       div(
-        id = "section-2",
+        id = "summary-table",
+        class = "mb-5", # add bottom margin
         div(
           class = "mb-4",
           h4("Summary table"),
@@ -79,11 +81,16 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
           ),
         card(reactableOutput(ns("summary_tbl")))
         ), # close summary table section 
+      
+      
+      # horizontal line
+      hr(),
 
 
       # Section 3: Explore indicators section ----------------
       div(
-        id = "section-3",
+        id = "explore-indicators",
+        class = "mb-5", # add bottom margin
         
         # panel with indicators
         # sticky-top prevents panel from moving when scrolling
@@ -238,8 +245,9 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       
       # About section -----------------------
       div(
+        id = "about",
         class = "mb-5",
-        h4("About", class = "fw-bold mb-4"),
+        h4("About", class = "mb-4"),
         div(style = "height:800px", "Placeholder")
         )
       
@@ -321,7 +329,7 @@ ltmhi_Server <- function(id) {
               html = TRUE,
               cell = function(value){
                 tags$a(
-                  href = "#section-3",
+                  href = "#explore-indicators",
                   value,
                   # when link is clicked, update input$indicator_clicked with the name of the indicator
                   # which will trigger an observeEvent() that is spying on this input run in order to
@@ -427,7 +435,6 @@ ltmhi_Server <- function(id) {
 
 
 # For testing:
-
 
 # shinyApp(
 #   ui = page_navbar(
