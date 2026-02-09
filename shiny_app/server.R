@@ -218,7 +218,7 @@ function(input, output, session) {
 
   
    # running module for the long-term monitoring of HE tab
-   # ltmi_Server(id = "ltmhi")
+   # ltmhi_Server(id = "ltmhi")
   
   
   # # ############################################.
