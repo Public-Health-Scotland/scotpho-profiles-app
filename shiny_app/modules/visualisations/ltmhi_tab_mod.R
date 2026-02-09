@@ -1,116 +1,261 @@
 ltmhi_UI <- function(id, ltmhi_dataset) {
   ns <- NS(id)
-  page_fixed(
+ tagList(
 
-    # header and description
+   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   # Page header  ----
+   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   
     div(
-      class = "my-5", # add top and bottom margin
+      class = "p-2 mb-3", # add padding and bottom margin 
       h1("Long-term Monitoring of Health Inequalities in Scotland"),
-      p("Description")
+      # MM revisit: final link to report to be added
+      p("Access the", tags$a("full report with narrative", href = "placeholder", target = "_blank"), "on the Public Health Scotland website."),
+      bookmarkButton(class = "btn-sm")
     ),
 
     # horizonal line
     hr(),
-
+   
+   
+   # ~~~~~~~~~~~~~~~~~~~~~~
+   # Page contents ------
+   # ~~~~~~~~~~~~~~~~~~~~~~
 
     # sidebar navigaton menu with sub-sections
     layout_columns(
       col_widths = c(3,9),
       
-      
-      # left: contents menu 
+   
+    # ~~~~~~~~~~~~~~~~~~~~~
+    ## Contents Menu -----
+    # ~~~~~~~~~~~~~~~~~~~~~
+    # left:
       div(
-        class = "sticky-top p-4", # sticky-top prevents menu from dissappearing out of view when scrolling through content
+        class = "sticky-top p-4", # sticky-top prevents menu from scrolling out of view p-4
         h4("Contents"),
-        shinyWidgets::radioGroupButtons(
-          inputId = ns("sections"),
-          label = NULL,
-          status = "primary",
-          choices = c("Key points", "Summary table", "Explore indicators", "About"),
-          direction = "vertical",
-          width = "100%"
+        tags$ul(
+          class = "list-group gap-3 list-unstyled",
+          tags$li(a(href = "#section-1", "Headline indicators")),
+          tags$li(a(href = "#section-2", "Summary table")),
+          tags$li(a(href = "#section-3", "Explore Indicators")),
+          tags$li(a(href = "#section-4", "About"))
         ),
         hr()
-      ),
+      ), # close menu 
       
-      
-      # bslib navset_hidden is like conditionalPanel from shiny
-      # the nav_panel to display will then be updated, depending on what's selected
-      # from input above (input$sections)
-      navset_hidden(
-        id = ns("navs"),
-        
-
-
-      # Key points section
-      nav_panel(
-        title = "Key points",
-        class = "container",
-        p("placeholder")
-      ),
-
-
-      # Summary table section
-      nav_panel(
-        title = "Summary table",
-        class = "container",
-        card(reactableOutput(ns("summary_tbl")))
-      ),
-
-
-      # Explore indicators section
-      nav_panel(
-        title = "Explore indicators",
-        class = "container",
-        # indicator filter 
-        selectizeInput(
-          inputId = ns("ind_filter"),
-          label = NULL,
-          choices = split(ltmhi_lookup$indicator, ltmhi_lookup$domain)
+    
+     # ~~~~~~~~~~~~~~~~~~~~~
+     # Contents -----
+     # ~~~~~~~~~~~~~~~~~~~~~
+     # right:
+      div(
+        class = "pt-4 gap-5", # add top padding and gap between each section 
+     
+      # Section 1: Headline indicators --------------
+      div(
+        id = "section-1",
+        h4("Headline indicators", class = "mb-4"),
+        layout_column_wrap(
+          width = "20rem",
+          heights_equal = "row",
+          card("placeholder", full_screen = TRUE, height = 300),
+          card("placeholder", full_screen = TRUE, height = 300),
+          card("placeholder", full_screen = TRUE, height = 300),
+          card("placeholder", full_screen = TRUE, height = 300)
         )
-      ),
+      ), # close key points section 
+      
+      # horizontal line 
+      hr(),
+
+      # Section 2: Summary table ----------------
+      div(
+        id = "section-2",
+        div(
+          class = "mb-4",
+          h4("Summary table"),
+          p("Recent trends in key indicators of health inequalities.")
+          ),
+        card(reactableOutput(ns("summary_tbl")))
+        ), # close summary table section 
 
 
-      # About section
-      nav_panel(
-        title = "About",
-        class = "container",
-        p("placeholder")
-      )
+      # Section 3: Explore indicators section ----------------
+      div(
+        id = "section-3",
+        
+        # panel with indicators
+        # sticky-top prevents panel from moving when scrolling
+        # bg-white makes background white (to prevent seeing content scrolling past underneath the filters)
+        # py-2 and my-2 = top and bottom padding and margins
+        div(
+          class = "sticky-top bg-white py-2 my-2", 
+          h3("Explore indicators", class = "mb-4"),
+          
+          div(
+            id = ns("filter_body"),
+            class = "p-2",
+            layout_columns(
+              # indicator filter 
+              selectizeInput(
+                inputId = ns("ind_filter"),
+                label = NULL,
+                choices = split(ltmhi_lookup$indicator, ltmhi_lookup$domain),
+                width = "100%"
+              ),
+              # type filter
+              radioButtons(
+                inputId = ns("type_filter"),
+                choiceNames = c("Quintiles", "Deciles"),
+                choiceValues = c("sc_quin", "sc_decile"),
+                label = NULL,
+                inline = TRUE,
+                selected = "sc_quin"
+              ) |>
+                # temporary code: disable sc_decile option for now
+                # first iteration will only present data by quintiles
+                tagAppendChild(
+                  tags$script(
+                    sprintf(
+                      "$(function(){ $('#%s input[value=\"sc_decile\"]').prop('disabled', true); });",
+                      ns("type_filter")
+                    )
+                  )
+                )
+              )
+            ), #c lose filter_body div
+          
+          # button for opening/closing filters
+          actionButton(
+            inputId = ns("toggle_filters"),
+            class = "btn-sm position-absolute",
+            style = "right: 0.75rem; bottom: 0.5rem; z-index: 10;",
+            label = "Hide filters"
+          )
+        ), # close sticky filter panel
+        
+        
+        # container for cards with charts
+        div(
+          class = "m-1",
+          
+          # Patterns of inequality charts
+          h5("Patterns of inequality", class = "mb-4"),
+          
+          layout_column_wrap(
+            width = "20rem",
+            
+            # SIMD bar chart 
+            navset_card_tab(
+              height = 450,
+              id = ns("simd_bar_card"),
+              full_screen = TRUE,
+              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Table", "placeholder"),
+              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+            ),
+            
+            # SIMD trend chart 
+            navset_card_tab(
+              height = 450,
+              id = ns("simd_trend_card"),
+              full_screen = TRUE,
+              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Table", "placeholder"),
+              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+            )
+          ),
+          
+          
+          br(),
+          
+          
+          # Inequality gap charts
+          h5("Inequality gap", class = "mb-4"),
+          
+          layout_column_wrap(
+            width = "20rem",
+            
+            # SII trend chart 
+            navset_card_tab(
+              height = 450,
+              id = ns("sii_card"),
+              full_screen = TRUE,
+              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Table", "placeholder"),
+              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+            ),
+            
+            # RII trend chart 
+            navset_card_tab(
+              height = 450,
+              id = ns("rii_card"),
+              full_screen = TRUE,
+              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Table", "placeholder"),
+              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+            )
+          ),
+          
+          
+          br(),
+          
+          
+          # Potential for imrpovement charts
+          h5("Potential for improvement", class = "mb-4"),
+          
+          layout_column_wrap(
+            width = "20rem",
+            
+            # SII trend chart 
+            navset_card_tab(
+              height = 450,
+              id = ns("par_bar_card"),
+              full_screen = TRUE,
+              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Table", "placeholder"),
+              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+            ),
+            
+            # RII trend chart 
+            navset_card_tab(
+              height = 450,
+              id = ns("par_trend_card"),
+              full_screen = TRUE,
+              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Table", "placeholder"),
+              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+            )
+          )
+        ) # close container for charts
+      ), # close explore indicators section
+      
+      
+      # horizontal line
+      hr(),
+      
+      
+      # About section -----------------------
+      div(
+        class = "mb-5",
+        h4("About", class = "fw-bold mb-4"),
+        div(style = "height:800px", "Placeholder")
+        )
+      
+      ) # close right hand side section
+    ) # close layout_colums for left-menu and right-content
+ ) # close tagList
 
-    ) # close navset_hidden
-    ) # close layout columns 
+} # close function 
 
-  )
-}
+
 
 ltmhi_Server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
-      
-      
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # navigation ------
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      
-      observeEvent(input$sections, {
-        
-        section_ids <- c("Key points", "Summary table", "Explore indicators", "About")
-        
-        walk(section_ids, function(id) {
-          if(input$sections == id){
-            nav_show(id = "navs", target = id, select = TRUE)
-          } else {
-            nav_hide(id = "navs", target = id)
-          }
-        })
-      })
-      
-      
-      
-      
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Summary table server code ----
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -244,12 +389,7 @@ ltmhi_Server <- function(id) {
       # update selection from indicator filter in 'explore indicators' section 
       # whenever link clicked in summary table (i.e. when input$indicator_clicked changes)
       observeEvent(input$indicator_clicked, {
-        
-        shinyWidgets::updateRadioGroupButtons(
-          inputId = "sections",
-          selected = "Explore indicators"
-        )
-          
+
         updateSelectizeInput(
           session = session,
           inputId = "ind_filter",
@@ -257,6 +397,24 @@ ltmhi_Server <- function(id) {
         )
       })
       
+      
+      
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Explore indicators server code ------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      
+      # open/close panel with filters when show/hide filter
+      # button is clicked and update buttons label accordingly
+      observeEvent(input$toggle_filters, {
+        shinyjs::toggle(id = "filter_body")
+        
+        if(input$toggle_filters %% 2 != 0){
+          updateActionButton(inputId = "toggle_filters", label = "Show filters")
+        } else {
+          updateActionButton(inputId = "toggle_filters", label = "Hide filters")
+        }
+        
+      })
       
       
       
@@ -273,6 +431,8 @@ ltmhi_Server <- function(id) {
 
 # shinyApp(
 #   ui = page_navbar(
+#     fillable = FALSE,
+#     header = useShinyjs(),
 #     nav_panel(
 #       class = "container-xxl",
 #       title = "National profile",
