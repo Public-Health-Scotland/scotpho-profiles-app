@@ -160,6 +160,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               full_screen = TRUE,
               nav_panel(title = "Chart", "placeholder"),
               nav_panel(title = "Table", "placeholder"),
+              nav_spacer(),
+              chart_controls_mod_UI(ns("simd_bar_controls"), controls = c(ci_switch = FALSE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             ),
             
@@ -170,6 +172,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               full_screen = TRUE,
               nav_panel(title = "Chart", "placeholder"),
               nav_panel(title = "Table", "placeholder"),
+              nav_spacer(),
+              chart_controls_mod_UI(ns("simd_trend_controls"), controls = c(ci_switch = FALSE, avg_switch = TRUE, zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             )
           ),
@@ -191,6 +195,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               full_screen = TRUE,
               nav_panel(title = "Chart", "placeholder"),
               nav_panel(title = "Table", "placeholder"),
+              nav_spacer(),
+              chart_controls_mod_UI(ns("sii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             ),
             
@@ -201,6 +207,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               full_screen = TRUE,
               nav_panel(title = "Chart", "placeholder"),
               nav_panel(title = "Table", "placeholder"),
+              nav_spacer(),
+              chart_controls_mod_UI(ns("rii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             )
           ),
@@ -215,7 +223,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
           layout_column_wrap(
             width = "20rem",
             
-            # SII trend chart 
+            # PAR bar chart 
             navset_card_tab(
               height = 450,
               id = ns("par_bar_card"),
@@ -225,13 +233,15 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             ),
             
-            # RII trend chart 
+            # PAR trend chart 
             navset_card_tab(
               height = 450,
               id = ns("par_trend_card"),
               full_screen = TRUE,
               nav_panel(title = "Chart", "placeholder"),
               nav_panel(title = "Table", "placeholder"),
+              nav_spacer(),
+              chart_controls_mod_UI(ns("par_trend_controls"), controls = c(zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             )
           )
@@ -426,6 +436,23 @@ ltmhi_Server <- function(id) {
       
       
       
+      # chart controls
+      # these objects store user selection from each cards chart controls
+      # as reactiveValues which can then be used to update the charts accordingly
+      # each one contains 3 values. If the input wasn't used in the UI the returned value
+      # will be NULL, e.g. for the SIMD bar chart when the app initially loads simd_bar_controls will be:
+      # simd_bar_controls$ci_switch = FALSE
+      # simd_bar_controls$avg_switch = NULL
+      # simd_bar_controls$zero_yaxis_switch = TRUE
+      
+      simd_bar_controls <- chart_controls_mod_server("simd_bar_controls")
+      simd_trend_controls <- chart_controls_mod_server("simd_trend_controls")
+      sii_controls <- chart_controls_mod_server("sii_controls")
+      rii_controls <- chart_controls_mod_server("rii_controls")
+      par_trend_controls <- chart_controls_mod_server("par_trend_controls")
+      
+      
+
     }
   )
 }
