@@ -1,3 +1,4 @@
+
 ltmhi_UI <- function(id, ltmhi_dataset) {
   ns <- NS(id)
  tagList(
@@ -24,6 +25,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
 
     # sidebar navigaton menu with sub-sections
     layout_columns(
+      gap = "2rem",
       col_widths = c(3,9),
       
    
@@ -56,7 +58,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       div(
         class = "mb-5", # add bottom margin
         id = "headline-indicators",
-        h4("Headline indicators", class = "mb-4"),
+        h2("Headline indicators", class = "mb-4"),
         layout_column_wrap(
           width = "20rem",
           heights_equal = "row",
@@ -76,7 +78,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         class = "mb-5", # add bottom margin
         div(
           class = "mb-4",
-          h4("Summary table"),
+          h2("Summary table"),
           p("Recent trends in key indicators of health inequalities.")
           ),
         card(reactableOutput(ns("summary_tbl")))
@@ -98,7 +100,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         # py-2 and my-2 = top and bottom padding and margins
         div(
           class = "sticky-top bg-white py-2 my-2", 
-          h3("Explore indicators", class = "mb-4"),
+          h2("Explore indicators", class = "mb-4"),
           
           div(
             id = ns("filter_body"),
@@ -109,7 +111,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 inputId = ns("ind_filter"),
                 label = NULL,
                 choices = split(ltmhi_lookup$indicator, ltmhi_lookup$domain),
-                width = "100%"
+                width = "100%",
+                selected = "Life expectancy, males"
               ),
               # type filter
               radioButtons(
@@ -146,55 +149,80 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         # container for cards with charts
         div(
           class = "m-1",
-          
+
           # Patterns of inequality charts
-          h5("Patterns of inequality", class = "mb-4"),
+          h3("Patterns of inequality", class = "mb-4"),
           
           layout_column_wrap(
             width = "20rem",
             
             # SIMD bar chart 
             navset_card_tab(
-              height = 450,
+              height = 500,
               id = ns("simd_bar_card"),
               full_screen = TRUE,
-              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(
+                title = "Chart",
+                div(
+                h4(textOutput(ns("simd_bar_title"), container = span), class = "chart-header"),
+                textOutput(ns("simd_bar_subtitle"))
+                ),
+              bar_chart_mod_UI(ns("simd_bar_chart"))
+                ),
               nav_panel(title = "Table", "placeholder"),
               nav_spacer(),
               chart_controls_mod_UI(ns("simd_bar_controls"), controls = c(ci_switch = FALSE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
-            ),
+            ), # close simd bar card
+            
             
             # SIMD trend chart 
             navset_card_tab(
-              height = 450,
+              height = 500,
               id = ns("simd_trend_card"),
               full_screen = TRUE,
-              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(
+                title = "Chart", 
+                div(
+                h4(textOutput(ns("simd_trend_title"), container = span), class = "chart-header"),
+                textOutput(ns("simd_trend_subtitle"))
+                ),
+                # to be added
+               # multi_trend_chart_mod_UI(ns("simd_trend_chart"))
+                ),
               nav_panel(title = "Table", "placeholder"),
               nav_spacer(),
               chart_controls_mod_UI(ns("simd_trend_controls"), controls = c(ci_switch = FALSE, avg_switch = TRUE, zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
-            )
-          ),
+          )# close simd trend card
+          ),  # close layout_column_wrap
           
-          
+          # add space
           br(),
           
           
           # Inequality gap charts
-          h5("Inequality gap", class = "mb-4"),
+          h3("Inequality gap", class = "mb-4"),
           
           layout_column_wrap(
             width = "20rem",
             
             # SII trend chart 
             navset_card_tab(
-              height = 450,
+              height = 600,
               id = ns("sii_card"),
               full_screen = TRUE,
-              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(
+                title = "Chart",
+                div(
+                  h4("Inequalities over time: absolute differences", class = "chart-header"),                
+                  p(textOutput(ns("sii_subtitle"))),
+                  p("An increasing trend suggests the gap between the most and least deprived areas is growing ", actionLink(ns("sii_info_btn"), label = "learn more"))
+                ),
+                trend_chart_mod_UI(ns("sii_chart"))
+                ),
               nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Help", about_sii),
               nav_spacer(),
               chart_controls_mod_UI(ns("sii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
@@ -202,49 +230,74 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
             
             # RII trend chart 
             navset_card_tab(
-              height = 450,
+              height = 600,
               id = ns("rii_card"),
               full_screen = TRUE,
-              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(
+                title = "Chart", 
+                div(
+                  h4("Inequalities over time: relative differences", class = "chart-header"),
+                p("The differences between the most disadvantaged area and the overall average for Scotland (expressed as a percentage)."),
+                p("An increasing trend suggests that the gap between the most disadvantaged area and the average is growing ", actionLink(ns("rii_info_btn"), label = "learn more"))
+                ),
+                trend_chart_mod_UI(ns("rii_chart"))
+                ),
               nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Help", about_rii),
               nav_spacer(),
               chart_controls_mod_UI(ns("rii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             )
-          ),
+            
+          ), # close layout_column_wrap
           
           
           br(),
           
           
           # Potential for imrpovement charts
-          h5("Potential for improvement", class = "mb-4"),
+          h3("Potential for improvement", class = "mb-4"),
           
           layout_column_wrap(
             width = "20rem",
             
             # PAR bar chart 
             navset_card_tab(
-              height = 450,
+              height = 500,
               id = ns("par_bar_card"),
               full_screen = TRUE,
-              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(title = "Chart", 
+                        div(
+                        h4(textOutput(ns("par_bar_title")), class = "chart-header"),
+                        p(textOutput(ns("par_bar_subtitle"), inline = TRUE), actionLink(ns("par_bar_info_btn"), label = "learn more"))
+                        ),
+                        stacked_bar_chart_mod_UI(ns("par_bar_chart"))
+                        ),
               nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Help", about_par),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             ),
             
             # PAR trend chart 
             navset_card_tab(
-              height = 450,
+              height = 500,
               id = ns("par_trend_card"),
               full_screen = TRUE,
-              nav_panel(title = "Chart", "placeholder"),
+              nav_panel(
+                title = "Chart", 
+                div(
+                  h4("Potential for improvement", class = "chart-header"),
+                p(textOutput(ns("par_trend_subtitle"), inline = TRUE), actionLink(ns("par_trend_info_btn"), label = "learn more"))
+                ),
+                trend_chart_mod_UI(ns("par_trend_chart"))
+                ),
               nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Help", about_par_trend),
               nav_spacer(),
               chart_controls_mod_UI(ns("par_trend_controls"), controls = c(zero_yaxis_switch = TRUE)),
               footer = card_footer(class = "d-flex justify-content-start", "placeholder")
             )
-          )
+          ) # close layout_column_wrap
         ) # close container for charts
       ), # close explore indicators section
       
@@ -305,8 +358,7 @@ ltmhi_Server <- function(id) {
             sii_trend_period = colDef(show = FALSE),
             rii_trend_period = colDef(show = FALSE),
             comparison_period = colDef(show = FALSE),
-            description = colDef(show = FALSE),
-            
+
             
             # domain column
             domain = colDef(
@@ -435,8 +487,58 @@ ltmhi_Server <- function(id) {
       })
       
       
+      ## reactive datasets -------------------------------
       
-      # chart controls
+      # filter simd dataset by selected indicator (and transpose values so higher always worse)
+      r_ind_data <- reactive({
+        simd_dataset |>
+          filter(indicator == input$ind_filter & areaname == "Scotland" & sex == "Total" & quint_type == "sc_quin") |>
+          mutate(across(.cols=sii:abs_range,.fns=abs)) |>
+          arrange(year)
+      })
+      
+      # further filter by totals only (no simd splits - for SII/RII/PAR trend charts)
+      r_ind_totals <- reactive({
+        r_ind_data() |>
+          filter(quintile == "Total")
+      })
+      
+      # further filter by quintiles only (no totals - for SIMD trend chart)
+      r_ind_quintiles <- reactive({
+        r_ind_data() |>
+          group_by(year) |>
+          mutate(total = measure[quintile == "Total"]) |>
+          ungroup() |>
+          filter(quintile != "Total")
+      })
+      
+      # further filter by quintiles for latest year only (for SIMD bar chart )
+      r_ind_quintiles_max <- reactive({
+        r_ind_data() |>
+          filter(quintile != "Total") |>
+          filter(year == max(year))
+      })
+      
+      r_ind_quintiles_par <- reactive({
+        r_ind_data() |>
+        filter(quintile != "Total") |>
+          filter(year == max(year)) |>
+        mutate(highest_measure= case_when(quintile==qmax ~ measure, TRUE ~ 0),
+               lowest_measure= case_when(quintile==qmin ~ measure, TRUE ~0),
+               highest=max(highest_measure),
+               lowest=max(lowest_measure),
+               baseline=case_when(interpret=="L" ~ lowest,
+                                  interpret=="H" ~ measure),
+               `attributable to inequality`=case_when(interpret=="L" ~ abs(measure-baseline),
+                                                      (interpret=="H" ~ abs(measure-highest)))) |>
+        pivot_longer(cols = c("attributable to inequality", "baseline"), names_to = "measure_name")
+      })
+      
+      
+
+      
+      
+      ##  chart controls ----------------------------------
       # these objects store user selection from each cards chart controls
       # as reactiveValues which can then be used to update the charts accordingly
       # each one contains 3 values. If the input wasn't used in the UI the returned value
@@ -452,6 +554,109 @@ ltmhi_Server <- function(id) {
       par_trend_controls <- chart_controls_mod_server("par_trend_controls")
       
       
+      
+      # Chart titles ---------------
+      
+      # dynamic chart titles
+      r_titles <- reactive({
+        max_year <- r_ind_quintiles_max()$trend_axis[1]
+        min_year <- r_ind_totals()$trend_axis[1]
+        
+        list(
+          simd_bar = paste(input$ind_filter, "by SIMD quintile,", max_year),
+          simd_trend = paste(input$ind_filter, "by SIMD quintile,", min_year, "-", max_year),
+          par_bar = paste("Attributable to inequality,", max_year)
+        )
+      })
+      
+      
+      # dynamic subtitles
+      r_subtitles <- reactive({
+        
+        measure <- r_ind_data()$type_definition[1]
+        indicator <- input$ind_filter
+        
+        list(
+          simd_bar = measure,
+          simd_trend = measure,
+          sii = paste0("The difference between most and least deprived areas (expressed as ", measure, ")."),
+          par_bar = paste("The portion of", indicator, "which could be attributed to socioeconomic inequalities."),
+          par_trend = paste("How much (%)", indicator, "could be improved if the levels of the 
+          least deprived area were experienced across the whole population.")
+        )
+        
+      })
+
+      
+      # render chart titles
+      output$simd_bar_title <- renderText({r_titles()$simd_bar})
+      output$simd_trend_title <- renderText({r_titles()$simd_trend})
+      output$par_bar_title <- renderText({r_titles()$par_bar})
+      
+      
+      # render chart subtitles
+      output$simd_bar_subtitle <- renderText({r_subtitles()$simd_bar})
+      output$simd_trend_subtitle <- renderText({r_subtitles()$simd_trend})
+      output$sii_subtitle <- renderText({r_subtitles()$sii})
+      output$par_bar_subtitle <- renderText({r_subtitles()$par_bar})
+      output$par_trend_subtitle <- renderText({r_subtitles()$par_trend})
+
+      
+      
+      
+      # charts -----
+      
+      
+      # SIMD snapshot chart
+      bar_chart_mod_Server(id = "simd_bar_chart",
+                           r_data = r_ind_quintiles_max,
+                           r_chart_controls = simd_bar_controls,
+                           x_col = "quintile", y_col = "measure", lowci_col = "lowci", upci_col = "upci"
+                           )
+      
+      
+      # SIMD trend chart
+      # module to be added
+      # multi_trend_chart_mod_Server(id = "simd_trend_chart", r_data = r_ind_quintiles,
+      #                          r_chart_controls = simd_trend_controls,
+      #                          x_col = "trend_axis", y_col = "measure", lowci_col = "lowci", upci_col = "upci",
+      #                          group_col = "quintile", avg_col = "total")
+      
+      
+      
+      # Relative Index of Inequality (RII) trend chart
+      trend_chart_mod_Server(id = "rii_chart",
+                         r_data = r_ind_totals,
+                         r_chart_controls = rii_controls,
+                         x_col = "trend_axis", y_col = "rii_int", lowci_col = "lowci_rii_int", upci_col = "upci_rii_int"
+      )
+      
+      
+      # Slope Index of Inequality (SII) trend chart
+      trend_chart_mod_Server(id = "sii_chart",
+                         r_data = r_ind_totals,
+                         r_chart_controls = sii_controls,
+                         x_col = "trend_axis", y_col = "sii", lowci_col = "lowci_sii", upci_col = "upci_sii"
+      )
+      
+      
+
+      # Population attributable Risk (PAR) bar chart
+      stacked_bar_chart_mod_Server(id = "par_bar_chart", r_data = r_ind_quintiles_par,
+                                   x_col = "quintile", y_col = "value", group_col = "measure_name")
+      
+      
+      # Population Attributable Risk (PAR) trend chart
+      trend_chart_mod_Server(id = "par_trend_chart",
+                             r_data = r_ind_totals,
+                             r_chart_controls = par_trend_controls,
+                             x_col = "trend_axis", y_col = "par"
+      )
+      
+      
+
+      
+      
 
     }
   )
@@ -461,10 +666,11 @@ ltmhi_Server <- function(id) {
 
 
 
-# For testing:
-
+# #For testing:
 # shinyApp(
 #   ui = page_navbar(
+#     theme = phs_theme,
+#     navbar_options = list(bg = "#3F3685"),
 #     fillable = FALSE,
 #     header = useShinyjs(),
 #     nav_panel(
