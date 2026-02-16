@@ -97,7 +97,7 @@ chart_controls_mod_UI <- function(id,
 #'
 #' @param id Character string. The module's namespace ID (should match the UI function).
 #'
-#' @return Returns the result of moduleServer().
+#' @return Returns a **reactiveValues** object
 #'
 
 #' # copy in server:
@@ -168,8 +168,9 @@ chart_controls_mod_server <- function(id) {
         names(rv),
         ~ {!is.null(rv[[.x]]) & identical(rv[[.x]], rv_init[[.x]])}
       )
-
-      setBookmarkExclude(c(exclusions, "chart_settings_btn")) # apply exclusions alongside the chart settings button which should always be excluded!
+      
+      # apply exclusions alongside the chart settings button which should always be excluded!
+      setBookmarkExclude(c(exclusions, "chart_settings_btn")) 
 
     })
 
@@ -189,45 +190,45 @@ chart_controls_mod_server <- function(id) {
 # library(shiny)
 # library(bslib)
 
-shinyApp(
-  ui = function(request){
-    page(
-      layout_column_wrap(
-        div(
-          p("Card with inputs module:"),
-          bslib::navset_card_pill(
-            nav_panel("Chart", "placeholder"),
-            nav_spacer(),
-            chart_controls_mod_UI(id = "example")
-            )
-          ),
-          div(
-            p("The values returned from the module:"),
-            verbatimTextOutput("results"),
-          )
-        ),
-      div(
-        p("The URL that is updated whenever the bookmark button is pressed. If user doesn't change the
-                default values of the switches, they won't appear in the URL, otherwise they will."),
-        textOutput("url"),
-        bookmarkButton()
-      )
-      )
-    },
-  server = function(input, output, session) {
-
-  selections <- chart_controls_mod_server(id = "example")
-
-  output$results <- renderPrint({
-    shiny::reactiveValuesToList(selections)
-  })
-
-  onBookmarked(function(url) {
-    output$url <- renderText({
-      paste("url:", url)
-    })
-  })
-
-  },
-  enableBookmarking = "url"
-)
+# shinyApp(
+#   ui = function(request){
+#     page(
+#       layout_column_wrap(
+#         div(
+#           p("Card with inputs module:"),
+#           bslib::navset_card_pill(
+#             nav_panel("Chart", "placeholder"),
+#             nav_spacer(),
+#             chart_controls_mod_UI(id = "example")
+#             )
+#           ),
+#           div(
+#             p("The values returned from the module:"),
+#             verbatimTextOutput("results"),
+#           )
+#         ),
+#       div(
+#         p("The URL that is updated whenever the bookmark button is pressed. If user doesn't change the
+#                 default values of the switches, they won't appear in the URL, otherwise they will."),
+#         textOutput("url"),
+#         bookmarkButton()
+#       )
+#       )
+#     },
+#   server = function(input, output, session) {
+# 
+#   selections <- chart_controls_mod_server(id = "example")
+# 
+#   output$results <- renderPrint({
+#     shiny::reactiveValuesToList(selections)
+#   })
+# 
+#   onBookmarked(function(url) {
+#     output$url <- renderText({
+#       paste("url:", url)
+#     })
+#   })
+# 
+#   },
+#   enableBookmarking = "url"
+# )
