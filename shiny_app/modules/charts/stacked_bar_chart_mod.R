@@ -97,11 +97,25 @@ stacked_bar_chart_mod_Server <- function(id,
       curr_series_ids(ids)
       
       
-      # create chart
-      hc <- hchart(
-        df, 
-        type = 'column', 
-        hcaes(y = .data[[y_col]], group = .data[[group_col]], x = .data[[x_col]])) |>
+      # create series data
+      # For each group do the following:
+      series_data <- map(ids, ~ {
+        
+        # a. get data for that particular group:
+        bar_data <- df[df[[group_col]] == .x, ]
+        
+        # b. turn group data into list
+        list(
+          id = .x,
+          name = .x,
+          type = "column",
+          data = list_parse2(bar_data[, c(x_col, y_col)])
+        )
+      })
+      
+      # create highchart
+      hc <- highchart() |>
+        hc_add_series_list(series_data) |>
         hc_plotOptions(series = list(stacking = "normal")) |>
         hc_xAxis(categories = unique(df[[x_col]])) |>
         hc_colors(c(phs_colors("phs-blue"), phs_colors("phs-purple"))) |>
