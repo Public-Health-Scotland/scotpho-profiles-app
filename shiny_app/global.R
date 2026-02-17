@@ -45,6 +45,9 @@ source("highcharter functions.R")
 main_dataset <- setDT(read_parquet("data/main_dataset.parquet")) # main dataset (to do: rename optdata file in data prep script)
 simd_dataset <- setDT(read_parquet("data/deprivation_dataset.parquet")) # dataset behind simd panel
 popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset.parquet")) # dataset behind popgroup panel
+demographic_dataset <- setDT(read_parquet("data/demographic_dataset")) # dataset behind demographics panel
+
+demographic_simd_dataset <- setDT(read_parquet("data/demographic_simd_dataset")) # dataset behind demographics panel
 
 # lookups
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
@@ -75,7 +78,6 @@ all_subtabs <- c("summary_tab",
                  "rank_tab", 
                  "simd_tab", 
                  "pop_groups_tab",
-                 "demographics_tab",
                  "about_profile_tab")
 
 
@@ -202,7 +204,7 @@ profiles_list <- list(
     short_name = "POP",
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab","demographics_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE

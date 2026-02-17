@@ -217,7 +217,7 @@ function(input, output, session) {
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
 
    #need to add demo data
-   demographics_mod_server("demographics", geo_selections, selected_profile, session)
+   demographics_mod_server("demographics",demographic_data, geo_selections, selected_profile, session)
    
    # running module for the long-term monitoring of HE tab
    # ltmi_Server(id = "ltmhi")
@@ -313,6 +313,14 @@ function(input, output, session) {
     }
   })
   
+  
+  # 5. DEMOGRAPHIC DATA
+  demographic_data <-reactive({
+    req(input$profile_choices != "")
+    demographic_dataset |>
+      filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)
+    
+  })
   
   
   ###################################################.
