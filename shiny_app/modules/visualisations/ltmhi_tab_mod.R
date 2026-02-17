@@ -188,7 +188,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 textOutput(ns("simd_trend_subtitle"))
                 ),
                 # to be added
-               # multi_trend_chart_mod_UI(ns("simd_trend_chart"))
+                multi_trend_chart_mod_UI(ns("simd_trend_chart"))
                 ),
               nav_panel(title = "Table", "placeholder"),
               nav_spacer(),
@@ -263,7 +263,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
             
             # PAR bar chart 
             navset_card_tab(
-              height = 500,
+              height = 550,
               id = ns("par_bar_card"),
               full_screen = TRUE,
               nav_panel(title = "Chart", 
@@ -280,7 +280,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
             
             # PAR trend chart 
             navset_card_tab(
-              height = 500,
+              height = 550,
               id = ns("par_trend_card"),
               full_screen = TRUE,
               nav_panel(
@@ -617,10 +617,10 @@ ltmhi_Server <- function(id) {
       
       # SIMD trend chart
       # module to be added
-      # multi_trend_chart_mod_Server(id = "simd_trend_chart", r_data = r_ind_quintiles,
-      #                          r_chart_controls = simd_trend_controls,
-      #                          x_col = "trend_axis", y_col = "measure", lowci_col = "lowci", upci_col = "upci",
-      #                          group_col = "quintile", avg_col = "total")
+      multi_trend_chart_mod_Server(id = "simd_trend_chart", r_data = r_ind_quintiles,
+                               r_chart_controls = simd_trend_controls,
+                               x_col = "trend_axis", y_col = "measure", lowci_col = "lowci", upci_col = "upci",
+                               group_col = "quintile", avg_col = "total")
       
       
       
@@ -666,8 +666,8 @@ ltmhi_Server <- function(id) {
 
 
 
-# #For testing:
-# shinyApp(
+# # #For testing:
+#  shinyApp(
 #   ui = page_navbar(
 #     theme = phs_theme,
 #     navbar_options = list(bg = "#3F3685"),
@@ -682,7 +682,8 @@ ltmhi_Server <- function(id) {
 #   server = function(input, output, session){
 #     ltmhi_Server("example")
 #   }
-# )
+#  )
+
 
 
 
