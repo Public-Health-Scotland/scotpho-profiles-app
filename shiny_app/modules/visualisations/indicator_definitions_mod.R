@@ -147,7 +147,7 @@ definitions_tab_Server <- function(id) {
                      
                      <div>
                      <h4 class = 'metadata-header'>Profiles</h4>
-                     ${rowInfo.values['profile']}
+                     ${rowInfo.values['profile_domain']}
                      </div>
                      
                      <br>
@@ -194,13 +194,13 @@ definitions_tab_Server <- function(id) {
                      <th>Age group</th>
                      <th>Sex</th>
                      <th>Available geographies</th>
-                     <th>Inequalities</th>
+                     <th>Year Type</th>
                      </tr>
                      <tr>
                      <td>${rowInfo.values['age_group']}</td>
                      <td>${rowInfo.values['sex']}</td>
                      <td>${rowInfo.values['available_geographies']}</td>
-                     <td>${rowInfo.values['label_inequality']}</td>
+                     <td>${rowInfo.values['year_type']}</td>
                      </tr>
                      </table>
                      
@@ -241,50 +241,37 @@ definitions_tab_Server <- function(id) {
             # The rest of the columns - set to hidden
             # these columns will not be visible in the table 
             # however most of them are used to populate the information when a row is expanded
-            profile = colDef(show = F),
-            domain = colDef(show = F),
-            trends_from = colDef(show = F),
+            ind_id = colDef(show = F),
+            profile_domain = colDef(show = F),
             indicator_definition = colDef(show = F),
             data_source = colDef(show = F),
             source_details = colDef(show = F),
-            related_publications = colDef(show = F),
-            supporting_information = colDef(show = F),
             inclusion_rationale = colDef(show = F),
-            numerator = colDef(show = F),
-            available_geographies = colDef(show = F),
-            disclosure_control = colDef(show = F),
-            confidence_interval_method = colDef(show = F),
-            type_definition = colDef(show = F),
-            notes_caveats = colDef(show = F),
-            denominator = colDef(show = F),
             diagnostic_code_position = colDef(show = F),
+            numerator = colDef(show = F),
+            denominator = colDef(show = F),
+            type_definition = colDef(show = F),
+            disclosure_control = colDef(show = F),
             rounding = colDef(show = F),
-            aggregation = colDef(show = F),
-            ind_id = colDef(show = F),
             age_group = colDef(show = F),
             sex = colDef(show = F),
-            update_frequency = colDef(show = F),
-            label_inequality = colDef(show = F),
-            supression =  colDef(show = F),
-            supress_less_than =  colDef(show = F),
-            type_id =  colDef(show = F),
+            confidence_interval_method = colDef(show = F),
+            available_geographies = colDef(show = F),
             interpret =  colDef(show = F),
-            analyst_notes = colDef(show = F),
-            profile_domain1 = colDef(show = F),
-            profile_domain2 = colDef(show = F),
-            profile_domain3 = colDef(show = F),
-            profile_domain = colDef(show = F),
-            active = colDef(show = F),
-            covid_impact = colDef(show = F),
-            days_since_update = colDef(show = F),
-            source_last_updated = colDef(show = F),
-            source_next_update = colDef(show = F),
-            year_type = colDef(show = F),
-            indicator_author = colDef(show = F),
             interpretation = colDef(show = F),
-            scotpho_profiles = colDef(show = F),
-            pop_group_splits = colDef(show = F),
-            scotpho_web_link = colDef(show = F)
+            year_type = colDef(show = F),
+            trends_from = colDef(show = F),
+            aggregation = colDef(show = F),
+            update_frequency = colDef(show = F),
+            last_updated = colDef(show = F),
+            next_update = colDef(show = F),
+            active = colDef(show = F),
+            notes_caveats = colDef(show = F),
+            related_publications = colDef(show = F),
+            supporting_information = colDef(show = F),
+            scotpho_web_link = colDef(show = F),
+            supression =  colDef(show = F),
+            type_id =  colDef(show = F)
           ) # close columns list
         ) # close reactable 
       }) # close render reactable
