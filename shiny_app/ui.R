@@ -87,16 +87,6 @@ page_navbar(
                           #  ),
                           #  hr(),     
                           
-                          # Change of source for children's PA indicator
-                          div(
-                            h4("February 2026 : Change of data source for children's physical activity indicator markedly affects the figures", class = "profile-header"),
-                            p("The indicator 'Children meeting physical activity guidelines' (part of the Children and Young People Mental Health Profile) is now sourced from the Scottish Health Survey, rather than the Health Behaviour in School-Aged Children survey.
-                            The new source covers a wider range of ages and is updated more frequently. The full time series back to 2008 has been updated. 
-                              Users may notice the percentages are markedly higher now: this is due to the younger ages included now (2 to 15y, compared with 11y+ previously) 
-                              and the more detailed way the indicator has been derived (from multiple questions answered by the child's parent (for 2 to 12 year olds) or the child (for 13 to 15 year olds), rather than from a single question asked to each child).")
-                          ),
-                          hr(),
-                          
                           # Climate profile info
                          div(
                            h4("October 2025 : New Climate Impact profile", class = "profile-header"),
