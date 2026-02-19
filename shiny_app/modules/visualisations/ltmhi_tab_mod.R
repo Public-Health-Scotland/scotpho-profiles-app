@@ -1,3 +1,13 @@
+##########################################################################.
+# MODULE: Long Term Monitioring of Health Inequalities (LTMHI) module ---- 
+# Prepares nav panel which displays LTMHI information .
+##########################################################################.
+
+
+#######################################################.
+## MODULE UI ----
+#######################################################.
+
 
 ltmhi_UI <- function(id, ltmhi_dataset) {
   ns <- NS(id)
@@ -321,6 +331,9 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
 } # close function 
 
 
+#######################################################.
+## MODULE SERVER ----
+#######################################################.
 
 ltmhi_Server <- function(id) {
   moduleServer(
@@ -449,7 +462,10 @@ ltmhi_Server <- function(id) {
                 
                 div(class = paste0("badge rounded-pill ms-auto bg-", colour), value)
               }
-            )
+            )            ,
+            
+            # Hide a column called 'description' so that not visible in table
+           description = colDef(show = F)
           )
         )
       })
