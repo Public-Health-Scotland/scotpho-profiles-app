@@ -248,7 +248,8 @@ depr_dataset <- create_dataset(
 # MM Nov 2025 - temporarily remove scotland decile data
 # as we currently only publish quintiles
 depr_dataset <- depr_dataset |>
-  filter(quint_type != "sc_decile")
+  filter(!quint_type %in% c("sc_decile", "hscp_quin"))
+
 
 
 # save deprivation dataset in this project data folder, ready to be used in the app
