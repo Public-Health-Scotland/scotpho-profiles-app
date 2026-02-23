@@ -312,12 +312,12 @@ page_navbar(
   # nav_menu(
   #   title = "Health inequalities",
   #   nav_panel(
-  #     title = "National profile",  
+  #     title = "National profile",
   #     value = "shi_tab",
   #     ltmhi_UI("ltmhi")
   #   )
   # ),
-  
+
   nav_spacer(), # add space to navbar 
   
   ########################################.
