@@ -50,7 +50,7 @@ popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset.parquet")) # datas
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc.parquet") # technical document
-#ltmhi_lookup <- data.table::fread("data/ltmhi_info.csv") # lookup for ltmhi indicators 
+ltmhi_lookup <- data.table::fread("data/ltmhi_info.csv") # lookup for ltmhi indicators 
 
 
 # shapefiles (for map) 
@@ -488,4 +488,27 @@ window.LeafletWidget.methods.setLabel = function(category, layerId, label){
 '
   ))
 )
+
+
+# function to force a bslib card into fullscreen mode
+# Note: In bslib multi-tab cards (e.g. navset_card_pill() etc.), the `id` arg 
+# is the navset's id within the card, not the card's id.
+# This function finds that navset element, then the nearest card container,
+# then click that card's fullscreen button.
+fullscreen_card_JS <- tags$script(HTML("
+      Shiny.addCustomMessageHandler('fullscreen_card', function(card_id) {
+        var nav = document.getElementById(card_id);
+        if (!nav) return;
+
+        var card = nav.closest('.bslib-card, .card');
+        if (!card) return;
+
+        var btn = card.querySelector('button.bslib-full-screen-enter');
+        if (btn) btn.click();
+      });
+    "))
+
+
+# code to enable bookmarking of the app
+enableBookmarking(store = "url")
 
