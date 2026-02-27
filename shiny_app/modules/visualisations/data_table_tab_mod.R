@@ -262,7 +262,7 @@ data_tab_mod_Server <- function(id) {
                      data <- bind_rows(data, rii, sii, par) |>
                        select(area_code, area_type, area_name, year, period, indicator, 
                               quintile, measure, value, upper_confidence_interval, 
-                              lower_confidence_interval, label_inequality) |>
+                              lower_confidence_interval) |>
                        arrange(indicator, area_name, year)
                    }
         
