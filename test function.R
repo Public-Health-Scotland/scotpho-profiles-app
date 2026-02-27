@@ -105,7 +105,6 @@ pop_simd_centile<- demographic_simd_dataset |>
   filter(centile_type=="quintile")
 
 
-
 pop_simd_centile_iz<- demographic_simd_dataset |>
   #filter(areatype == "Intermediate zone" & areaname =="Culter")|>
   filter(areatype == "Council area" & areaname =="Aberdeen City")|>
@@ -125,20 +124,27 @@ pop_simd_centile_iz_rearrange <-pop_simd_centile_iz |>
                 values_from = "population") |>
   #mutate(across(c(Q1:Q5), ~ replace_na(.x, 0)))|>
   #ungroup() |>
-  mutate(Total = rowSums(across(c(Q1,Q2,Q3,Q4,Q5)), na.rm = TRUE))
+  mutate(Total = rowSums(across(c(Q1,Q2,Q3,Q4,Q5)), na.rm = TRUE),
+         measure_type=case_when(substr(population_group,1,3) =="pop" ~ "count",
+                                substr(population_group,1,3) =="per" ~ "(%)",
+                                TRUE ~ "other"))
+
+
     
 
 # need to filter for single year 
 table_data<-pop_simd_centile_iz_rearrange |>
   filter(year==2020)|>
-  select(simd_domain,population_group,Q1,Q2,Q3,Q4,Q5,Total)
+  filter(population_group=="pop_all_ages") |>
+  select(simd_domain,measure_type,population_group,Q1,Q2,Q3,Q4,Q5,Total)
+  
 
 
 #table showing population count and percent of population by each simd quintile grouped by simd domain
 reactable(data=table_data,
   defaultExpanded = TRUE,
   #defaultPageSize = nrow(data),
-  groupBy = "population_group",
+  groupBy = "measure_type",
   columns = list(
     simd_domain = colDef(name = "SIMD Domain",      
                          style = list(borderRight = "1px solid #eee"),
