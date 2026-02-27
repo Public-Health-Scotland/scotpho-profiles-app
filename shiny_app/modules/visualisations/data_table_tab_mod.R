@@ -135,7 +135,7 @@ data_tab_mod_Server <- function(id) {
         if(input$dataset_selector == "Main Dataset") {
           main_data_geo_nodes # full list of geographies
         } else {
-          main_data_geo_nodes[c(1,2,4)] # scotland, hb and ca only 
+          main_data_geo_nodes[c(1:3)] # scotland, hb and ca only 
         }
       })
       
@@ -322,7 +322,7 @@ data_tab_mod_Server <- function(id) {
         if (!is.null(input$profile_selector) && input$profile_selector != "") {
           
           profile_filtered_data <- data |>
-            filter(grepl(paste(profiles_list[[profile_selector]]$short_name, collapse = "|"), profile_domain))
+            filter(grepl(paste(profiles_list[[input$profile_selector]]$short_name, collapse = "|"), profile_domain))
           
           
           available_indicators <- unique(profile_filtered_data$indicator)
@@ -391,7 +391,7 @@ data_tab_mod_Server <- function(id) {
         updateVirtualSelect(session = session,
                             inputId = "profile_selector",
                             selected = NULL,
-                            choices = profiles_list)
+                            choices = names(profiles_list))
         
       })
       
@@ -402,40 +402,17 @@ data_tab_mod_Server <- function(id) {
     ##############################.
       
       output$data_tab_table <- renderDT({
-        
-        # columns to hide in table
-        if(input$dataset_selector == "Main Dataset") {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3, 9,10, 11)))
-          
-        } else {
-          cols_to_display = list(list(visible=FALSE, targets=c(0,3,9,10,11, 12)))
-        }
-        
-        
-        
-        # column names for table
-        if(input$dataset_selector == "Main Dataset") {
-          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Measure Type", 
-                        "Indicator", "Numerator", "Measure", "hidden", "hidden", "hidden")
-          
-        } else {
-          col_names = c("hidden", "Type", "Area", "hidden", "Period", "Indicator", 
-                        "Quintile", "Measure", "Value", "hidden", "hidden", "hidden", "hidden")
-        }
-        
-        
+
         datatable(tableData(),
                   style = 'bootstrap', 
                   caption = sprintf('Total rows: %s', nrow(tableData())),
                   rownames = FALSE,
-                  colnames = col_names,
                   options = list(scrollX = TRUE,
                                  scrollY = "600px", 
                                  pageLength = 20,
                                  searching = FALSE,
                                  language = list(
-                                   zeroRecords = "Select atleast one geography to display results."),
-                                 columnDefs = cols_to_display
+                                   zeroRecords = "Select atleast one geography to display results.")
                   ))
         
         
