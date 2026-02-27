@@ -67,8 +67,7 @@ data_table_mod_Server <- function(id, r_data, cols) {
           data = r_data(),
           defaultExpanded = TRUE,
           defaultPageSize = nrow(r_data()),
-          columns = purrr::map(hide_cols, ~ reactable::colDef(show = FALSE)) |>
-            rlang::set_names(hide_cols)
+          columns = purrr::map(hide_cols, ~ reactable::colDef(show = FALSE)) |> set_names(hide_cols)
           )
       })
       
