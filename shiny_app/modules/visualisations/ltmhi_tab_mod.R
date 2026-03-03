@@ -27,6 +27,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
   
   
  tagList(
+   div(class = "container-xxl",
 
    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    # Page header  ----
@@ -34,11 +35,10 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
    
     div(
       class = "p-2 mb-3", # add padding and bottom margin 
-      h1("Long-term Monitoring of Health Inequalities in Scotland"),
-      p("Brief explanation about LTMHI and link to the full report?"),
-      # # MM revisit: final link to report to be added
-      # p("Access the", tags$a("full report with narrative", href = "placeholder", target = "_blank"), "on the Public Health Scotland website."),
-      bookmarkButton(class = "btn-sm")
+      h1("Long-term Monitoring of Health Inequalities in Scotland", style = "font-size:2.5rem"),
+      p("This page provides interactive charts and summary data for indicators featured in the latest Long‑Term Monitoring of Health Inequalities in Scotland report. 
+      Read the accompanying narrative in the full report", tags$a("here", icon("arrow-up-right-from-square"), href = "placeholder", target = "_blank"), "."),
+      bookmarkButton(class = "btn-sm", label = "Bookmark page")
     ),
 
     # space
@@ -47,7 +47,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
    # Notice about feedback
    div(
      class = "p-3", style = "background-color:#ECECEC",
-     "Banner about contactung us to provide feedback?"
+     p(class = "m-0", "We welcome any feedback on the contents and design of this page at ",  tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), ".")
    ),
    
    
@@ -68,7 +68,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
     # ~~~~~~~~~~~~~~~~~~~~~
     # left:
       div(
-        class = "sticky-top p-4", # sticky-top prevents menu from scrolling out of view p-4
+        class = "sticky-top p-4", # sticky-top prevents menu from scrolling out of view
         h4("Contents"),
         tags$ul(
           class = "list-group gap-3 list-unstyled",
@@ -105,7 +105,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 class = "ms-4",
                 h3("Life expectancy", style = "font-size: 1.2rem;"),
                 markdown("In 2022-2024, females living in the most deprived areas were expected to live **9 years less**, and males **11 years less**, than those in the least deprived areas."),
-                le_chart(most_males = 70, most_females = 75, least_males = 60, least_females = 65)
+                le_chart(most_males = 70, most_females = 76, least_males = 82, least_females = 85)
               )
             ),
 
@@ -117,7 +117,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 class = "ms-4",
                 h3("Healthy life expectancy", style = "font-size: 1.2rem;"),
                 markdown("In 2021-2023, females in the most deprived areas were expected to spend **22 fewer years** in good health, and males **23 fewer years**, than those in the least deprived areas."),
-                le_chart(most_males = 70, most_females = 75, least_males = 60, least_females = 65)
+                le_chart(most_males = 48, most_females = 50, least_males = 71, least_females = 71)
               )
             )
             )
@@ -218,6 +218,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               nav_panel(
                 title = "Chart",
                 div(
+                  class = "p-2",
                 h4(textOutput(ns("simd_bar_title"), container = span), class = "chart-header"),
                 textOutput(ns("simd_bar_subtitle"))
                 ),
@@ -388,6 +389,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       
       ) # close right hand side section
     ) # close layout_colums for left-menu and right-content
+   ) # close container
  ) # close tagList
 
 } # close function 
@@ -430,6 +432,8 @@ ltmhi_Server <- function(id) {
           data = ltmhi_lookup,
           defaultExpanded = TRUE,
           defaultPageSize = nrow(ltmhi_lookup),
+          # centre the contents inside each cell
+          defaultColDef = colDef(vAlign = "center"), 
           columns = list(
             
             # hidden columns
@@ -442,10 +446,11 @@ ltmhi_Server <- function(id) {
             # domain column
             domain = colDef(
               name = "Domain",
+              minWidth = 110,
               cell = function(value, index) {
                 if (index > 1 && ltmhi_lookup$domain[index] == ltmhi_lookup$domain[index - 1]) {
                   div(style = "visibility:hidden", value)
-                } else value
+                } else div(class = "fw-bold", value)
               }
             ),
             
@@ -453,10 +458,12 @@ ltmhi_Server <- function(id) {
             # comparison column
             comparison = colDef(
               name = "Most vs. least deprived quintile",
+              minWidth = 120,
               html = TRUE,
               cell = function(value, index){
                 as.character(tooltip(
-                  div(class = "badge rounded-pill ms-auto", style = "background-color: #adb5bd", value),
+                  div(value),
+                  #div(class = "badge rounded-pill ms-auto", style = "background-color: #adb5bd", value),
                   paste(value, "in the least deprived quintile in", ltmhi_lookup$comparison_period[index])
                 ))
               }
