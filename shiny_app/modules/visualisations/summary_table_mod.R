@@ -84,7 +84,7 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     
     
     # show spine chart explanation when any areatype other than Scotland has been selected, otherwise hide it
-    observeEvent(selected_geo()$areatype, {
+    observe({
       if (selected_geo()$areatype != "Scotland") {
         shinyjs::show("spine_chart_explanation")
       } else {
