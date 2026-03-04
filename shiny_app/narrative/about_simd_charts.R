@@ -20,21 +20,21 @@ about_simd_quintiles <- tagList(
 about_rii <- tagList(
   tags$div(
   tags$h6("What does the chart show?", class = "chart-header"),
-  tags$p("The chart below shows how relative inequality (the gap between the least disadvantaged group
+  tags$p("The chart shows how relative inequality (the gap between the least disadvantaged group
      and the average of all groups) has changed over time."),
-  tags$p("The values in the chart are known as the 'Relative Index of Inequality (RII)' for each year this 
+  tags$p("The values in the chart are based on the 'Relative Index of Inequality (RII)'. For each year this 
           is calculated using a linear regression model of the social variable (in this case the SIMD quintiles) 
           and the selected indicator measure (e.g. rate of hospitalisations/deaths/etc)."),
-  tags$p("The RII represents the inequality gap between the most disadvantaged and the overall average. ScotPHO use a
-          linear regression model and have converted the RII so that the value in the chart represents the percentage
-          difference of the rate in the most disadvantaged group relative to the rate in the overall population.")
+  tags$p("ScotPHO calculate the RII and convert it so that the value in the chart represents the percentage
+          difference of the rate in the most disadvantaged group relative to the rate in the overall population. 
+         The chart therefore shows the relative inequality gap between the most disadvantaged and the overall average. ")
   ),
   tags$div(
   tags$h6("How do I interpret the chart?", class = "chart-header"),
   tags$p("If there were no difference between indicator values in the most disadvantaged area and the overall
-          average the RII would be zero. The larger the RII the greater the inequity between the most disadvantaged
-          areas and the overall average. It is possible for relative inequality to reduce but absolute inequality
-          to increase which why it is important to consider trends in both the SII and RII.")
+          average the value would be zero. The larger the value the greater the inequality between the most disadvantaged
+          area and the overall average. It is possible for relative inequality to reduce but absolute inequality
+          to increase which why it is important to consider trends in both.")
   )
   )
 
@@ -47,9 +47,9 @@ about_rii <- tagList(
 about_sii <- tagList(
   tags$div(
     tags$h6("What does the chart show?", class = "chart-header"),
-    tags$p("The chart shows the absolute inequality has changed over time. Absolute inequality is
+    tags$p("The chart shows how the absolute inequality has changed over time. Absolute inequality is
             measured using a value called the 'Slope Index of Inequality (SII)'. This is a measure of
-            the gap between the most and least disadvantaged populations.")
+            the absolute gap between the most and least deprived areas.")
     ),
   tags$div(
     tags$h6("How do I interpret the chart?", class = "chart-header"),
@@ -62,17 +62,19 @@ about_sii <- tagList(
 # About population attributable risk trends (PAR)
 ##########################################################
 
-
 about_par <- tagList(
   tags$div(
     tags$h6("What does the chart show?", class = "chart-header"),
     tags$p("The bar chart shows indicator values split by the deprivation quintiles. The area shaded
-       in purple is the same across all 5 quintiles, it shows the rate observed in the least deprived
-       quintile. The area shaded in blue represents the additional activity the 4 remaining quintiles
-       have over and above that seen in the least deprived quintile."),
-    tags$p("Looking at data in this way illustrates the potential impact of removing deprivation (i.e. 
-    in the hypothetical situation that all deprivation quintiles experienced the same rates).")
+       in purple is the same across all 5 quintiles: the rate observed in the least deprived
+       quintile. Everything that is 'worse' than this value is classified as being attributable to inequality, and is shaded in blue.")
     ),
+  tags$div(
+    tags$h6("How do I interpret the chart?", class = "chart-header"),
+    tags$p("Looking at data in this way illustrates the potential impact of removing deprivation (i.e. 
+           in the hypothetical situation that all deprivation quintiles experienced the same rates). 
+           It allows us to understand how a particular indicator could improve if all groups had the same level of outcome.")
+  ),
   tags$div(
     tags$h6("Related resources", class = "chart-header"),
     tags$p("You can read more about the Population Attributable Risk in the", tags$a("Measuring inequalities 
