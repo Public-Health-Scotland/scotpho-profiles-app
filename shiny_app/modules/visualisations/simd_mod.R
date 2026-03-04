@@ -831,7 +831,7 @@ simd_navpanel_ui <- function(id) {
         "Scroll to Metadata Button",
         "Click here to scroll to the metadata panel below.<br>
         It contains information about the selected indicator, including indicator definition, 
-        data source, notes and caveats and links to relevant publications and pages on the ScotPHO website. "
+        data source, notes and caveats, and links to relevant publications and pages on the ScotPHO website. "
       )$
       step(
         ns("depr_measures_wrapper"), #Measures of deprivation
@@ -845,9 +845,9 @@ simd_navpanel_ui <- function(id) {
         "Select Quintile Type",
         "Click here to toggle between Scotland quintiles and local quintiles.<br> 
         When local quintiles are selected, Quintile 1 will represent the 20% most 
-        deprived datazones in the selected region.<br>
+        deprived datazones in the selected area.<br>
         When Scotland quintiles are selected, Quintile 1 will represent datazones 
-        in the selected region which are in the 20% most deprived 
+        in the selected area which are in the 20% most deprived 
         across Scotland."
       )$
       step(
