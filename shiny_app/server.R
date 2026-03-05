@@ -446,7 +446,7 @@ function(input, output, session) {
     # so users know it's been successfully copied to clipboard
     updateActionButton(
       session,
-      "copy_url",
+      "copy_url_btn",
       label = "Copied",
       icon  = icon("check")
     )
