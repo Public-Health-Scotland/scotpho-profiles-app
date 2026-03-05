@@ -345,13 +345,15 @@ function(input, output, session) {
   
   # Temporary step to remove all inputs from the bookmarked URL
   # except those related to the LTMHI profile (and the selected nav)
+  # The LTMHI module (and other modules used within that) will also
+  # be applying further exclusions to ltmhi-related inputs
   # This code is only run once when the app initally loads
   observeEvent(input$nav, {
 
     # ids of all inputs from across the app
     all_inputs <- names(input)
 
-    # those related to LTMHI only (excluding anything reactable related)
+    # those related to LTMHI only
     ltmhi_inputs <- all_inputs[grepl("ltmhi", all_inputs)]
 
     # inputs to exclude 
@@ -364,15 +366,29 @@ function(input, output, session) {
   }, ignoreInit = FALSE, once = TRUE)
   
   
+  # 2 additional inputs to be excluded (these are created within the popup modal that appears during 
+  # bookmarking, and are therefore don't exist to be able to be excluded in step above when app initially loads
+  # this step takes previous bookmark exclusions from step above and adds an additional 2 exclusions
+  # this code is only run once
+  observeEvent(input$url_text, {
+    setBookmarkExclude(c(session$getBookmarkExclude(), "url_text", "copy_url_btn"))
+  }, ignoreInit = TRUE, once = TRUE)
+  
+  
   
   # 2. Onbookmark logic ----
   # i.e. things that should happen BEFORE the final bookmark is created
-  # this code is triggered whenever a user clicks the bookmark button or share buttons
+  # this code runs whenever a user clicks the bookmark button OR share buttons
+  # (both of which trigger the session to be bookmarked)
   
   # update custom variable called 'share_card' - this will be added to the bookmarked URL
   # if a share button hasn't been clicked (i.e. main 'bookmark' button clicked) then share_card will be NULL
   onBookmark(function(state) {
+    # update variablle called share_card
     state$values$share_card <- session$userData$share_card %||% NULL
+    
+    # re-reset userData variable called share_card back to NULL
+    session$userData$share_card <- NULL
   })
   
   
@@ -380,7 +396,7 @@ function(input, output, session) {
   # i.e. things that should happen AFTER the final bookmark is created
   # open a modal with the URL for users to copy
   onBookmarked(function(url) {
-    
+  
     showModal(
       modalDialog(
         title = "Bookmark link",
@@ -403,7 +419,7 @@ function(input, output, session) {
           column(
             width = 3,
             actionButton(
-              inputId = "copy_url",
+              inputId = "copy_url_btn",
               label = "Copy",
               icon = icon("copy"),
               width = "100%"
@@ -412,11 +428,12 @@ function(input, output, session) {
         )
       )
     )
+
   })
   
   
   # when copy url button is clicked in modal dialog:
-  observeEvent(input$copy_url, {
+  observeEvent(input$copy_url_btn, {
     
     # copy whatever is in the text box to clipboard
     # modifying example here to simpler solution using shinyjs:
