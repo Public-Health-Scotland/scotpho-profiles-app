@@ -158,16 +158,21 @@ create_dataset <- function(folder,
   if (dataset == "deprivation"){
     data <- data |>
       mutate(
-        qmax = ifelse(sum(is.na(measure))==5, as.character(NA), quintile[which.max(measure)]), # which quintile contains highest rate/value
-        qmin = ifelse(sum(is.na(measure))==5, as.character(NA), quintile[which.min(measure)]) # which quintile contains lowest rate/value
-      ) |>
-      dplyr::mutate(
         quintile = dplyr::recode(
           quintile,
           "1" = "1 - most deprived", 
           "5" = "5 - least deprived"
         )
-      )
+      ) |>
+      # create 2 new columns which are populated with the highest and lowest value
+      # these are used for the calculation for PAR charts
+      group_by(ind_id, year, quint_type, code) |>
+      mutate(
+        qmax = ifelse(sum(is.na(measure))==5, as.character(NA), quintile[which.max(measure)]), # which quintile contains highest rate/value
+        qmin = ifelse(sum(is.na(measure))==5, as.character(NA), quintile[which.min(measure)]) # which quintile contains lowest rate/value
+      ) |>
+      ungroup()
+
   }
   
   
