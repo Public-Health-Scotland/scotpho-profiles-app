@@ -384,10 +384,10 @@ function(input, output, session) {
   # update custom variable called 'share_card' - this will be added to the bookmarked URL
   # if a share button hasn't been clicked (i.e. main 'bookmark' button clicked) then share_card will be NULL
   onBookmark(function(state) {
-    # update variablle called share_card
+    # update url variable called share_card
     state$values$share_card <- session$userData$share_card %||% NULL
     
-    # re-reset userData variable called share_card back to NULL
+    # re-reset userData variable (updated within share card button module) called share_card back to NULL
     session$userData$share_card <- NULL
   })
   
