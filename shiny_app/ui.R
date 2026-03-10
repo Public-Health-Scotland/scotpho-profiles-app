@@ -86,11 +86,11 @@ page_navbar(
                           
                           # Updates
                           #Physical Activity Profile
-                          div(h4("March 2026: New Physical Activity profile", class = "profile-header"),
-                              p("The Physical Activity Profile, produced in collaboration with the University of Edinburgh, contains council- and health board-level indicators which report on
-                               active travel, uptake of the Chief Medical Officer's",
+                          div(h4("March 2026: In development, a new Physical Activity profile", class = "profile-header"),
+                              p("We have published a limited set of indicators as part of a new Physical Activity profile, produced in collaboration with the University of Edinburgh. This
+                              profile is underdevelopment and contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's.",
                                 tags$a("Physical Activity Guidelines,", href = "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report",
-                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure.")
+                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available.")
                           ),
                           hr(),
                           
@@ -240,7 +240,6 @@ page_navbar(
                        nav_panel(title = "Summary", value = "summary_tab",
                                  
                                  # Display message at top of summary tab for specific profiles only
-                                 # commenting out Jan 2025 but leaving script as placeholder as new text may come along 
                                  conditionalPanel(condition = "input.profile_choices == 'Population Health'",
                                                   br(),
                                                   card(max_height = 150,
@@ -249,7 +248,7 @@ page_navbar(
                                                          for Health Equity in Scotland by providing access to the latest data on population health outcomes and inequalities. The indicators are structured 
                                                          around the “Marmot Eight” principles as laid out in the Institute of Health Equity’s work on ",
                                                          tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ",
-                                                         "We are working with PHS to complete the indicator set and ensure each reflects the latest available data soon.")
+                                                         "We are working with PHS to complete the indicator set and ensure each reflects the latest available data.")
                                                        )
                                                   ),
   
@@ -262,6 +261,16 @@ page_navbar(
                                                          (conduct problems, emotional symptoms, hyperactivity/inattention, prosocial behaviour, and peer relationship problems). 
                                                          Also, the source of the data for 'children meeting physical activity guidelines' has changed, resulting in higher estimates. 
                                                          See the indicator metadata for more information.")
+                                                  )
+                                 ),
+                                 # only display this card when physical activity profile selected
+                                 conditionalPanel(condition = "input.profile_choices == 'Physical Activity'",
+                                                  br(),
+                                                  card(max_height = 150,
+                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development:",class = "info-box-header"),
+                                                       p("The initial launch of this profile contains a limited set of indicators at the Scotland, health board and council geography level only.
+                                                         Over time we intend to expand the range of indicators available",
+                                                         "If you would like to feed into this development please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
                                                   )
                                  ),
                                  summary_table_ui("summary")
@@ -303,7 +312,8 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Children & Young People Mental Health'", about_cmh_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
                                  conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text),
-                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text)
+                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text),
+                                 conditionalPanel("input.profile_choices == 'Physical Activity'", about_pa_text)
                        )
 
                        

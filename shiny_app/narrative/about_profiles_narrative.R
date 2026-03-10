@@ -275,6 +275,29 @@ about_alc_text <- navset_pill_list(
 
 
 ###########################################.
+### Physical Activity ----
+
+about_pa_text <- navset_pill_list(
+  widths = c(3, 9),
+  nav_panel("Overview",
+            h3("Overview"),
+            p("The Scottish Public Health Observatory (ScotPHO) Physical Activity Profile presents a range of data at national, local authority, NHS board level.
+            This dashboard was created in collaboration with PHS colleages and from Edinburgh University 
+            The aim of the dashboard is to provide updated information linked to Active Scotland Outcomes Framework"),
+            br()
+  ),
+  nav_panel("Further information",
+            h3("Futher information"),
+            p("The Scottish Government  ",
+              tags$a("Active Scotland Outcomes Framework dashabord ",href="https://scotland.shinyapps.io/sg-active-scotland-outcomes-framework-indicators/", target = "_blank"),
+              "which provides further information relating to alcohol."),
+            br()
+  )
+)
+
+
+
+###########################################.
 ### Adult Mental Health ----
 
 about_men_text <-  navset_pill_list(
