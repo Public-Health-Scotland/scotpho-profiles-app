@@ -263,14 +263,32 @@ page_navbar(
                                  # only display this when Climate change is selected
                                  # contains links to info about profile and related publication
                                  conditionalPanel(condition = "input.profile_choices == 'Climate'",
-                                                  div(style = "padding: 10px; background-color: #F5ECF4;",
-                                                      p(bs_icon("info-circle-fill", size = "1.2em"), " Read more about the new",
-                                                        actionLink(inputId = "cli_about_link", label = "climate profile"), 
-                                                        " and access the associated report on the Public Health Scotland website:", 
-                                                        tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")
+                                                  # temporarily comment out until the climate team correct indicators
+                                                  # div(style = "padding: 10px; background-color: #F5ECF4;",
+                                                  #     p(bs_icon("info-circle-fill", size = "1.2em"), " Read more about the new",
+                                                  #       actionLink(inputId = "cli_about_link", label = "climate profile"), 
+                                                  #       " and access the associated report on the Public Health Scotland website:", 
+                                                  #       tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")
+                                                  #       )
+                                                  #     )
+                                                  
+                                                  # temporary notice about climate profile indicators being removed
+                                                  card(
+                                                    class = "m-2",
+                                                    card_header(bs_icon("info-circle-fill", size = "1.2em"),"Important notice",class = "info-box-header"),
+                                                    card_body(
+                                                      p("The", tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank"),
+                                                        "has been temporarily removed from the public domain while the Climate Analyst Team investigates an error in the code. 
+                                                        It is expected to have affected indicators related to risk thresholds and modelled deaths estimates. 
+                                                        These have temporarily been removed from the profiles tool. The Climate Analyst Team is working to fix the error 
+                                                        and update the results accordingly. The corrected report will be released in May. For any questions, please contact", 
+                                                        tags$a("phs.climateanalysis@phs.scot", href = "mailto::phs.climateanalysis@phs.scot", target = "_blank")
                                                         )
                                                       )
-                                                  ),
+                                                    )
+                                                  ), # close conditional panel
+                                                      
+
                                  trend_mod_ui("trends")),
                        
                        # rank sub-tab 
