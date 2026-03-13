@@ -213,8 +213,10 @@ climate_popgrp <- create_dataset(
 )
 
 
+# temporary step until climate pop_grp indicators available again
+popgrp_dataset <-scotpho_popgrp
 # combine all popgroup datasets
-popgrp_dataset <- rbind(scotpho_popgrp, climate_popgrp)
+#popgrp_dataset <- rbind(scotpho_popgrp, climate_popgrp)
 
 
 # save popgroup dataset in this projects data folder, ready to be used in the app
