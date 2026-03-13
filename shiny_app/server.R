@@ -276,7 +276,7 @@ function(input, output, session) {
   
   
   # 3. DEPRIVATION DATASET
-  # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
+  # filters the deprivation dataset by selected profile, filtered data then passed to the deprivation visualisation module 
   simd_data <- reactive({
     req(input$profile_choices != "")
     if(input$profile_choices == "All Indicators"){

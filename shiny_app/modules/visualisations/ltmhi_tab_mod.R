@@ -116,8 +116,8 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               card_body(
                 class = "ms-4",
                 h3("Healthy life expectancy", style = "font-size: 1.2rem;"),
-                markdown("In 2022-2024, females in the most deprived areas were expected to spend **23 fewer years** in good health, and males **22 fewer years**, than those in the least deprived areas."),
-                le_chart(most_males = 48, most_females = 50, least_males = 71, least_females = 71)
+                markdown("In 2022-2024, females in the most deprived areas were expected to spend **24 fewer years** in good health, and males **21 fewer years**, than those in the least deprived areas."),
+                le_chart(most_males = 48, most_females = 46, least_males = 69, least_females = 70)
               )
             )
             )
