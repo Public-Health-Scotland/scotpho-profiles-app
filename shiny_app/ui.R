@@ -10,6 +10,9 @@
 
 # this first part of the UI creates a purple navigation bar to place individual tabs in
 # it's also where some external script are sourced that are required for different part of the app to work
+
+# need to wrap ui in this function for bookmarking to work
+function(request){
 page_navbar(
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
@@ -26,6 +29,7 @@ page_navbar(
     useShinyjs(), # need to declare this to use functions from the shinyjs package, e.g. to show/hide parts of the UI
     use_cicerone(), # required for guided tours
     leafletjs, # required for leaflet maps (see js code in global scipt)
+    fullscreen_card_JS, # required for share buttons (see js code in global script)
     tags$script(src = "https://code.highcharts.com/highcharts.js"), # required for spinecharts
     includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
     ),
@@ -309,14 +313,14 @@ page_navbar(
   # Currently only contains tab for a national profile 
   # (which supplements the long-term monitoring of HE in Scotland report)
   # but will eventually include local profiles
-  # nav_menu(
-  #   title = "Health inequalities",
-  #   nav_panel(
-  #     title = "National profile",
-  #     value = "shi_tab",
-  #     ltmhi_UI("ltmhi")
-  #   )
-  # ),
+  nav_menu(
+    title = "Health inequalities",
+    nav_panel(
+      title = "National profile",
+      value = "shi_tab",
+      ltmhi_UI("ltmhi")
+    )
+  ),
 
   nav_spacer(), # add space to navbar 
   
@@ -353,8 +357,8 @@ page_navbar(
     )
   ) # close nav menu
   
-) #close main ui function
-
+) #close main ui
+} # close bookmarking function
 
 ### END
 

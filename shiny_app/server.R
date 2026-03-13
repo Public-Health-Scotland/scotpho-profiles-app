@@ -218,7 +218,7 @@ function(input, output, session) {
 
   
    # running module for the long-term monitoring of HE tab
-   #ltmhi_Server(id = "ltmhi")
+   ltmhi_Server(id = "ltmhi")
   
   
   # # ############################################.
@@ -276,7 +276,7 @@ function(input, output, session) {
   
   
   # 3. DEPRIVATION DATASET
-  # filters the deprivation dataset by selected profile, filtered data then passed to the depriavtion visualisation module 
+  # filters the deprivation dataset by selected profile, filtered data then passed to the deprivation visualisation module 
   simd_data <- reactive({
     req(input$profile_choices != "")
     if(input$profile_choices == "All Indicators"){
@@ -330,6 +330,149 @@ function(input, output, session) {
     
     rank_geo_guide$start()
   })
+  
+  
+  
+  ###########################################.
+  # Bookmarking ------
+  ###########################################.
+  
+  # Bookmarking is currently only available for the LTMHI tab
+  # but will eventually be rolled out to the profiles tab.
+
+
+  # 1. Bookmark exclusions ----
+  
+  # Temporary step to remove all inputs from the bookmarked URL
+  # except those related to the LTMHI profile (and the selected nav)
+  # The LTMHI module (and other modules used within that) will also
+  # be applying further exclusions to ltmhi-related inputs
+  # This code is only run once when the app initally loads
+  observeEvent(input$nav, {
+
+    # ids of all inputs from across the app
+    all_inputs <- names(input)
+
+    # those related to LTMHI only
+    ltmhi_inputs <- all_inputs[grepl("ltmhi", all_inputs)]
+
+    # inputs to exclude 
+    exclusions <- setdiff(all_inputs, c(ltmhi_inputs, "nav"))
+    
+    # apply exclusions
+    setBookmarkExclude(exclusions)
+
+
+  }, ignoreInit = FALSE, once = TRUE)
+  
+  
+  # 2 additional inputs to be excluded (these are created within the popup modal that appears during 
+  # bookmarking, and are therefore don't exist to be able to be excluded in step above when app initially loads
+  # this step takes previous bookmark exclusions from step above and adds an additional 2 exclusions
+  # this code is only run once
+  observeEvent(input$url_text, {
+    setBookmarkExclude(c(session$getBookmarkExclude(), "url_text", "copy_url_btn"))
+  }, ignoreInit = TRUE, once = TRUE)
+  
+  
+  
+  # 2. Onbookmark logic ----
+  # i.e. things that should happen BEFORE the final bookmark is created
+  # this code runs whenever a user clicks the bookmark button OR share buttons
+  # (both of which trigger the session to be bookmarked)
+  
+  # update custom variable called 'share_card' - this will be added to the bookmarked URL
+  # if a share button hasn't been clicked (i.e. main 'bookmark' button clicked) then share_card will be NULL
+  onBookmark(function(state) {
+    # update url variable called share_card
+    state$values$share_card <- session$userData$share_card %||% NULL
+    
+    # re-reset userData variable (updated within share card button module) called share_card back to NULL
+    session$userData$share_card <- NULL
+  })
+  
+  
+  # 3. onBookmarked logic ----
+  # i.e. things that should happen AFTER the final bookmark is created
+  # open a modal with the URL for users to copy
+  onBookmarked(function(url) {
+  
+    showModal(
+      modalDialog(
+        title = "Bookmark link",
+        easyClose = TRUE,
+        size = "l",
+        "Copy link below to share with others:",
+        # have to use shiny fluidRow and column here
+        # instead of bslib layout_columns as throws an error
+        # for some reason!
+        fluidRow(
+          column(
+            width = 9,
+            textInput(
+              inputId = "url_text",
+              label = NULL,
+              value = url, # add bookmarked url as text inside input
+              width = "100%"
+            )
+          ),
+          column(
+            width = 3,
+            actionButton(
+              inputId = "copy_url_btn",
+              label = "Copy",
+              icon = icon("copy"),
+              width = "100%"
+            )
+          )
+        )
+      )
+    )
+
+  })
+  
+  
+  # when copy url button is clicked in modal dialog:
+  observeEvent(input$copy_url_btn, {
+    
+    # copy whatever is in the text box to clipboard
+    # modifying example here to simpler solution using shinyjs:
+    # https://stackoverflow.com/questions/78448126/copying-output-to-clipboard-in-r-shiny
+    shinyjs::runjs(
+      code = sprintf("navigator.clipboard.writeText('%s');", input$url_text)
+    )
+    
+    # update action buttons label and icon
+    # so users know it's been successfully copied to clipboard
+    updateActionButton(
+      session,
+      "copy_url_btn",
+      label = "Copied",
+      icon  = icon("check")
+    )
+    
+  })
+  
+
+  
+  # 4. onRestore logic -----
+  # i.e. things that should happen before any restored inputs update the UI
+
+  # find the card which matches the card id in the variable 'share_card'
+  # and run the JS function called 'fullscreen_card' (defined in global)
+  onRestore(function(state) {
+    
+    # get value from 'share_card' variable in URL
+    card_id <- state$values$share_card
+    
+    # trigger js function called fullscreen_card to run (from global script)
+    # which will open the correct card
+    if(!is.null(card_id)){
+      session$sendCustomMessage("fullscreen_card", card_id)
+    }
+  })
+  
+  
   
 
   

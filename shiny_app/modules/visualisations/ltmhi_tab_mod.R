@@ -11,7 +11,23 @@
 
 ltmhi_UI <- function(id, ltmhi_dataset) {
   ns <- NS(id)
+  
+  # chart for LE/HLE headline indicator cards
+  le_chart <- function(most_males, most_females, least_males, least_females){
+    highchart() |>
+      hc_chart(type = "bar") |>
+      hc_xAxis(categories = c("Males", "Females"), title = list(text = NULL), lineWidth = 0,tickLength = 0) |>
+      hc_add_series(name = "most deprived", data = c(most_males, most_females), dataLabels = list(enabled = TRUE)) |>
+      hc_add_series(name = "least deprived", data = c(least_males, least_females), dataLabels = list(enabled = TRUE)) |>
+      hc_yAxis(title = list(text = ""), labels = list(enabled = FALSE), gridLineWidth = 0) |>
+      hc_colors(c(phs_colors("phs-magenta"), phs_colors("phs-blue")))
+  }
+  
+  
+  
+  
  tagList(
+   div(class = "container-xxl",
 
    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    # Page header  ----
@@ -19,23 +35,31 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
    
     div(
       class = "p-2 mb-3", # add padding and bottom margin 
-      h1("Long-term Monitoring of Health Inequalities in Scotland"),
-      # MM revisit: final link to report to be added
-      p("Access the", tags$a("full report with narrative", href = "placeholder", target = "_blank"), "on the Public Health Scotland website."),
-      bookmarkButton(class = "btn-sm")
+      h1("Long-term Monitoring of Health Inequalities in Scotland", style = "font-size:2.5rem"),
+      p("This page provides interactive charts and summary data for indicators featured in the latest Long‑Term Monitoring of Health Inequalities in Scotland report. 
+      Read the accompanying narrative in the full report", tags$a("here", icon("arrow-up-right-from-square"), href = "placeholder", target = "_blank"), "."),
+      bookmarkButton(class = "btn-sm", label = "Bookmark page")
     ),
 
-    # horizonal line
-    hr(),
+    # space
+    br(),
+   
+   # Notice about feedback
+   div(
+     class = "p-3", style = "background-color:#ECECEC",
+     p(class = "m-0", "We welcome any feedback on the contents and design of this page at ",  tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), ".")
+   ),
    
    
+   
+
    # ~~~~~~~~~~~~~~~~~~~~~~
    # Page contents ------
    # ~~~~~~~~~~~~~~~~~~~~~~
 
     # sidebar navigaton menu with sub-sections
     layout_columns(
-      gap = "2rem",
+      gap = "0.5rem",
       col_widths = c(3,9),
       
    
@@ -44,7 +68,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
     # ~~~~~~~~~~~~~~~~~~~~~
     # left:
       div(
-        class = "sticky-top p-4", # sticky-top prevents menu from scrolling out of view p-4
+        class = "sticky-top p-4", # sticky-top prevents menu from scrolling out of view
         h4("Contents"),
         tags$ul(
           class = "list-group gap-3 list-unstyled",
@@ -64,20 +88,40 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       div(
         class = "pt-4", # add top padding
      
-      # Section 1: Headline indicators --------------
-      div(
-        class = "mb-5", # add bottom margin
-        id = "headline-indicators",
-        h2("Headline indicators", class = "mb-4"),
-        layout_column_wrap(
-          width = "20rem",
-          heights_equal = "row",
-          card("placeholder", full_screen = TRUE, height = 300),
-          card("placeholder", full_screen = TRUE, height = 300),
-          card("placeholder", full_screen = TRUE, height = 300),
-          card("placeholder", full_screen = TRUE, height = 300)
-        )
-      ), # close key points section 
+        
+        # Section 1: Headline indicators --------------
+        div(
+          class = "mb-5", # add bottom margin
+          id = "headline-indicators",
+          h2("Headline indicators", class = "mb-4"),
+          layout_column_wrap(
+            width = "20rem",
+            heights_equal = "row",
+            card(
+              class = "py-3",
+              height = 450,
+              full_screen = TRUE,
+              card_body(
+                class = "ms-4",
+                h3("Life expectancy", style = "font-size: 1.2rem;"),
+                markdown("In 2022-2024, females living in the most deprived areas were expected to live **9 years less**, and males **11 years less**, than those in the least deprived areas."),
+                le_chart(most_males = 71, most_females = 76, least_males = 82, least_females = 85)
+              )
+            ),
+
+            card(
+              class = "py-3",
+              height = 450,
+              full_screen = TRUE,
+              card_body(
+                class = "ms-4",
+                h3("Healthy life expectancy", style = "font-size: 1.2rem;"),
+                markdown("In 2022-2024, females in the most deprived areas were expected to spend **24 fewer years** in good health, and males **21 fewer years**, than those in the least deprived areas."),
+                le_chart(most_males = 48, most_females = 46, least_males = 69, least_females = 70)
+              )
+            )
+            )
+        ), # close key points section
       
       # horizontal line 
       hr(),
@@ -144,7 +188,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                   )
                 )
               )
-            ), #c lose filter_body div
+            ), #close filter_body div
           
           # button for opening/closing filters
           actionButton(
@@ -174,15 +218,19 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               nav_panel(
                 title = "Chart",
                 div(
+                  class = "p-2",
                 h4(textOutput(ns("simd_bar_title"), container = span), class = "chart-header"),
                 textOutput(ns("simd_bar_subtitle"))
                 ),
               bar_chart_mod_UI(ns("simd_bar_chart"))
                 ),
-              nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Table", data_table_mod_UI(ns("simd_bar_tbl"))),
               nav_spacer(),
               chart_controls_mod_UI(ns("simd_bar_controls"), controls = c(ci_switch = FALSE)),
-              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+              footer = card_footer(
+                class = "d-flex justify-content-start", 
+                share_button_mod_UI(ns("simd_bar_share"))
+                )
             ), # close simd bar card
             
             
@@ -200,10 +248,13 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 # to be added
                 multi_trend_chart_mod_UI(ns("simd_trend_chart"))
                 ),
-              nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Table", data_table_mod_UI(ns("simd_trend_tbl"))),
               nav_spacer(),
               chart_controls_mod_UI(ns("simd_trend_controls"), controls = c(ci_switch = FALSE, avg_switch = TRUE, zero_yaxis_switch = TRUE)),
-              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+              footer = card_footer(
+                class = "d-flex justify-content-start", 
+                share_button_mod_UI(ns("simd_trend_share"))
+                )
           )# close simd trend card
           ),  # close layout_column_wrap
           
@@ -231,11 +282,14 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 ),
                 trend_chart_mod_UI(ns("sii_chart"))
                 ),
-              nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Table", data_table_mod_UI(ns("sii_tbl"))),
               nav_panel(title = "Help", about_sii),
               nav_spacer(),
               chart_controls_mod_UI(ns("sii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
-              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+              footer = card_footer(
+                class = "d-flex justify-content-start", 
+                share_button_mod_UI(ns("sii_share"))
+                )
             ),
             
             # RII trend chart 
@@ -252,11 +306,14 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 ),
                 trend_chart_mod_UI(ns("rii_chart"))
                 ),
-              nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Table", data_table_mod_UI(ns("rii_tbl"))),
               nav_panel(title = "Help", about_rii),
               nav_spacer(),
               chart_controls_mod_UI(ns("rii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
-              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+              footer = card_footer(
+                class = "d-flex justify-content-start", 
+                share_button_mod_UI(ns("rii_share"))
+                )
             )
             
           ), # close layout_column_wrap
@@ -285,7 +342,10 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                         ),
               nav_panel(title = "Table", "placeholder"),
               nav_panel(title = "Help", about_par),
-              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+              footer = card_footer(
+                class = "d-flex justify-content-start", 
+                share_button_mod_UI(ns("par_bar_share"))
+                )
             ),
             
             # PAR trend chart 
@@ -305,7 +365,10 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               nav_panel(title = "Help", about_par_trend),
               nav_spacer(),
               chart_controls_mod_UI(ns("par_trend_controls"), controls = c(zero_yaxis_switch = TRUE)),
-              footer = card_footer(class = "d-flex justify-content-start", "placeholder")
+              footer = card_footer(
+                class = "d-flex justify-content-start", 
+                share_button_mod_UI(ns("par_trend_share"))
+                )
             )
           ) # close layout_column_wrap
         ) # close container for charts
@@ -326,6 +389,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       
       ) # close right hand side section
     ) # close layout_colums for left-menu and right-content
+   ) # close container
  ) # close tagList
 
 } # close function 
@@ -339,6 +403,9 @@ ltmhi_Server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
+      
+
+      ns <- session$ns
 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Summary table server code ----
@@ -363,11 +430,14 @@ ltmhi_Server <- function(id) {
         
         reactable(
           data = ltmhi_lookup,
-          highlight = TRUE,
-          pagination = FALSE,
+          defaultExpanded = TRUE,
+          defaultPageSize = nrow(ltmhi_lookup),
+          # centre the contents inside each cell
+          defaultColDef = colDef(vAlign = "center"), 
           columns = list(
             
             # hidden columns
+            ind_id = colDef(show = FALSE),
             sii_trend_period = colDef(show = FALSE),
             rii_trend_period = colDef(show = FALSE),
             comparison_period = colDef(show = FALSE),
@@ -376,10 +446,11 @@ ltmhi_Server <- function(id) {
             # domain column
             domain = colDef(
               name = "Domain",
+              minWidth = 110,
               cell = function(value, index) {
                 if (index > 1 && ltmhi_lookup$domain[index] == ltmhi_lookup$domain[index - 1]) {
                   div(style = "visibility:hidden", value)
-                } else value
+                } else div(class = "fw-bold", value)
               }
             ),
             
@@ -387,10 +458,12 @@ ltmhi_Server <- function(id) {
             # comparison column
             comparison = colDef(
               name = "Most vs. least deprived quintile",
+              minWidth = 120,
               html = TRUE,
               cell = function(value, index){
                 as.character(tooltip(
-                  div(class = "badge rounded-pill ms-auto", style = "background-color: #adb5bd", value),
+                  div(value),
+                  #div(class = "badge rounded-pill ms-auto", style = "background-color: #adb5bd", value),
                   paste(value, "in the least deprived quintile in", ltmhi_lookup$comparison_period[index])
                 ))
               }
@@ -462,10 +535,7 @@ ltmhi_Server <- function(id) {
                 
                 div(class = paste0("badge rounded-pill ms-auto bg-", colour), value)
               }
-            )            ,
-            
-            # Hide a column called 'description' so that not visible in table
-           description = colDef(show = F)
+            )
           )
         )
       })
@@ -503,7 +573,9 @@ ltmhi_Server <- function(id) {
       })
       
       
-      ## reactive datasets -------------------------------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # reactive datasets ------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       
       # filter simd dataset by selected indicator (and transpose values so higher always worse)
       r_ind_data <- reactive({
@@ -528,13 +600,14 @@ ltmhi_Server <- function(id) {
           filter(quintile != "Total")
       })
       
-      # further filter by quintiles for latest year only (for SIMD bar chart )
+      # further filter by quintiles for latest year only (for SIMD bar chart)
       r_ind_quintiles_max <- reactive({
         r_ind_data() |>
           filter(quintile != "Total") |>
           filter(year == max(year))
       })
       
+      # further filter by quintiles for latest year only and reshape data (for par bar chart)
       r_ind_quintiles_par <- reactive({
         r_ind_data() |>
         filter(quintile != "Total") |>
@@ -553,8 +626,10 @@ ltmhi_Server <- function(id) {
       
 
       
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #  chart controls ------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       
-      ##  chart controls ----------------------------------
       # these objects store user selection from each cards chart controls
       # as reactiveValues which can then be used to update the charts accordingly
       # each one contains 3 values. If the input wasn't used in the UI the returned value
@@ -570,10 +645,11 @@ ltmhi_Server <- function(id) {
       par_trend_controls <- chart_controls_mod_server("par_trend_controls")
       
       
-      
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Chart titles ---------------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       
-      # dynamic chart titles
+      # dynamic titles
       r_titles <- reactive({
         max_year <- r_ind_quintiles_max()$trend_axis[1]
         min_year <- r_ind_totals()$trend_axis[1]
@@ -620,8 +696,9 @@ ltmhi_Server <- function(id) {
       
       
       
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
       # charts -----
-      
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
       
       # SIMD snapshot chart
       bar_chart_mod_Server(id = "simd_bar_chart",
@@ -630,49 +707,91 @@ ltmhi_Server <- function(id) {
                            x_col = "quintile", y_col = "measure", lowci_col = "lowci", upci_col = "upci"
                            )
       
-      
+
       # SIMD trend chart
-      # module to be added
       multi_trend_chart_mod_Server(id = "simd_trend_chart", r_data = r_ind_quintiles,
                                r_chart_controls = simd_trend_controls,
                                x_col = "trend_axis", y_col = "measure", lowci_col = "lowci", upci_col = "upci",
                                group_col = "quintile", avg_col = "total")
-      
-      
-      
+
+
+
       # Relative Index of Inequality (RII) trend chart
       trend_chart_mod_Server(id = "rii_chart",
                          r_data = r_ind_totals,
                          r_chart_controls = rii_controls,
                          x_col = "trend_axis", y_col = "rii_int", lowci_col = "lowci_rii_int", upci_col = "upci_rii_int"
       )
-      
-      
+
+
       # Slope Index of Inequality (SII) trend chart
       trend_chart_mod_Server(id = "sii_chart",
                          r_data = r_ind_totals,
                          r_chart_controls = sii_controls,
                          x_col = "trend_axis", y_col = "sii", lowci_col = "lowci_sii", upci_col = "upci_sii"
       )
-      
-      
+
+
 
       # Population attributable Risk (PAR) bar chart
       stacked_bar_chart_mod_Server(id = "par_bar_chart", r_data = r_ind_quintiles_par,
                                    x_col = "quintile", y_col = "value", group_col = "measure_name")
-      
-      
+
+
       # Population Attributable Risk (PAR) trend chart
       trend_chart_mod_Server(id = "par_trend_chart",
                              r_data = r_ind_totals,
                              r_chart_controls = par_trend_controls,
                              x_col = "trend_axis", y_col = "par"
-      )
+                             )
+      
+      
+      
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Share card buttons ------
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      
+      share_button_mod_Server(id = "simd_bar_share", card_id = ns("simd_bar_card"))
+      share_button_mod_Server(id = "simd_trend_share", card_id = ns("simd_trend_card"))
+      share_button_mod_Server(id = "sii_share", card_id = ns("sii_card"))
+      share_button_mod_Server(id = "rii_share", card_id = ns("rii_card"))
+      share_button_mod_Server(id = "par_bar_share", card_id = ns("par_bar_card"))
+      share_button_mod_Server(id = "par_trend_share", card_id = ns("par_trend_card"))
       
       
 
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Data tables ----
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
       
+      data_table_mod_Server(id = "simd_bar_tbl", r_data = r_ind_quintiles_max, cols = c("quintile", "measure"))
+      data_table_mod_Server(id = "simd_trend_tbl", r_data = r_ind_quintiles, cols = c("year", "quintile", "measure"))
+      data_table_mod_Server(id = "sii_tbl", r_data = r_ind_totals, cols = c("year", "sii"))
+      data_table_mod_Server(id = "rii_tbl", r_data = r_ind_totals, cols = c("year", "rii_int"))
+      data_table_mod_Server(id = "par_bar_tbl", r_data = r_ind_totals, cols = c("year", "sii"))
+      data_table_mod_Server(id = "par_trend_tbl", r_data = r_ind_totals, cols = c("year", "rii_int"))
       
+
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Bookmarking exclusions -----
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      
+      # Excluding some inputs created within this module (such as cards, buttons) 
+      # from appearing in bookmarked URLs. Note that any nested modules used within this
+      # module will have bookmark exclusions applied in their source code so won't be listed here
+      # The exclusions here are only inputs created within this module.
+      setBookmarkExclude(
+          # exclude card inputs
+          c("simd_bar_card", "simd_trend_card", "sii_card", "rii_card", "par_bar_card", "par_trend_card",
+          # exclude buttons 
+          "toggle_filters", "sii_info_btn", "rii_info_btn", "par_bar_info_btn", "par_trend_info_btn",
+          # temporary - exclude quint_type filter until enabled
+          "type_filter",
+          # exclude inputs automatically created by reactable
+          "summary_tbl__reactable__page", "summary_tbl__reactable__pageSize", "summary_tbl__reactable__pages",
+          "summary_tbl__reactable__sorted", "summary_tbl__reactable__selected"
+            ))
+                         
 
     }
   )
@@ -682,23 +801,26 @@ ltmhi_Server <- function(id) {
 
 
 
-# # #For testing:
-#  shinyApp(
-#   ui = page_navbar(
-#     theme = phs_theme,
-#     navbar_options = list(bg = "#3F3685"),
-#     fillable = FALSE,
-#     header = useShinyjs(),
-#     nav_panel(
-#       class = "container-xxl",
-#       title = "National profile",
-#       ltmhi_UI("example")
-#       )
-#     ),
-#   server = function(input, output, session){
-#     ltmhi_Server("example")
-#   }
-#  )
+# #For testing:
+# shinyApp(
+#   enableBookmarking = "url",
+#  ui = function(request){
+#    page_navbar(
+#    theme = phs_theme,
+#    navbar_options = list(bg = "#3F3685"),
+#    fillable = FALSE,
+#    header = useShinyjs(),
+#    nav_panel(
+#      class = "container-xxl",
+#      title = "National profile",
+#      ltmhi_UI("example")
+#      )
+#    )
+#    },
+#  server = function(input, output, session){
+#    ltmhi_Server("example")
+#  }
+# )
 
 
 
