@@ -234,7 +234,7 @@ profiles_list <- list(
   # "Long-term Monitoring of Health Inequalities in Scotland" = list(
   #     short_name = "SHI",
   #     homepage_description = markdown("Under development - not yet available"),
-  #     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assesed/self-reported", "Service-use"),
+  #     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assessed/self-reported", "Service-use"),
   #     subtabs = NULL,
   #     nav_id = "shi_tab",
   #     new = FALSE,
