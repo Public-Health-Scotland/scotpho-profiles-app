@@ -1,8 +1,8 @@
-#' Data table Module
+#' Mini Data table Module
 #'
-#' A Shiny module that creates a data table using **reactable** that is updated
+#' A Shiny module that creates a mini data table using **reactable** that is updated
 #' in response to a reactive dataset
-#'
+#' These mini-data tables are the ones presented if user opts to view data table behind a chart in navcards
 
 
 #' Data Table mod UI
