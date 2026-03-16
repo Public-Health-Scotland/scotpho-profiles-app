@@ -769,8 +769,8 @@ ltmhi_Server <- function(id) {
       data_table_mod_Server(id = "simd_trend_tbl", r_data = r_ind_quintiles, cols = c("year", "quintile", "measure"))
       data_table_mod_Server(id = "sii_tbl", r_data = r_ind_totals, cols = c("year", "sii"))
       data_table_mod_Server(id = "rii_tbl", r_data = r_ind_totals, cols = c("year", "rii_int"))
-      data_table_mod_Server(id = "par_bar_tbl", r_data = r_ind_totals, cols = c("year", "sii"))
-      data_table_mod_Server(id = "par_trend_tbl", r_data = r_ind_totals, cols = c("year", "rii_int"))
+      data_table_mod_Server(id = "par_bar_tbl", r_data = r_ind_quintiles_par, cols = c("quintile","measure_name","value"))
+      data_table_mod_Server(id = "par_trend_tbl", r_data = r_ind_totals, cols = c("year", "par"))
       
 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
