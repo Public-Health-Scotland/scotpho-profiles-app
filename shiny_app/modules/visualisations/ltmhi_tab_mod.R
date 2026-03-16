@@ -90,6 +90,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
      
         
         # Section 1: Headline indicators --------------
+        # Each card contains hardcoded indicator values which will require manual updating at present
         div(
           class = "mb-5", # add bottom margin
           id = "headline-indicators",
@@ -340,7 +341,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                         ),
                         stacked_bar_chart_mod_UI(ns("par_bar_chart"))
                         ),
-              nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Table", data_table_mod_UI(ns("par_bar_tbl"))),
               nav_panel(title = "Help", about_par),
               footer = card_footer(
                 class = "d-flex justify-content-start", 
@@ -361,7 +362,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 ),
                 trend_chart_mod_UI(ns("par_trend_chart"))
                 ),
-              nav_panel(title = "Table", "placeholder"),
+              nav_panel(title = "Table", data_table_mod_UI(ns("par_trend_tbl"))),
               nav_panel(title = "Help", about_par_trend),
               nav_spacer(),
               chart_controls_mod_UI(ns("par_trend_controls"), controls = c(zero_yaxis_switch = TRUE)),
