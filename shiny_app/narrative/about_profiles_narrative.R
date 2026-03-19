@@ -512,6 +512,45 @@ about_cli_text <- navset_pill_list(
     )
 )
 
+##Physical Activity
+about_pa_text <- navset_pill_list(
+  widths = c(3, 9),
+  nav_panel(
+    title = "About this profile",
+    h3("About this profile"),
+    p("The Physical Activity profile, produced in collaboration within the ", 
+      tags$a("Physical Activity for Health Research Centre (PAHRC)", href = "https://education-sport.ed.ac.uk/research/centres-groups-networks/physical-activity-for-health", target = "_blank"),
+      "at the University of Edinburgh, was developed in alignment with ", 
+      tags$a("Scotland’s National Framework on Physical Activity for Health", href = "https://www.gov.scot/publications/physical-activity-health-framework/pages/1/", target = "_blank"),
+      ". The indicator domains Active Travel, Active Place & Spaces, Active Places of Learning, Sport and Active Recreation and Overarching Indicators map to the ",
+      tags$a("strategic outcome areas of the framework", href = "https://www.actify.org.uk/scotlandsnationalframework", target = "_blank"),
+      "It also monitors uptake of the", tags$a("Chief Medical Officer’s Physical Activity Guidelines", href = "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report", target = "_blank"),
+      "."),
+    p("This profile aims to support councils and health boards in understanding 
+      how active local adults and children are relative to other areas and the 
+      Scotland average. It also seeks to support the use of physical activity data
+      in local authority planning and decision making, for example by collating 
+      residents’ views on local services and facilities."),
+    p("Indicators are available at health board and council level depending on 
+      data source. Deprivation splits are available at Scotland level. The 
+      population groups tab contains breakdowns of the indicators for councils 
+      and health boards by age group (16-64 and 65+ years), sex and disability 
+      status. These population group splits aid users in understanding how different
+      groups engage with physical activity and how well local services cater to 
+      these groups."),
+    p("Indicator data are predominantly sourced from the Scottish Health Survey 
+      and the Scottish Household Survey. The data files uploaded to the UK Data 
+      Service archives have been used to design the indicators and the breakdowns
+      presented. While this allows ScotPHO to report on survey questions unavailable
+      through other platforms, such as the ",
+      tags$a("Active Scotland Outcomes Framework", href = "https://scotland.shinyapps.io/sg-active-scotland-outcomes-framework-indicators/", target = "_blank"),
+      "dashboard, the ",
+      tags$a("Scottish Household Survey", href = "https://scotland.shinyapps.io/sg-scottish-household-survey-data-explorer/", target = "_blank"),
+      " data explorer or the ",
+      tags$a("Scottish Health Survey", href = "https://scotland.shinyapps.io/sg-scottish-health-survey/", target = "_blank"),
+      " dashboard, the data may not be available in as timely a manner as other publications affiliated with these surveys.")
+    ) #close nav panel
+  ) #close nav pill list
 
 
   
