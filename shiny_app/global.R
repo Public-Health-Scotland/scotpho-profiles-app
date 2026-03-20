@@ -154,7 +154,7 @@ profiles_list <- list(
   # to make visible uncomment below and also around line #310 in ui script which is linked to HI nav menu item
   "Long-term Monitoring of Health Inequalities in Scotland" = list(
     short_name = "SHI",
-    homepage_description = markdown("Under development : View indicators relating to **long-term monitoring of health inequalities**."),
+    homepage_description = markdown("View indicators relating to **long-term monitoring of health inequalities**."),
     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assessed/self-reported", "Service-use"),
     subtabs = NULL,
     nav_id = "shi_tab",

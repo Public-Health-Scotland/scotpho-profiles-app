@@ -490,5 +490,22 @@ about_cli_text <- navset_pill_list(
 )
 
 
+###########################################.
+### SHI/Long term monitoring national profile ----
+
+about_shi_text <- 
+  #navset_pill_list(
+  nav_panel(h4("About"),
+            p("Responsibility for long-term monitoring of health inequalities in Scotland by area deprivation has moved from the Scottish Government to ",
+            tags$a("Public Health Scotland (PHS)", href = "https://publichealthscotland.scot/", target = "_blank"),
+            ". The ",
+            tags$a("most recent Scottish Government report", href = "https://www.gov.scot/collections/long-term-monitoring-of-health-inequalities/", target = "_blank"),
+            " was published in 2023 and included data to 2021. Public Health Scotland are developing this dashboard and reporting framework to replace the previous reporting arrangements. 
+            An ",
+            #update this link when we know url of interim report on phs website
+            tags$a("interim report", href = "https://www.gov.scot/collections/long-term-monitoring-of-health-inequalities/", target = "_blank"),
+            " drawing on existing ScotPHO indicators data within this profile was used to provide evidence on health inequalities in Scotland by area deprivation to support ongoing action to reduce health inequalities.")
+  )
+#)
 
   

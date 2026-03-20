@@ -47,7 +47,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
    # Notice about feedback
    div(
      class = "p-3", style = "background-color:#ECECEC",
-     p(class = "m-0", "We welcome any feedback on the contents and design of this page at ",  tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), ".")
+     p(class = "m-0", "This dashboard is under development and we welcome any feedback on the contents and design of this page at ",  tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), ".")
    ),
    
    
@@ -385,7 +385,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
         id = "about",
         class = "mb-5",
         h4("About", class = "mb-4"),
-        div(style = "height:800px", "Placeholder")
+        div(style = "height:800px", about_shi_text)
         )
       
       ) # close right hand side section
