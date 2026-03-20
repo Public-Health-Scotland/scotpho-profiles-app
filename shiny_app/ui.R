@@ -326,19 +326,19 @@ page_navbar(
   ######################################.
   # Health inequalities Menu ------
   ######################################.
-  # uncomment below when we're ready to deploy new health inequalities reports 
-  # Menu for profiles focusing on health inequalities
-  # Currently only contains tab for a national profile 
-  # (which supplements the long-term monitoring of HE in Scotland report)
-  # but will eventually include local profiles
-  # nav_menu(
-  #   title = "Health inequalities",
-  #   nav_panel(
-  #     title = "National profile",
-  #     value = "shi_tab",
-  #     ltmhi_UI("ltmhi")
-  #   )
-  # ),
+  #uncomment below when we're ready to deploy new health inequalities reports
+  #Menu for profiles focusing on health inequalities
+  #Currently only contains tab for a national profile
+  #(which supplements the long-term monitoring of HE in Scotland report)
+  #but will eventually include local profiles
+  nav_menu(
+    title = "Monitoring health inequalities",
+    nav_panel(
+      title = "National profile",
+      value = "shi_tab",
+      ltmhi_UI("ltmhi")
+    )
+  ),
 
   nav_spacer(), # add space to navbar 
   
