@@ -1,6 +1,6 @@
 #####################################.
 # data_table_tab_mod.R
-# This module creates the layout for the data tab
+# This module creates the layout for the bulk download data tab
 # It allows users to build a data table that can be downloaded in various formats
 #####################################.
 

@@ -24,11 +24,11 @@ summary_table_ui <- function(id) {
     
     # enable guided tour
     # use_cicerone(),
-    
     br(),
     hidden(
-      card(
+      div(
         id = ns("spine_chart_explanation"),
+      card(
         card_header("How to interpret table results"),
         card_body(
           p("The results below provide a snapshot of the latest data for each indicator in this profile at your selected geography level. If you have selected a local area from the geography filter above, you will see a 'spine chart' for each indicator. 
@@ -47,6 +47,7 @@ summary_table_ui <- function(id) {
               span(tags$div(style = "width:20px; height:20px; background-color:gray; border-radius:50%; display:inline-block; margin:5px;"), "grey - not statistically different to Scotland"),
               span(tags$div(style = "width:20px; height:20px; background-color:white; border:1px solid black; outline-color:black; border-radius:50%; display:inline-block; margin:5px;"), "white - no difference to be calculated")
             ))))
+      )
     ),
     
     bslib::card(

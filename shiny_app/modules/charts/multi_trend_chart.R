@@ -284,7 +284,7 @@ multi_trend_chart_mod_Server <- function(id,
             })
             
             # add matching CI series (if applicable)
-            if (isTRUE(r_chart_controls$zero_yaxis_switch)){
+            if (isTRUE(r_chart_controls$ci_switch)){
               walk(add, ~ {
                 hc <- hcpxy_add_series(
                   hc,
@@ -317,7 +317,7 @@ multi_trend_chart_mod_Server <- function(id,
           }
             
             # update matching CI series (if applicable)
-            if (isTRUE(r_chart_controls$zero_yaxis_switch)){
+            if (isTRUE(r_chart_controls$ci_switch)){
               walk(update, ~ {
                 hc <- hcpxy_update_series(
                   hc, 
@@ -409,7 +409,7 @@ multi_trend_chart_mod_Server <- function(id,
                 id = "avg",
                 name = "Average",
                 color = "red",
-                data = list_parse2(df[, c(x_col, avg_col)])
+                data = list_parse2(r_data()[, c(x_col, avg_col)])
               )
           } else {
             highchartProxy(ns("multi_trend_chart")) |>
