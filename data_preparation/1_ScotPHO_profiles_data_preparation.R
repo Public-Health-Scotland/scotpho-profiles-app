@@ -258,6 +258,16 @@ depr_dataset <- depr_dataset |>
 write_parquet(depr_dataset, file = file.path(project_folder, "deprivation_dataset.parquet"), compression = "zstd")
 
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Step 6: Source Long term monitoring indicator info -----              
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#open look-up identifying which indicators belong in national LTMHI report
+
+ltmhi_info <- read.csv(file.path(scotpho_folder, "Shiny Data/ltmhi_info.csv"))
+write_parquet(ltmhi_info, file = file.path(project_folder, "ltmhi_info.parquet"), compression = "zstd")
+
+
 
 # clear global env.
 rm(list = ls())
