@@ -503,7 +503,7 @@ about_shi_text <-
             " was published in 2023 and included data to 2021. Public Health Scotland are developing this dashboard and reporting framework to replace the previous reporting arrangements. 
             An ",
             #update this link when we know url of interim report on phs website
-            tags$a("interim report", href = "https://www.gov.scot/collections/long-term-monitoring-of-health-inequalities/", target = "_blank"),
+            tags$a("interim report", href = "https://publichealthscotland.scot/publications/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/", target = "_blank"),
             " drawing on existing ScotPHO indicators data within this profile was used to provide evidence on health inequalities in Scotland by area deprivation to support ongoing action to reduce health inequalities.")
   )
 #)

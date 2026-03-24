@@ -37,7 +37,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       class = "p-2 mb-3", # add padding and bottom margin 
       h1("Long-term Monitoring of Health Inequalities in Scotland", style = "font-size:2.5rem"),
       p("This page provides interactive charts and summary data for indicators featured in the latest Long‑Term Monitoring of Health Inequalities in Scotland report. 
-      Read the accompanying narrative in the full report", tags$a("here", icon("arrow-up-right-from-square"), href = "placeholder", target = "_blank"), "."),
+      Read the accompanying narrative in the full report", tags$a("here", icon("arrow-up-right-from-square"), href = "https://publichealthscotland.scot/publications/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/", target = "_blank"), "."),
       bookmarkButton(class = "btn-sm", label = "Bookmark page")
     ),
 
@@ -383,9 +383,9 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       # About section -----------------------
       div(
         id = "about",
-        class = "mb-5",
+        class = "mb-5 pb-5",
         h4("About", class = "mb-4"),
-        div(style = "height:800px", about_shi_text)
+        about_shi_text
         )
       
       ) # close right hand side section
