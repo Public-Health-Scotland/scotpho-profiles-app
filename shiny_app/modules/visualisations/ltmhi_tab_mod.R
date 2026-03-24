@@ -465,7 +465,7 @@ ltmhi_Server <- function(id) {
                 as.character(tooltip(
                   div(value),
                   #div(class = "badge rounded-pill ms-auto", style = "background-color: #adb5bd", value),
-                  paste(value, "in the least deprived quintile in", ltmhi_lookup$comparison_period[index])
+                  paste(value, "in the most deprived quintile in", ltmhi_lookup$comparison_period[index])
                 ))
               }
             ),
