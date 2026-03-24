@@ -50,7 +50,7 @@ popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset.parquet")) # datas
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc.parquet") # technical document
-#ltmhi_lookup <- data.table::fread("data/ltmhi_info.csv") # lookup for ltmhi indicators 
+ltmhi_lookup <- read_parquet("data/ltmhi_info.parquet") # lookup for ltmhi indicators 
 
 
 # shapefiles (for map) 
@@ -150,6 +150,18 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Scottish Health Inequalities (ie national level reporting on health inequalities)
+  # to make visible uncomment below and also around line #310 in ui script which is linked to HI nav menu item
+  "Long-term Monitoring of Health Inequalities in Scotland" = list(
+    short_name = "SHI",
+    homepage_description = markdown("View indicators relating to **long-term monitoring of health inequalities**."),
+    domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assessed/self-reported", "Service-use"),
+    subtabs = NULL,
+    nav_id = "shi_tab",
+    new = TRUE,
+    active = TRUE
+  ),
+  
   # Children and young people info
   "Children & Young People" = list(
     short_name = "CYP",
@@ -228,18 +240,6 @@ profiles_list <- list(
     new = FALSE,
     active = TRUE
   )
-#  ,
- # Scottish Health Inequalities (ie national level reporting on health inequalities)
- # to make visible uncomment below and also around line #310 in ui script which is linked to HI nav menu item
-  # "Long-term Monitoring of Health Inequalities in Scotland" = list(
-  #     short_name = "SHI",
-  #     homepage_description = markdown("Under development - not yet available"),
-  #     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assessed/self-reported", "Service-use"),
-  #     subtabs = NULL,
-  #     nav_id = "shi_tab",
-  #     new = FALSE,
-  #     active = FALSE
-  # )
 
 )
 
