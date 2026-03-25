@@ -526,9 +526,13 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
           hc_exporting(
             filename = paste0("ScotPHO rank - ", selected_indicator(), " - ", geo_selections()$areatype),
             chartOptions = list(
-              title = list(text = paste0(selected_indicator(), " split by ", geo_selections()$areatype)),
-              subtitle = list(text = paste0(chart_desc)),
-              yAxis = list(title = list(text = paste0(unique(rank_data()$type_definition))))
+              title = list(
+                text = paste0(selected_indicator(), " split by ", geo_selections()$areatype),
+                style = list(fontWeight = "bold"), align = "left"
+                ),
+              subtitle = list(text = sprintf("%s <br> %s", chart_desc, rank_data()$type_definition[1]), align = "left"),
+              yAxis = list(title = list(text = paste0(unique(rank_data()$type_definition)))),
+              caption = list(text = "Source: ScotPHO Profiles Tool")
             )
           )
         
