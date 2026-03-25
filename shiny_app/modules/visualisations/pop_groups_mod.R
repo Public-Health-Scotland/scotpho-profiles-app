@@ -275,9 +275,16 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
         hc_exporting(
           filename = paste0("ScotPHO ", selected_indicator(), " split by ", input$split_filter),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by ", input$split_filter)),
-            subtitle = list(text = paste0(pop_rank_data()$trend_axis[1])),
-            yAxis = list(title = list(text = paste0(pop_rank_data()$type_definition[1])))
+            title = list(
+              text = sprintf("%s, split by %s; %s", selected_indicator(), input$split_filter, geo_selections()$areaname),
+              style = list(fontWeight = "bold"), align = "left"
+            ),
+            subtitle = list(
+              text = sprintf("%s <br> %s",pop_trend_data()$trend_axis[1], pop_trend_data()$type_definition[1]), 
+              useHTML = TRUE, align = "left"
+              ),
+            yAxis = list(title = list(text = paste0(pop_rank_data()$type_definition[1]))),
+            caption = list(text = "Source: ScotPHO Profiles Tool")
           )
         )
       
@@ -307,9 +314,16 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
         hc_exporting(
           filename = paste0("ScotPHO trend - ", selected_indicator(), " split by ", input$split_filter),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator(), " split by ", input$split_filter)),
-            subtitle = list(text = paste0(first(pop_trend_data()$trend_axis)," to ",last(pop_trend_data()$trend_axis))),
-            yAxis = list(title = list(text = paste0(pop_trend_data()$type_definition[1])))
+            title = list(
+              text = sprintf("%s, split by %s; %s", selected_indicator(), input$split_filter, geo_selections()$areaname),
+              style = list(fontWeight = "bold"), align = "left"
+            ),
+            subtitle = list(
+              text = sprintf("%s to %s<br>%s",first(pop_trend_data()$trend_axis),last(pop_trend_data()$trend_axis),first(pop_trend_data()$type_definition)), 
+              useHTML = TRUE, align = "left"
+              ),
+            yAxis = list(title = list(text = paste0(pop_trend_data()$type_definition[1]))),
+            caption = list(text = "Source: ScotPHO Profiles Tool")
           )
         )
       
