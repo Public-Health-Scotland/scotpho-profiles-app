@@ -259,7 +259,25 @@ profile_filter_choices <- names(Filter(function(x) x$active == TRUE & x$nav_id =
 # into 'active' and 'archived' in the indicator filters across the other tabs
 archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
 
+# profile list for techdoc
+techdoc <- techdoc %>%
+  mutate(profiles = gsub("-.*;", "; ", profile_domain)) %>% #drop domains
+  mutate(profiles = gsub("-.*", "; ", profiles)) %>% #drop domains that don't have ; after them
+  mutate(profiles = stringr::str_replace_all(profiles, c("HWB" = "Health & Wellbeing",                   
+                                               "CWB" = "Population Health",                    
+                                               "CLI" = "Climate",                             
+                                               "MEN" = "Adult Mental Health",                  
+                                               "CMH" = "Children & Young People Mental Health",
+                                               "CYP" = "Children & Young People",             
+                                               "TOB" = "Tobacco",                              
+                                               "ALC" = "Alcohol",                               
+                                               "DRG" = "Drugs",
+                                               "PHY" = "Physical Activity",
+                                               "POP" = "Population",
+                                               "SHI" = "Health inequalities")))
+  
 
+                            
 
 # Area names by geography type  including HB, CA, HSCP, alcohol and drugs partnership
 # HSC partnership names - also used as the choices for an additional parent area filter 
