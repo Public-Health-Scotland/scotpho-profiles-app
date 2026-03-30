@@ -53,7 +53,7 @@ demographic_simd_dataset <- setDT(read_parquet("data/demographic_simd_dataset"))
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
 main_data_geo_nodes <- readRDS("data/main_dataset_geography_nodes.rds") # geography nodes for data table tab
 techdoc <- read_parquet("data/techdoc.parquet") # technical document
-ltmhi_lookup <- data.table::fread("data/ltmhi_info.csv") # lookup for ltmhi indicators 
+#ltmhi_lookup <- data.table::fread("data/ltmhi_info.csv") # lookup for ltmhi indicators 
 
 
 # shapefiles (for map) 
