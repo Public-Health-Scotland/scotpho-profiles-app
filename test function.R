@@ -98,11 +98,19 @@ create_pyramid_chart <- function(data){
 
 ##Plan to convert these into a table showing count of datazone in each of the 5 deprivation quintiles for all domains (including overall) 
 
+# table could present by quintile or decile
+# which population (all ages, under 25, working age)
+# show total population or number of dz within the quintile  (are the centile threholds defined using population weighting)
+# only shows 1 year 
+# how do we show areas that are persistently deprived - how many dz wher 
+
+
 pop_simd_centile<- demographic_simd_dataset |>
   filter(areatype == "Scotland" & areaname =="Scotland")|>
   filter(year==2023) |>
   filter(simd_domain=="overall") |>
   filter(centile_type=="quintile")
+
 
 
 pop_simd_centile_iz<- demographic_simd_dataset |>
@@ -112,7 +120,7 @@ pop_simd_centile_iz<- demographic_simd_dataset |>
   filter(centile_type=="quintile")|>
   group_by(year,code,simd_domain, areatype, areaname,centile_type,parent_area,areaname_full) |>
   ungroup()|>
-  complete(quintile = c("1","2","3","4","5"), fill = list(pop_all_ages = 0))|>
+  complete(quintile = c("1","2","3","4","5"), fill = list(pop_all_ages = 0))|> # ensure all areas have 5 quintiles and fill gaps with zero
   mutate(quintile=paste0("Q",quintile))
   
 pop_simd_centile_iz_rearrange <-pop_simd_centile_iz |>

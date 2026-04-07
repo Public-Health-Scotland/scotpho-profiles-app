@@ -322,6 +322,9 @@ create_bar_chart <- function(data,
   
 }
 
+############################.
+# population pyramid ----
+############################.
 
 create_pyramid_chart <- function(data){
   
@@ -335,9 +338,9 @@ create_pyramid_chart <- function(data){
              title = list(text = "Age Group (years)"),
              reversed=FALSE) %>% #reversing axis means that lower ages at the bottom rather than top
     
-    # Add title
-    hc_title(text = "Population Pyramid") |>
-    hc_subtitle(text = "a subtitle - link to nrs?") |>
+    # Add title - rest of the app adds title as dynamic text -probably want to do it that way rather than in HC
+    #hc_title(text = "Population Pyramid") |>
+    #hc_subtitle(text = "a subtitle - link to nrs?") |>
     
     # Add Series (mapping additional population and year columns which appear in tooltip alongside the % of population)
     hc_add_series(name = "Male", data = data,type = "bar", hcaes(x = age, y = percentage_Male, pop_value = population_Male, year=year)) %>%
@@ -364,7 +367,7 @@ create_pyramid_chart <- function(data){
       max = 5,            # Fixed end (must match min to be centered)
       tickInterval = 1,   # Distance between labels
       labels = list(formatter = JS("function() { return Math.abs(this.value); }")), #ensure axis labels show absolute values not negatives for the males
-      title = list(text = "Percentage of Population")
+      title = list(text = "Percentage of Population (%)")
     ) 
   
   #return chart

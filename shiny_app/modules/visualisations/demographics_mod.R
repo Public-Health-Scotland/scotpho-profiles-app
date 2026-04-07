@@ -18,7 +18,8 @@ demographics_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content)
-                        p("some text")),
+                        p("some text - need to insert filter on year"),
+                        p("potentially add ability to overlay scotland pattern as line on pyramid")),
       
       # create a multi-tab card 
       div(id = ns("demog_card_wrapper"),
@@ -29,7 +30,7 @@ demographics_mod_ui <- function(id) {
             # charts tab -----------------------
             nav_panel("Charts",
                       value = ns("demog_chart_tab"), #id for guided tour
-                      # uiOutput(ns("trend_title")), # title 
+                      uiOutput(ns("pyramid_title")), # title 
                       #uiOutput(ns("trend_caveats")), # caveats
                       highchartOutput(outputId = ns("pop_pyramid_chart")) |> # chart
                         withSpinner() |> 
@@ -49,9 +50,8 @@ demographics_mod_ui <- function(id) {
             
           # accordion panel with metadata table 
           div(id = ns("metadata_section"),
-              p("metadata here"),
-              div(uiOutput(ns("sex_split_text")) # chart header 
-              
+              div(uiOutput(ns("sex_split_text")), # chart header 
+                  p("metadata here")
               ))
       
               #metadata_panel_UI(ns("metadata_table")))
@@ -84,7 +84,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # create population pyramid dataframe
     pyramid_data <- reactive({
     dataset() |>
-      filter(year==2024)
+      filter(year==2024) #need to create a filter for year 
       })
     
     # calculate total male/female population split
@@ -105,6 +105,33 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     output$sex_split_text <- renderUI({
       paste0("Percentage of the population : Male ",round(sex_ratio_data()$pmale[1],digits=1),"% Female ",round(sex_ratio_data()$pfemale[1],digits=1),"%")
     })
+    
+    
+# Population Pyramid Title
+    output$pyramid_title <- renderUI({
+      req(pyramid_data())
+      
+      # create dynamic text if no indicators available for selected profile
+      # and geography
+      shiny::validate(
+        need( nrow(pyramid_data()) > 0, "No population data available area type and year. Try selecting another geography type or time period")
+      )
+      
+      # display 3 x titles
+      div(
+        tags$h5(first(pyramid_data()$areaname), class = "chart-header"), # year
+        tags$h5(first(pyramid_data()$year), class = "chart-header"), # year
+        tags$p("Source: NRS population estimates") # source of populations
+        #tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
+        #tags$h6(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)), # time range
+        #tags$p(trend_data()$type_definition[1]) # type definiton
+      )
+      
+    })
+    
+    
+    
+    
     
     ############################################.
     # charts -----
