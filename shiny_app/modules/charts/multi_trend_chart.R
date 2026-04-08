@@ -92,20 +92,31 @@ multi_trend_chart_mod_Server <- function(id,
       curr_series_ids <- reactiveVal(character(0))
       
 
-      # chart colours (to be expanded for non SIMD charts)
-      palette <- list(
-        "1 - most deprived" =  "#9B4393",
-        "5 - least deprived" =  "#0078D4",
-        "10 - least deprived" = "#0078D4",
-        "2" = "#DFDDE3",
-        "3" = "#DFDDE3",
-        "4" = "#DFDDE3",
-        "5" = "#DFDDE3",
-        "6" = "#DFDDE3",
-        "7" = "#DFDDE3",
-        "8" = "#DFDDE3",
-        "9" = "#DFDDE3"
-      )
+      # chart colours
+      r_palette <- reactive({
+      if(group_col == "quintile"){
+        palette <- list(
+          "1 - most deprived" =  "#9B4393",
+          "5 - least deprived" =  "#0078D4",
+          "10 - least deprived" = "#0078D4",
+          "2" = "#DFDDE3",
+          "3" = "#DFDDE3",
+          "4" = "#DFDDE3",
+          "5" = "#DFDDE3",
+          "6" = "#DFDDE3",
+          "7" = "#DFDDE3",
+          "8" = "#DFDDE3",
+          "9" = "#DFDDE3"
+        )
+      } else {
+        groups <- as.character(unique(r_data()[[group_col]]))
+        palette <- head(phs_colour_values, length(groups))
+        names(palette) <- groups
+      }
+        palette
+      })
+      
+
       
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # render chart once on initial load -----
@@ -118,9 +129,9 @@ multi_trend_chart_mod_Server <- function(id,
         
         isolate({
           
-          df <- r_data() # data to plot
-          groups <- unique(df[[group_col]]) # lines to plot
-          
+          df <- as.data.frame(r_data()) # data to plot
+          groups <- as.character(unique(df[[group_col]])) # lines to plot
+
           
           # update reactive val with the names of groups being plotted
           # on initial load 
@@ -132,7 +143,7 @@ multi_trend_chart_mod_Server <- function(id,
               id = group,
               name = group,
               type = "line",
-              color = palette[[group]],
+              color = r_palette()[[group]],
               # list_parse2 is a highcarter function that formats data into a list
               data = list_parse2(df[df[[group_col]] == group, c(x_col, y_col)])
             )
@@ -172,7 +183,7 @@ multi_trend_chart_mod_Server <- function(id,
                   id = paste0("ci-", group),
                   name = paste0("ci-", group),
                   type = "arearange",
-                  color = palette[[group]],
+                  color = r_palette()[[group]],
                   showInLegend = FALSE,
                   fillOpacity = 0.2,
                   enableMouseTracking = FALSE, 
@@ -242,7 +253,7 @@ multi_trend_chart_mod_Server <- function(id,
       observeEvent(r_data(), {
 
           # data to be plotted
-          df <- r_data()
+          df <- as.data.frame(r_data())
 
           old_group_ids <- isolate(curr_series_ids()) # old lines that were plotted
           new_group_ids <- unique(df[[group_col]]) # new lines to be plotted
@@ -250,8 +261,8 @@ multi_trend_chart_mod_Server <- function(id,
 
           # get chart that's already rendered
           hc <- highchartProxy(ns("multi_trend_chart"))
-          
-          
+
+
           # update xaxis
           hc <- hcpxy_update(hc, xAxis = list(categories = unique(df[[x_col]])), redraw = FALSE)
 
@@ -261,28 +272,28 @@ multi_trend_chart_mod_Server <- function(id,
           add <- setdiff(new_group_ids, old_group_ids)
           update <- intersect(old_group_ids, new_group_ids)
 
-          
+
           # remove lines (if applicable)
           if (length(remove) > 0) {
             hc <- hcpxy_remove_series(hc, id = remove)
           }
-          
-          
+
+
           # add lines (if applicable)
           if(length(add) > 0){
-            
+
             walk(add, ~ {
               hc <- hcpxy_add_series(
                hc,
                id = .x,
                name = .x,
                type = "line",
-               color = palette[[.x]],
+               color = r_palette()[[.x]],
                data = list_parse2(df[df[[group_col]] == .x, c(x_col, y_col)]),
                redraw = FALSE
               )
             })
-            
+
             # add matching CI series (if applicable)
             if (isTRUE(r_chart_controls$ci_switch)){
               walk(add, ~ {
@@ -291,44 +302,44 @@ multi_trend_chart_mod_Server <- function(id,
                   id = paste0("ci-",.x),
                   name = paste0("ci-",.x),
                   type = "arearange",
-                  color = palette[[.x]],
+                  color = r_palette()[[.x]],
                   showInLegend = FALSE,
                   fillOpacity = 0.2,
-                  enableMouseTracking = FALSE, 
-                  zIndex = -1, 
+                  enableMouseTracking = FALSE,
+                  zIndex = -1,
                   data = list_parse2(df[df[[group_col]] == .x, c(x_col, upci_col, lowci_col)]),
-                  redraw = FALSE
-                )
-              }) 
-            }
-          }
-          
-          
-          # update lines (if applicable)
-          if(length(update) > 0){
-            walk(update, ~ {
-              hc <- hcpxy_update_series(
-                hc, 
-                id = .x, 
-                data = list_parse2(df[df[[group_col]] == .x, c(x_col, y_col)]), 
-                redraw = FALSE
-                )
-            })
-          }
-            
-            # update matching CI series (if applicable)
-            if (isTRUE(r_chart_controls$ci_switch)){
-              walk(update, ~ {
-                hc <- hcpxy_update_series(
-                  hc, 
-                  id = paste0("ci-", .x), 
-                  data = list_parse2(df[df[[group_col]] == .x, c(x_col, upci_col, lowci_col)]), 
                   redraw = FALSE
                 )
               })
             }
-              
-              
+          }
+
+
+          # update lines (if applicable)
+          if(length(update) > 0){
+            walk(update, ~ {
+              hc <- hcpxy_update_series(
+                hc,
+                id = .x,
+                data = list_parse2(df[df[[group_col]] == .x, c(x_col, y_col)]),
+                redraw = FALSE
+                )
+            })
+          }
+
+            # update matching CI series (if applicable)
+            if (isTRUE(r_chart_controls$ci_switch)){
+              walk(update, ~ {
+                hc <- hcpxy_update_series(
+                  hc,
+                  id = paste0("ci-", .x),
+                  data = list_parse2(df[df[[group_col]] == .x, c(x_col, upci_col, lowci_col)]),
+                  redraw = FALSE
+                )
+              })
+            }
+
+
               # update average line (if applicable)
                 if(isTRUE(r_chart_controls$avg_switch)){
                   hc <- hc |>
@@ -352,7 +363,7 @@ multi_trend_chart_mod_Server <- function(id,
       }, ignoreInit = TRUE)
 
 
-      
+
       ## b. Updates in response to chart controls changing -----
       # i.e. adding/removing bits from the chart
 
@@ -363,14 +374,14 @@ multi_trend_chart_mod_Server <- function(id,
             yAxis = list(min = if (isTRUE(r_chart_controls$zero_yaxis_switch)) 0 else NULL)
           )
       }, ignoreInit = TRUE)
-      
-      
+
+
       # adding/removing CI series
       observeEvent(r_chart_controls$ci_switch, {
-        
+
         hc <- highchartProxy(ns("multi_trend_chart"))
         groups <- curr_series_ids()
-        
+
         if (isTRUE(r_chart_controls$ci_switch)){
            walk(groups, ~ {
             hc <- hcpxy_add_series(
@@ -378,12 +389,12 @@ multi_trend_chart_mod_Server <- function(id,
               id = paste0("ci-",.x),
               name = paste0("ci-",.x),
               type = "arearange",
-              color = palette[[.x]],
+              color = r_palette()[[.x]],
               linkedTo = .x,
               showInLegend = FALSE,
               fillOpacity = 0.2,
-              enableMouseTracking = FALSE, 
-              zIndex = -1, 
+              enableMouseTracking = FALSE,
+              zIndex = -1,
               showInLegend = FALSE,
               data = list_parse2(r_data()[r_data()[[group_col]] == .x, c(x_col, upci_col, lowci_col)]),
               redraw = FALSE
@@ -392,12 +403,12 @@ multi_trend_chart_mod_Server <- function(id,
         } else {
           hc <- hcpxy_remove_series(hc, id = paste0("ci-", groups))
         }
-           
+
           hc
-          
+
       }, ignoreInit = TRUE)
-      
-      
+
+
       # adding/removing average line
       observeEvent(r_chart_controls$avg_switch, {
 
@@ -415,8 +426,8 @@ multi_trend_chart_mod_Server <- function(id,
             highchartProxy(ns("multi_trend_chart")) |>
               hcpxy_remove_series(id = "avg")
           }
-        
-        
+
+
       }, ignoreInit = TRUE)
 
 
