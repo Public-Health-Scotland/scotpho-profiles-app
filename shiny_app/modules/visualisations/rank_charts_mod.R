@@ -531,7 +531,6 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
                 style = list(fontWeight = "bold"), align = "left"
                 ),
               subtitle = list(text = sprintf("%s <br> %s", chart_desc, rank_data()$type_definition[1]), align = "left"),
-             # yAxis = list(title = list(text = paste0(unique(rank_data()$type_definition)))),
               caption = list(text = "Source: ScotPHO Profiles Tool")
             )
           )

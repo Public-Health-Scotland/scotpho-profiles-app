@@ -527,7 +527,6 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
               last(trend_data()$trend_axis),
               first(trend_data()$type_definition)
             ), useHTML = TRUE, align = "left"),
-            #yAxis = list(title = list(text = paste0(trend_data()$type_definition[1]))),
             caption = list(text = "Source: ScotPHO Profiles Tool")
           )
         )
