@@ -495,18 +495,19 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     })
     
     
-    # create a reactive object which stores a list of 10 pieces of information at one time (5 for each chart):
+    # create a reactive object which stores a list of 12 pieces of information at one time (6 for each chart):
     # a. the narrative to display in the interpretation tab (i.e. stored under 'left_chart_narrative' for the left chart)
     # b. the chart title to display (i.e. stored under 'left_chart_title')
     # c . the 2 x charts subtitle to display (i.e. stored under 'left_chart_subtitle_1 and left_chart_subtitle_2)
     # d. the filename of the chart if saved as a png (i.e. stored under 'left_chart_filename')
+    # e. the units to be added to the chart when downloading
     chart_text <- reactive({
       req(simd_measures_data())
       
       switch(input$depr_measures,
              
              
-             # Prepare the 10 bits of text for if patterns of inequality are selected
+             # Prepare the 12 bits of text for if patterns of inequality are selected
              "Patterns of inequality" = list(
                
                # SIMD bar chart titles/subtitles/interpretation/filename
@@ -527,7 +528,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
              ),
              
              
-             # Prepare the 8 bits of text for if Inequality gap is selected
+             # Prepare the 10 bits of text for if Inequality gap is selected
              "Inequality gap" = list(
                
                # SII trend chart titles/subtitles/interpretation/filename
@@ -549,7 +550,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
              ),
              
              
-             # Prepare the 9 bits of text for if potential for improvement is selected
+             # Prepare the 11 bits of text for if potential for improvement is selected
              "Potential for improvement" = list(
                
                # potential for improvement bar chart titles/subtitles/interpretation/filename
@@ -672,7 +673,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
           filename = chart_text()$left_chart_filename,
           chartOptions = list(
             title = list(text = chart_text()$left_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$left_chart_subtitle_1, align = "left"),
+            subtitle = list(text = sprintf("%s <br> %s", chart_text()$left_chart_subtitle_1, left_chart_download_units), align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
@@ -735,7 +736,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
           filename =chart_text()$right_chart_filename,
           chartOptions = list(
             title = list(text = chart_text()$right_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$right_chart_subtitle_1, align = "left"),
+            subtitle = list(text = sprintf("%s <br> %s", chart_text()$right_chart_subtitle_1, right_chart_download_units), align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
