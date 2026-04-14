@@ -516,7 +516,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                left_chart_subtitle_1 = paste0(simd_measures_data()$left_data$trend_axis[1]),
                left_chart_subtitle_2 = paste0(simd_measures_data()$left_data$type_definition[1]),
                left_chart_filename = paste0("ScotPHO SIMD barchart- ", selected_indicator()),
-               left_chart_download_units = left_chart_subtitle_2,
+               left_chart_download_units = paste0(simd_measures_data()$left_data$type_definition[1]),
                
                # SIMD trend chart titles/subtitles/interpretation/filename
                right_chart_narrative = about_simd_trend,
@@ -524,7 +524,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                right_chart_subtitle_1 = paste0(first(simd_measures_data()$right_data$trend_axis)," to ",last(simd_measures_data()$right_data$trend_axis)),
                right_chart_subtitle_2 = paste0(simd_measures_data()$right_data$type_definition[1]),
                right_chart_filename = paste0("ScotPHO SIMD trendchart- ", selected_indicator()),
-               right_chart_download_units = right_chart_subtitle_2
+               right_chart_download_units = paste0(simd_measures_data()$right_data$type_definition[1])
              ),
              
              
@@ -537,7 +537,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                left_chart_subtitle_1 = paste0("The chart shows the difference between most and least deprived areas (expressed as ", simd_measures_data()$left_data$type_definition[1], ")."),
                left_chart_subtitle_2 = "An increasing trend suggests the gap between the most and least deprived areas is growing.",
                left_chart_filename = paste0("ScotPHO SII chart- ", selected_indicator()),
-               left_chart_download_units = paste0(simd_measures_data()$left_data$type_definition[1]),
+               left_chart_download_units = paste0(""),
                
                
                # RII trend chart titles/subtitles/interpretation/filename
@@ -546,7 +546,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                right_chart_subtitle_1 = "The chart shows the differences between the most disadvantaged area and the overall average for Scotland (expressed as a percentage).",
                right_chart_subtitle_2 = "An increasing trend suggests that the gap between the most disadvantaged area and the average is growing",
                right_chart_filename = paste0("ScotPHO RII chart - ", selected_indicator()),
-               right_chart_download_units = paste0("Percentage")
+               right_chart_download_units = paste0("")
              ),
              
              
@@ -559,7 +559,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                left_chart_subtitle_1 = paste0("The portion of ", selected_indicator(), " which could be attributed to socioeconomic inequalities."),
                left_chart_subtitle_2 = paste0(simd_measures_data()$left_data$type_definition[1]),
                left_chart_filename = paste0("ScotPHO Attributable to inequality chart - ", selected_indicator()),
-               left_chart_download_units = left_chart_subtitle_2,
+               left_chart_download_units = paste0(simd_measures_data()$left_data$type_definition[1]),
                
                right_chart_narrative = about_par_trend,
                right_chart_title = paste0("Potential for improvement"),
@@ -673,7 +673,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
           filename = chart_text()$left_chart_filename,
           chartOptions = list(
             title = list(text = chart_text()$left_chart_title, align = "left"),
-            subtitle = list(text = sprintf("%s <br> %s", chart_text()$left_chart_subtitle_1, left_chart_download_units), align = "left"),
+            subtitle = list(text = sprintf("%s <br> %s", chart_text()$left_chart_subtitle_1, chart_text()$left_chart_download_units), align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
@@ -736,7 +736,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
           filename =chart_text()$right_chart_filename,
           chartOptions = list(
             title = list(text = chart_text()$right_chart_title, align = "left"),
-            subtitle = list(text = sprintf("%s <br> %s", chart_text()$right_chart_subtitle_1, right_chart_download_units), align = "left"),
+            subtitle = list(text = sprintf("%s <br> %s", chart_text()$right_chart_subtitle_1, chart_text()$right_chart_download_units), align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
