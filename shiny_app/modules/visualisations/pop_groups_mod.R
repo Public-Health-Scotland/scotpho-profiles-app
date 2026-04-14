@@ -283,7 +283,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
               text = sprintf("%s <br> %s",pop_trend_data()$trend_axis[1], pop_trend_data()$type_definition[1]), 
               useHTML = TRUE, align = "left"
               ),
-            yAxis = list(title = list(text = paste0(pop_rank_data()$type_definition[1]))),
+           # yAxis = list(title = list(text = paste0(pop_rank_data()$type_definition[1]))),
             caption = list(text = "Source: ScotPHO Profiles Tool")
           )
         )
@@ -322,7 +322,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
               text = sprintf("%s to %s<br>%s",first(pop_trend_data()$trend_axis),last(pop_trend_data()$trend_axis),first(pop_trend_data()$type_definition)), 
               useHTML = TRUE, align = "left"
               ),
-            yAxis = list(title = list(text = paste0(pop_trend_data()$type_definition[1]))),
+          #  yAxis = list(title = list(text = paste0(pop_trend_data()$type_definition[1]))),
             caption = list(text = "Source: ScotPHO Profiles Tool")
           )
         )
