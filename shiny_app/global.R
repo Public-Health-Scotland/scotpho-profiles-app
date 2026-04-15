@@ -273,15 +273,14 @@ pd_list <- sort(geo_lookup$areaname[geo_lookup$areatype=="Police division"])
 
 
 # geography areatypes
-areatype_list <- c("Alcohol & drug partnership", 
-                   "Council area", 
-                   "Health board",  
-                   "HSC locality", 
-                   "HSC partnership",  
-                   "Intermediate zone",
-                   "Police division",
-                   "Scotland")
-
+areatype_list <- c("Alcohol & drug partnership", #S11
+                   "Council area", #S12
+                   "Health board",  #S08
+                   "HSC locality", #S99
+                   "HSC partnership",  #S37
+                   "Intermediate zone", #S02
+                   "Police division", #S32
+                   "Scotland") #S00
 
 
 

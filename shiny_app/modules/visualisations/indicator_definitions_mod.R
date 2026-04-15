@@ -80,7 +80,7 @@ definitions_tab_Server <- function(id) {
           x
         } else {
           x <- x |>
-            filter(grepl(paste(input$geo_search, collapse="|"), available_geographies))
+            filter(ind_id %in% main_dataset$ind_id[main_dataset$areatype %in% input$geo_search])
         }
         
         
