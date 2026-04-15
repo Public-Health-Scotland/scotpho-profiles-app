@@ -26,7 +26,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
       dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
       if(selected_profile()$full_name == "All Indicators"){
-        choices <- unique(dt$indicator)
+        choices <- sort(unique(dt$indicator))
       } else {
       
       # select columns and get unique rows
