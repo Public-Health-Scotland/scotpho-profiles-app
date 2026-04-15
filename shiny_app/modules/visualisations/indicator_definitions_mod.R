@@ -147,7 +147,7 @@ definitions_tab_Server <- function(id) {
                      
                      <div>
                      <h4 class = 'metadata-header'>Profiles</h4>
-                     ${rowInfo.values['profile_domain']}
+                     ${rowInfo.values['profiles']}
                      </div>
                      
                      <br>
@@ -243,6 +243,7 @@ definitions_tab_Server <- function(id) {
             # however most of them are used to populate the information when a row is expanded
             ind_id = colDef(show = F),
             profile_domain = colDef(show = F),
+            profiles = colDef(show = F),
             indicator_definition = colDef(show = F),
             data_source = colDef(show = F),
             source_details = colDef(show = F),

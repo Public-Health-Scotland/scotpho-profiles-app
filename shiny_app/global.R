@@ -260,7 +260,6 @@ profile_filter_choices <- names(Filter(function(x) x$active == TRUE & x$nav_id =
 archived_indicators <- techdoc$ind_id[techdoc$active == "AR"]
 
 
-
 # Area names by geography type  including HB, CA, HSCP, alcohol and drugs partnership
 # HSC partnership names - also used as the choices for an additional parent area filter 
 # when intermediate zone/localities are selected to reduce the number of IZ/localities
