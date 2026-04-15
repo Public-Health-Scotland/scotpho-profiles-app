@@ -62,6 +62,27 @@ prepare_techdoc <- function(filepath,
   techdoc <- techdoc |>
     filter(active %in% c("A", "AR", if(test_indicators) "T"))
   
+
+  
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Make a profiles column containing only the profile long name -----
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  techdoc <- techdoc |>
+    mutate(profiles = gsub("-.*;", "; ", profile_domain)) |> #drop domains
+    mutate(profiles = gsub("-.*", "; ", profiles)) |> #drop domains that don't have ; after them
+    mutate(profiles = stringr::str_replace_all(profiles, c("HWB" = "Health & Wellbeing",                   
+                                                           "CWB" = "Population Health",                    
+                                                           "CLI" = "Climate",                             
+                                                           "MEN" = "Adult Mental Health",                  
+                                                           "CMH" = "Children & Young People Mental Health",
+                                                           "CYP" = "Children & Young People",             
+                                                           "TOB" = "Tobacco",                              
+                                                           "ALC" = "Alcohol",                               
+                                                           "DRG" = "Drugs",
+                                                           "PHY" = "Physical Activity",
+                                                           "POP" = "Population",
+                                                           "SHI" = "Health inequalities")))
   
   
   
@@ -83,6 +104,7 @@ prepare_techdoc <- function(filepath,
       
       # profile(s) and domain(s) indicator belongs to
       profile_domain,
+      profiles,
       
       # data source details (why 2 cols?)
       data_source,
