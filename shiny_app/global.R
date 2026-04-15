@@ -283,44 +283,6 @@ areatype_list <- c("Alcohol & drug partnership", #S11
                    "Police division", #S32
                    "Scotland") #S00
 
-# getting available_geographies from the data that has been read in, rather than the techdoc column:
-
-# function to get the geogs for each indicator
-get_geogs <- function(df) {
-  df %>%  
-    mutate(geog = substr(code, 1, 3)) %>%
-    select(ind_id, geog) %>%
-    unique()
-}
-
-# run the function
-main_geogs <- get_geogs(main_dataset)
-simd_geogs <- get_geogs(simd_dataset)
-popgroup_geogs <- get_geogs(popgroup_dataset)
-
-# combine the data and create and available_geographies column
-all_geogs <- rbind(main_geogs, simd_geogs, popgroup_geogs) %>% 
-  unique() %>%
-  mutate(geog = factor(geog,
-                       levels = c("S00", "S08", "S32", "S12", "S37", "S11", "S99", "S02"),
-                       labels = c("Scotland", #S00
-                                  "Health board",  #S08
-                                  "Police division", #S32
-                                  "Council area", #S12
-                                  "HSC partnership",  #S37
-                                  "Alcohol & drug partnership", #S11
-                                  "HSC locality", #S99
-                                  "Intermediate zone" #S02
-                                  ))) %>%
-  arrange(ind_id, geog) %>%
-  group_by(ind_id) %>%
-  summarise(available_geographies = paste0(geog, collapse=", ")) %>%
-  ungroup()
-
-# replace existing column in techdoc (as this could have typos/missing/incorrect data)
-techdoc <- techdoc %>% 
-  select(-available_geographies) %>%
-  merge(y=all_geogs, by="ind_id")
 
 
 # 5. Dashboard theme ---------------------------------------------------------------
