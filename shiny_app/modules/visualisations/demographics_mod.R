@@ -48,13 +48,13 @@ demographics_mod_ui <- function(id) {
                       reactableOutput(ns("pyramid_table")) # table
             ),
             
-            # add space
+           # add space
            # bslib::nav_spacer()),
-          
+           # not sure any popover controls are required so maybe don't needed so could maybe delete?
+           
           # footer with download buttons
           footer = card_footer(class = "d-flex justify-content-left",
                                div(id = ns("pyramid_download_chart"), download_chart_mod_ui(ns("save_pyramid_chart"))),
-                               #  div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
                                div(id = ns("pyramid_download_data"), download_data_btns_ui(ns("download_pyramid_data")))
           )
       ), # close navset card pill
@@ -223,11 +223,12 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
                                                    "code",
                                                    "areaname",
                                                    "areatype",
-                                                   "age band (years)"= "age",
-                                                   "population_Male",
-                                                   "population_Female"))
+                                                   "age band (years)" = "age",
+                                                   "male population" = "population_Male",
+                                                   "male percentage" = "percentage_Male",
+                                                   "female population" = "population_Female",
+                                                   "female percentage" = "percentage_Female"))
       
-    
     
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~
