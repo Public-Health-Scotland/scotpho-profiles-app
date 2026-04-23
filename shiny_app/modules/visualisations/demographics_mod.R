@@ -49,13 +49,13 @@ demographics_mod_ui <- function(id) {
             ),
             
             # add space
-            bslib::nav_spacer()),
+           # bslib::nav_spacer()),
           
           # footer with download buttons
           footer = card_footer(class = "d-flex justify-content-left",
-                               p("download buttons")
+                               div(id = ns("pyramid_download_chart"), download_chart_mod_ui(ns("save_pyramid_chart"))),
                                #  div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
-                               # div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
+                               div(id = ns("pyramid_download_data"), download_data_btns_ui(ns("download_pyramid_data")))
           )
       ), # close navset card pill
       
@@ -67,13 +67,12 @@ demographics_mod_ui <- function(id) {
       
       #metadata_panel_UI(ns("metadata_table")))
     ) # close
-  )  # close layout sidebar)                 
+  ))  # close layout sidebar)                 
   
   # nav_panel("Charts",
   #   p("hello")
   # )
-  
-  
+ 
 } #close ui function
 
 ############
@@ -169,10 +168,18 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     output$pop_pyramid_chart <- renderHighchart({
       
       shiny::validate(
-        need( nrow(pyramid_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area.")))
+        need(nrow(pyramid_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area.")))
       
       create_pyramid_chart(
-        data = pyramid_data())
+        data = pyramid_data()) |>
+        #add chart title when downloading the chart image
+        hc_exporting(
+          filename = paste0("ScotPHO Population Pyramid"),
+          chartOptions = list(
+            title = list(text = paste0(first(pyramid_data()$areaname))),
+            subtitle = list(text = paste0(first(pyramid_data()$year)))
+          )
+        )
       
     })
     
@@ -197,7 +204,40 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
                   population_Male = colDef(name = "Male population"),
                   population_Female = colDef(name = "Female population")
                 ))
-    }) #close pyramid table
+    }) #close pyramid mini data table
+    
+    
+    
+    
+    ######################################.
+    # Downloads -------
+    ######################################.
+    
+    # server for chart and data downloads
+    download_chart_mod_server(id = "save_pyramid_chart", chart_id = ns("pop_pyramid_chart"))
+    
+    download_data_btns_server(id = "download_pyramid_data", 
+                              data = pyramid_data, 
+                              file_name = "Pyramid_ScotPHO_data_extract", 
+                              selected_columns = c("year",
+                                                   "code",
+                                                   "areaname",
+                                                   "areatype",
+                                                   "age band (years)"= "age",
+                                                   "population_Male",
+                                                   "population_Female"))
+      
+    
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Share card buttons ------
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    #add ability to share card - might need to adapt the card share module to cope with sub-tab logic rather than LTMHI layout
+    #share_button_mod_Server(id = "demog_pyramid_share", card_id = ns("demog_navset_card_pill"))
+    
+    
     
   }) #close moduleServer
 } # close server function
