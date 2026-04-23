@@ -124,8 +124,8 @@ pop_simd_centile_iz<- demographic_simd_dataset |>
   mutate(quintile=paste0("Q",quintile))
   
 pop_simd_centile_iz_rearrange <-pop_simd_centile_iz |>
-  select(-dz_count)|>
-  pivot_longer(cols = c("pop_all_ages", "pop_u26", "pop_working","percent_all","percent_u26","percent_working"),
+ # select(-dz_count)|>
+  pivot_longer(cols = c("pop_all_ages", "pop_u26", "pop_working","percent_all","percent_u26","percent_working","dz_count"),
                names_to = "population_group",
                values_to = "population")|>
   pivot_wider(names_from = "quintile",
@@ -143,7 +143,7 @@ pop_simd_centile_iz_rearrange <-pop_simd_centile_iz |>
 # need to filter for single year 
 table_data<-pop_simd_centile_iz_rearrange |>
   filter(year==2020)|>
-  filter(population_group=="pop_all_ages") |>
+  filter(population_group=="percent_all") |>
   select(simd_domain,measure_type,population_group,Q1,Q2,Q3,Q4,Q5,Total)
   
 

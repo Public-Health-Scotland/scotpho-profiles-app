@@ -19,6 +19,14 @@ demographics_mod_ui <- function(id) {
       sidebar = sidebar(width = 500,
                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content)
                         p("some text - need to insert filter on year"),
+                        
+                        # time period filter 
+                        selectizeInput(
+                          inputId = ns("period_filter"),
+                          label = "Select time period:",
+                          choices = NULL # choices dynamically updated in server depending on selected indicator
+                        ),
+                        
                         p("potentially add ability to overlay scotland pattern as line on pyramid")),
       
       # create a multi-tab card 
@@ -35,6 +43,12 @@ demographics_mod_ui <- function(id) {
                       highchartOutput(outputId = ns("pop_pyramid_chart")) |> # chart
                         withSpinner() |> 
                         bslib::as_fill_carrier() #required to ensure chart fills panel
+            ),
+            
+            # data tab
+            nav_panel("Data",
+                      value = ns("demog_data_tab"), #id for guided tour
+                      reactableOutput(ns("pyramid_table")) # table
             ),
             
             # add space
@@ -84,7 +98,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # create population pyramid dataframe
     pyramid_data <- reactive({
     dataset() |>
-      filter(year==2024) #need to create a filter for year 
+      filter(year== input$period_filter) 
       })
     
     # calculate total male/female population split
@@ -94,6 +108,30 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
         summarise(pmale=abs(sum(percentage_Male)),
                pfemale=sum(percentage_Female))|>
         ungroup()
+    })
+    
+    
+    ## year filter ----
+    observe({
+      
+      # get available def periods for selected indicator AND selected area
+      # (important as e.g. Scotland may have more up to date data
+      # or have different level of aggregation than selected area)
+      choices <- sort(unique(dataset()$year[dataset()$areaname == geo_selections()$areaname]),decreasing = TRUE)
+      
+      ##FIGURE OUT HOW TO SORT IN DESCENDING ORDER SO MOST RECENT YEAR PLOTTED FIRST
+      
+      # avoid transient invalid values while updating filter
+      shiny::freezeReactiveValue(input, "period_filter")
+      
+      # update filter choices
+      updateSelectizeInput(
+        session = session,
+        inputId = "period_filter",
+        choices = choices,
+        selected = if (length(choices)) choices[[1]] else NULL
+      )
+      
     })
     
     
@@ -150,7 +188,28 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
 
     
 
-    
+    # ~~~~~~~~~~~~~~~~~~~~~
+    # data table ----
+    # ~~~~~~~~~~~~~~~~~~~~~
+    output$pyramid_table <- renderReactable({
+      req(pyramid_data())
+      
+      data <- pyramid_data() |>
+        select(year, code, areaname, age,population_Male,population_Female) 
+      
+      reactable(data,
+                defaultExpanded = T,
+                defaultPageSize = nrow(data),
+                columns = list(
+                  year = colDef("Year"),
+                  code = colDef("Area code"),
+                  areaname = colDef(name = "Area name"),
+                  age= colDef("Age band (years)"),
+                  population_Male = colDef(name = "Male population"),
+                  population_Female = colDef(name = "Female population")
+                )
+      )
+    })
     
     
     

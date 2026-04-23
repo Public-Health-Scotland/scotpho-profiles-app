@@ -24,8 +24,8 @@ lookups <- paste0(data_folder, "Lookups/")
 pop_lookup <- "/PHI_conf/ScotPHO/Profiles/Data/Lookups/Population/"
 
 
-population_data_file <- readRDS(file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
-
+#population_data_file <- readRDS(file=paste0(pop_lookup, 'testfile_population_breakdown_wide.rds'))
+population_data_file <- readRDS(file=paste0(pop_lookup, 'population_age_sex_breakdown_wide.rds'))
 
 population_data <- population_data_file  |>
   mutate(age = case_when(age_grp == 1 ~ "0-4",

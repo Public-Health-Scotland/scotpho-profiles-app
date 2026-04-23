@@ -327,9 +327,11 @@ create_bar_chart <- function(data,
 ############################.
 
 create_pyramid_chart <- function(data){
-  
+
+  axis_value <- round(max(abs(data$percentage_Male),data$percentage_Female),0)
+    
   hc <- hchart(data,
-               type = "bar") %>%
+               type = "bar") |>
     hc_plotOptions(series = list(stacking = "normal",
                                  grouping = FALSE,
                                  pointPadding = 0, # Smaller value = fatter bars
@@ -361,10 +363,11 @@ create_pyramid_chart <- function(data){
     }")
     ) %>%
     
+
     # Format Y-Axis (% population)
     hc_yAxis(
-      min = -5,           # Fixed start
-      max = 5,            # Fixed end (must match min to be centered)
+      min = -axis_value ,           # Fixed start
+      max = axis_value,            # Fixed end (should match min to be centered)
       tickInterval = 1,   # Distance between labels
       labels = list(formatter = JS("function() { return Math.abs(this.value); }")), #ensure axis labels show absolute values not negatives for the males
       title = list(text = "Percentage of Population (%)")
