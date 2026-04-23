@@ -215,7 +215,9 @@ function(input, output, session) {
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
-
+   demographics_mod_server("demographics",demographic_data, geo_selections, selected_profile, session)
+   
+   
   
    # running module for the long-term monitoring of HE tab
    ltmhi_Server(id = "ltmhi")
@@ -311,6 +313,11 @@ function(input, output, session) {
     }
   })
   
+  # 5. DEMOGRAPHIC DATA (used to generate population pyramid)
+  demographic_data <-reactive({
+    req(input$profile_choices != "")
+    demographic_dataset |>
+      filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)})
   
   
   ###################################################.
