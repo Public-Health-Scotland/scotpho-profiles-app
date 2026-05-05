@@ -319,7 +319,7 @@ data_tab_mod_Server <- function(id) {
         
         
         # Further filter indicators if a profile is selected
-        if (!is.null(input$profile_selector) && input$profile_selector != "") {
+        if (!is.null(input$profile_selector)) {
           
           profile_filtered_data <- data |>
             filter(grepl(paste(profiles_list[[input$profile_selector]]$short_name, collapse = "|"), profile_domain))
