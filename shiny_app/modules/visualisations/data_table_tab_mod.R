@@ -12,96 +12,144 @@
 
 data_tab_modUI <- function(id) {
   ns <- NS(id)
-  tagList(
-    page_sidebar(padding = 20, gap = 20,
-                       sidebar = sidebar(width = 300, padding = 20,
-                                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
-                                         
-                                         # clear filters button
-                                         actionButton(ns("clear_table_filters"),
-                                                      label = "Clear all filters",
-                                                      icon ("eraser"),
-                                                      class = "down"),
-                                         
-                                         # dataset selection filter
-                                         radioButtons(
-                                           inputId = ns("dataset_selector"),
-                                           label = bslib::tooltip(
-                                             placement = "bottom",
-                                             trigger = list("Select a dataset",icon("info-circle")),
-                                                        "The main dataset contains data on all indicators at 
-                                                        various geography levels. The inequalities dataset is a smaller subset of indicators 
-                                             and geographies, which are split by SIMD quintiles and other measures of inequality 
-                                             (this dataset underpins the visualisations in the inequalities sub-tabs).", 
-                                           ),                                           choices = c("Main Dataset","Inequalities Dataset"),
-                                           selected = "Main Dataset" # default on main opt dataset
-                                         ),
+    page_sidebar(
+      sidebar = sidebar(
+        width = 400, 
+        open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
+        bg = "#F8FAFC",
+        
+        # header and clear filters button
+        div(
+          class = "d-flex justify-content-between",
+          h4("Filters"),
+          actionButton(
+            inputId = ns("clear_table_filters"),
+            label = "Clear filters",
+            icon ("eraser"),
+            class = "btn-sm"
+            )
+          ),
+        
+        
+        # dataset selection filter
+        card(
+          card_header(
+            div("Dataset", span("*", class = "text-red")),
+            tooltip(
+              bs_icon("info-circle"),
+              "The main dataset contains data for all indicators at various geography levels.
+               The inequalities dataset is a smaller subset of indicators and geographies,
+               split by SIMD quintiles and other measures of inequality (this dataset underpins
+               the visualisations in the inequalities sub-tabs)."
+              )
+            ),
+          card_body(
+            helpText("Select a dataset to get started."),
+            radioButtons(
+              inputId = ns("dataset_selector"),
+              label = NULL,
+              choices = c("Main Dataset","Inequalities Dataset"),
+              selected = "Main Dataset" # default on main dataset
+            )
+          )
+        ),
+        
+        # quintile type filter (only if inequalities dataset is selected)
+        hidden(
+          div(
+            id = ns("inequality_extras"),
+            card(
+              card_header(
+                div("SIMD Quintile types", span("*", class = "text-red")),
+                tooltip(
+                  bs_icon("info-circle"),
+                  p("Scottish quintile 1 refers to the datazones containing the 20% most deprived population in Scotland. Local quintile 1 contains the datazones where the 20% most deprived population within a particular Health board or Council area reside."),
+                  p("Scottish quintiles therefore highlight inequalities between Scotland’s most and least deprived population, while local quintiles show inequalities within an area.")
+                )
+              ),
+              helpText("Select one or more quintile type."),
+              checkboxGroupInput(
+                inputId = ns("quint_type_selector"), 
+                label = NULL, 
+                choices = c("Local", "Scotland"),
+                selected = "Scotland" # default on scottish quintiles
+              )
+            )
+        )
+        ),
+        
 
-                                         # quintile type filter (only if inequalities dataset is selected)
-                                         conditionalPanel(
-                                           id = ns(id),
-                                           condition = "input['dataset_selector'] === 'Inequalities Dataset'",
-                                           radioGroupButtons(
-                                             inputId = ns("quint_type_selector"),
-                                             label = "Select quintile type",
-                                             choices = c("Local", "Scotland"),
-                                             selected = "Scotland" # default on max year for each indicator
-                                           )
-                                         ),
+        
+        # Geography filters
+        card(
+          card_header(
+            div("Geographies", span("*", class = "text-red"))
+          ),
+          card_body(
+            helpText("Use the '+' symbol to expand areatypes and the checkboxes to select areas. Selecting the checkbox next to an areatype will select all areas within that geography level."),
+            quercusInput(
+              inputId = ns("geography_selector"),
+              label = NULL,
+              choices = main_data_geo_nodes, # defined in global script
+              returnValue = "id", # return geography code instead of name 
+              width = "100%",
+              searchPlaceholder = "Type to search geographies",
+              searchEnabled = TRUE, # add search box 
+              showChildrenOnSearch = TRUE,
+              checkboxSelectionEnabled = TRUE, # add checkboxes
+              multiSelectEnabled = TRUE, # allow multiple selections
+              cascadeSelectChildren = TRUE # select all child areas when parent area selected
+            )
+          )
+        ),
                                          
-                                         # Geography filters
-                                         jstreeOutput(ns("geography_selector")),
-                                         
-                                         # profile filters
-                                         virtualSelectInput(inputId = ns("profile_selector"),
-                                                            label = "Select profile(s)",
-                                                            choices = profiles_list,
-                                                            disableSelectAll = FALSE,
-                                                            multiple = TRUE,
-                                                            search = TRUE,
-                                                            searchByStartsWith = TRUE,
-                                                            width = '100%',
-                                                            zIndex = 100),
-                                         
-                                         # indicator filters
-                                         virtualSelectInput(inputId = ns("indicator_selector"),
-                                                            label = "Select indicator(s)",
-                                                            noOptionsText = "Select atleast one geography to see what indicators are available",
-                                                            choices = NULL,
-                                                            disableSelectAll = TRUE,
-                                                            multiple = TRUE,
-                                                            search = TRUE,
-                                                            searchByStartsWith = TRUE,
-                                                            dropboxWrapper = "body",
-                                                            dropboxWidth = '400px',
-                                                            width = '100%',
-                                                            zIndex = 100),
-                                         
-                                         
-                                         # time period filter
-                                         radioGroupButtons(
-                                           inputId = ns("time_period_selector"),
-                                           label = "Select time period:",
-                                           choices = c("Latest available year", "All years"),
-                                           selected = "Latest available year"
-                                         )
-                                         
-                       ), # close sidebar
-                       
-                       h1("Download data"),
-                       p("Use the filters to build a data table, which can then be downloaded in various formats using the button below. 
-                         Please note that the table below is a preview. The downloaded dataset will contain more columns containing metadata 
-                         than are presented here."),
+        # profile filters
+        card(
+          card_header("Profiles", helpText("(optional)")),
+          card_body(
+            helpText("Filter dataset by profiles. Some profiles may be disabled depending on the dataset and geography selected."),
+            pickerInput(
+              inputId = ns("profile_selector"),
+              label = NULL,
+              choices = names(discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI"))),
+              multiple = TRUE,
+              options = list(container = "body")
+            )
+          )
+        ),
+        
+        # indicator filters
+        card(
+          card_header("Indicators", helpText("(optional)")),
+          helpText("Filter dataset by indicators. Indicator choices are dependent on previous selections."),
+          pickerInput(
+            inputId = ns("indicator_selector"),
+            label = NULL,
+            choices = NULL,
+            multiple = TRUE,
+            options = list(container = "body")
+          )
+        )
+        ), # close sidebar
+      
+      h1("Download data"),
+      p("Use the filters to build a data table, which can then be downloaded in various formats using the button below. 
+         The table below is a preview. The downloaded dataset will contain more columns containing metadata 
+         than are presented here."),
                  
                  
-                       # download data button
-                        download_data_btns_ui(id = ns("datatable_downloads")),
-                       # data table
-                       DTOutput(ns("data_tab_table"))
-                       
-        ) # close layout
+     # download data button
+     download_data_btns_ui(id = ns("datatable_downloads")),
+     
 
-  )
+     # data table
+     card(
+       card_header(p(textOutput(ns("row_count"), inline = TRUE), " rows")),
+       card_body(DTOutput(ns("data_tab_table")))
+     )
+     
+     ) # close layout
+
 }
 
 #######################################################.
@@ -112,10 +160,10 @@ data_tab_mod_Server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
-      
+
       ns <- session$ns
-      
-      
+
+
       #############################.
       # REACTIVE DATASETS ----
       #############################.
@@ -127,109 +175,80 @@ data_tab_mod_Server <- function(id) {
                "Inequalities Dataset" = simd_dataset)
         })
       
-      
-      
-      # choices for geography filter, depending on what dataset is selected
-      # this is required because the deprivation dataset only has Scotland, CA and HB level data
-      GeographyNodes <- reactive({
-        if(input$dataset_selector == "Main Dataset") {
-          main_data_geo_nodes # full list of geographies
-        } else {
-          main_data_geo_nodes[c(1:3)] # scotland, hb and ca only 
-        }
-      })
-      
-      
-      # data to display in table /download 
+
+
+
+
+
+
+      # data to display in table /download
       tableData <- reactive({
-        
+
         # selected dataset
-        data <- selectedData() 
-        
+        data <- selectedData()
+
         # filter by selected geographies
-        paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
-        data <- data |> subset(geo_path %in% paths)
-        
-        
-        # filter by time period 
-        if(input$time_period_selector == "Latest available year") {
-          setDT(data) # switch to data.table format here as quicker than grouping using dplyr
-          data <- data[, .SD[year == max(year)], by = indicator]
-        } else data
-        
-        
+        data <- data[code %in% input$geography_selector]
+
+
         # filter by quint type (if inequalities dataset selected)
-        if(input$dataset_selector == "Inequalities Dataset") {
-          if(input$quint_type_selector == "Scotland") {
-            data <- data |> filter(quint_type == "sc_quin")
+        if(input$dataset_selector == "Inequalities Dataset"){
+        if(length(input$quint_type_selector) == 1){
+          if("Scotland" %in% input$quint_type_selector){
+          data <- data[quint_type == "sc_quin"]
           } else {
-            data <- data |> filter(quint_type != "sc_quin")
+          data <- data[quint_type != "sc_quin"]
           }
-        } else data
-        
-        
-        # if profile selected (but indicators have not been)
-        # then filter by selected profiles only 
-        if(isTruthy(input$profile_selector) & !isTruthy(input$indicator_selector)) {
-          if("All Indicators" %in% input$profile_selector) {
-            data } else {
-          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
-          
-          data <- data |>
-            filter(grepl(profile_short_names, profile_domain))
-            }
-          
-          
-          # if a profile has been selected (and some indicators too)
-          # then filter by profile and indicator
-        } else if(isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
-          profile_short_names <- paste(map_chr(input$profile_selector, ~ pluck(profiles_list, .x, "short_name")), collapse = "|")
-          
-          data <- data |>
-            filter(grepl(profile_short_names, profile_domain)) |>
-            filter(indicator %in% input$indicator_selector)
-          
-          
-          
-          # if no profile has been selected but some indicators have
-          # then filter by indicators only 
-        } else if(!isTruthy(input$profile_selector) & isTruthy(input$indicator_selector)) {
-          
-          data <- data |>
-            filter(indicator %in% input$indicator_selector)
-          
-        } else {
-          
-          # if nothings been selected from profile or indicator filter then return all available indicators
-          # for chosen dataset/geography/time period
-          data <- data
         }
-        
-        # rename some columns 
+        }
+
+        # further filter by profile (if any selected)
+        if(!is.null(input$profile_selector)){
+
+          # find short 3-letter profile names from profiles list
+          # in global script for selected indicator and create regex
+          # "e.g. DRG|ALC" and alcohol are selected
+          profile_regex <- profiles_list[input$profile_selector] |>
+            map_chr("short_name") |>
+            paste(collapse = "|")
+
+          # filter rows where any of short names found in profile_domain column
+          data <- data[grepl(profile_regex, profile_domain)]
+        }
+
+
+
+        # further filter by indicator (if any selected)
+        if(!is.null(input$indicator_selector)){
+          data <- data[indicator %in% input$indicator_selector]
+        }
+
+
+        # rename some columns
         data <- data |>
-          rename(area_code = code, 
-                 area_type = areatype, 
-                 area_name = areaname, 
-                 period = def_period, 
-                 upper_confidence_interval = upci, 
+          rename(area_code = code,
+                 area_type = areatype,
+                 area_name = areaname,
+                 period = def_period,
+                 upper_confidence_interval = upci,
                  lower_confidence_interval = lowci)
-        
+
         # columns to return if main dataset was selected
         if(input$dataset_selector == "Main Dataset") {
-          
+
           data <- data |>
             select(area_code, area_type, area_name, year, period, type_definition,
-                   indicator, numerator, measure, 
+                   indicator, numerator, measure,
                    upper_confidence_interval, lower_confidence_interval) } else {
-                     
+
                      # columns to return if inequalities dataset was selected
                      # note this requires some reshaping due to the format of the inequalities dataset
-                     
+
                      # all inequalities data
                      data <- data |>
                        rename(value = measure,
                               measure = type_definition)
-                     
+
                      # sii data
                      sii <- data |>
                        filter(quintile == "Total") |>
@@ -239,7 +258,7 @@ data_tab_mod_Server <- function(id) {
                        mutate(measure = "Slope index of inequality (SII)",
                               quintile = NULL
                        )
-                     
+
                      # rii data
                      rii <- data |>
                        filter(quintile == "Total") |>
@@ -248,7 +267,7 @@ data_tab_mod_Server <- function(id) {
                               lower_confidence_interval = lowci_rii) |>
                        mutate(measure = "Relative index of inequality (RII)",
                               quintile = NULL)
-                     
+
                      # par data
                      par <- data |>
                        filter(quintile == "Total") |>
@@ -257,169 +276,211 @@ data_tab_mod_Server <- function(id) {
                               lower_confidence_interval = lowci_rii_int) |>
                        mutate(measure = "Population attributable risk (PAR)",
                               quintile = NULL)
-                     
+
                      # different inequalities measures combined
                      data <- bind_rows(data, rii, sii, par) |>
-                       select(area_code, area_type, area_name, year, period, indicator, 
-                              quint_type, quintile, measure, value, upper_confidence_interval, 
+                       select(area_code, area_type, area_name, year, period, indicator,
+                              quint_type, quintile, measure, value, upper_confidence_interval,
                               lower_confidence_interval) |>
                        arrange(indicator, area_name, year)
                    }
-        
+
                   # add data source column
                   techdoc <- techdoc |>
                     select(indicator_name, data_source)
-                  
+
                   data <- data |>
                     left_join(techdoc, by = c("indicator" = "indicator_name"))
-        
+
       })
-      
-      
+
+
     #####################################.
     # DYNAMIC FILTERS ----
     #####################################.
-      
-      
-      # create geography filter using GeographyNodes() reactive object
-      # which stores available geographies, depending on what dataset was selected
-      output$geography_selector <- renderJstree({
-        jstree(
-          GeographyNodes(),
-          checkboxes = TRUE,
-          selectLeavesOnly = TRUE,
-          theme = "proton"
+
+
+      # Update geography choices depending on selected dataset
+      # (as only Scotland, HB and CA data available in inequalities dataset)
+      observeEvent(input$dataset_selector, {
+
+        # either return full list or only part of list containing scotland, HB, CA choices
+        valid_choices <- switch(
+          input$dataset_selector,
+          "Main Dataset" = main_data_geo_nodes,
+          "Inequalities Dataset" = main_data_geo_nodes[c(1:3)]
         )
+
+        # update filter with choices
+        updateQuercusInput(inputId = "geography_selector", choices = valid_choices)
+
       })
       
       
-      # update geography choices when required
-      observe({
-        jstreeUpdate(session, ns("geography_selector"), GeographyNodes())
-      })
-      
-      
-      # Update indicator filter choices based on dataset and geography selected
-      # (and further updating if profile also selected)
-      observe({
-        
-        # return selected geographies
-        paths <- sapply(input$geography_selector_checked_paths, `[[`, "path")
-        
-        # filter selected dataset by selected geographies
-        data <- selectedData() |>
-          subset(geo_path %in% paths)
-        
-        # create vector of available indicators
-        available_indicators <- unique(data$indicator)
-        
-        # Store the current selection of indicators (if there were any)
-        # i.e. if you've switched dataset but had previously selected some indicators
-        current_selected_indicators <- input$indicator_selector
-        
-        
-        # Further filter indicators if a profile is selected
-        if (!is.null(input$profile_selector)) {
-          
-          profile_filtered_data <- data |>
-            filter(grepl(paste(profiles_list[[input$profile_selector]]$short_name, collapse = "|"), profile_domain))
-          
-          
-          available_indicators <- unique(profile_filtered_data$indicator)
-          
+      # show/hide quintile type filter depending on selected dataset
+      observeEvent(input$dataset_selector, {
+        if(input$dataset_selector == "Inequalities Dataset"){
+          shinyjs::show("inequality_extras")
+        } else {
+          shinyjs::hide("inequality_extras")
         }
+      })
+      
+      # enable/disable quintile type filter depending on selecte geographies
+      # as only Scottish quintiles can be selected if no local areas selected
+      observeEvent(input$geography_selector, {
+        req(input$dataset_selector == "Inequalities Dataset")
+        req(input$geography_selector)
         
-        
-        # Update the filter choices
-        updateVirtualSelect(session = session,
-                            inputId = "indicator_selector",
-                            choices = available_indicators)
-        
-        # Reapply the previous selection if they are still valid
-        valid_selections <- intersect(current_selected_indicators, available_indicators)
-        
-        if (!is.null(valid_selections) && length(valid_selections) > 0) {
-          updateVirtualSelect(session = session,
-                              inputId = "indicator_selector",
-                              selected = valid_selections)
-          
+
+        if(length(input$geography_selector) == 1 & "S00000001" %in% input$geography_selector){
+          updateCheckboxGroupInput(
+            inputId = "quint_type_selector",
+            selected = "Scotland"
+          )
+          disable("quint_type_selector")
+        } else {
+          enable("quint_type_selector")
         }
+
+      })
+
+
+
+      # Update profile filter choices based on dataset and geography selected
+      observeEvent(c(input$geography_selector, selectedData()), {
+        req(input$geography_selector) # don't run until a geography has been selected
+
+        # further filter selected dataset by selected geographies
+        geo_profiles <- unique(selectedData()[code %in% input$geography_selector, profile_domain])
+
+        # get names of profiles excluding 'All Indicators' and 'Long-term Montitoring of HE'
+        # as we don't want these to be choices in the profiles filter
+        all_profiles <- names(discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI")))
+
+        # with he exception of 'All Indicators' and 'LTMHI' profiles,
+        # return TRUE/FALSE for each profile
+        # if the
+        profile_disable <- map_lgl(
+          discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI")),
+          ~ !any(grepl(.x$short_name, geo_profiles))
+        )
+
         
+        profile_disable <- unname(profile_disable)
+
+
+
+        #disable invalid choices
+        updatePickerInput(
+          inputId = "profile_selector",
+          session = session,
+          choices = all_profiles, # this needs to be here towork!
+          choicesOpt = list(
+            disabled = profile_disable,
+            style = ifelse(profile_disable,
+                           yes = "color: rgba(119, 119, 119, 0.5);",
+                           no = "")
+          )
+        )
+
       })
-      
-      
-      # # update profile choices based on chosen dataset -----
-      observe({
 
-        available_profile_choices <- switch(input$dataset_selector,
-                                            "Main Dataset" = names(profiles_list),
-                                            "Inequalities Dataset" = names(Filter(function(x)  "simd_tab" %in% x$subtabs & x$active == TRUE, profiles_list)))
 
-        updateVirtualSelect(session = session,
-                            inputId = "profile_selector",
-                            choices = available_profile_choices)
+      # Update indicator choices depending on selected dataset, geography(s) and (optionally) profile(s)
+      observeEvent(c(input$geography_selector, input$profile_selector), {
+
+        # take selected dataset and filter on area selections
+        data <- selectedData()[code %in% input$geography_selector]
+
+
+        # if profile(s) have been selected then further filter the data
+        if(!is.null(input$profile_selector)){
+
+          # get short names for selected profiles
+          profile_regex <- profiles_list[input$profile_selector] |>
+            map_chr("short_name") |>
+            paste(collapse = "|")
+
+
+          data <- data |>
+            filter(grepl(profile_regex, profile_domain))
+        }
+
+        # get unique indicator names
+        valid_choices <- unique(data$indicator)
+
+        # update indicator filter choices
+        updatePickerInput(inputId = "indicator_selector", choices =  valid_choices)
+
       })
 
 
-      
-      
-      
-      ## reset all filters when 'clear filters' button is clicked 
+
+
+
+      ## reset all filters when 'clear filters' button is clicked
       observeEvent(input$clear_table_filters, {
-        
+
         # reset the dataset selector to "Main Dataset"
-        updateRadioButtons(session, 
-                                inputId = "dataset_selector", 
+        updateRadioButtons(session,
+                                inputId = "dataset_selector",
                                 selected = "Main Dataset")
-        
+
         # reset the geographies to those available for the main dataset
         jstreeUpdate(session, "geography_selector", main_data_geo_nodes)
-        
-        
+
+
         # reset the time period filter to max year per indicator
         updateRadioButtons(session = session,
                                 inputId = "time_period",
                                 selected = "Latest available year")
-        
+
         # reset the indicator list to those present in main dataset
         updateVirtualSelect(session = session,
                             inputId = "indicator",
                             selected = NULL,
                             choices = NULL)
-        
+
         # reset the profile filter
         updateVirtualSelect(session = session,
                             inputId = "profile_selector",
                             selected = NULL,
-                            choices = names(profiles_list))
-        
+                            choices = names(discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI"))))
+
       })
       
       
-      
+      output$row_count <- renderText({
+        nrow(tableData())
+      })
+
+
+
     ##############################.
     # DATA TABLE ----
     ##############################.
-      
+
       output$data_tab_table <- renderDT({
 
+
         datatable(tableData(),
-                  style = 'bootstrap', 
+                  style = 'bootstrap',
                   caption = sprintf('Total rows: %s', nrow(tableData())),
                   rownames = FALSE,
-                  options = list(scrollX = TRUE,
-                                 scrollY = "600px", 
-                                 pageLength = 20,
+                  options = list(#scrollX = TRUE,
+                                # scrollY = "600px",
+                                 pageLength = 100,
                                  searching = FALSE,
                                  language = list(
                                    zeroRecords = "Select atleast one geography to display results.")
                   ))
-        
-        
-        
+
+
+
       })
-      
-      
+
+
             ##################################.
             # Downloads ----
             ##################################.
@@ -427,9 +488,9 @@ data_tab_mod_Server <- function(id) {
             # data table bulk download (note this is a module )
             # note: use filename argument once data downloads PR merged
             download_data_btns_server(id = "datatable_downloads", data = tableData, file_name="ScotPHO_datatab_extract")
-      
-      
-      
+
+
+
     }
   )
 }
