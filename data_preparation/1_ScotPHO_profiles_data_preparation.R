@@ -55,6 +55,7 @@ library(cli)
 library(rlang)
 library(tools)
 library(utils)
+library(shinyWidgets)
 
 
 ## Source functions ----
