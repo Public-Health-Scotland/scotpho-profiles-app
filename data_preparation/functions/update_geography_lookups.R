@@ -33,6 +33,7 @@ create_geography_lookup <- function (folder){
   
   # convert cols from factor to character and arrange alphabetically
   geo_lookup <- geo_lookup |>
+    select(-areaname_full) |> # drop column - not use anywhere in shiny app
     mutate(across(everything(), ~ as.character(.))) |>
     arrange(areatype, parent_area, areaname)
   
