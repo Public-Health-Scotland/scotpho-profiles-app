@@ -11,18 +11,17 @@ library(bslib) # app layout functions/theming
 library(phsstyles) # for phs colour palette
 library(shinyjs) # for various functions to expand/collapse geography filters 
 library(htmltools) # for landing page template to read
+library(htmlwidgets) # unsure if being used - to be review 
 library(purrr) # needed for sourcing modules with map
 library(reactable) # data tables
 library(highcharter) # visualisations
 library(data.table) # faster data wrangling
 library(dplyr) # data wrangling
-library(htmlwidgets) # for download buttons
 library(shinycssloaders) # for spinners when ui loading
 library(jsonlite) # for download data in json format/reading in .json shapefiles
 library(reactable) # for data tables
 library(leaflet) # for map
-library(jsTreeR) # for data tab geography filters
-library(shinyWidgets)
+library(shinyWidgets) # for various inputs (must be V0.9.1 or above)
 library(bsicons) # for icons
 library(cicerone) #for guided tours of tabs
 library(DT)
