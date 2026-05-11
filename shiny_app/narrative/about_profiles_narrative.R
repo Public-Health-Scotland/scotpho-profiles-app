@@ -392,8 +392,6 @@ about_cli_text <- navset_pill_list(
       open = FALSE,
       accordion_panel(
         title = "Climate Health Impacts",
-        p("These indicators were revised on 12 May 2026, following an error found in the first release. 
-          For details regarding this revision, please see our  ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication.", class = "text-red"),
         p("Provides modelled estimates for the number and rate of deaths attributable to heat, based on PHS’ recent 
         ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication. It must be noted these indicators are our best estimate for the 
         number of deaths and the rate of deaths per 100,000 population, not the observed number or crude rate.
@@ -435,6 +433,8 @@ about_cli_text <- navset_pill_list(
   
   nav_panel("Climate Health Impacts",
             h3("Climate Health Impacts"),
+            p("These indicators were revised on 12 May 2026, following an error found in the first release. 
+          For details regarding this revision, please see our  ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication.", class = "text-red"),
             p("The Climate Health Impacts domain includes indicators linked to PHS’ recent",
               tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")," publication. They are part of a wider project to develop a full suite for the impacts of Climate on Health, and in the future will include the Health Impacts from cold and flooding. The feasibility of these indicators is explored 
             in the ",
