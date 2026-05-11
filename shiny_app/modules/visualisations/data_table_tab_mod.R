@@ -34,8 +34,9 @@ data_tab_modUI <- function(id) {
         # dataset selection filter
         card(
           card_header(
+            class = "d-flex justify-content-between",
             div("Dataset", span("*", class = "text-red")),
-            tooltip(
+            popover(
               bs_icon("info-circle"),
               "The main dataset contains data for all indicators at various geography levels.
                The inequalities dataset is a smaller subset of indicators and geographies,
@@ -54,14 +55,15 @@ data_tab_modUI <- function(id) {
           )
         ),
         
-        # quintile type filter (only if inequalities dataset is selected)
+        # quintile type filter (hidden by default - only shown if inequalities dataset is selected)
         hidden(
           div(
             id = ns("inequality_extras"),
             card(
               card_header(
+                class = "d-flex justify-content-between",
                 div("SIMD Quintile types", span("*", class = "text-red")),
-                tooltip(
+                popover(
                   bs_icon("info-circle"),
                   p("Scottish quintile 1 refers to the datazones containing the 20% most deprived population in Scotland. Local quintile 1 contains the datazones where the 20% most deprived population within a particular Health board or Council area reside."),
                   p("Scottish quintiles therefore highlight inequalities between Scotland’s most and least deprived population, while local quintiles show inequalities within an area.")
@@ -79,7 +81,6 @@ data_tab_modUI <- function(id) {
         ),
         
 
-        
         # Geography filters
         card(
           card_header(
@@ -103,7 +104,7 @@ data_tab_modUI <- function(id) {
           )
         ),
                                          
-        # profile filters
+        # profile filter
         card(
           card_header("Profiles", helpText("(optional)")),
           card_body(
@@ -111,14 +112,14 @@ data_tab_modUI <- function(id) {
             pickerInput(
               inputId = ns("profile_selector"),
               label = NULL,
-              choices = names(discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI"))),
+              choices = names(discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI"))), # exclude 'All indicators' and LTMHI profiles from choices
               multiple = TRUE,
-              options = list(container = "body")
+              options = list(container = "body") # ensures drop-down can be expanded outside the sidebar if needed
             )
           )
         ),
         
-        # indicator filters
+        # indicator filter
         card(
           card_header("Indicators", helpText("(optional)")),
           helpText("Filter dataset by indicators. Indicator choices are dependent on previous selections."),
@@ -127,7 +128,7 @@ data_tab_modUI <- function(id) {
             label = NULL,
             choices = NULL,
             multiple = TRUE,
-            options = list(container = "body")
+            options = list(container = "body") # ensures drop-down can be expanded outside the sidebar if needed
           )
         )
         ), # close sidebar
@@ -176,11 +177,6 @@ data_tab_mod_Server <- function(id) {
         })
       
 
-
-
-
-
-
       # data to display in table /download
       tableData <- reactive({
 
@@ -191,7 +187,7 @@ data_tab_mod_Server <- function(id) {
         data <- data[code %in% input$geography_selector]
 
 
-        # filter by quint type (if inequalities dataset selected)
+        # filter by quint type(s) (if inequalities dataset selected)
         if(input$dataset_selector == "Inequalities Dataset"){
         if(length(input$quint_type_selector) == 1){
           if("Scotland" %in% input$quint_type_selector){
@@ -206,16 +202,16 @@ data_tab_mod_Server <- function(id) {
         if(!is.null(input$profile_selector)){
 
           # find short 3-letter profile names from profiles list
-          # in global script for selected indicator and create regex
-          # "e.g. DRG|ALC" and alcohol are selected
+          # in global script for selected profile(s) and create regex
+          # to search for in dataset "e.g. DRG|ALC" 
           profile_regex <- profiles_list[input$profile_selector] |>
             map_chr("short_name") |>
             paste(collapse = "|")
 
           # filter rows where any of short names found in profile_domain column
+          # using regex created above 
           data <- data[grepl(profile_regex, profile_domain)]
         }
-
 
 
         # further filter by indicator (if any selected)
@@ -233,6 +229,7 @@ data_tab_mod_Server <- function(id) {
                  upper_confidence_interval = upci,
                  lower_confidence_interval = lowci)
 
+        
         # columns to return if main dataset was selected
         if(input$dataset_selector == "Main Dataset") {
 
@@ -326,7 +323,7 @@ data_tab_mod_Server <- function(id) {
         }
       })
       
-      # enable/disable quintile type filter depending on selecte geographies
+      # enable/disable quintile type filter depending on selected geographies
       # as only Scottish quintiles can be selected if no local areas selected
       observeEvent(input$geography_selector, {
         req(input$dataset_selector == "Inequalities Dataset")
@@ -351,7 +348,8 @@ data_tab_mod_Server <- function(id) {
       observeEvent(c(input$geography_selector, selectedData()), {
         req(input$geography_selector) # don't run until a geography has been selected
 
-        # further filter selected dataset by selected geographies
+        # further filter selected dataset by selected geographies and return unique values
+        # in profile_domain column 
         geo_profiles <- unique(selectedData()[code %in% input$geography_selector, profile_domain])
 
         # get names of profiles excluding 'All Indicators' and 'Long-term Montitoring of HE'
@@ -359,23 +357,24 @@ data_tab_mod_Server <- function(id) {
         all_profiles <- names(discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI")))
 
         # with he exception of 'All Indicators' and 'LTMHI' profiles,
-        # return TRUE/FALSE for each profile
-        # if the
+        # go through each profile in the profiles list from global script and 
+        # return TRUE if the profile should be disabled or FALSE if it should be enabled 
+        # e.g. if 'ALC' is not found in 'geo_profiles' then return TRUE else FALSE
         profile_disable <- map_lgl(
           discard(profiles_list, ~ .x$short_name %in% c("ALL", "SHI")),
           ~ !any(grepl(.x$short_name, geo_profiles))
         )
 
-        
+        # convert named vector created above to unnamed vector
         profile_disable <- unname(profile_disable)
 
 
 
-        #disable invalid choices
+        # disable invalid choices
         updatePickerInput(
           inputId = "profile_selector",
           session = session,
-          choices = all_profiles, # this needs to be here towork!
+          choices = all_profiles,
           choicesOpt = list(
             disabled = profile_disable,
             style = ifelse(profile_disable,
@@ -428,13 +427,11 @@ data_tab_mod_Server <- function(id) {
                                 selected = "Main Dataset")
 
         # reset the geographies to those available for the main dataset
-        jstreeUpdate(session, "geography_selector", main_data_geo_nodes)
+        updateQuercusInput(session = session,
+                           inputId = "geography_selector", 
+                           choices = main_data_geo_nodes)
 
 
-        # reset the time period filter to max year per indicator
-        updateRadioButtons(session = session,
-                                inputId = "time_period",
-                                selected = "Latest available year")
 
         # reset the indicator list to those present in main dataset
         updateVirtualSelect(session = session,
@@ -451,6 +448,7 @@ data_tab_mod_Server <- function(id) {
       })
       
       
+      # return number of rows in filtered dataset
       output$row_count <- renderText({
         nrow(tableData())
       })
@@ -485,8 +483,7 @@ data_tab_mod_Server <- function(id) {
             # Downloads ----
             ##################################.
 
-            # data table bulk download (note this is a module )
-            # note: use filename argument once data downloads PR merged
+            # data table bulk download 
             download_data_btns_server(id = "datatable_downloads", data = tableData, file_name="ScotPHO_datatab_extract")
 
 

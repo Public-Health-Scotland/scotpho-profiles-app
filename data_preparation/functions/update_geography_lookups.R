@@ -55,38 +55,51 @@ create_geography_lookup <- function (folder){
 
 update_geography_hierachy <- function(folder){
   
+  # Go through each geography type and do the following:
   geo_list <- map(c("Scotland", "Health board", "Council area", "Alcohol & drug partnership", 
                     "HSC partnership", "Police division", "HSC locality", "Intermediate zone"), ~ {
 
     
-    data_x <- geo_lookup[geo_lookup$areatype == .x, ]
+    # a. filter the geo_lookup by that areatype
+    areatype_lookup <- geo_lookup[geo_lookup$areatype == .x, ]
     
+    # b. created a list for that areatype, in the format
+    # required for shinyWidgets::quercusInput() 
+    # create_tree is a function from the shiny Widgets package that
+    # creates choices for this input in the required format
+    
+    # if the areatype is scotland, create a list with just 1 level
     if (.x == "Scotland") {
       
       create_tree(
-        data = data_x,
-        levels    = "areatype",
+        data = areatype_lookup,
+        levels = "areatype",
         levels_id = "code"
       )
-      
+    
+    # if areatype is IZ/HSC locality, create list with 3 levels
     } else if (.x %in% c("Intermediate zone", "HSC locality")) {
       
       create_tree(
-        data = data_x,
-        levels    = c("areatype", "parent_area", "areaname"),
+        data = areatype_lookup,
+        levels = c("areatype", "parent_area", "areaname"),
         levels_id = c("areatype", "parent_area", "code")
       )
       
     } else {
       
+    
+      # otherwise if anything else (HB/CA etc) create list with 2 levels
       create_tree(
-        data = data_x,
-        levels    = c("areatype", "areaname"),
+        data = areatype_lookup,
+        levels = c("areatype", "areaname"),
         levels_id = c("areatype", "code")
       )
     }
-  }) |> reduce(c)
+  }) |> reduce(c) # reduce into one large nested list
     
+  
+  # save output
   saveRDS(geo_list, file.path(project_folder, "main_dataset_geography_nodes.rds"))
 }
 
