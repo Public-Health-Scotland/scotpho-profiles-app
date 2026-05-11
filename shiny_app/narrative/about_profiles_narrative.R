@@ -401,10 +401,8 @@ about_cli_text <- navset_pill_list(
       accordion_panel(
         title = "Weather",
         p("To place climate health impacts in context, it is useful to understand the temperature trends around Scotland. 
-        We have therefore included two indicators for the mean and maximum summer temperatures. Additionally, in the 
-        ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication, 22.6°C was identified as the threshold at which the population 
-        is at a 10% higher risk of death than at safe temperatures. As such, we have included an extra indicator of ‘Number of Days over 22.6°C’.
-        Available at Scotland, Health Board, Council Area and Intermediate Zone level."
+        We have therefore included two indicators for the mean and maximum summer temperatures. Additionally, we have included 
+        an extra indicator of ‘Number of Days at or over 25°C’. Available at Scotland, Health Board, Council Area and Intermediate Zone level."
           )
         ),
       
@@ -435,18 +433,21 @@ about_cli_text <- navset_pill_list(
   
   nav_panel("Climate Health Impacts",
             h3("Climate Health Impacts"),
+            p("These indicators were revised on 12 May 2026, following an error found in the first release. 
+          For details regarding this revision, please see our  ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication.", class = "text-red"),
             p("The Climate Health Impacts domain includes indicators linked to PHS’ recent",
               tags$a("‘Heat impacts on health in Scotland: Deaths 2005-2024’", href = "https://publichealthscotland.scot/publications/heat-impacts-on-health-in-scotland/heat-impacts-on-health-in-scotland-28-october-2025/", target = "_blank")," publication. They are part of a wider project to develop a full suite for the impacts of Climate on Health, and in the future will include the Health Impacts from cold and flooding. The feasibility of these indicators is explored 
             in the ",
               tags$a("PHS Climate Impact Indicators (CII) Feasibility Report", href = "https://publichealthscotland.scot/publications/phs-climate-impact-indicators-cii-feasibility-report/", target = "_blank"),
             ". At present, there are two ScotPHO Climate indicators from this publication:"),
             tags$ul(
-            tags$li("Modelled rate of deaths attributable to heat over the risk increase threshold (18.2°C)"),
-            tags$li("Modelled number of deaths attributable to heat over the risk increase threshold (18.2°C)")
+            tags$li("Modelled rate of deaths attributable to heat over the risk increase threshold (20.7°C)"),
+            tags$li("Modelled number of deaths attributable to heat over the risk increase threshold (20.7°C)")
             ),
-            p("These are calculated using a Distributed Lag Non-linear model and are our best estimate for the number of deaths and the rate of deaths per 100,000 population. 
-              18.2°C has been identified in our publication as the ‘Risk Increase Threshold’, that is ‘the threshold at which the relative risk of death starts to increase significantly 
-              (i.e. the lower confidence interval for the relative risk of death is above 1). For detailed methodology, see ‘Health Impacts from Heat: 2005-2024’."),
+            p("These are calculated using a Distributed Lag Non-linear model and are our best estimate for the number of deaths and the 
+              rate of deaths per 100,000 population. 20.7°C has been identified in our publication as the ‘Risk Increase Threshold’, 
+              that is ‘the threshold at which the relative risk of death starts to increase significantly (i.e. the lower confidence 
+              interval for the relative risk of death is above 1). For detailed methodology, see ‘Health Impacts from Heat: 2005-2024’."),
             br()
   ),
   
@@ -472,10 +473,9 @@ about_cli_text <- navset_pill_list(
     br(),
     
     div(
-      p("3) Number of days over high-risk threshold (22.6°C)", style = "font-weight: bold;"),
-      p("In the ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication, 22.6°C was identified as the High-Risk Threshold for deaths associated 
-    with heat. At this threshold, the population is at a 10% higher risk than it is at safe temperatures. This third indicator extracts 
-    the number of days for a given region that are above this temperature.Available at Scotland, Health Board and Intermediate Zone level.")
+      p("3) Number of days at or above 25°C", style = "font-weight: bold;"),
+      p("This third indicator extracts the number of days for a given region that are at or above 25°C. 
+        Available at Scotland, Health Board and Intermediate Zone level.")
     ),
     br()
     ),
