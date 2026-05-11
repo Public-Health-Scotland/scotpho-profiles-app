@@ -393,7 +393,7 @@ about_cli_text <- navset_pill_list(
       accordion_panel(
         title = "Climate Health Impacts",
         p("These indicators were revised on 12 May 2026, following an error found in the first release. 
-          For details regarding this revision, please see our  ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication.", class "text-red"),
+          For details regarding this revision, please see our  ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication.", class = "text-red"),
         p("Provides modelled estimates for the number and rate of deaths attributable to heat, based on PHS’ recent 
         ‘Heat impacts on health in Scotland: Deaths 2005-2024’ publication. It must be noted these indicators are our best estimate for the 
         number of deaths and the rate of deaths per 100,000 population, not the observed number or crude rate.
