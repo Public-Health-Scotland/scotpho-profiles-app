@@ -34,7 +34,6 @@ create_geography_lookup <- function (folder){
   # convert cols from factor to character and arrange alphabetically
   geo_lookup <- geo_lookup |>
     select(-areaname_full) |> # drop column - not use anywhere in shiny app
-    mutate(across(everything(), ~ as.character(.))) |>
     arrange(areatype, parent_area, areaname)
   
   # save in local repo
@@ -55,6 +54,12 @@ create_geography_lookup <- function (folder){
 # to create the hierarchical geography filter in the sidebar.
 
 update_geography_hierachy <- function(folder){
+  
+  # get lookup 
+  geo_lookup <- readRDS(file.path(scotpho_folder, "Lookups/Geography/opt_geo_lookup.rds")) |>
+    # convert from factor to character otherwise produces massive file!
+    mutate(across(everything(), ~ as.character(.)))
+    
   
   # Go through each geography type and do the following:
   geo_list <- map(c("Scotland", "Health board", "Council area", "Alcohol & drug partnership", 
