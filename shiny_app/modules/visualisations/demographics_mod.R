@@ -15,16 +15,13 @@ demographics_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content)
-                        tags$b("A new tab designed to illustrate various asepects of demography e.g. age sex struture through pop pyramids,
-                          Could also add SIMD deprivation breakdowns and ethnicity. would have radio buttons to switch between."),
                         # time period filter 
                         selectizeInput(
                           inputId = ns("period_filter"),
                           label = "Select time period:",
                           choices = NULL # choices dynamically updated in server depending on selected indicator
+                        )
                         ),
-                        
-                        tags$b("Ideally we would add ability to overlay Scotland percentages as comparator (just lines with no fill")),
       
       # create a multi-tab card 
       div(id = ns("demog_card_wrapper"),
@@ -36,7 +33,6 @@ demographics_mod_ui <- function(id) {
             nav_panel("Charts",
                       value = ns("demog_chart_tab"), #id for guided tour
                       uiOutput(ns("pyramid_title")), # title 
-                      #uiOutput(ns("trend_caveats")), # caveats
                       highchartOutput(outputId = ns("pop_pyramid_chart")) |> # chart
                         withSpinner() |> 
                         bslib::as_fill_carrier() #required to ensure chart fills panel
@@ -47,11 +43,7 @@ demographics_mod_ui <- function(id) {
                       value = ns("demog_data_tab"), #id for guided tour
                       reactableOutput(ns("pyramid_table")) # table
             ),
-            
-           # add space
-           # bslib::nav_spacer()),
-           # not sure any popover controls are required so maybe don't needed so could maybe delete?
-           
+ 
           # footer with download buttons
           footer = card_footer(class = "d-flex justify-content-left",
                                div(id = ns("pyramid_download_chart"), download_chart_mod_ui(ns("save_pyramid_chart"))),
@@ -64,15 +56,10 @@ demographics_mod_ui <- function(id) {
           div(uiOutput(ns("sex_split_text")), # chart header 
               p("metadata here")
           ))
-      
-      #metadata_panel_UI(ns("metadata_table")))
+
     ) # close
   ))  # close layout sidebar)                 
-  
-  # nav_panel("Charts",
-  #   p("hello")
-  # )
- 
+
 } #close ui function
 
 ############
@@ -155,9 +142,6 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
         tags$h5(first(pyramid_data()$areaname), class = "chart-header"), # year
         tags$h5(first(pyramid_data()$year), class = "chart-header"), # year
         tags$p("Source: NRS population estimates") # source of populations
-        #tags$h5(selected_indicator(), class = "chart-header"), # selected indicator
-        #tags$h6(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)), # time range
-        #tags$p(trend_data()$type_definition[1]) # type definition
       )
     })
     
