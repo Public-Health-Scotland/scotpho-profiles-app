@@ -326,7 +326,8 @@ create_bar_chart <- function(data,
 # population pyramid ----
 ############################.
 
-create_pyramid_chart <- function(data){
+create_pyramid_chart <- function(data,
+                                 chart_theme = theme){
   
   axis_value <- round(max(abs(data$percentage_Male),data$percentage_Female),0)
   
@@ -340,13 +341,9 @@ create_pyramid_chart <- function(data){
              title = list(text = "Age Group (years)"),
              reversed=FALSE) %>% #reversing axis means that lower ages at the bottom rather than top
     
-    # Add title - rest of the app adds title as dynamic text -probably want to do it that way rather than in HC
-    #hc_title(text = "Population Pyramid") |>
-    #hc_subtitle(text = "a subtitle - link to nrs?") |>
-    
     # Add Series (mapping additional population and year columns which appear in tooltip alongside the % of population)
-    hc_add_series(name = "Male", data = data,type = "bar", hcaes(x = age, y = percentage_Male, pop_value = population_Male, year=year)) %>%
-    hc_add_series(name = "Female", data = data,type = "bar", hcaes(x = age, y = percentage_Female, pop_value = population_Female, year=year)) %>%
+    hc_add_series(name = "Male", id = "m_series", data = data,type = "bar", color = "#3F3685", hcaes(x = age, y = percentage_Male, pop_value = population_Male, year=year)) %>%
+    hc_add_series(name = "Female", id = "f_series", data = data,type = "bar", color = "#9B4393", hcaes(x = age, y = percentage_Female, pop_value = population_Female, year=year)) %>%
     
     # Tooltip
     hc_tooltip(
@@ -372,6 +369,10 @@ create_pyramid_chart <- function(data){
       labels = list(formatter = JS("function() { return Math.abs(this.value); }")), #ensure axis labels show absolute values not negatives for the males
       title = list(text = "Percentage of Population (%)")
     ) 
+  
+  # add theme 
+  hc <- hc |>
+    hc_add_theme(chart_theme)
   
   #return chart
   hc
