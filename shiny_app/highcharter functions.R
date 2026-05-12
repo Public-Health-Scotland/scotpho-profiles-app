@@ -3,7 +3,8 @@
 ##################.
 theme <- hc_theme(
   chart = list(
-    backgroundColor = "white"
+    backgroundColor = "white",
+    animation = FALSE
   ),
   yAxis = list(
     gridLineWidth = 0
