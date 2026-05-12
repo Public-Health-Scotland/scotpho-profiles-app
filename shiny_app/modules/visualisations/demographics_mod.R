@@ -166,22 +166,47 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # charts -----
     ############################################.
     output$pop_pyramid_chart <- renderHighchart({
+
+      # only render chart once - all subsequent updates done via proxy functions
+      isolate({
+        create_pyramid_chart(data = pyramid_data()) |>
+            hc_exporting(
+              filename = "ScotPHO Population Pyramid",
+              chartOptions = list(
+                title = list(text = paste0(first(pyramid_data()$areaname))),
+                subtitle = list(text = paste0(first(pyramid_data()$year)))
+              )
+            )
+        
+        })
       
-      shiny::validate(
-        need(nrow(pyramid_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area.")))
-      
-      create_pyramid_chart(
-        data = pyramid_data()) |>
-        #add chart title when downloading the chart image
-        hc_exporting(
-          filename = paste0("ScotPHO Population Pyramid"),
-          chartOptions = list(
-            title = list(text = paste0(first(pyramid_data()$areaname))),
-            subtitle = list(text = paste0(first(pyramid_data()$year)))
+    })
+    
+    
+    # each time reactive dataset updates, update the chart
+    observeEvent(pyramid_data(), {
+
+      # Update bars
+      highchartProxy(ns("pop_pyramid_chart")) |>
+        hcpxy_update_series(
+          id = "m_series",
+          data = list_parse2(pyramid_data()[, .(age, percentage_Male)])
+        ) |>
+        hcpxy_update_series(
+          id = "f_series",
+          data = list_parse2(pyramid_data()[, .(age, percentage_Female)])
+        ) |>
+        # update titles/subtitles in chart download
+        hcpxy_update(
+          exporting = list(
+            chartOptions = list(
+              title = list(text = paste0(first(pyramid_data()$areaname))),
+              subtitle = list(text = paste0(first(pyramid_data()$year)))
+            )
           )
         )
       
-    })
+    }, ignoreInit = TRUE)
     
     
     # ~~~~~~~~~~~~~~~~~~~~~
