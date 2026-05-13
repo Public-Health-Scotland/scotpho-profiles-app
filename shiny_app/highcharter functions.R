@@ -332,9 +332,8 @@ create_pyramid_chart <- function(data,
   
   axis_value <- round(max(abs(data$percentage_Male),data$percentage_Female),0)
   
-  hc <- hchart(data,
-               type = "bar") |>
-    hc_plotOptions(series = list(stacking = "normal",
+  hc <- highchart()|>
+    hc_plotOptions(bar = list(stacking = "normal",
                                  grouping = FALSE,
                                  pointPadding = 0, # Smaller value = fatter bars
                                  groupPadding = 0)) |>  # Smaller value = fatter bars

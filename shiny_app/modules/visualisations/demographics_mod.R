@@ -15,11 +15,26 @@ demographics_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content)
-                        # time period filter 
-                        selectizeInput(
+                        # # time period filter 
+                        # selectizeInput(
+                        #   inputId = ns("period_filter"),
+                        #   label = "Select time period:",
+                        #   choices = NULL # choices dynamically updated in server depending on selected indicator
+                        # ),
+                        # year filter
+                        shinyWidgets::sliderTextInput(
                           inputId = ns("period_filter"),
-                          label = "Select time period:",
-                          choices = NULL # choices dynamically updated in server depending on selected indicator
+                          label = "Select year:",
+                          grid = TRUE,
+                          animate = TRUE,
+                          choices = c("2024")
+                        ),
+    
+                        # scotland comparator filter
+                        checkboxInput(
+                          inputId = ns("comp_filter"),
+                          label = "Compare against Scotland",
+                          value = FALSE
                         )
                         ),
       
@@ -81,12 +96,21 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # create population pyramid dataframe
     pyramid_data <- reactive({
       dataset() |>
-        filter(year== input$period_filter) 
+        filter(year== input$period_filter & areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) 
+    })
+    
+    
+    # comparator data (for lines on pop pyramid)
+    comparator_data <- reactive({
+      req(isTRUE(input$comp_filter))
+      dataset() |>
+        filter(year == input$period_filter & areatype == "Scotland")
     })
     
     # calculate total male/female population split
     sex_ratio_data <- reactive({
       dataset() |>
+        filter(areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) |>
         group_by(year,areaname)|>
         summarise(pmale=abs(sum(percentage_Male)),
                   pfemale=sum(percentage_Female),.groups = "drop")
@@ -99,19 +123,26 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
       # get available def periods for selected indicator AND selected area
       # (important as e.g. Scotland may have more up to date data
       # or have different level of aggregation than selected area)
-      choices <- sort(unique(dataset()$year[dataset()$areaname == geo_selections()$areaname]),decreasing = TRUE)
+      choices <- sort(unique(dataset()$year[dataset()$areaname == geo_selections()$areaname]),decreasing = FALSE)
       
       ##FIGURE OUT HOW TO SORT IN DESCENDING ORDER SO MOST RECENT YEAR PLOTTED FIRST
       
-      # avoid transient invalid values while updating filter
-      shiny::freezeReactiveValue(input, "period_filter")
+      # # avoid transient invalid values while updating filter
+      # shiny::freezeReactiveValue(input, "period_filter")
+      # 
+      # # update filter choices
+      # updateSelectizeInput(
+      #   session = session,
+      #   inputId = "period_filter",
+      #   choices = choices,
+      #   selected = if (length(choices)) choices[[1]] else NULL
+      # )
       
-      # update filter choices
-      updateSelectizeInput(
+      
+      shinyWidgets::updateSliderTextInput(
         session = session,
         inputId = "period_filter",
-        choices = choices,
-        selected = if (length(choices)) choices[[1]] else NULL
+        choices = choices
       )
       
     })
@@ -171,7 +202,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     observeEvent(pyramid_data(), {
 
       # Update bars
-      highchartProxy(ns("pop_pyramid_chart")) |>
+      hc <- highchartProxy(ns("pop_pyramid_chart")) |>
         hcpxy_update_series(
           id = "m_series",
           data = list_parse2(pyramid_data()[, .(age, percentage_Male)])
@@ -179,7 +210,23 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
         hcpxy_update_series(
           id = "f_series",
           data = list_parse2(pyramid_data()[, .(age, percentage_Female)])
-        ) |>
+        )
+      
+      # update comparator lines (if applicable)
+      if(isTRUE(input$comp_filter)){
+        hc <- hc |>
+          hcpxy_update_series(
+            id = "m_comp_series",
+            data = list_parse2(comparator_data()[, .(age, percentage_Male)])
+          ) |>
+          hcpxy_update_series(
+            id = "f_comp_series",
+            data = list_parse2(comparator_data()[, .(age, percentage_Female)])
+          )
+          
+      }
+      
+      hc <- hc |>
         # update titles/subtitles in chart download
         hcpxy_update(
           exporting = list(
@@ -190,6 +237,39 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
           )
         )
       
+    }, ignoreInit = TRUE)
+    
+    
+    
+    # add/remove scotland comparator lines
+    observeEvent(input$comp_filter, {
+    
+      hc <- highchartProxy(ns("pop_pyramid_chart"))
+      
+      if(isTRUE(input$comp_filter)){
+        hc <- hc |>
+          hcpxy_add_series(
+            id = "m_comp_series", 
+            name = "males - Scotland",
+            type = "line",
+            color = "black",
+            data = list_parse2(comparator_data()[, .(age, percentage_Male)])
+          ) |>
+          hcpxy_add_series(
+            id = "f_comp_series", 
+            name = "females - Scotland",
+            type = "line",
+            color = "black",
+            data = list_parse2(comparator_data()[, .(age, percentage_Female)])
+          )
+          
+      } else {
+        hc <- hc |>
+          hcpxy_remove_series(id = "f_comp_series") |>
+          hcpxy_remove_series(id = "m_comp_series")
+      }
+      
+      hc
     }, ignoreInit = TRUE)
     
     

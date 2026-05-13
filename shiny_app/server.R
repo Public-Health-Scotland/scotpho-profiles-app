@@ -314,10 +314,14 @@ function(input, output, session) {
   })
   
   # 5. DEMOGRAPHIC DATA (used to generate population pyramid)
-  demographic_data <-reactive({
+  demographic_data <- reactive({
     req(input$profile_choices != "")
     demographic_dataset |>
-      filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)})
+      filter(
+        (areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |
+          areatype == "Scotland"
+      )
+        })
   
   
   ###################################################.
