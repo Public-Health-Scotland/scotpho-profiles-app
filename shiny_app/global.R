@@ -45,6 +45,7 @@ source("highcharter functions.R")
 main_dataset <- setDT(read_parquet("data/main_dataset.parquet")) # main dataset (to do: rename optdata file in data prep script)
 simd_dataset <- setDT(read_parquet("data/deprivation_dataset.parquet")) # dataset behind simd panel
 popgroup_dataset <- setDT(read_parquet("data/popgroup_dataset.parquet")) # dataset behind popgroup panel
+demographic_dataset <- setDT(read_parquet("data/demographic_dataset")) # dataset behind demographics age/sex visualisations
 
 # lookups
 geo_lookup <- setDT(readRDS("data/profiles_geo_lookup.rds")) # geography lookup
@@ -75,6 +76,7 @@ all_subtabs <- c("summary_tab",
                  "rank_tab", 
                  "simd_tab", 
                  "pop_groups_tab", 
+                 "demographics_tab",
                  "about_profile_tab")
 
 
@@ -95,7 +97,7 @@ profiles_list <- list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "pop_groups_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -108,7 +110,7 @@ profiles_list <- list(
                                     the **Collaboration for Health Equity in Scotland**"),
     domain_order = c("Over arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism", "Environmental sustainability and health equity"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "pop_groups_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -131,7 +133,7 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural**  determinants."),
     domain_order = c("Mental health outcomes", "Individual determinants",
                      "Community determinants", "Structural determinants"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "pop_groups_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -144,7 +146,7 @@ profiles_list <- list(
     domain_order = c("Mental health outcomes", "Individual determinants",
                      "Family and friends", "Learning environment",
                      "Community determinants", "Structural determinants"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "pop_groups_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -190,7 +192,7 @@ profiles_list <- list(
     short_name = "ALC",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab", "trends_tab", "rank_tab", "simd_tab", "pop_groups_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -213,7 +215,7 @@ profiles_list <- list(
     short_name = "POP",
     homepage_description = markdown("View **population estimates** for different age groups."),
     domain_order = NULL,
-    subtabs = c("summary_tab", "trends_tab", "rank_tab"),
+    subtabs = c("summary_tab", "trends_tab", "rank_tab","demographics_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
