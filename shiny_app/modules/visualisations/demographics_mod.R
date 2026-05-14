@@ -138,11 +138,12 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
       #   selected = if (length(choices)) choices[[1]] else NULL
       # )
       
-      
+
       shinyWidgets::updateSliderTextInput(
         session = session,
         inputId = "period_filter",
-        choices = choices
+        choices = choices,
+        selected = max(choices)
       )
       
     })
