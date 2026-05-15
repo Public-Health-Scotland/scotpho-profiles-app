@@ -23,24 +23,24 @@ simd_navpanel_ui <- function(id) {
                         
                         # button to scroll to metadata
                         div(id = ns("deprivation_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
-
+                        
                         # sex filter (for the mental health profile only as some SIMD indicators have sex splits)
                         # it will be hidden for all other profiles
                         shinyjs::hidden(
                           selectizeInput(inputId = ns("sex_filter"), 
-                                       label = "Select sex:", 
-                                       choices = c("Total", "Male", "Female"), 
-                                       selected = "Total")
-                          ),
+                                         label = "Select sex:", 
+                                         choices = c("Total", "Male", "Female"), 
+                                         selected = "Total")
+                        ),
                         
                         # measure filter
                         div(id = ns("depr_measures_wrapper"),
-                        radioButtons(
-                          inputId = ns("depr_measures"),
-                          label = "Explore data by:",
-                          choices = c("Patterns of inequality", "Inequality gap", "Potential for improvement"),
-                          selected = c("Patterns of inequality")
-                        )),
+                            radioButtons(
+                              inputId = ns("depr_measures"),
+                              label = "Explore data by:",
+                              choices = c("Patterns of inequality", "Inequality gap", "Potential for improvement"),
+                              selected = c("Patterns of inequality")
+                            )),
                         
                         # quint type filter 
                         div(id = ns("deprivation_quintile_type_wrapper"), 
@@ -65,118 +65,118 @@ simd_navpanel_ui <- function(id) {
       
       # Left hand side card 
       div(id = ns("chart_panels_highlight"),  # Div for Cicerone tour
-      layout_column_wrap(
-   
-        width = 1/2,
-          navset_card_pill(
-            id = ns("left_card"),
-            height = 650,
-            full_screen = TRUE,
+          layout_column_wrap(
             
-            # chart tab 
-            nav_panel(
-              title = "Chart",
-              div(
-                uiOutput(ns("left_chart_header")) # chart header 
+            width = 1/2,
+            navset_card_pill(
+              id = ns("left_card"),
+              height = 650,
+              full_screen = TRUE,
+              
+              # chart tab 
+              nav_panel(
+                title = "Chart",
+                div(
+                  uiOutput(ns("left_chart_header")) # chart header 
+                ),
+                highchartOutput(ns("left_chart")) |> # chart
+                  withSpinner() |> 
+                  bslib::as_fill_carrier() 
               ),
-              highchartOutput(ns("left_chart")) |> # chart
-                withSpinner() |> 
-                bslib::as_fill_carrier() 
-            ),
-            
-            # Data tab 
-            nav_panel(
-              title = "Data",
-              reactableOutput(ns("left_table"))
-            ),
-            
-            # Interpretation tab 
-            nav_panel(
-              title = "Help",
-              uiOutput(ns("left_chart_narrative"))
-            ),
-            
-            nav_spacer(),
-
-            # Popover with filters
-            nav_item(
-              div(id = ns("deprivation_popover_left"),
-              popover(
-                title = "Filters",
-                trigger = chart_controls_icon(),
-                checkboxInput(ns("left_ci_switch"), label = " Include confidence intervals", FALSE),
-                checkboxInput(ns("left_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
-                checkboxInput(ns("left_average_switch"), label = "Include averages", FALSE)
-                
+              
+              # Data tab 
+              nav_panel(
+                title = "Data",
+                reactableOutput(ns("left_table"))
+              ),
+              
+              # Interpretation tab 
+              nav_panel(
+                title = "Help",
+                uiOutput(ns("left_chart_narrative"))
+              ),
+              
+              nav_spacer(),
+              
+              # Popover with filters
+              nav_item(
+                div(id = ns("deprivation_popover_left"),
+                    popover(
+                      title = "Filters",
+                      trigger = chart_controls_icon(),
+                      checkboxInput(ns("left_ci_switch"), label = " Include confidence intervals", FALSE),
+                      checkboxInput(ns("left_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
+                      checkboxInput(ns("left_average_switch"), label = "Include averages", FALSE)
+                      
+                    )
                 )
-              )
-            ),
-            
-            # card footer with download buttons
-            footer = card_footer(
-              class = "d-flex justify-content-left",
-              div(id = ns("deprivation_save_chart"), download_chart_mod_ui(ns("save_left_chart"))),
-              div(id = ns("deprivation_save_data"), download_data_btns_ui(ns("save_left_data")))
-          )
-          
-            ), #close navset_card_pill
-        
-        # right hand side card 
-        navset_card_pill(
-            id = ns("right_card"),
-            height = 650,
-            full_screen = TRUE,
-            
-            # chart tab 
-            nav_panel(
-              title = "Chart",
-              div(
-                uiOutput(ns("right_chart_header"))
               ),
-              highchartOutput(ns("right_chart")) |>
-                withSpinner() |> 
-                bslib::as_fill_carrier() 
-            ),
+              
+              # card footer with download buttons
+              footer = card_footer(
+                class = "d-flex justify-content-left",
+                div(id = ns("deprivation_save_chart"), download_chart_mod_ui(ns("save_left_chart"))),
+                div(id = ns("deprivation_save_data"), download_data_btns_ui(ns("save_left_data")))
+              )
+              
+            ), #close navset_card_pill
             
-            # data tab 
-            nav_panel(
-              title = "Data",
-              reactableOutput(ns("right_table"))
-            ),
+            # right hand side card 
+            navset_card_pill(
+              id = ns("right_card"),
+              height = 650,
+              full_screen = TRUE,
+              
+              # chart tab 
+              nav_panel(
+                title = "Chart",
+                div(
+                  uiOutput(ns("right_chart_header"))
+                ),
+                highchartOutput(ns("right_chart")) |>
+                  withSpinner() |> 
+                  bslib::as_fill_carrier() 
+              ),
+              
+              # data tab 
+              nav_panel(
+                title = "Data",
+                reactableOutput(ns("right_table"))
+              ),
+              
+              # interpretation tab 
+              nav_panel(
+                title = "Help",
+                uiOutput(ns("right_chart_narrative"))
+              ),
+              nav_spacer(),
+              
+              # popover with filters
+              nav_item(
+                popover(
+                  title = "Filters",
+                  trigger = chart_controls_icon(),
+                  checkboxInput(ns("right_ci_switch"), label = " include confidence intervals", FALSE),
+                  checkboxInput(ns("right_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
+                  checkboxInput(ns("right_average_switch"), label = "Include averages", FALSE)
+                ) 
+              ),
+              
+              # card footer with download buttons
+              footer = card_footer(
+                class = "d-flex justify-content-left",
+                download_chart_mod_ui(ns("save_right_chart")),
+                download_data_btns_ui(ns("save_right_data")))
+            ) #close navset_card_pill
             
-            # interpretation tab 
-            nav_panel(
-              title = "Help",
-              uiOutput(ns("right_chart_narrative"))
-            ),
-            nav_spacer(),
-            
-            # popover with filters
-            nav_item(
-              popover(
-                title = "Filters",
-                trigger = chart_controls_icon(),
-                checkboxInput(ns("right_ci_switch"), label = " include confidence intervals", FALSE),
-                checkboxInput(ns("right_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
-                checkboxInput(ns("right_average_switch"), label = "Include averages", FALSE)
-              ) 
-            ),
-            
-            # card footer with download buttons
-            footer = card_footer(
-              class = "d-flex justify-content-left",
-              download_chart_mod_ui(ns("save_right_chart")),
-              download_data_btns_ui(ns("save_right_data")))
-        ) #close navset_card_pill
-  
-       ) # close layout column wrap
+          ) # close layout column wrap
       ), # close div for cicerone tour
       
       # accordion panel with metadata table 
       div(id = ns("metadata_section"), metadata_panel_UI(ns("metadata_table")))
-        ) # close layout sidebar
-      ) # close taglist
-
+    ) # close layout sidebar
+  ) # close taglist
+  
   
 } #close ui function
 
@@ -192,7 +192,7 @@ simd_navpanel_ui <- function(id) {
 
 
 
-  simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile, root_session){
+simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile, root_session){
   moduleServer(id, function(input, output, session) {
     
     # permits compatibility between shiny and cicerone tours
@@ -245,48 +245,48 @@ simd_navpanel_ui <- function(id) {
     })
     
     
-        # determining which quint types are available
-        # and enabling/disabling quint type filter accordingly
-        observeEvent(indicator_data(), {
-
-          # check what quint types are available for selected indicator
-          available_quints <- unique(indicator_data()$quint_type)
-
-          # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
-          # then disable filter and default to the 1 that is available
-          if (length(available_quints)==1){
-            if(available_quints == "sc_quin"){
-              updateRadioButtons(session, "quint_type", selected = "Scotland")
-            } else {
-              updateRadioButtons(session, "quint_type", selected = "Local")
-            }
-            shinyjs::disable("quint_type")
-          } else {
-
-            # otherwise if both local and scottish quintiles available then enable filter so
-            # users can toggle between the two options (default to Scotland)
-            shinyjs::enable("quint_type")
-            updateRadioButtons(session, "quint_type", selected = "Scotland")
-          }
-        })
+    # determining which quint types are available
+    # and enabling/disabling quint type filter accordingly
+    observeEvent(indicator_data(), {
+      
+      # check what quint types are available for selected indicator
+      available_quints <- unique(indicator_data()$quint_type)
+      
+      # If there's only 1 quint type available for the selected geography and area (i.e. only scotland OR local quintiles)
+      # then disable filter and default to the 1 that is available
+      if (length(available_quints)==1){
+        if(available_quints == "sc_quin"){
+          updateRadioButtons(session, "quint_type", selected = "Scotland")
+        } else {
+          updateRadioButtons(session, "quint_type", selected = "Local")
+        }
+        shinyjs::disable("quint_type")
+      } else {
+        
+        # otherwise if both local and scottish quintiles available then enable filter so
+        # users can toggle between the two options (default to Scotland)
+        shinyjs::enable("quint_type")
+        updateRadioButtons(session, "quint_type", selected = "Scotland")
+      }
+    })
     
     
-        # update sex filter choices depending on what splits are available for the selected indicator
-        # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it
-        observeEvent(indicator_data(), {
-
-          # update filter choices
-          choices <- unique(indicator_data()$sex) # get choices
-          selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
-          updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices
-
-          # show/hide filter
-          if(length(choices) == 1){
-            shinyjs::hide("sex_filter")
-          } else {
-            shinyjs::show("sex_filter")
-          }
-        }, ignoreNULL = TRUE)
+    # update sex filter choices depending on what splits are available for the selected indicator
+    # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it
+    observeEvent(indicator_data(), {
+      
+      # update filter choices
+      choices <- unique(indicator_data()$sex) # get choices
+      selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
+      updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices
+      
+      # show/hide filter
+      if(length(choices) == 1){
+        shinyjs::hide("sex_filter")
+      } else {
+        shinyjs::show("sex_filter")
+      }
+    }, ignoreNULL = TRUE)
     
     
     
@@ -327,7 +327,7 @@ simd_navpanel_ui <- function(id) {
       dt <- simd_data() |>
         filter(indicator == selected_indicator()) |>
         mutate(across(.cols=sii:abs_range,.fns=abs)) # convert any negative numbers to positive so that indicators where higher number is good plot properly
-
+      
     })
     
     
@@ -350,7 +350,7 @@ simd_navpanel_ui <- function(id) {
         dt <- indicator_data() |>
           filter(quint_type != "sc_quin")
       }
-
+      
       
       data <- switch(input$depr_measures,
                      
@@ -495,18 +495,19 @@ simd_navpanel_ui <- function(id) {
     })
     
     
-    # create a reactive object which stores a list of 10 pieces of information at one time (5 for each chart):
+    # create a reactive object which stores a list of 12 pieces of information at one time (6 for each chart):
     # a. the narrative to display in the interpretation tab (i.e. stored under 'left_chart_narrative' for the left chart)
     # b. the chart title to display (i.e. stored under 'left_chart_title')
     # c . the 2 x charts subtitle to display (i.e. stored under 'left_chart_subtitle_1 and left_chart_subtitle_2)
     # d. the filename of the chart if saved as a png (i.e. stored under 'left_chart_filename')
+    # e. the units to be added to the chart when downloading
     chart_text <- reactive({
       req(simd_measures_data())
       
       switch(input$depr_measures,
              
              
-             # Prepare the 10 bits of text for if patterns of inequality are selected
+             # Prepare the 12 bits of text for if patterns of inequality are selected
              "Patterns of inequality" = list(
                
                # SIMD bar chart titles/subtitles/interpretation/filename
@@ -515,17 +516,19 @@ simd_navpanel_ui <- function(id) {
                left_chart_subtitle_1 = paste0(simd_measures_data()$left_data$trend_axis[1]),
                left_chart_subtitle_2 = paste0(simd_measures_data()$left_data$type_definition[1]),
                left_chart_filename = paste0("ScotPHO SIMD barchart- ", selected_indicator()),
+               left_chart_download_units = paste0(simd_measures_data()$left_data$type_definition[1]),
                
                # SIMD trend chart titles/subtitles/interpretation/filename
                right_chart_narrative = about_simd_trend,
                right_chart_title = paste0(selected_indicator(), " by SIMD quintile - trend"),
                right_chart_subtitle_1 = paste0(first(simd_measures_data()$right_data$trend_axis)," to ",last(simd_measures_data()$right_data$trend_axis)),
                right_chart_subtitle_2 = paste0(simd_measures_data()$right_data$type_definition[1]),
-               right_chart_filename = paste0("ScotPHO SIMD trendchart- ", selected_indicator())
+               right_chart_filename = paste0("ScotPHO SIMD trendchart- ", selected_indicator()),
+               right_chart_download_units = paste0(simd_measures_data()$right_data$type_definition[1])
              ),
              
              
-             # Prepare the 8 bits of text for if Inequality gap is selected
+             # Prepare the 10 bits of text for if Inequality gap is selected
              "Inequality gap" = list(
                
                # SII trend chart titles/subtitles/interpretation/filename
@@ -534,7 +537,7 @@ simd_navpanel_ui <- function(id) {
                left_chart_subtitle_1 = paste0("The chart shows the difference between most and least deprived areas (expressed as ", simd_measures_data()$left_data$type_definition[1], ")."),
                left_chart_subtitle_2 = "An increasing trend suggests the gap between the most and least deprived areas is growing.",
                left_chart_filename = paste0("ScotPHO SII chart- ", selected_indicator()),
-               
+               left_chart_download_units = paste0(""),
                
                
                # RII trend chart titles/subtitles/interpretation/filename
@@ -542,11 +545,12 @@ simd_navpanel_ui <- function(id) {
                right_chart_title = paste0("Inequalities over time: relative differences"),
                right_chart_subtitle_1 = "The chart shows the differences between the most disadvantaged area and the overall average for Scotland (expressed as a percentage).",
                right_chart_subtitle_2 = "An increasing trend suggests that the gap between the most disadvantaged area and the average is growing",
-               right_chart_filename = paste0("ScotPHO RII chart - ", selected_indicator())
+               right_chart_filename = paste0("ScotPHO RII chart - ", selected_indicator()),
+               right_chart_download_units = paste0("")
              ),
              
              
-             # Prepare the 9 bits of text for if potential for improvement is selected
+             # Prepare the 11 bits of text for if potential for improvement is selected
              "Potential for improvement" = list(
                
                # potential for improvement bar chart titles/subtitles/interpretation/filename
@@ -555,11 +559,13 @@ simd_navpanel_ui <- function(id) {
                left_chart_subtitle_1 = paste0("The portion of ", selected_indicator(), " which could be attributed to socioeconomic inequalities."),
                left_chart_subtitle_2 = paste0(simd_measures_data()$left_data$type_definition[1]),
                left_chart_filename = paste0("ScotPHO Attributable to inequality chart - ", selected_indicator()),
+               left_chart_download_units = paste0(simd_measures_data()$left_data$type_definition[1]),
                
                right_chart_narrative = about_par_trend,
                right_chart_title = paste0("Potential for improvement"),
                right_chart_subtitle_1 = paste0("How much (%) ", selected_indicator(), " could be improved if the levels of the least deprived area were experienced across the whole population."),
-               right_chart_filename = paste0("ScotPHO PAR barchart- ", selected_indicator())
+               right_chart_filename = paste0("ScotPHO PAR barchart- ", selected_indicator()),
+               right_chart_download_units = paste0("Percentage")
              )
       )
     })
@@ -667,7 +673,7 @@ simd_navpanel_ui <- function(id) {
           filename = chart_text()$left_chart_filename,
           chartOptions = list(
             title = list(text = chart_text()$left_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$left_chart_subtitle_1, align = "left"),
+            subtitle = list(text = sprintf("%s <br> %s", chart_text()$left_chart_subtitle_1, chart_text()$left_chart_download_units), align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
@@ -730,7 +736,7 @@ simd_navpanel_ui <- function(id) {
           filename =chart_text()$right_chart_filename,
           chartOptions = list(
             title = list(text = chart_text()$right_chart_title, align = "left"),
-            subtitle = list(text = chart_text()$right_chart_subtitle_1, align = "left"),
+            subtitle = list(text = sprintf("%s <br> %s", chart_text()$right_chart_subtitle_1, chart_text()$right_chart_download_units), align = "left"),
             caption = list(text = paste0("<b>Source: ScotPHO Profiles tool</b><br><em>Area: ", geo_selections()$areaname, "</em>"))
           )
         )
@@ -862,7 +868,7 @@ simd_navpanel_ui <- function(id) {
         "Click here to download the selected data as a CSV, RDS or JSON file.",
         position = "left"
       )
-
+    
     #initiate the guide
     guide_deprivation$init()
     

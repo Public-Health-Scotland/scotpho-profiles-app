@@ -512,10 +512,22 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
         colour_palette = "multi"
       ) |>
         hc_exporting(
+          allowHTML = TRUE,
           filename = paste0("ScotPHO trend - ", selected_indicator()),
           chartOptions = list(
-            title = list(text = paste0(selected_indicator())),
-            subtitle = list(text = paste0(first(trend_data()$trend_axis)," to ",last(trend_data()$trend_axis)))
+            title = list(
+              text = selected_indicator(), 
+              style = list(
+                fontWeight = "bold"
+              ),
+              align = "left"),
+            subtitle = list(text = sprintf(
+              "%s to %s<br>%s",
+              first(trend_data()$trend_axis),
+              last(trend_data()$trend_axis),
+              first(trend_data()$type_definition)
+            ), useHTML = TRUE, align = "left"),
+            caption = list(text = "Source: ScotPHO Profiles Tool")
           )
         )
     })
