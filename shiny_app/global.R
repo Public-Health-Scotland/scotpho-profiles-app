@@ -222,12 +222,12 @@ profiles_list <- list(
   # Physical Activity info
   "Physical Activity" = list(
     short_name = "PHY",
-    homepage_description = markdown("Under development - not yet available"),
-    domain_order = NULL,
-    subtabs = c("trends_tab", "rank_tab", "simd_tab"),
+    homepage_description = markdown("**Under development**. View indicators related to **Active Places & Spaces**, **Active Places of Learning**,  **Active Travel** and **Sport & Active Recreation**"),
+    domain_order = c("Overarching", "Active Places and Spaces", "Active Places of Learning", "Active Travel", "Sport and Active Recreation"),
+    subtabs = all_subtabs,
     nav_id = "Profiles",
-    new = FALSE,
-    active = FALSE
+    new = TRUE,
+    active = TRUE
   ),
   
   # All indicators info
