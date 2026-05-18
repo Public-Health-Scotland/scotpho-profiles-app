@@ -87,10 +87,10 @@ page_navbar(
                           # Updates
                           #Physical Activity Profile
                           div(h4("March 2026: In development, a new Physical Activity profile", class = "profile-header"),
-                              p("We have published a limited set of indicators as part of a new Physical Activity profile, produced in collaboration with the University of Edinburgh. This
-                              profile is underdevelopment and contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's.",
+                              p("We have published a limited set of indicators as part of a new Physical Activity profile in collaboration with the Physical Activity for Health Research Centre (PAHRC) at the University of Edinburgh.
+                                This profile contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's.",
                                 tags$a("Physical Activity Guidelines,", href = "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report",
-                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available.")
+                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available. Please get in touch with ScotPHO at phs.scotpho@phs.scot if you would like to feed into development.")
                           ),
                           hr(),
                           
@@ -269,7 +269,7 @@ page_navbar(
                                                   card(max_height = 150,
                                                        card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development:",class = "info-box-header"),
                                                        p("The initial launch of this profile contains a limited set of indicators at the Scotland, health board and council geography level only.
-                                                         Over time we intend to expand the range of indicators available",
+                                                         Over time we intend to expand the range of indicators available.",
                                                          "If you would like to feed into this development please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
                                                   )
                                  ),
