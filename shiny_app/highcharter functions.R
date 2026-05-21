@@ -336,29 +336,20 @@ create_pyramid_chart <- function(data,
     hc_plotOptions(bar = list(stacking = "normal",
                                  grouping = FALSE,
                                  pointPadding = 0, # Smaller value = fatter bars
-                                 groupPadding = 0)) |>  # Smaller value = fatter bars
+                                 groupPadding = 0),  # Smaller value = fatter bars
+                   series = list(states = list(inactive = list(enabled = FALSE, opacity = 1))) 
+                   
+                                 ) |> 
     hc_xAxis(categories = data$age, 
              title = list(text = "Age Group (years)"),
              reversed=FALSE) %>% #reversing axis means that lower ages at the bottom rather than top
     
     # Add Series (mapping additional population and year columns which appear in tooltip alongside the % of population)
-    hc_add_series(name = "Male", id = "m_series", data = data,type = "bar", color = "#3F3685", hcaes(x = age, y = percentage_Male, pop_value = population_Male, year=year)) %>%
-    hc_add_series(name = "Female", id = "f_series", data = data,type = "bar", color = "#9B4393", hcaes(x = age, y = percentage_Female, pop_value = population_Female, year=year)) %>%
+    hc_add_series(name = "Male", id = "m_series", data = data,type = "bar", color = "#3F3685", hcaes(x = age, y = percentage_Male)) %>%
+    hc_add_series(name = "Female", id = "f_series", data = data,type = "bar", color = "#9B4393", hcaes(x = age, y = percentage_Female)) %>%
     
-    # Tooltip
-    hc_tooltip(
-      shared = TRUE, # set to true to ensure both male and female values appear for each age category
-      formatter = JS("function() {
-      var s = '<b>Age: ' + this.x + '</b>';
-      $.each(this.points, function(i, point) {
-        var absVal = Math.abs(point.y);
-        s += '<br/>' + this.point.year + ' ' +
-        point.series.name + ' Population: '+  Highcharts.numberFormat(this.point.pop_value,0,',') +
-        ': ('+ Highcharts.numberFormat(absVal, 1) + '%)';
-      });
-      return s;
-    }")
-    ) %>%
+    # remove tooltip
+    hc_tooltip(enabled = FALSE) |>
     
     
     # Format Y-Axis (% population)
@@ -368,7 +359,7 @@ create_pyramid_chart <- function(data,
       tickInterval = 1,   # Distance between labels
       labels = list(formatter = JS("function() { return Math.abs(this.value); }")), #ensure axis labels show absolute values not negatives for the males
       title = list(text = "Percentage of Population (%)")
-    ) 
+    )
   
   # add theme 
   hc <- hc |>
