@@ -55,6 +55,7 @@ library(cli)
 library(rlang)
 library(tools)
 library(utils)
+library(shinyWidgets)
 
 
 ## Source functions ----
@@ -150,7 +151,7 @@ scotpho_main <- create_dataset(
   file_suffix = "_shiny.csv", 
   test_indicators = FALSE,
   profile_filter = NULL,
-  file_snapshot = TRUE # set to TRUE if deploying
+  file_snapshot = FALSE # set to TRUE if deploying
 )
 
 
@@ -163,7 +164,7 @@ climate_main <- create_dataset(
   file_suffix = "_shiny.parquet",
   test_indicators = FALSE,
   profile_filter = NULL,
-  file_snapshot = TRUE # set to TRUE if deploying
+  file_snapshot = FALSE # set to TRUE if deploying
 )
 
 # combine all main datasets 
@@ -195,7 +196,7 @@ scotpho_popgrp <- create_dataset(
   file_suffix = "popgrp.csv",
   test_indicators = FALSE,
   profile_filter = NULL,
-  file_snapshot = TRUE # set to TRUE if deploying
+  file_snapshot = FALSE # set to TRUE if deploying
 )
 
 
@@ -209,7 +210,7 @@ climate_popgrp <- create_dataset(
   file_suffix = "popgrp.parquet",
   test_indicators = FALSE,
   profile_filter = NULL,
-  file_snapshot = TRUE # set to true if deploying
+  file_snapshot = FALSE # set to true if deploying
 )
 
 
@@ -244,7 +245,7 @@ depr_dataset <- create_dataset(
   file_suffix = "ineq.rds",
   test_indicators = FALSE,
   profile_filter = NULL,
-  file_snapshot = TRUE # set to true if deploying
+  file_snapshot = FALSE # set to true if deploying
 )
 
 # MM Nov 2025 - temporarily remove scotland decile data

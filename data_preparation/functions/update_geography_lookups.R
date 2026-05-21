@@ -29,45 +29,14 @@ create_geography_lookup <- function (folder){
   }
   
   # get lookup 
-  geo_lookup <- readRDS(file.path(scotpho_folder, "Lookups/Geography/opt_geo_lookup.rds")) |>
-    select(-areaname_full)
+  geo_lookup <- readRDS(file.path(scotpho_folder, "Lookups/Geography/opt_geo_lookup.rds"))
   
-  # arrange areatypes
+  # convert cols from factor to character and arrange alphabetically
   geo_lookup <- geo_lookup |>
-    mutate(areatype = factor(
-      areatype,
-      levels = c(
-        "Scotland",
-        "Health board",
-        "Council area",
-        "Alcohol & drug partnership",
-        "HSC partnership",
-        "HSC locality",
-        "Intermediate zone",
-        "Police division"
-      )
-    )) |>
+    select(-areaname_full) |> # drop column - not use anywhere in shiny app
     arrange(areatype, parent_area, areaname)
   
-  # add additional column to the lookup that 
-  # contains the full geography path (e.g. Health board/NHS Ayrshire & Arran)
-  geo_lookup <- geo_lookup |>
-    mutate(
-      geo_path = paste(
-        areatype,
-        case_when(
-          areatype %in% c("Intermediate zone", "HSC locality") ~ parent_area,
-          TRUE ~ areaname
-        ),
-        case_when(
-          areatype %in% c("Intermediate zone", "HSC locality") ~ areaname,
-          TRUE ~ NA_character_
-        ),
-        sep = "/"
-      ),
-      geo_path = sub("/NA$", "", geo_path)
-    )
-  
+  # save in local repo
   saveRDS(geo_lookup, file.path(project_folder, "profiles_geo_lookup.rds"))
   
   # return geo_lookup outside of function
@@ -76,62 +45,67 @@ create_geography_lookup <- function (folder){
 }
 
 
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 2. geography list -----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # This lookup is used only on the data table tab of the app, in order
 # to create the hierarchical geography filter in the sidebar.
-# this code is lifted from the documentation for the 'jsTreeR' package 
-# (which is the package used to create the geography filter in the data table tab)
-# see examples here: https://www.rdocumentation.org/packages/jsTreeR/versions/1.1.0/topics/jstree-shiny 
 
-update_geography_hierachy <-function(folder){
+update_geography_hierachy <- function(folder){
   
-  # get unique geographies from geo lookup
-  leaves <- geo_lookup$geo_path 
+  # get lookup 
+  geo_lookup <- readRDS(file.path(scotpho_folder, "Lookups/Geography/opt_geo_lookup.rds")) |>
+    # convert from factor to character otherwise produces massive file!
+    mutate(across(everything(), ~ as.character(.)))
+    
   
-  dfs <- lapply(strsplit(leaves, "/"), function(s){
-    item <-Reduce(function(a,b) paste0(a,"/",b), s[-1], s[1], accumulate = TRUE)
-    data.frame(
-      item = item,
-      parent = c("root", item[-length(item)]),
-      stringsAsFactors = FALSE
-    )
-  })
-  
-  
-  #dat <- dfs[[1]]
-  # for(i in 2:length(dfs)){
-  #   dat <- merge(dat, dfs[[i]], all = TRUE)
-  # }
-  
-  # amending function using 2 lines below to use rbind instead of merge 
-  # This allows parent nodes to be ordered based on how data is arranged before being passed to this function
-  # instead of alphabetically
-  dat <- do.call(rbind, dfs)
-  dat <- dat[!duplicated(dat), ]
-  
-  f <- function(parent){
-    i <- match(parent, dat$item)
-    item <- dat$item[i]
-    children <- dat$item[dat$parent==item]
-    label <- tail(strsplit(item, "/")[[1]], 1)
-    if(length(children)){
-      list(
-        text = label,
-        children = lapply(children, f),
-        icon =FALSE,
-        state = list(selected = FALSE, opened = FALSE )
+  # Go through each geography type and do the following:
+  geo_list <- map(c("Scotland", "Health board", "Council area", "Alcohol & drug partnership", 
+                    "HSC partnership", "Police division", "HSC locality", "Intermediate zone"), ~ {
+
+    
+    # a. filter the geo_lookup by that areatype
+    areatype_lookup <- geo_lookup[geo_lookup$areatype == .x, ]
+    
+    # b. created a list for that areatype, in the format
+    # required for shinyWidgets::quercusInput() 
+    # create_tree is a function from the shiny Widgets package that
+    # creates choices for this input in the required format
+    
+    # if the areatype is scotland, create a list with just 1 level
+    if (.x == "Scotland") {
+      
+      create_tree(
+        data = areatype_lookup,
+        levels = "areatype",
+        levels_id = "code"
       )
-    }else{
-      list(text = label, type = "child",icon = FALSE,
-           state = list(selected = FALSE,opened = FALSE ))
+    
+    # if areatype is IZ/HSC locality, create list with 3 levels
+    } else if (.x %in% c("Intermediate zone", "HSC locality")) {
+      
+      create_tree(
+        data = areatype_lookup,
+        levels = c("areatype", "parent_area", "areaname"),
+        levels_id = c("areatype", "parent_area", "code")
+      )
+      
+    } else {
+      
+    
+      # otherwise if anything else (HB/CA etc) create list with 2 levels
+      create_tree(
+        data = areatype_lookup,
+        levels = c("areatype", "areaname"),
+        levels_id = c("areatype", "code")
+      )
     }
-  }
+  }) |> reduce(c) # reduce into one large nested list
+    
   
-  geo_list <- lapply(dat$item[dat$parent == "root"], f)
-  
+  # save output
   saveRDS(geo_list, file.path(project_folder, "main_dataset_geography_nodes.rds"))
 }
 
