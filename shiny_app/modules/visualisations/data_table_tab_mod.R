@@ -128,8 +128,9 @@ data_tab_modUI <- function(id) {
             label = NULL,
             choices = NULL,
             multiple = TRUE,
-            options = list(container = "body") # ensures drop-down can be expanded outside the sidebar if needed
-          )
+            options = list(container = "body", # ensures drop-down can be expanded outside the sidebar if needed
+                           liveSearch = TRUE) #allows searching of indicators) 
+            )
         )
         ), # close sidebar
       
@@ -410,7 +411,7 @@ data_tab_mod_Server <- function(id) {
         valid_choices <- unique(data$indicator)
 
         # update indicator filter choices
-        updatePickerInput(inputId = "indicator_selector", choices =  valid_choices)
+        updatePickerInput(inputId = "indicator_selector", choices =  valid_choices, options = list(liveSearch = TRUE))
 
       })
 
