@@ -299,6 +299,16 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
       
     })
     
+    # update y-axis min and max each time user changes global geography selection
+    observeEvent(dataset(), {
+      
+      # find highest % in the area filtered dataset
+      axis_value <- round(max(abs(dataset()$percentage_Male),dataset()$percentage_Female),0)
+      
+      highchartProxy(ns("pop_pyramid_chart")) |>
+        hcpxy_update(yAxis = list(min = -axis_value , max = axis_value))
+    })
+    
     
     
     # each time reactive dataset updates, update the pyramid chart
