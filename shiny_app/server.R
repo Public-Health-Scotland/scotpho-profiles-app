@@ -215,7 +215,8 @@ function(input, output, session) {
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
    pop_groups_server("pop_groups",popgroup_data, geo_selections, selected_profile, session)
-
+   
+   demog_simd_mod_server("demog_simd",demog_simd_data, geo_selections, selected_profile, session)
   
    # running module for the long-term monitoring of HE tab
    ltmhi_Server(id = "ltmhi")
@@ -311,6 +312,19 @@ function(input, output, session) {
     }
   })
   
+  
+  # 6. DEMOGRAPHIC SIMD DATA (used to generate populations by SIMD quintiles)
+  demog_simd_data <- reactive({
+    req(input$profile_choices != "")
+    demographic_simd_dataset |>
+      filter(
+        (areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |
+          areatype == "Scotland"
+      )
+  })
+  
+  
+
   
   
   ###################################################.

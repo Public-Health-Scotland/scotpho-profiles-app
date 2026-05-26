@@ -14,6 +14,11 @@
 # need to wrap ui in this function for bookmarking to work
 function(request){
 page_navbar(
+  title = tags$a(
+    href = "https://scotpho.org.uk", # Your target webpage URL
+    target = "_blank",                  # Optional: Opens the link in a new browser tab
+    tags$img(src = "phs-logo-white.png", height = "40px", style = "opacity: 0.7;")
+  ),
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
@@ -34,6 +39,24 @@ page_navbar(
     includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
     ),
 
+  # nav_item(
+  #   tags$a(img(src = "phs-logo-white.png", 
+  #                                          alt = "link to Public Health Scotland website"),
+  #                                          href = "https://www.publichealthscotland.scot/",
+  #                                          target = "_blank",
+           # style = "position: relative;
+           #             top: -15px;
+           #             margin-left: 10px;
+  #          #             margin-top: 5px;")),
+  # 
+  # nav_item(tags$a(img(src = "white-logo.png")
+  #                     #style = "height: 1.8em, vertical-align: middle;"),
+  #                     # margin-left: 10px;
+  #                      #margin-top: 5px;"),
+  #                     #style = "height: 1.2em; width: auto; vertical-align: middle;"),
+  #                 #style = "display: flex; align-items: center; padding: 0.5rem 1rem;", 
+  #                     href = "https://github.com/Public-Health-Scotland/scotpho-profiles-app", target = "_blank")),
+  
   #######################################.
   # Homepage ----
   ######################################.
@@ -44,7 +67,7 @@ page_navbar(
   
   nav_panel(value = "Home", style = "margin: 0; padding:0;", # remove margin so no white space at top of landing page
             title = "Home",
-            style = "background-color:#F7F7F7;",
+            style = "background-color:#F7F7F7; vertical-align: middle;",
             htmlTemplate("landing-page.html", # sits in separate file in app folder
                          # buttons to navigate to about scotpho, about profiles and indicator definitions tabs
                          additional_info_buttons = div(
@@ -303,6 +326,9 @@ page_navbar(
                        
                        # population groups sub-tab
                        nav_panel(title = "Population groups", value = "pop_groups_tab", pop_groups_ui("pop_groups")),
+                       
+                       # demographics SIMD sub-tab
+                       nav_panel(title = "SIMD", value = "demog_simd_tab", demog_simd_mod_ui("demog_simd")),
                        
                        # About this profile sub tab (text that appears is conditional depending on selected profile)
                        # the text for each profile is defined in the 'narrative' subfolder in the 'about_profiles_narrative.R' script
