@@ -88,6 +88,24 @@ page_navbar(
                           # ),
                           # hr(), 
                           
+                          # New smoking attributable methodology
+                          div(
+                            h4("May 2026: Smoking attributable deaths and hospital admissions now available for 2023-2024", class = "profile-header"),
+                            p("The latest update includes a recalculation of historical data using a new and more accurate methodology. 
+                              Relative risks are now based on more recent research presented in the", tags$a("Royal College of Physicians' 2018 report.",
+                              href = "https://www.rcp.ac.uk/resources/hiding-in-plain-sight-treating-tobacco-dependency-in-the-nhs/", 
+                              target = "_blank")," This change brings Scotland's methodology in line with England and Wales."),
+                            p("The impact of the new methodology on 2023-2024 (and previously published) data, is a reduction of around 15-20% in admissions and deaths.
+                              This has been driven primarily by changes to included conditions."),
+                            p("These indicators are intended to complement the ", tags$a("Public Health Scotland publication",
+                              href = "https://publichealthscotland.scot/publications/smoking-attributable-hospital-admissions-and-deaths/smoking-attributable-hospital-admissions-and-deaths-scotland-2024/", 
+                              target = "_blank"), "released in May 2026. While ScotPHO have replicated the methodology used in this publication as closely as possible, 
+                              presentation of subnational breakdowns in the Profiles Tool necessitates calculation of two-year rolling averages rather than single year estimates."),
+                            p("For more information on the methodology changes (such as ICD-10 codes included), please see the PHS publication's ", 
+                              tags$a("Technical Document.", href = "https://publichealthscotland.scot/media/38690/2026-05-19-technical-documentv06_final.pdf", target = "_blank")),
+                          ),
+                          hr(),
+
                           # Updates
                           div(
                             h4("February 2026 : Indicator updates", class = "profile-header"),
