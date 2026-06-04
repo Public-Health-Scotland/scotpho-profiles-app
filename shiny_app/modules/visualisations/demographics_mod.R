@@ -35,7 +35,7 @@ demographics_mod_ui <- function(id) {
                         # hover information 
                         helpText("Hover over (or tap on mobile devices) an age group in the pyramid chart to update the figures below."),
                         value_box(
-                          title = textOutput(ns("age_group")),
+                          title = textOutput(ns("vb_title")),
                           value = textOutput(ns("total_pop")),
                           textOutput(ns("perc_pop")),
                           showcase = highchartOutput(ns("bars"), height = "70px"),
@@ -203,16 +203,26 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # Dynamic elements of population pyramid title/subtitles
     output$areaname <- renderText({geo_selections()$areaname})
     output$year <- renderText({input$period_filter})
+
+    # # age category (for value box)
+    # output$age_group <- renderText({
+    #   if(is.null(input$pyramid_hover)){
+    #     "All ages"
+    #   } else {
+    #     paste("Age", input$pyramid_hover)
+    #   }
+    # })
+    # 
     
-    
-    # age category (for value box)
-    output$age_group <- renderText({
+    # Valuebox title
+    output$vb_title <- renderText({
       if(is.null(input$pyramid_hover)){
-        "All ages"
+        paste0({geo_selections()$areaname}, " Population, All ages, ",{input$period_filter})
       } else {
-        paste("Age", input$pyramid_hover)
+        paste0({geo_selections()$areaname}, " Population, Age ", input$pyramid_hover, {input$period_filter})
       }
     })
+    
     
     
     # population size (for value box)
@@ -290,7 +300,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
             hc_exporting(
               filename = "ScotPHO Population Pyramid",
               chartOptions = list(
-                title = list(text = paste0(first(pyramid_data()$areaname))),
+                title = list(text = paste0(first(pyramid_data()$areaname)," Population")),
                 subtitle = list(text = paste0(first(pyramid_data()$year)))
               )
             )
