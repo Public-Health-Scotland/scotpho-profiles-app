@@ -193,14 +193,19 @@ page_navbar(
                 hidden(div(id = "prof_filter_hidden",
                       selectizeInput(inputId = "profile_choices", 
                                      label = NULL, 
-                                     choices = profile_filter_choices, #declared in global script
-                                     options = list(onInitialize = I('function() { this.setValue(""); }')))
+                                     choices = c("", profile_filter_choices), #declared in global script
+                                     selected = ""
+                                     )
                     )),
               # geography header with button
                 div(class = "header-elements",
                     tagAppendAttributes(class = "geography-header", h2(textOutput("geography_header"))),
                     actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
+  
+              # bookmark button
+              bookmarkButton(),
+  
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
                 

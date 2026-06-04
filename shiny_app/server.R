@@ -112,6 +112,7 @@ function(input, output, session) {
   # 3. storing full and short name of the selected profile ( Currently, this particular info is only being used in the 
   # trend module to ensure that police divisions only appear as a filter if mental health is selected)
   selected_profile <- reactive({
+    req(input$profile_choices != "")
     list(
       full_name = input$profile_choices, 
       short_name = pluck(profiles_list, input$profile_choices, "short_name"),
@@ -347,23 +348,38 @@ function(input, output, session) {
   # except those related to the LTMHI profile (and the selected nav)
   # The LTMHI module (and other modules used within that) will also
   # be applying further exclusions to ltmhi-related inputs
-  # This code is only run once when the app initally loads
+  # This code runs whenever uses switches tabs along the main navbar
   observeEvent(input$nav, {
-
+    
+    # only run when user on ltmhi or profiles tab
+    # not relevant to other tabs
+    req(input$nav %in% c("shi_tab", "Profiles"))  
+    
     # ids of all inputs from across the app
     all_inputs <- names(input)
-
+    
     # those related to LTMHI only
-    ltmhi_inputs <- all_inputs[grepl("ltmhi", all_inputs)]
+    ltmhi_tab_inputs <- all_inputs[grepl("ltmhi", all_inputs)]
+    
+    # global geography and profile filter input ids
+    profile_tab_inputs <- c("areatype", "areaname", "parent_area", "profile_choices")
+    
+    # inputs to bookmark 
+    inclusions <- c("nav", # selected tab from main navbar
+                    if(input$nav == "shi_tab") ltmhi_tab_inputs,
+                    if(input$nav == "Profiles") profile_tab_inputs
+                    )
 
-    # inputs to exclude 
-    exclusions <- setdiff(all_inputs, c(ltmhi_inputs, "nav"))
+    # inputs to exclude
+    exclusions <- setdiff(all_inputs, inclusions)
     
     # apply exclusions
     setBookmarkExclude(exclusions)
+    
+    
+  }, ignoreInit = TRUE)
+  
 
-
-  }, ignoreInit = FALSE, once = TRUE)
   
   
   # 2 additional inputs to be excluded (these are created within the popup modal that appears during 
@@ -470,6 +486,20 @@ function(input, output, session) {
     if(!is.null(card_id)){
       session$sendCustomMessage("fullscreen_card", card_id)
     }
+    
+    # update geo_selections() reactive values object with the
+    # bookmarked geography filter selections - this gets around the fact
+    # that this object usually only updates when 'apply filters' button
+    # is clicked - i.e. this is the same code that runs in response to button click
+    # further up this script
+    geo_selections(
+      list(
+        areatype = state$input$areatype,
+        areaname = state$input$areaname,
+        parent_area = state$input$parent_area
+      )
+    )
+    
   })
   
   
