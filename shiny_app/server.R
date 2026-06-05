@@ -492,13 +492,15 @@ function(input, output, session) {
     # that this object usually only updates when 'apply filters' button
     # is clicked - i.e. this is the same code that runs in response to button click
     # further up this script
-    geo_selections(
-      list(
-        areatype = state$input$areatype,
-        areaname = state$input$areaname,
-        parent_area = state$input$parent_area
+    if(state$input$nav == "Profiles"){
+      geo_selections(
+        list(
+          areatype = state$input$areatype,
+          areaname = state$input$areaname,
+          parent_area = state$input$parent_area
+        )
       )
-    )
+    }
     
   })
   
