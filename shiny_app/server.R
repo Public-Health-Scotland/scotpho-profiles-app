@@ -333,6 +333,20 @@ function(input, output, session) {
   })
   
   
+  # if a user clicks directly on the 'Profiles' tab in the navbar
+  # without clicking a profile button on the homepage (resulting in input$profile_choices not updating), 
+  # then select 'Health & Wellbeing' profile so there's always something displayed
+  observeEvent(input$nav, {
+    req(input$nav == "Profiles")
+    if(input$profile_choices == ""){
+    updateSelectizeInput(
+      inputId = "profile_choices",
+      selected = "Health & Wellbeing"
+    )
+    }
+  })
+  
+  
   
   ###########################################.
   # Bookmarking ------
@@ -344,31 +358,27 @@ function(input, output, session) {
 
   # 1. Bookmark exclusions ----
   
-  # Temporary step to remove all inputs from the bookmarked URL
-  # except those related to the LTMHI profile (and the selected nav)
-  # The LTMHI module (and other modules used within that) will also
-  # be applying further exclusions to ltmhi-related inputs
+  # Step to remove inputs from a bookmarked URL, depending on
+  # what tab your on (currently only relevant to the LTMHI and Profile tabs 
   # This code runs whenever uses switches tabs along the main navbar
   observeEvent(input$nav, {
     
     # only run when user on ltmhi or profiles tab
-    # not relevant to other tabs
+    # not currently relevant to other tabs
     req(input$nav %in% c("shi_tab", "Profiles"))  
     
     # ids of all inputs from across the app
     all_inputs <- names(input)
-    
-    # those related to LTMHI only
-    ltmhi_tab_inputs <- all_inputs[grepl("ltmhi", all_inputs)]
-    
-    # global geography and profile filter input ids
-    profile_tab_inputs <- c("areatype", "areaname", "parent_area", "profile_choices")
-    
-    # inputs to bookmark 
-    inclusions <- c("nav", # selected tab from main navbar
-                    if(input$nav == "shi_tab") ltmhi_tab_inputs,
-                    if(input$nav == "Profiles") profile_tab_inputs
-                    )
+
+    # inputs to bookmark, depending on what tab your on 
+    inclusions <- c(
+      # selected tab from main navbar (always to be included)
+      "nav",
+      # inputs related to the LTMTI tab only 
+      if(input$nav == "shi_tab") all_inputs[grepl("ltmhi", all_inputs)],
+      # inputs related to the Profiles tab only (i.e. globally selected geography and profile)
+      if(input$nav == "Profiles") c("areatype", "areaname", "parent_area", "profile_choices")
+      )
 
     # inputs to exclude
     exclusions <- setdiff(all_inputs, inclusions)

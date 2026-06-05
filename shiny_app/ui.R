@@ -206,7 +206,7 @@ page_navbar(
               # bookmark button
              div(
                p("Click the button below to create a shareable link with your profile and geography selections."),
-              bookmarkButton()
+              bookmarkButton(class = "btn-sm")
               ),
   
               # hidden geography filterers to display when button clicked
