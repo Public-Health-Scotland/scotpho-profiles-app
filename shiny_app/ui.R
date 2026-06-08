@@ -14,6 +14,11 @@
 # need to wrap ui in this function for bookmarking to work
 function(request){
 page_navbar(
+  title = tags$a(
+    href = "https://scotpho.org.uk", # Your target webpage URL
+    target = "_blank",                  # Optional: Opens the link in a new browser tab
+    tags$img(src = "phs-logo-white.png", height = "40px", style = "opacity: 0.7;")
+  ),
   fillable = FALSE, # controlling how items grow/shrink when browser different sizes
   window_title = "ScotPHO profiles",
   id = "nav", # id required for profile buttons - works with profile_homepage_btn_mod to control navigation
