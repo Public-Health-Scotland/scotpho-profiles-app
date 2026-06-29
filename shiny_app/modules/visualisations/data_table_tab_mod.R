@@ -257,7 +257,7 @@ data_tab_mod_Server <- function(id) {
                               quintile = NULL
                        )
 
-                     # rii data
+                     # rii data - simple
                      rii <- data |>
                        filter(quintile == "Total") |>
                        mutate(value = rii,
@@ -266,20 +266,29 @@ data_tab_mod_Server <- function(id) {
                        mutate(measure = "Relative index of inequality (RII)",
                               quintile = NULL)
 
+                     # rii data - as %
+                     rii_int <- data |>
+                       filter(quintile == "Total") |>
+                       mutate(value = rii_int,
+                              upper_confidence_interval = upci_rii_int,
+                              lower_confidence_interval = lowci_rii_int) |>
+                       mutate(measure = "Relative index of inequality (RII) as %",
+                              quintile = NULL)
+                     
                      # par data
                      par <- data |>
                        filter(quintile == "Total") |>
                        mutate(value = par,
-                              upper_confidence_interval = upci_rii_int,
-                              lower_confidence_interval = lowci_rii_int) |>
+                              upper_confidence_interval = 0, # there are no CI around PAR
+                              lower_confidence_interval = 0) |> # there are no CI around PAR
                        mutate(measure = "Population attributable risk (PAR)",
                               quintile = NULL)
 
                      # different inequalities measures combined
-                     data <- bind_rows(data, rii, sii, par) |>
+                     data <- bind_rows(data, rii, rii_int, sii, par) |>
                        select(area_code, area_type, area_name, year, period, indicator,
-                              quint_type, quintile, measure, value, upper_confidence_interval,
-                              lower_confidence_interval) |>
+                              quint_type, quintile, measure, value, lower_confidence_interval,
+                              upper_confidence_interval) |>
                        arrange(indicator, area_name, year)
                    }
 

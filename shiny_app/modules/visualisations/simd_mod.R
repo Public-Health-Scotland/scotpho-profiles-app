@@ -441,7 +441,7 @@ simd_navpanel_ui <- function(id) {
                                                upci_rii_int = colDef(show = FALSE),
                                                lowci_rii_int = colDef(show = FALSE),
                                                trend_axis = colDef(name = "Time period"),
-                                               rii_int = colDef(name = "Relative index of inequality (RII)")
+                                               rii_int = colDef(name = "Relative index of inequality (RII) as %")
                        )
                      ),
                      
