@@ -86,11 +86,12 @@ page_navbar(
                           
                           # Updates
                           #Physical Activity Profile
-                          div(h4("March 2026: In development, a new Physical Activity profile", class = "profile-header"),
+                          div(h4("June 2026: New Physical Activity profile", class = "profile-header"),
                               p("We have published a limited set of indicators as part of a new Physical Activity profile in collaboration with the Physical Activity for Health Research Centre (PAHRC) at the University of Edinburgh.
                                 This profile contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's.",
                                 tags$a("Physical Activity Guidelines,", href = "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report",
-                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available. Please get in touch with ScotPHO at phs.scotpho@phs.scot if you would like to feed into development.")
+                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available. Please get in touch with ScotPHO at ", tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), 
+                              "if you would like to feed into development.")
                           ),
                           hr(),
                           
