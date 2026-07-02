@@ -93,6 +93,16 @@ page_navbar(
                           # ),
                           # hr(), 
                           
+                          #Physical Activity Profile
+                          div(h4("June 2026: New Physical Activity profile", class = "profile-header"),
+                              p("We have published a limited set of indicators as part of a new Physical Activity profile in collaboration with the Physical Activity for Health Research Centre (PAHRC) at the University of Edinburgh.
+                                This profile contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's.",
+                                tags$a("Physical Activity Guidelines,", href = "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report",
+                                       target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available. Please get in touch with ScotPHO at ", tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), 
+                                "if you would like to feed into development.")
+                          ),
+                          hr(),
+                          
                           # New smoking attributable methodology
                           div(
                             h4("May 2026: Smoking attributable deaths and hospital admissions now available for 2023-2024", class = "profile-header"),
@@ -137,15 +147,15 @@ page_navbar(
                          ),
                          hr(),
                                             
-                          # CYP Mental Health profile info
-                          div(
-                            h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
-                            p("The Mental Health Profile for Children & Young People is the result of Public Health Scotland's", 
-                              tags$a("Mental Health Indicators project.", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
-                              target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
-                              of interconnected determinants (risk factors and protective factors) of these outcomes. This profile follows ScotPHO's publication of the adult mental health profile in late 2024.")
-                          ),
-                          hr(),
+                          # # CYP Mental Health profile info
+                          # div(
+                          #   h4("April 2025 : New Mental Health Profile for Children & Young People", class = "profile-header"),
+                          #   p("The Mental Health Profile for Children & Young People is the result of Public Health Scotland's", 
+                          #     tags$a("Mental Health Indicators project.", href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
+                          #     target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
+                          #     of interconnected determinants (risk factors and protective factors) of these outcomes. This profile follows ScotPHO's publication of the adult mental health profile in late 2024.")
+                          # ),
+                          # hr(),
                   
               #   # Profiles tool re-design info : SEPT 2025 hide text since the 'new' design w as launched a year ago - keep script as a template for future notes
               #   div(
@@ -158,15 +168,15 @@ page_navbar(
               #   ),
               # hr(),
               # Adult Mental Health profile info
-              div(
-                h4("October 2024 : New Mental Health Profile for Adults", class = "profile-header"),
-                p("The Mental Health Profile for Adults is the result of Public Health Scotland's", tags$a("Mental Health Indicators project.", 
-                  href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
-                  target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
-                  of interconnected determinants (risk factors and protective factors) of these outcomes. ScotPHO have 
-                 recently published this profile for indicators in adults and are currently working on the profile for children and young people.")
-                ),
-              hr(),
+              # div(
+              #   h4("October 2024 : New Mental Health Profile for Adults", class = "profile-header"),
+              #   p("The Mental Health Profile for Adults is the result of Public Health Scotland's", tags$a("Mental Health Indicators project.", 
+              #     href = "https://publichealthscotland.scot/our-areas-of-work/health-and-wellbeing/prevention-of-mental-ill-health-and-improved-wellbeing/mental-health-indicators/overview/", 
+              #     target = "_blank")," The mental health indicators include measures of mental health outcomes, as well as of a wide range 
+              #     of interconnected determinants (risk factors and protective factors) of these outcomes. ScotPHO have 
+              #    recently published this profile for indicators in adults and are currently working on the profile for children and young people.")
+              #   ),
+              # hr(),
               # Feedback info
               div(
                 h4("Feedback", class = "profile-header"),
@@ -281,6 +291,18 @@ page_navbar(
                                                          See the indicator metadata for more information.")
                                                   )
                                  ),
+                                 
+                                 # only display this card when physical activity profile selected
+                                 conditionalPanel(condition = "input.profile_choices == 'Physical Activity'",
+                                                  br(),
+                                                  card(max_height = 150,
+                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development:",class = "info-box-header"),
+                                                       p("The initial launch of this profile contains a limited set of indicators.
+                                                         Over time we intend to expand the range of indicators available.",
+                                                         "If you would like to feed into this development please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
+                                                  )
+                                 ),
+                                 
                                  summary_table_ui("summary")
                                  ),
                        
@@ -323,7 +345,8 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Children & Young People Mental Health'", about_cmh_text),
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
                                  conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text),
-                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text)
+                                 conditionalPanel("input.profile_choices == 'Climate'", about_cli_text),
+                                 conditionalPanel("input.profile_choices == 'Physical Activity'", about_pa_text)
                        )
 
                        
