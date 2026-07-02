@@ -269,7 +269,7 @@ page_navbar(
                                                   br(),
                                                   card(max_height = 150,
                                                        card_header(bs_icon("info-circle-fill", size = "1.2em"),"Profile in development:",class = "info-box-header"),
-                                                       p("The initial launch of this profile contains a limited set of indicators at the Scotland, health board and council geography level only.
+                                                       p("The initial launch of this profile contains a limited set of indicators.
                                                          Over time we intend to expand the range of indicators available.",
                                                          "If you would like to feed into this development please contact ",tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"))
                                                   )

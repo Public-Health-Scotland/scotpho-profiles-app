@@ -150,6 +150,17 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Physical Activity info
+  "Physical Activity" = list(
+    short_name = "PHY",
+    homepage_description = markdown("**Under development**. View indicators related to **Active Places & Spaces**, **Active Places of Learning**,  **Active Travel** and **Sport & Active Recreation**"),
+    domain_order = c("Overarching", "Active Places and Spaces", "Active Places of Learning", "Active Travel", "Sport and Active Recreation"),
+    subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = TRUE,
+    active = TRUE
+  ),
+  
   # Children and young people info
   "Children & Young People" = list(
     short_name = "CYP",
@@ -204,17 +215,6 @@ profiles_list <- list(
     subtabs = c("summary_tab", "trends_tab", "rank_tab"),
     nav_id = "Profiles",
     new = FALSE,
-    active = TRUE
-  ),
-  
-  # Physical Activity info
-  "Physical Activity" = list(
-    short_name = "PHY",
-    homepage_description = markdown("**Under development**. View indicators related to **Active Places & Spaces**, **Active Places of Learning**,  **Active Travel** and **Sport & Active Recreation**"),
-    domain_order = c("Overarching", "Active Places and Spaces", "Active Places of Learning", "Active Travel", "Sport and Active Recreation"),
-    subtabs = all_subtabs,
-    nav_id = "Profiles",
-    new = TRUE,
     active = TRUE
   ),
   
