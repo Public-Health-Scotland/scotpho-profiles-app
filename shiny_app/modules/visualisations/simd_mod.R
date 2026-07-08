@@ -441,7 +441,7 @@ simd_navpanel_ui <- function(id) {
                                                upci_rii_int = colDef(show = FALSE),
                                                lowci_rii_int = colDef(show = FALSE),
                                                trend_axis = colDef(name = "Time period"),
-                                               rii_int = colDef(name = "Relative index of inequality (RII)")
+                                               rii_int = colDef(name = "Relative index of inequality (RII) as %")
                        )
                      ),
                      
@@ -540,7 +540,7 @@ simd_navpanel_ui <- function(id) {
                # RII trend chart titles/subtitles/interpretation/filename
                right_chart_narrative = about_rii,
                right_chart_title = paste0("Inequalities over time: relative differences"),
-               right_chart_subtitle_1 = "The chart shows the differences between the most disadvantaged area and the overall average for Scotland (expressed as a percentage).",
+               right_chart_subtitle_1 = "The chart shows the differences between the most disadvantaged area and the overall average for your selected area (expressed as a percentage).",
                right_chart_subtitle_2 = "An increasing trend suggests that the gap between the most disadvantaged area and the average is growing",
                right_chart_filename = paste0("ScotPHO RII chart - ", selected_indicator())
              ),
