@@ -287,7 +287,6 @@ definitions_tab_Server <- function(id) {
         
         filename ="scotpho_indicator_definitions.csv",
         content = function(file) {
-          #write.csv(techdoc |>
           write.csv(tech_info() |>
                       select(-c(active, source_details)),
                     file, row.names=FALSE) }
