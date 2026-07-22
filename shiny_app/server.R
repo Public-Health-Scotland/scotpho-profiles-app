@@ -95,9 +95,9 @@ function(input, output, session) {
   observeEvent(input$apply_geo_filters, {
     geo_selections(
       list(
-        areatype = input$areatype, # selected areatype 
-        areaname = input$areaname, # selected areaname 
-        parent_area = input$parent_area # selected parent area (only applicable if HSC locality/Intermediate zone is selected)
+       areatype = input$areatype,
+       parent_area = ifelse(input$areatype %in% c("HSC Locality", "Intermediate zone"), input$parent_area, NA),
+       areaname = ifelse(input$areatype == "Scotland", "Scotland", input$areaname)
       )
     )
   })
@@ -511,6 +511,8 @@ function(input, output, session) {
         )
       )
     }
+    
+
     
   })
   
