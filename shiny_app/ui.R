@@ -205,7 +205,7 @@ page_navbar(
   
               # bookmark button
              div(
-               p("Click the button below to create a shareable link with your profile and geography selections."),
+               p("Save or share your profile and geography selections using the button below."),
               bookmarkButton(class = "btn-sm")
               ),
   
@@ -261,28 +261,28 @@ page_navbar(
                                  
                                  # Display message at top of summary tab for specific profiles only
                                  # commenting out Jan 2025 but leaving script as placeholder as new text may come along 
-                                 conditionalPanel(condition = "input.profile_choices == 'Population Health'",
-                                                  br(),
-                                                  card(max_height = 150,
-                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"About this profile",class = "info-box-header"),
-                                                       p("The Population Health dashboard has been developed to support the ambitions of Scotland’s Population Health Framework, and the Collaboration 
-                                                         for Health Equity in Scotland by providing access to the latest data on population health outcomes and inequalities. The indicators are structured 
-                                                         around the “Marmot Eight” principles as laid out in the Institute of Health Equity’s work on ",
-                                                         tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ",
+                                 hidden(
+                                   card(
+                                     id = "CWB_banner",
+                                     card_header(bs_icon("info-circle-fill", size = "1.2em"),"About this profile",class = "info-box-header"),
+                                     p("The Population Health dashboard has been developed to support the ambitions of Scotland’s Population Health Framework, and the Collaboration 
+                                        for Health Equity in Scotland by providing access to the latest data on population health outcomes and inequalities. The indicators are structured 
+                                         around the “Marmot Eight” principles as laid out in the Institute of Health Equity’s work on ",
+                                      tags$a("Marmot Places", href = "https://www.instituteofhealthequity.org/taking-action/marmot-places", target = "_blank"),". ",
                                                          "We are working with PHS to complete the indicator set and ensure each reflects the latest available data soon.")
-                                                       )
-                                                  ),
+                                     )
+                                   ),
   
                                  # only display this card when Mental Health profile selected
-                                 conditionalPanel(condition = "input.profile_choices == 'Children & Young People Mental Health'",
-                                                  br(),
-                                                  card(max_height = 150,
-                                                       card_header(bs_icon("info-circle-fill", size = "1.2em"),"Updates to this profile in Jan 2026:",class = "info-box-header"),
-                                                       p("Additional indicators about children's mental health outcomes have been added 
-                                                         (conduct problems, emotional symptoms, hyperactivity/inattention, prosocial behaviour, and peer relationship problems). 
-                                                         Also, the source of the data for 'children meeting physical activity guidelines' has changed, resulting in higher estimates. 
-                                                         See the indicator metadata for more information.")
-                                                  )
+                                 hidden(
+                                   card(
+                                     id = "CMH_banner",
+                                     card_header(bs_icon("info-circle-fill", size = "1.2em"),"Updates to this profile in Jan 2026:",class = "info-box-header"),
+                                     p("Additional indicators about children's mental health outcomes have been added 
+                                       (conduct problems, emotional symptoms, hyperactivity/inattention, prosocial behaviour, and peer relationship problems). 
+                                        Also, the source of the data for 'children meeting physical activity guidelines' has changed, resulting in higher estimates. 
+                                        See the indicator metadata for more information.")
+                                     )
                                  ),
                                  summary_table_ui("summary")
                                  ),

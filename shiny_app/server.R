@@ -183,9 +183,17 @@ function(input, output, session) {
   })
   
   
+  ###############################################################.
+  # CONDITIONALLY SHOWING INFO CARDS FOR SPECIFIC PROFILES ----
+  ###############################################################.
+  # A couple of profiles have an info card about their summary table that is hidden in the UI
+  # This code shows/hides these cards when applicable
+  observeEvent(input$profile_choices, {
+    toggle(id = "CWB_banner", condition = input$profile_choices == "Population Health")
+    toggle(id = "CMH_banner", condition = input$profile_choices == "Children & Young People Mental Health")
+  })
   
-  
-  
+
   
   ###############################################################.
   # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB ----
@@ -428,7 +436,7 @@ function(input, output, session) {
         title = "Bookmark link",
         easyClose = TRUE,
         size = "l",
-        "Copy link below to share with others:",
+        "This URL preserves your current profile and geography choices, allowing you to return to the same view later or share it with others.",
         # have to use shiny fluidRow and column here
         # instead of bslib layout_columns as throws an error
         # for some reason!
