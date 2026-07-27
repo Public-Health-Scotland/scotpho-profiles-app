@@ -695,22 +695,6 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     observeEvent(input$summary_tour_button, {
       guide_summary$start()
     })
-    
-    
-    # MM note June 2026:
-    # prevent these from appearing in any bookmarked urls
-    # to be revisited to understand why they would appear!
-    setBookmarkExclude(
-      c(session$getBookmarkExclude(), 
-        "summary_table__reactable__page",
-        "summary_table__reactable__pageSize",
-        "summary_table__reactable__pages",
-        "summary_table__reactable__sorted",
-        "summary_table__reactable__selected"
-        ))
-    
- 
-       
 
   }) # close module server
 } # close module

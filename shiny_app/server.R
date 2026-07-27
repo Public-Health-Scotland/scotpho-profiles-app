@@ -387,13 +387,19 @@ function(input, output, session) {
       # inputs related to the Profiles tab only (i.e. globally selected geography and profile)
       if(input$nav == "Profiles") c("areatype", "areaname", "parent_area", "profile_choices")
       )
-
+    
     # inputs to exclude
     exclusions <- setdiff(all_inputs, inclusions)
     
+    #specifically excluding reactable inputs from summary tab which generate after the exclusions list
+    onBookmark(function(state) {
+      reactable_ids <- grep("__reactable__", names(as.list(reactiveValuesToList(input))), value = TRUE)
+
+      state$exclude <- unique(c(state$exclude, reactable_ids))
+    })
+    
     # apply exclusions
     setBookmarkExclude(exclusions)
-    
     
   }, ignoreInit = TRUE)
   
