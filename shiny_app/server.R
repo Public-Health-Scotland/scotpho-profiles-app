@@ -390,13 +390,7 @@ function(input, output, session) {
     
     # inputs to exclude
     exclusions <- setdiff(all_inputs, inclusions)
-    
-    #specifically excluding reactable inputs from summary tab which generate after the exclusions list
-    onBookmark(function(state) {
-      reactable_ids <- grep("__reactable__", names(as.list(reactiveValuesToList(input))), value = TRUE)
-
-      state$exclude <- unique(c(state$exclude, reactable_ids))
-    })
+  
     
     # apply exclusions
     setBookmarkExclude(exclusions)
@@ -429,6 +423,13 @@ function(input, output, session) {
     
     # re-reset userData variable (updated within share card button module) called share_card back to NULL
     session$userData$share_card <- NULL
+  })
+  
+  #specifically excluding reactable inputs from summary tab which generate after the exclusions list
+  onBookmark(function(state) {
+    reactable_ids <- grep("__reactable__", names(as.list(reactiveValuesToList(input))), value = TRUE)
+    
+    state$exclude <- unique(c(state$exclude, reactable_ids))
   })
   
   
