@@ -384,8 +384,9 @@ function(input, output, session) {
       "nav",
       # inputs related to the LTMTI tab only 
       if(input$nav == "shi_tab") all_inputs[grepl("ltmhi", all_inputs)],
-      # inputs related to the Profiles tab only (i.e. globally selected geography and profile)
-      if(input$nav == "Profiles") c("areatype", "areaname", "parent_area", "profile_choices")
+      # inputs related to the Profiles tab only (i.e. globally selected profile)
+      # Note we don't include the 3 globally geography inputs - we use geo_selections reactive vals object instead
+      if(input$nav == "Profiles") c("profile_choices")
       )
     
     # inputs to exclude
@@ -425,11 +426,17 @@ function(input, output, session) {
     session$userData$share_card <- NULL
   })
   
-  #specifically excluding reactable inputs from summary tab which generate after the exclusions list
+  # specifically excluding reactable inputs from summary tab which generate after the exclusions list
   onBookmark(function(state) {
     reactable_ids <- grep("__reactable__", names(as.list(reactiveValuesToList(input))), value = TRUE)
     
     state$exclude <- unique(c(state$exclude, reactable_ids))
+  })
+  
+  
+  # save geo_selections reactive value object into a variable in the url called 'geography'
+  onBookmark(function(state) {
+    state$values$geography <- geo_selections()
   })
   
   
@@ -518,13 +525,7 @@ function(input, output, session) {
     # is clicked - i.e. this is the same code that runs in response to button click
     # further up this script
     if(state$input$nav == "Profiles"){
-      geo_selections(
-        list(
-          areatype = state$input$areatype,
-          areaname = state$input$areaname,
-          parent_area = state$input$parent_area
-        )
-      )
+      geo_selections(state$values$geography)
     }
     
 
