@@ -95,9 +95,9 @@ function(input, output, session) {
   observeEvent(input$apply_geo_filters, {
     geo_selections(
       list(
-        areatype = input$areatype, # selected areatype 
-        areaname = input$areaname, # selected areaname 
-        parent_area = input$parent_area # selected parent area (only applicable if HSC locality/Intermediate zone is selected)
+       areatype = input$areatype,
+       parent_area = ifelse(input$areatype %in% c("HSC Locality", "Intermediate zone"), input$parent_area, NA),
+       areaname = ifelse(input$areatype == "Scotland", "Scotland", input$areaname)
       )
     )
   })
@@ -112,6 +112,7 @@ function(input, output, session) {
   # 3. storing full and short name of the selected profile ( Currently, this particular info is only being used in the 
   # trend module to ensure that police divisions only appear as a filter if mental health is selected)
   selected_profile <- reactive({
+    req(input$profile_choices != "")
     list(
       full_name = input$profile_choices, 
       short_name = pluck(profiles_list, input$profile_choices, "short_name"),
@@ -182,9 +183,17 @@ function(input, output, session) {
   })
   
   
+  ###############################################################.
+  # CONDITIONALLY SHOWING INFO CARDS FOR SPECIFIC PROFILES ----
+  ###############################################################.
+  # A couple of profiles have an info card about their summary table that is hidden in the UI
+  # This code shows/hides these cards when applicable
+  observeEvent(input$profile_choices, {
+    toggle(id = "CWB_banner", condition = input$profile_choices == "Population Health")
+    toggle(id = "CMH_banner", condition = input$profile_choices == "Children & Young People Mental Health")
+  })
   
-  
-  
+
   
   ###############################################################.
   # DETERMINING WHICH SUB-TABS TO SHOW/HIDE ON THE PROFILES TAB ----
@@ -332,6 +341,20 @@ function(input, output, session) {
   })
   
   
+  # if a user clicks directly on the 'Profiles' tab in the navbar
+  # without clicking a profile button on the homepage (resulting in input$profile_choices not updating), 
+  # then select 'Health & Wellbeing' profile so there's always something displayed
+  observeEvent(input$nav, {
+    req(input$nav == "Profiles")
+    if(input$profile_choices == ""){
+    updateSelectizeInput(
+      inputId = "profile_choices",
+      selected = "Health & Wellbeing"
+    )
+    }
+  })
+  
+  
   
   ###########################################.
   # Bookmarking ------
@@ -343,27 +366,39 @@ function(input, output, session) {
 
   # 1. Bookmark exclusions ----
   
-  # Temporary step to remove all inputs from the bookmarked URL
-  # except those related to the LTMHI profile (and the selected nav)
-  # The LTMHI module (and other modules used within that) will also
-  # be applying further exclusions to ltmhi-related inputs
-  # This code is only run once when the app initally loads
+  # Step to remove inputs from a bookmarked URL, depending on
+  # what tab your on (currently only relevant to the LTMHI and Profile tabs 
+  # This code runs whenever uses switches tabs along the main navbar
   observeEvent(input$nav, {
-
+    
+    # only run when user on ltmhi or profiles tab
+    # not currently relevant to other tabs
+    req(input$nav %in% c("shi_tab", "Profiles"))  
+    
     # ids of all inputs from across the app
     all_inputs <- names(input)
 
-    # those related to LTMHI only
-    ltmhi_inputs <- all_inputs[grepl("ltmhi", all_inputs)]
-
-    # inputs to exclude 
-    exclusions <- setdiff(all_inputs, c(ltmhi_inputs, "nav"))
+    # inputs to bookmark, depending on what tab your on 
+    inclusions <- c(
+      # selected tab from main navbar (always to be included)
+      "nav",
+      # inputs related to the LTMTI tab only 
+      if(input$nav == "shi_tab") all_inputs[grepl("ltmhi", all_inputs)],
+      # inputs related to the Profiles tab only (i.e. globally selected profile)
+      # Note we don't include the 3 globally geography inputs - we use geo_selections reactive vals object instead
+      if(input$nav == "Profiles") c("profile_choices")
+      )
+    
+    # inputs to exclude
+    exclusions <- setdiff(all_inputs, inclusions)
+  
     
     # apply exclusions
     setBookmarkExclude(exclusions)
+    
+  }, ignoreInit = TRUE)
+  
 
-
-  }, ignoreInit = FALSE, once = TRUE)
   
   
   # 2 additional inputs to be excluded (these are created within the popup modal that appears during 
@@ -391,6 +426,19 @@ function(input, output, session) {
     session$userData$share_card <- NULL
   })
   
+  # specifically excluding reactable inputs from summary tab which generate after the exclusions list
+  onBookmark(function(state) {
+    reactable_ids <- grep("__reactable__", names(as.list(reactiveValuesToList(input))), value = TRUE)
+    
+    state$exclude <- unique(c(state$exclude, reactable_ids))
+  })
+  
+  
+  # save geo_selections reactive value object into a variable in the url called 'geography'
+  onBookmark(function(state) {
+    state$values$geography <- geo_selections()
+  })
+  
   
   # 3. onBookmarked logic ----
   # i.e. things that should happen AFTER the final bookmark is created
@@ -402,7 +450,7 @@ function(input, output, session) {
         title = "Bookmark link",
         easyClose = TRUE,
         size = "l",
-        "Copy link below to share with others:",
+        "This URL preserves your current profile and geography choices, allowing you to return to the same view later or share it with others.",
         # have to use shiny fluidRow and column here
         # instead of bslib layout_columns as throws an error
         # for some reason!
@@ -470,6 +518,18 @@ function(input, output, session) {
     if(!is.null(card_id)){
       session$sendCustomMessage("fullscreen_card", card_id)
     }
+    
+    # update geo_selections() reactive values object with the
+    # bookmarked geography filter selections - this gets around the fact
+    # that this object usually only updates when 'apply filters' button
+    # is clicked - i.e. this is the same code that runs in response to button click
+    # further up this script
+    if(state$input$nav == "Profiles"){
+      geo_selections(state$values$geography)
+    }
+    
+
+    
   })
   
   

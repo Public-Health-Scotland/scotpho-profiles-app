@@ -20,7 +20,7 @@
 
 summary_table_ui <- function(id) {
   ns <- NS(id)
-  tagList(
+  page_fixed(
     
     # enable guided tour
     # use_cicerone(),
@@ -695,9 +695,6 @@ summary_table_server <- function(id, selected_geo, selected_profile, filtered_da
     observeEvent(input$summary_tour_button, {
       guide_summary$start()
     })
-    
- 
-       
 
   }) # close module server
 } # close module
