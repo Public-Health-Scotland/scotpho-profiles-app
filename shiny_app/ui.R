@@ -218,11 +218,6 @@ page_navbar(
                     actionButton("show_geo_filters", label = "Change area", icon = icon("filter"), class = "btn-sm ms-3 btn-global")
                 ),
   
-              # bookmark button
-             div(
-               p("Save or share your profile and geography selections using the button below."),
-              bookmarkButton(class = "btn-sm")
-              ),
   
               # hidden geography filterers to display when button clicked
                 hidden(div(id = "geo_filters_hidden",
@@ -255,6 +250,12 @@ page_navbar(
                     actionButton("apply_geo_filters", label = "Apply geography filters", class = "btn-apply-geo-filter")
                     ) # close layout columns
                   )), # close hidden div
+  
+        # bookmark button
+       div(
+       p("Save or share your profile and geography selections using the button below."),
+       bookmarkButton(class = "btn-sm")
+       ),
              br(), # add space between header and sub-tabs
 
   
