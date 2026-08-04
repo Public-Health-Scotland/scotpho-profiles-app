@@ -28,3 +28,11 @@ Within this folder is a master script '1_ScotPHO_profiles_data_prepartion' that 
 
 ## shiny_app
 Within this folder are scripts require for functioning of the profiles tool shiny app
+
+##Licensing
+Source code: Licensed under the MIT License. 
+Underlying Data: Licensed under the Open Government Licence (OGL) v3.0.
+Visualisations: This application utilises the highcharter R package, which depends on the proprietary Highcharts JavaScript library. Our organisation maintains a paid license for this.
+
+Note for downstream users: If you clone or fork this repository to run or distribute your own version of this application, you are responsible for securing your own commercial or governmental license from Highcharts to comply with their End User License Agreement (EULA).
+
