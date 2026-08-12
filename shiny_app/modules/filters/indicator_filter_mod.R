@@ -19,7 +19,8 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
     
     
     # update indicator choices if user changes profile or geography
-    observeEvent(c(selected_profile(), geo_selections()),{
+    observeEvent(c(selected_profile(), geo_selections(), filtered_data()),{
+      
       dt <- setDT(filtered_data())
       
       # filter data by selected geography to get available indicators for selected profile
