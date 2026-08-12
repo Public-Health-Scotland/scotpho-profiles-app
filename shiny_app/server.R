@@ -204,6 +204,7 @@ function(input, output, session) {
   # and checks it against the list of subtabs assigned to each profile in the profiles list
   # for example, if "All indicators" has been selected, th
   observeEvent(input$profile_choices, {
+    req(!input$profile_choices %in%  c("", "Custom profile"))
     walk(all_subtabs, function(subtab) {
       if (subtab %in% pluck(profiles_list, input$profile_choices, "subtabs")) {
         nav_show(id = "sub_tabs", target = subtab)
@@ -211,7 +212,7 @@ function(input, output, session) {
         nav_hide(id = "sub_tabs", target = subtab)
       }
     })
-  }, ignoreInit = TRUE)
+  })
   
   
   
@@ -219,7 +220,7 @@ function(input, output, session) {
   
   
   # running modules for each sub-tab
-   trend_mod_server("trends", profile_data, geo_selections, selected_profile, session)
+   trend_mod_server("trends", profile_data_test, geo_selections, selected_profile, session)
    rank_mod_server("rank", areatype_data, geo_selections, selected_profile, session, selected_subtab = reactive({input$sub_tabs}))
    summary_table_server("summary", geo_selections, selected_profile, areatype_data)
    simd_navpanel_server("simd", simd_data, geo_selections, selected_profile, session)
@@ -272,12 +273,21 @@ function(input, output, session) {
     bindCache(input$profile_choices)  
   
   
+  profile_data_test <- reactive({
+    if(input$profile_choices == "Custom profile"){
+      byo_profile$main_dataset()
+    } else {
+      profile_data()
+    }
+  })
+  
+  
   
   # 2. MAIN DATASET FILTERED BY BOTH PROFILE AND AREATYPE
   # used for rank/summary tabs 
   areatype_data <- reactive({
-    req(profile_data())
-    profile_data() |>
+    req(profile_data_test())
+    profile_data_test() |>
       filter(areatype == geo_selections()$areatype | areatype == "Scotland")
   })
   
@@ -291,6 +301,8 @@ function(input, output, session) {
     if(input$profile_choices == "All Indicators"){
       simd_dataset |>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)
+    } else if(input$profile_choices == "Custom profile"){
+      byo_profile$simd_dataset()
     } else {
     prepare_profile_data(
       dataset = simd_dataset,
@@ -310,6 +322,9 @@ function(input, output, session) {
     if(input$profile_choices == "All Indicators"){
       popgroup_dataset |>
         filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname)
+    } else if(input$profile_choices == "Custom profile"){
+      byo_profile$popgroup_dataset()
+      
     } else {
     prepare_profile_data(
       dataset = popgroup_dataset,
@@ -319,6 +334,50 @@ function(input, output, session) {
     )
     }
   })
+  
+  
+  
+  
+  ##################################################.
+  # BUILD YOUR OWN PROFILE -----
+  ##################################################.
+  
+  
+  # run server module for profile builder
+  byo_profile <- profile_builder_Server(
+    id = "byo_profile", 
+    selected_profile == reactive({input$profile_choices}), 
+    geo_selections = geo_selections
+    )
+  
+  
+  # show/hide relevant tabs depending on data availability for
+  # custom selected indicators 
+  observeEvent(c(byo_profile$build_profile_btn_clicked(), input$profile_choices), {
+    req(input$profile_choices == "Custom profile" & byo_profile$build_profile_btn_clicked() > 0)
+    
+    # always show summary, trends and rank
+    nav_show(id = "sub_tabs", target = "summary_tab", select = TRUE) # select summary tab
+    nav_show(id = "sub_tabs", target = "trends_tab")
+    nav_show(id = "sub_tabs", target = "rank_tab")
+    
+    # conditionally show simd tab
+    if(nrow(byo_profile$simd_dataset()) > 0){
+      nav_show(id = "sub_tabs", target = "simd_tab")
+    } else {
+      nav_hide(id = "sub_tabs", target = "simd_tab")
+    }
+    
+    # conditionally show popgroup tab
+    if(nrow(byo_profile$popgroup_dataset()) > 0){
+      nav_show(id = "sub_tabs", target = "pop_groups_tab")
+    } else {
+      nav_hide(id = "sub_tabs", target = "pop_groups_tab")
+    }
+    
+  })
+  
+
   
   
   
@@ -400,7 +459,7 @@ function(input, output, session) {
   
 
   
-  
+
   # 2 additional inputs to be excluded (these are created within the popup modal that appears during 
   # bookmarking, and are therefore don't exist to be able to be excluded in step above when app initially loads
   # this step takes previous bookmark exclusions from step above and adds an additional 2 exclusions
@@ -429,7 +488,7 @@ function(input, output, session) {
   # specifically excluding reactable inputs from summary tab which generate after the exclusions list
   onBookmark(function(state) {
     reactable_ids <- grep("__reactable__", names(as.list(reactiveValuesToList(input))), value = TRUE)
-    
+
     state$exclude <- unique(c(state$exclude, reactable_ids))
   })
   
