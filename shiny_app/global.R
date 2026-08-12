@@ -74,7 +74,9 @@ all_subtabs <- c("summary_tab",
                  "rank_tab", 
                  "simd_tab", 
                  "pop_groups_tab", 
-                 "about_profile_tab")
+                 "about_profile_tab",
+                 "byo_profile_tab"
+                 )
 
 
 # this list contains information on each profile within the tool:
@@ -94,7 +96,7 @@ profiles_list <- list(
     short_name = "HWB",
     homepage_description = markdown("View indicators relating to **Behaviours**, **Crime**, **Economy**, **Life expectancy** and **Mortality, ill health and injury**."),
     domain_order = NULL,
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab","trends_tab","rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -107,9 +109,19 @@ profiles_list <- list(
                                     the **Collaboration for Health Equity in Scotland**"),
     domain_order = c("Over arching indicators","Early years","Education","Work","Living standards",
                      "Healthy places", "Impact of ill health prevention","Discrimination and racism", "Environmental sustainability and health equity"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab","trends_tab","rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
     new = FALSE,
+    active = TRUE
+  ),
+  
+  "Custom profile" = list(
+    short_name = "BYO",
+    homepage_description = "Build your own profile of indicators for a particular area which can be saved, revisited and shared with others.",
+    domain_order = NULL,
+    subtabs = c("byo_profile_tab"),
+    nav_id = "Profiles",
+    new = TRUE,
     active = TRUE
   ),
   
@@ -130,7 +142,7 @@ profiles_list <- list(
     homepage_description = markdown("View indicators relating to **Mental health outcomes**, and **Individual**, **Community** and **Structural**  determinants."),
     domain_order = c("Mental health outcomes", "Individual determinants",
                      "Community determinants", "Structural determinants"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab","trends_tab","rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -143,7 +155,7 @@ profiles_list <- list(
     domain_order = c("Mental health outcomes", "Individual determinants",
                      "Family and friends", "Learning environment",
                      "Community determinants", "Structural determinants"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab","trends_tab","rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
@@ -166,7 +178,7 @@ profiles_list <- list(
     short_name = "PHY",
     homepage_description = markdown("View indicators related to **Active Places & Spaces**, **Active Places of Learning**,  **Active Travel** and **Sport & Active Recreation**"),
     domain_order = c("Overarching", "Active Places and Spaces", "Active Places of Learning", "Active Travel", "Sport and Active Recreation"),
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab","trends_tab","rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
     new = TRUE,
     active = TRUE
@@ -200,7 +212,7 @@ profiles_list <- list(
     short_name = "ALC",
     homepage_description = markdown("View indicators relating to **Community safety**, **Environment**, **Health**, **Prevalence** and **Services**."),
     domain_order = NULL,
-    subtabs = all_subtabs,
+    subtabs = c("summary_tab","trends_tab","rank_tab", "simd_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
     new = FALSE,
     active = TRUE
