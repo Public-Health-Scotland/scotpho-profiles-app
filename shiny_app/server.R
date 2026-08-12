@@ -396,7 +396,7 @@ function(input, output, session) {
     # apply exclusions
     setBookmarkExclude(exclusions)
     
-  }, ignoreInit = TRUE)
+  })
   
 
   
