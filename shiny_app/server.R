@@ -96,7 +96,7 @@ function(input, output, session) {
     geo_selections(
       list(
        areatype = input$areatype,
-       parent_area = ifelse(input$areatype %in% c("HSC Locality", "Intermediate zone"), input$parent_area, NA),
+       parent_area = ifelse(input$areatype %in% c("HSC locality", "Intermediate zone"), input$parent_area, NA),
        areaname = ifelse(input$areatype == "Scotland", "Scotland", input$areaname)
       )
     )
