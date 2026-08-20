@@ -150,7 +150,6 @@ profiles_list <- list(
   ),
   
   # Scottish Health Inequalities (ie national level reporting on health inequalities)
-  # to make visible uncomment below and also around line #310 in ui script which is linked to HI nav menu item
   "Long-term Monitoring of Health Inequalities in Scotland" = list(
     short_name = "SHI",
     homepage_description = markdown("View indicators relating to **long-term monitoring of health inequalities**."),
@@ -161,6 +160,17 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Health board monitoring profile 
+  "Health Board Monitoring" = list(
+    short_name = "HBM",
+    homepage_description = markdown("Placeholder text"),
+    domain_order = c("Overall", "Childhood", "Adulthood (pregnancy)", "Adulthood"),
+    subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = TRUE,
+    active = TRUE
+  ),
+
   # Physical Activity info
   "Physical Activity" = list(
     short_name = "PHY",
