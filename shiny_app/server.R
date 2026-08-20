@@ -369,7 +369,7 @@ function(input, output, session) {
   # Step to remove inputs from a bookmarked URL, depending on
   # what tab your on (currently only relevant to the LTMHI and Profile tabs 
   # This code runs whenever uses switches tabs along the main navbar
-  observeEvent(input$nav, {
+  observe({
     
     # only run when user on ltmhi or profiles tab
     # not currently relevant to other tabs
