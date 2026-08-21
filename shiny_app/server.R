@@ -96,7 +96,7 @@ function(input, output, session) {
     geo_selections(
       list(
        areatype = input$areatype,
-       parent_area = ifelse(input$areatype %in% c("HSC Locality", "Intermediate zone"), input$parent_area, NA),
+       parent_area = ifelse(input$areatype %in% c("HSC locality", "Intermediate zone"), input$parent_area, NA),
        areaname = ifelse(input$areatype == "Scotland", "Scotland", input$areaname)
       )
     )
@@ -369,7 +369,7 @@ function(input, output, session) {
   # Step to remove inputs from a bookmarked URL, depending on
   # what tab your on (currently only relevant to the LTMHI and Profile tabs 
   # This code runs whenever uses switches tabs along the main navbar
-  observeEvent(input$nav, {
+  observe({
     
     # only run when user on ltmhi or profiles tab
     # not currently relevant to other tabs
@@ -384,9 +384,9 @@ function(input, output, session) {
       "nav",
       # inputs related to the LTMTI tab only 
       if(input$nav == "shi_tab") all_inputs[grepl("ltmhi", all_inputs)],
-      # inputs related to the Profiles tab only (i.e. globally selected profile)
+      # inputs related to the Profiles tab only (i.e. globally selected profile and selected subtab)
       # Note we don't include the 3 globally geography inputs - we use geo_selections reactive vals object instead
-      if(input$nav == "Profiles") c("profile_choices")
+      if(input$nav == "Profiles") c("profile_choices", "sub_tabs")
       )
     
     # inputs to exclude
@@ -396,7 +396,7 @@ function(input, output, session) {
     # apply exclusions
     setBookmarkExclude(exclusions)
     
-  }, ignoreInit = TRUE)
+  })
   
 
   
