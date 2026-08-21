@@ -386,12 +386,11 @@ prepare_profile_data <- function(dataset, # a dataset (e.g. main,simd or pop_grp
   
 
   # create a domain column - this ensures we return the correct domain for the chosen profile in cases where an indicator
-  # This code extracts the relevant profile and domain (it looks for the text after the XXX profile code and stops 
-  # if a character that isn't a letter or a space is encountered, e.g., a ";")
-  dt <- dt[, domain := regmatches(profile_domain, 
-                                  regexpr(paste0(profile, "-([a-zA-Z*[[:blank:]]]*)*"), 
-                                          profile_domain))
-  ][, domain := substr(domain, 5, nchar(domain))] # gets rid of the XXX profile code
+  # this code extracts the domain for the selected profile by 
+  # a. searching the part of the string that starts with the correct profile abbreviation e.g. "HWB-" in the profile_domain column
+  # b. taking everything after the "-" up to the next ";"
+  # c. returning only the domain name within that substring and storing in a new column called 'domain'
+  dt <- dt[, domain := sub(paste0(".*", profile, "-([^;]+).*"), "\\1", profile_domain)]
   
 dt #returns a data table filtered to only contain indicators belonging to selected profile with column added for correct domain
 
