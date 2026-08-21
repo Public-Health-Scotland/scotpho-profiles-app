@@ -384,9 +384,9 @@ function(input, output, session) {
       "nav",
       # inputs related to the LTMTI tab only 
       if(input$nav == "shi_tab") all_inputs[grepl("ltmhi", all_inputs)],
-      # inputs related to the Profiles tab only (i.e. globally selected profile)
+      # inputs related to the Profiles tab only (i.e. globally selected profile and selected subtab)
       # Note we don't include the 3 globally geography inputs - we use geo_selections reactive vals object instead
-      if(input$nav == "Profiles") c("profile_choices")
+      if(input$nav == "Profiles") c("profile_choices", "sub_tabs")
       )
     
     # inputs to exclude
