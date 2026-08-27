@@ -55,6 +55,15 @@ download_chart_mod_server <- function(id, chart_id, width = 600, height = 400) {
                                      height = height)
       )
     })
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Bookmarking logic -----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # exclude chart download buttons from any bookmarked URLs
+    setBookmarkExclude("chart_download")
+    
   })
 }
 
