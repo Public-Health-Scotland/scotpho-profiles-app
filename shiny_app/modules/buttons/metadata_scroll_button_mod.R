@@ -39,6 +39,11 @@ metadata_scroll_button_Server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
+      
+      # Bookmarking logic -----
+      # Exclude button from any bookmarked URLs
+      setBookmarkExclude("go_to_metadata")
+
       # return results of input$go_to_metadata 
       # note: the value is 0/NULL by default and increments by 1 each time clicked
       # we set ignoreNULL = TRUE to only start tracking the button when it's actually been clicked
