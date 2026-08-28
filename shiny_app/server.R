@@ -359,45 +359,48 @@ function(input, output, session) {
   ###########################################.
   # Bookmarking ------
   ###########################################.
-  
-  # Bookmarking is currently only available for the LTMHI tab
-  # but will eventually be rolled out to the profiles tab.
-
 
   # 1. Bookmark exclusions ----
   
   # Step to remove inputs from a bookmarked URL, depending on
-  # what tab your on (currently only relevant to the LTMHI and Profile tabs 
-  # This code runs whenever uses switches tabs along the main navbar
+  # what tab your on (currently only relevant to the LTMHI and Profile tabs) 
   observe({
     
     # only run when user on ltmhi or profiles tab
-    # not currently relevant to other tabs
-    req(input$nav %in% c("shi_tab", "Profiles"))  
-    
+    req(input$nav %in% c("shi_tab", "Profiles"))
+
     # ids of all inputs from across the app
     all_inputs <- names(input)
 
-    # inputs to bookmark, depending on what tab your on 
+    # inputs to bookmark, depending on what tab your on
     inclusions <- c(
       # selected tab from main navbar (always to be included)
       "nav",
-      # inputs related to the LTMTI tab only 
+      # inputs related to the LTMTI tab only
       if(input$nav == "shi_tab") all_inputs[grepl("ltmhi", all_inputs)],
       # inputs related to the Profiles tab only (i.e. globally selected profile and selected subtab)
       # Note we don't include the 3 globally geography inputs - we use geo_selections reactive vals object instead
-      if(input$nav == "Profiles") c("profile_choices", "sub_tabs")
+      if(input$nav == "Profiles") c("profile_choices", "sub_tabs"),
+      
+      # inputs belonging to the selected sub-tab. Note module inputs are namespaced using the modules id. 
+      # E.g we have set the id of the large module holding all the simd tabs ui/server code to "simd" which means 
+      # all inputs within that module start with "simd-", e.g. the input id for "sex_filter" in the sidebar of simd tab is actually "simd-sex_filter"
+      # Note some inputs used within these sub-tab modules are already excluded at the module level so won't be returned here (e.g. buttons, cards)
+      if(input$nav == "Profiles" & input$sub_tabs == "simd_tab") all_inputs[grepl("simd-", all_inputs)],
+      if(input$nav == "Profiles" & input$sub_tabs == "trends_tab") all_inputs[grepl("trends-", all_inputs)],
+      if(input$nav == "Profiles" & input$sub_tabs == "rank_tab") all_inputs[grepl("rank-", all_inputs)],
+      if(input$nav == "Profiles" & input$sub_tabs == "pop_groups_tab") all_inputs[grepl("pop_groups-", all_inputs)]
       )
-    
+
     # inputs to exclude
     exclusions <- setdiff(all_inputs, inclusions)
-  
-    
+
+
     # apply exclusions
     setBookmarkExclude(exclusions)
-    
+
   })
-  
+
 
   
   
@@ -527,6 +530,8 @@ function(input, output, session) {
     if(state$input$nav == "Profiles"){
       geo_selections(state$values$geography)
     }
+    
+    
     
 
     
