@@ -115,6 +115,7 @@ simd_navpanel_ui <- function(id) {
               # card footer with download buttons
               footer = card_footer(
                 class = "d-flex justify-content-left",
+                share_button_mod_UI(ns("share_left_card")),
                 div(id = ns("deprivation_save_chart"), download_chart_mod_ui(ns("save_left_chart"))),
                 div(id = ns("deprivation_save_data"), download_data_btns_ui(ns("save_left_data")))
               )
@@ -165,6 +166,7 @@ simd_navpanel_ui <- function(id) {
               # card footer with download buttons
               footer = card_footer(
                 class = "d-flex justify-content-left",
+                share_button_mod_UI(ns("share_right_card")),
                 download_chart_mod_ui(ns("save_right_chart")),
                 download_data_btns_ui(ns("save_right_data")))
             ) #close navset_card_pill
@@ -798,6 +800,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     # data downloads (note these are modules)
     download_data_btns_server(id = "save_left_data", data = reactive({simd_measures_data()$left_data}), file_name = paste0("ScotPHO data - ", input$depr_measures))
     download_data_btns_server(id = "save_right_data", data = reactive({simd_measures_data()$right_data}), file_name = paste0("ScotPHO data - ", input$depr_measures))
+    
+    
+    ################################.
+    # Share buttons -----
+    ################################.
+    share_button_mod_Server(id = "share_left_card", card_id = ns("left_card"))
+    share_button_mod_Server(id = "share_right_card", card_id = ns("right_card"))
     
     ############################################.
     # Guided tour ----

@@ -82,6 +82,7 @@ pop_groups_ui <- function(id) {
             
             # card footer - download buttons
             footer = card_footer(class = "d-flex justify-content-left",
+                        share_button_mod_UI(ns("bar_share")),
                         div(id = ns("pop_groups_save_chart"), download_chart_mod_ui(ns("save_pop_rankchart"))),
                         div(id = ns("pop_groups_save_data"), download_data_btns_ui(ns("pop_rank_download"))))
 
@@ -93,6 +94,7 @@ pop_groups_ui <- function(id) {
           
           div(id = ns("pop_line_chart_wrapper"),
           bslib::navset_card_pill(
+            id = ns("pop_groups_trend_card"),
             height = 600,
             full_screen = TRUE,
             
@@ -126,6 +128,7 @@ pop_groups_ui <- function(id) {
             ),
             # card footer - download buttons
             footer = card_footer(class = "d-flex justify-content-left",
+                        share_button_mod_UI(ns("trend_share")),
                         download_chart_mod_ui(ns("save_pop_trendchart")),
                         download_data_btns_ui(ns("pop_trend_download")))
           )# close trend card
@@ -394,6 +397,14 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     
     download_chart_mod_server(id = "save_pop_trendchart", chart_id = ns("pop_trend_chart"))
     download_data_btns_server(id = "pop_trend_download", data = pop_trend_data, file_name = "Popgroup_ScotPHO_data_extract")
+    
+    
+    
+    ############################################.
+    # Share buttons -----
+    ############################################.
+    share_button_mod_Server(id = "bar_share", card_id = ns("pop_groups_bar_card"))
+    share_button_mod_Server(id = "trend_share", card_id = ns("pop_groups_trend_card"))
     
     ############################################.
     # Guided tour ----

@@ -115,6 +115,7 @@ rank_mod_ui <- function(id) {
             )
             ),
             footer = card_footer(class = "d-flex justify-content-left",
+                        share_button_mod_UI(ns("bar_share")),
                         div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
                         div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
           )),
@@ -123,11 +124,15 @@ rank_mod_ui <- function(id) {
         
         div(id = ns("rank_map_wrapper"),
         card(
+          id = ns("map_card"),
           height = 700,
           full_screen = TRUE,
           leafletOutput(ns("map")) |> # map
             withSpinner() |> 
-            bslib::as_fill_carrier() 
+            bslib::as_fill_carrier() ,
+          card_footer(
+            share_button_mod_UI(ns("map_share"))
+          )
         ))
         
       ), # close layout column wrap
@@ -739,6 +744,13 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
                                                     "upper_confidence_interval" = "upci", 
                                                     "lower_confidence_interval" = "lowci"))
      
+     
+     
+     ############################
+     # Share buttons -----
+     ############################
+     share_button_mod_Server(id = "bar_share", card_id = ns("rank_navset_card_pill"))
+     share_button_mod_Server(id = "map_share", card_id = ns("map_card"))
      
      ############################################.
      # Guided tour ----
