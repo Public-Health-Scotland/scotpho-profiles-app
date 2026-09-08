@@ -87,6 +87,13 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
       }
     )
     
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Bookmarking logic -----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # exclude data download buttons from any bookmarked URLs
+    setBookmarkExclude(c("downloadCSV", "downloadRDS", "downloadJSON", "downloadParquet"))
+    
     
   })
 }

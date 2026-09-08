@@ -18,10 +18,26 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
   moduleServer(id, function(input, output, session) {
     
     
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Bookmarking logic ----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # reactive value for re-storing bookmarked indicator
+    bookmarked_indicator <- reactiveVal(NULL)
+    
+    # if a bookmarked URL is opened, update the rv
+    # with the name of the indicator stored in the url
+    onRestore(function(state) {
+      bookmarked_indicator(state$input$indicator_filter)
+    })
+
+    
+    
     # update indicator choices if user changes profile or geography
     observeEvent(c(selected_profile(), geo_selections()),{
       dt <- setDT(filtered_data())
       
+
       # filter data by selected geography to get available indicators for selected profile
       dt <- dt[areatype == geo_selections()$areatype & areaname == geo_selections()$areaname]
       
@@ -50,12 +66,25 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
 
       # Create a list of choices for the filter grouped by domain 
       choices <- split(dt$indicator, dt$domain) # create list that splits up indicators by domain
-      choices <- lapply(choices, function(x) as.list(x)) # convert to list of lists
-      
+
       }
+      
+      # Determine default selection:
+      # choose the first indicator in the list of choices
+      # (unless a bookmarked URL has been opened, in which
+      # case use the rv that contains that indicator)
+      if (is.null(bookmarked_indicator())) {
+        selection <- unlist(choices, use.names = FALSE)[1]
+      } else {
+        selection <- isolate(bookmarked_indicator())
+        bookmarked_indicator(NULL) # reset rv back to NULL
+      }
+      
+
       # populate the indicator filter with indicator choices grouped by domain
       updateSelectizeInput(session, "indicator_filter", 
-                           choices = choices
+                           choices = choices,
+                           selected = selection
       ) 
     })
     
