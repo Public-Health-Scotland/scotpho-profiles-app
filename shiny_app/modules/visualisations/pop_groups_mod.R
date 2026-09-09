@@ -81,10 +81,15 @@ pop_groups_ui <- function(id) {
             ),
             
             # card footer - download buttons
-            footer = card_footer(class = "d-flex justify-content-left",
-                        share_button_mod_UI(ns("bar_share")),
-                        div(id = ns("pop_groups_save_chart"), download_chart_mod_ui(ns("save_pop_rankchart"))),
-                        div(id = ns("pop_groups_save_data"), download_data_btns_ui(ns("pop_rank_download"))))
+            footer = card_footer(
+              toolbar(
+                align = "left",
+                share_button_mod_UI(ns("bar_share")),
+                toolbar_divider(),
+                div(id = ns("pop_groups_save_chart"), download_chart_mod_ui(ns("save_pop_rankchart"))),
+                toolbar_divider(),
+                div(id = ns("pop_groups_save_data"), download_data_btns_ui(ns("pop_rank_download"))))
+            )
 
           ) # close bar chart card
        ), #close bar chart card wrapper
@@ -127,10 +132,16 @@ pop_groups_ui <- function(id) {
               )
             ),
             # card footer - download buttons
-            footer = card_footer(class = "d-flex justify-content-left",
-                        share_button_mod_UI(ns("trend_share")),
-                        download_chart_mod_ui(ns("save_pop_trendchart")),
-                        download_data_btns_ui(ns("pop_trend_download")))
+            footer = card_footer(
+              toolbar(
+                align = "left",
+                share_button_mod_UI(ns("trend_share")),
+                toolbar_divider(),
+                download_chart_mod_ui(ns("save_pop_trendchart")),
+                toolbar_divider(),
+                download_data_btns_ui(ns("pop_trend_download"))
+                )
+            )
           )# close trend card
           )# close wrapper div for tour
       ), # close layout column wrap

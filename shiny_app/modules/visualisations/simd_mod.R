@@ -114,10 +114,14 @@ simd_navpanel_ui <- function(id) {
               
               # card footer with download buttons
               footer = card_footer(
-                class = "d-flex justify-content-left",
+                toolbar(
+                align = "left",
                 share_button_mod_UI(ns("share_left_card")),
+                toolbar_divider(),
                 div(id = ns("deprivation_save_chart"), download_chart_mod_ui(ns("save_left_chart"))),
+                toolbar_divider(),
                 div(id = ns("deprivation_save_data"), download_data_btns_ui(ns("save_left_data")))
+                )
               )
               
             ), #close navset_card_pill
@@ -165,10 +169,15 @@ simd_navpanel_ui <- function(id) {
               
               # card footer with download buttons
               footer = card_footer(
-                class = "d-flex justify-content-left",
+                toolbar(
+                align = "left",
                 share_button_mod_UI(ns("share_right_card")),
+                toolbar_divider(),
                 download_chart_mod_ui(ns("save_right_chart")),
-                download_data_btns_ui(ns("save_right_data")))
+                toolbar_divider(),
+                download_data_btns_ui(ns("save_right_data"))
+                )
+              )
             ) #close navset_card_pill
             
           ) # close layout column wrap

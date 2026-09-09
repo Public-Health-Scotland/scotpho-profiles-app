@@ -125,10 +125,15 @@ trend_mod_ui <- function(id) {
         ),
         
         # footer with share/download buttons
-        footer = card_footer(class = "d-flex justify-content-left",
-                    share_button_mod_UI(ns("trend_share")),
-                    div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
-                    div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
+        footer = card_footer(
+          toolbar(
+            align = "left",
+            share_button_mod_UI(ns("trend_share")),
+            toolbar_divider(),
+            div(id = ns("trend_download_chart"), download_chart_mod_ui(ns("download_trends_chart"))),
+            toolbar_divider(),
+            div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
+        )
       )
       ), # close navset card pill
       

@@ -114,10 +114,16 @@ rank_mod_ui <- function(id) {
               )
             )
             ),
-            footer = card_footer(class = "d-flex justify-content-left",
-                        share_button_mod_UI(ns("bar_share")),
-                        div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
-                        div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download"))))
+            footer = card_footer(
+              toolbar(
+                align = "left",
+                share_button_mod_UI(ns("bar_share")),
+                toolbar_divider(),
+                div(id = ns("rank_download_chart"), download_chart_mod_ui(ns("save_rank_chart"))),
+                toolbar_divider(),
+                div(id = ns("rank_download_data"), download_data_btns_ui(ns("rank_download")))
+                )
+            )
           )),
        
         # map card -------------------
@@ -131,7 +137,10 @@ rank_mod_ui <- function(id) {
             withSpinner() |> 
             bslib::as_fill_carrier() ,
           card_footer(
+            toolbar(
+              align = "left",
             share_button_mod_UI(ns("map_share"))
+            )
           )
         ))
         
