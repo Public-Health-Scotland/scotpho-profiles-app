@@ -3,7 +3,8 @@
 ##################.
 theme <- hc_theme(
   chart = list(
-    backgroundColor = "white"
+    backgroundColor = "white",
+    animation = FALSE
   ),
   yAxis = list(
     gridLineWidth = 0
@@ -320,4 +321,51 @@ create_bar_chart <- function(data,
   
   hc 
   
+}
+
+############################.
+# population pyramid ----
+############################.
+
+create_pyramid_chart <- function(data,
+                                 chart_theme = theme){
+  
+  axis_value <- round(max(abs(data$percentage_Male),data$percentage_Female),0)
+  
+  hc <- highchart()|>
+    hc_plotOptions(bar = list(stacking = "normal",
+                                 grouping = FALSE,
+                                 pointPadding = 0, # Smaller value = fatter bars
+                                 groupPadding = 0),  # Smaller value = fatter bars
+                   series = list(states = list(inactive = list(enabled = FALSE, opacity = 1))) 
+                   
+                                 ) |> 
+    hc_xAxis(categories = data$age, 
+             title = list(text = "Age Group (years)"),
+             reversed=FALSE) %>% #reversing axis means that lower ages at the bottom rather than top
+    
+    # Add Series (mapping additional population and year columns which appear in tooltip alongside the % of population)
+    hc_add_series(name = "Male", id = "m_series", data = data,type = "bar", color = "#3F3685", hcaes(x = age, y = percentage_Male)) %>%
+    hc_add_series(name = "Female", id = "f_series", data = data,type = "bar", color = "#9B4393", hcaes(x = age, y = percentage_Female)) %>%
+    
+    # remove tooltip
+    hc_tooltip(enabled = FALSE) |>
+    
+    
+    # Format Y-Axis (% population)
+    hc_yAxis(
+      min = -axis_value ,           # Fixed start
+      max = axis_value,            # Fixed end (should match min to be centered)
+      tickInterval = 1,   # Distance between labels
+      labels = list(formatter = JS("function() { return Math.abs(this.value); }")), #ensure axis labels show absolute values not negatives for the males
+      title = list(text = "Percentage of Population (%)")
+    )
+  
+  # add theme 
+  hc <- hc |>
+    hc_add_theme(chart_theme)
+  
+  #return chart
+  hc
+ 
 }
