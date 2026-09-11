@@ -330,6 +330,7 @@ create_bar_chart <- function(data,
 create_pyramid_chart <- function(data,
                                  chart_theme = theme){
   
+  #sets fixed value for x axis based on percentages in the selected data
   axis_value <- round(max(abs(data$percentage_Male),data$percentage_Female),0)
   
   hc <- highchart()|>

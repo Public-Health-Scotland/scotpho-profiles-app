@@ -15,7 +15,7 @@ demographics_mod_ui <- function(id) {
       # sidebar for filters ------------------
       sidebar = sidebar(width = 500,
                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content)
-
+                        
                         # year filter
                         shinyWidgets::sliderTextInput(
                           inputId = ns("period_filter"),
@@ -24,14 +24,22 @@ demographics_mod_ui <- function(id) {
                           animate = TRUE,
                           choices = c("2024")
                         ),
-    
-                        # scotland comparator filter
+                        
+                        # age group setting
+                        radioButtons(
+                          inputId = ns("demog_agegrp_selected"),
+                          label = "Select age groups:",
+                          choices = c("5 year agebands", "Broad agebands"),
+                          selected = c("5 year agebands")
+                        ),
+                        
+                        # #scotland comparator filter (only shows when Scotland not the selected geography)
                         checkboxInput(
                           inputId = ns("comp_filter"),
                           label = "Compare against Scotland",
-                          value = FALSE
-                        ),
+                          value = FALSE),
                         
+
                         # hover information 
                         helpText("Hover over (or tap on mobile devices) an age group in the pyramid chart to update the figures below."),
                         value_box(
@@ -41,7 +49,7 @@ demographics_mod_ui <- function(id) {
                           showcase = highchartOutput(ns("bars"), height = "70px"),
                           showcase_layout = "bottom"
                         )
-                        ), # close sidebar
+      ), # close sidebar
 
       
       # create a multi-tab card 
@@ -107,8 +115,16 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # filtering by globally selected area and selected year from slider
     pyramid_data <- reactive({
       dataset() |>
-        filter(year== input$period_filter & areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) 
+        filter(year== input$period_filter & areaname == geo_selections()$areaname & areatype == geo_selections()$areatype) |>
+        filter(age_category == input$demog_agegrp_selected)
     })
+    
+    # #sets fixed value for x axis based on percentages in the selected data
+    # pyramid_axis <- reactive({
+    #       axis_value <- round(max(abs(pyramid_data()$percentage_Male),pyramid_data()$percentage_Female),0)
+    # 
+    # })
+    # axis_value <- round(max(abs(data$percentage_Male),data$percentage_Female),0)
     
     
     # comparator data (for lines on pop pyramid)
@@ -116,7 +132,8 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     comparator_data <- reactive({
       req(isTRUE(input$comp_filter))
       dataset() |>
-        filter(year == input$period_filter & areatype == "Scotland")
+        filter(year == input$period_filter & areatype == "Scotland")|>
+        filter(age_category== input$demog_agegrp_selected)
     })
     
     
@@ -175,11 +192,14 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
       # or have different level of aggregation than selected area)
       choices <- sort(unique(dataset()$year[dataset()$areaname == geo_selections()$areaname]),decreasing = FALSE)
 
+      #selected value should be the max value of the population estimates (ie latest official population estimate)
+      selected <-max(dataset()$year[dataset()$areaname == geo_selections()$areaname & dataset()$pop_type=="Population Estimates"])
+      
       shinyWidgets::updateSliderTextInput(
         session = session,
         inputId = "period_filter",
         choices = choices,
-        selected = max(choices)
+        selected = selected
       )
       
     })
@@ -219,7 +239,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
       if(is.null(input$pyramid_hover)){
         paste0({geo_selections()$areaname}, " Population, All ages, ",{input$period_filter})
       } else {
-        paste0({geo_selections()$areaname}, " Population, Age ", input$pyramid_hover, {input$period_filter})
+        paste0({geo_selections()$areaname}, " Population, Age ", input$pyramid_hover,"years, ", {input$period_filter})
       }
     })
     
@@ -310,10 +330,10 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     })
     
     # update y-axis min and max each time user changes global geography selection
-    observeEvent(dataset(), {
+    observeEvent(pyramid_data(), {
       
       # find highest % in the area filtered dataset
-      axis_value <- round(max(abs(dataset()$percentage_Male),dataset()$percentage_Female),0)
+      axis_value <- round(max(abs(pyramid_data()$percentage_Male),pyramid_data()$percentage_Female),0)
       
       highchartProxy(ns("pop_pyramid_chart")) |>
         hcpxy_update(yAxis = list(min = -axis_value , max = axis_value))
@@ -400,7 +420,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
     # create sex bar chart for the value box
     # wrapping in isolate to ensure only renders once on initial load - subsequent updates done via proxy functions
     output$bars <- renderHighchart({
-      isolate({
+    #  isolate({
         
         # create axis categories 
         m_label <- paste0(format(totals_data()$population_Male, big.mark = ","), " males (", round(totals_data()$percentage_Male, digits = 1), "%)")
@@ -428,7 +448,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
           hc_plotOptions(bar = list(pointPadding = 0, # Smaller value = fatter bars
                                     groupPadding = 0))
         
-      })
+     # })
     })
     
     
