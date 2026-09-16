@@ -1,3 +1,5 @@
+## need to get the axis labels to update when age bandings swithced.
+
 ###########################################################################.
 # MODULE: pop_pyramid_mod ---- 
 # prepares the nav_panel layout displaying population pyramid
@@ -239,7 +241,7 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
       if(is.null(input$pyramid_hover)){
         paste0({geo_selections()$areaname}, " Population, All ages, ",{input$period_filter})
       } else {
-        paste0({geo_selections()$areaname}, " Population, Age ", input$pyramid_hover,"years, ", {input$period_filter})
+        paste0({geo_selections()$areaname}, " Population, Age ", input$pyramid_hover," years, ", {input$period_filter})
       }
     })
     
