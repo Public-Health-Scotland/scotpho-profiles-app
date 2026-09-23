@@ -108,22 +108,22 @@ trend_mod_ui <- function(id) {
         # add space
         bslib::nav_spacer(),
         
-        # popover with extra controls for trend chart
-        bslib::nav_item(
-          div(id = ns("trend_popover"), bslib::popover(
-            title = "Decide how to present data in the chart",
-            chart_controls_icon(), 
-            # rate/numerator toggle
-            radioButtons(inputId = ns("numerator_button_trends"), label = NULL, 
-                         choices = c("Rate", "Numerator"),
-                         selected = "Rate"),
-            # constrain y-axis to start at zero
-            checkboxInput(ns("zero_trend"), label = "y-axis should include zero", value = TRUE),
-            # ci switch
-            checkboxInput(ns("ci_switch_trends"), label = "95% confidence intervals", FALSE),
-          ))
-        ),
-        
+        nav_item(
+          toolbar(
+        # Primary data/display selector
+          toolbar_input_select(
+            id = ns("variable"),
+            label = "Display",
+            choices = c("Rate","Numerator"),
+            icon = bs_icon("bar-chart")
+          ),
+          toolbar_divider(),
+          # popover with extra controls for trend chart
+          chart_controls_mod_UI(id = ns("controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE))
+
+          ) # close toolbar
+        ), # close nav item
+
         # footer with share/download buttons
         footer = card_footer(
           toolbar(
@@ -134,7 +134,7 @@ trend_mod_ui <- function(id) {
             toolbar_divider(),
             div(id = ns("trend_download_data"), download_data_btns_ui(ns("download_trends_data"))))
         )
-      )
+      ) # close navset card pill
       ), # close navset card pill
       
       # accordion panel with metadata table 
@@ -323,12 +323,12 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     
     
     # disable CI checkbox when numerator is selected
-    observeEvent(input$numerator_button_trends, {
-      if(input$numerator_button_trends == "Numerator") {
-        disable("ci_switch_trends")
+    observeEvent(input$variable, {
+      if(input$variable == "Numerator") {
+        disable("controls-ci_switch")
         updateCheckboxInput(session, "ci_switch_trends", value = FALSE)
-      } else if (input$numerator_button_trends == "Rate") {
-        enable("ci_switch_trends")
+      } else if (input$variable == "Rate") {
+        enable("controls-ci_switch")
       }
     })
     
@@ -357,14 +357,14 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       # if the numerator column is empty ensure the selected option to plot in the trend chart is 'rate'
       # and disable the filter
       if(is.na(indicator_filtered_data()$numerator[1])){
-        updateRadioButtons(session, "numerator_button_trends", selected = "Rate")
-        shinyjs::disable("numerator_button_trends")
+        update_toolbar_input_select(id = "variable", choices = c("Rate", "Numerator"), selected = "Rate")
+        shinyjs::disable("variable")
         # otherwise enable the filter to allow users to toggle between numerator/rate
-      } else{
-        shinyjs::enable("numerator_button_trends")
+      } else {
+        shinyjs::enable("variable")
       }
-      
-    })
+
+    }, ignoreInit = TRUE)
     
     
     #######################################################.
@@ -457,8 +457,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
       
       # create a y-axis column depending on whether user selects numerator or rate
       df <- df |>
-        mutate(y = case_when(input$numerator_button_trends == "Numerator" ~ numerator,
-                             input$numerator_button_trends == "Rate" ~ measure)) |>
+        mutate(y = case_when(input$variable == "Numerator" ~ numerator,
+                             input$variable == "Rate" ~ measure)) |>
         
         # arrange data by year
         arrange(year)
@@ -497,13 +497,17 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # Charts/tables ----
     #############################################.
     
+    # returns TRUE/FALSE for each of the switch inputs in the chart controls popover
+    # which can then be used to update the chart accordingly
+    controls <- chart_controls_mod_server(id = "controls")
+    
     # trend chart
     output$trend_chart <- renderHighchart({
       req(trend_data())
       
       type_definition <- case_when(
-        input$numerator_button_trends == "Numerator" ~ "Number",
-        input$numerator_button_trends == "Rate" ~ paste0(unique(trend_data()$type_definition)))
+        input$variable == "Numerator" ~ "Number",
+        input$variable == "Rate" ~ paste0(unique(trend_data()$type_definition)))
 
       create_multi_line_trend_chart(
         data = trend_data(),
@@ -513,8 +517,8 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
         lowci_col = "lowci",
         grouping_col = "areaname",
         legend_position = "top",
-        zero_yaxis = input$zero_trend,
-        include_confidence_intervals = input$ci_switch_trends,
+        zero_yaxis = controls$zero_yaxis_switch,
+        include_confidence_intervals = controls$ci_switch,
         colour_palette = "multi"
       ) |>
         hc_exporting(
@@ -551,7 +555,7 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
                   areatype = colDef(name = "Area type"),
                   areaname = colDef(name = "Area name"),
                   trend_axis = colDef(name = "Period"),
-                  y = colDef(name = input$numerator_button_trends),
+                  y = colDef(name = input$variable),
                   upci = colDef(name = "Upper CI"),
                   lowci = colDef(name = "Lower CI")
                 )
@@ -670,6 +674,16 @@ trend_mod_server <- function(id, filtered_data, geo_selections, selected_profile
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     share_button_mod_Server(id = "trend_share", card_id = ns("trend_navset_card_pill"))
     
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Bookmarking -------
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # exclude some inputs from appearing in bookmarked URL (i.e. buttons, card ids)
+    setBookmarkExclude(c("variable_tooltip", # tooltap id (automatically generated for toolbar inputs) 
+                         "trend_tour_button", # tour button id 
+                         "trend_navset_card_pill")) # card id
     
   }) # close moduleServer
 } # close server function
