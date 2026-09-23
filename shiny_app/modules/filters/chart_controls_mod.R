@@ -58,7 +58,6 @@ chart_controls_mod_UI <- function(id,
   
   
   # add inputs to popover within nav item
-  nav_item(
     popover(
       title = "Chart settings",
       trigger = actionButton(
@@ -69,7 +68,7 @@ chart_controls_mod_UI <- function(id,
       ),
       inputs
     )
-  )
+  
   
 }
 
