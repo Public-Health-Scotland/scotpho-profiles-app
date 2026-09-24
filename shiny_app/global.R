@@ -319,8 +319,8 @@ phs_theme <- bs_theme(
  
       # buttons styling 
       ".btn-global {background-color: #E0E0E0; border:$phs-blue; color:black; border-radius:15px;}", #  global filter buttons
-      ".btn-download {color:white; background-color:$phs-blue; border:$phs-blue;}", # data download buttons for card footers
-      ".btn-download:hover {background-color: #e0e0e0; color:black; border:#e0e0e0;}", # data download buttons on hover
+     # ".btn-download {color:white; background-color:$phs-blue; border:$phs-blue;}", # data download buttons for card footers
+     # ".btn-download:hover {background-color: #e0e0e0; color:black; border:#e0e0e0;}", # data download buttons on hover
       ".profile-btn-disabled {background-color:#F4F4F4}",
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # 2 x landing page hero buttons
       ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # hover colour for landing page profile buttons
