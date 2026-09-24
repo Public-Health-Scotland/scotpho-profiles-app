@@ -20,17 +20,16 @@ pop_groups_ui <- function(id) {
                         
                         
                         # indicator filter (note this is a module)
-                        div(id = ns("pop_groups_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator_filter"))),
+                        div(id = ns("pop_groups_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator"))),
                         
                         # button to scroll to metadata
                         div(id = ns("pop_groups_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
                         
                         # filter to select pop split (set choices to NULL 
                         # as they are updated dynamically on the server side, depending on selected indicator)
-                        div(id = ns("pop_groups_split_filter"), selectInput(
+                        div(id = ns("pop_groups_split_filter"), selectizeInput(
                           inputId = ns("split_filter"),
                           label = "Select equality split:",
-                          selectize = TRUE,
                           choices = NULL
                         )
                         ),
@@ -70,13 +69,7 @@ pop_groups_ui <- function(id) {
             # extra controls for bar chart 
             bslib::nav_item(
               div(id = ns("pop_groups_popover_left"),
-              bslib::popover(
-                title = "Filters",
-                chart_controls_icon(),
-                checkboxInput(ns("rank_avg_switch"), label = "Include average", FALSE),
-                checkboxInput(ns("ci_switch"), label = " include confidence intervals", FALSE),
-                selectInput(ns("pop_years_filter"), label = "select year", choices = NULL)
-              )
+              chart_controls_mod_UI(id = ns("bar_controls"), controls = c(ci_switch = FALSE, avg_switch = FALSE))
               )
             ),
             
@@ -120,16 +113,7 @@ pop_groups_ui <- function(id) {
             
             # extra controls for filters
             bslib::nav_item(
-              bslib::popover(
-                title = "Filters",
-                chart_controls_icon(),
-                # add average line
-                checkboxInput(ns("trend_avg_switch"), label = "Include average", FALSE),
-                # constrain y-axis to start at zero
-                checkboxInput(ns("zero_popgp"), label = "y-axis should include zero", value = TRUE),
-                # too many CI for age split, removed at this stage
-                checkboxInput(ns("trend_ci_switch"), label = " include confidence intervals", FALSE) 
-              )
+              chart_controls_mod_UI(id = ns("trend_controls"))
             ),
             # card footer - download buttons
             footer = card_footer(
@@ -165,36 +149,38 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     
     # required for chart downloads
     ns <- session$ns
-    
+
     
     ##########################.
     ## Dynamic filters -----
     #########################.
     
     ## update choices for population split filter, depending on what indicator was selected, include sort on split name
-    observe({
+    observeEvent(ind_data(), {
+      
+      # temporarily freeze input whilst choices are being updated
+      freezeReactiveValue(input, "split_filter")
 
-      available_splits <- dataset() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype) |>
+      # get available splits depending on selected indicator/area
+      available_splits <- ind_data() |>
         arrange(split_name) |>
-        pull(unique(split_name))
+        distinct(split_name) |>
+        pull()
+
+      # determine what the default selection should be - either bookmarked value or first option in list or choices
+      if(is.null(bookmarked_split())){
+        selection <- available_splits[1]
+      } else {
+        selection <- isolate(bookmarked_split())
+        bookmarked_split(NULL) # re-set rv back to NULL
+      }
       
-      updateSelectInput(session, inputId = "split_filter", choices = available_splits)
-      
+     # update the filter
+     updateSelectizeInput(inputId = "split_filter", choices = available_splits, selected = selection)
       
     })
     
-    # update years choices for bar chart filter, depending on indicator selected
-    observe({
-      
-      available_years <- dataset() |>
-        filter(indicator == selected_indicator() & areatype == geo_selections()$areatype & areaname == geo_selections()$areaname & split_name == input$split_filter) |>
-        arrange(desc(year)) |>
-        pull(unique(def_period))
-      
-      updateSelectInput(session, inputId = "pop_years_filter",
-                        choices = available_years, selected = available_years[1])
-    })
+
     
     
     #######################################################.
@@ -202,27 +188,39 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     #######################################################.
     
     # generate list of indicators (from the simd indicators dataset) available 
-    selected_indicator <- indicator_filter_mod_server(id = "indicator_filter", dataset, geo_selections, selected_profile)
+    selected_indicator <- indicator_filter_mod_server(id = "indicator", dataset, geo_selections, selected_profile)
+    
+    
+    # filter profile dataset by selected indicator
+    ind_data <- reactive({
+      req(selected_indicator())
+      
+      dataset() |>
+        filter(
+          areatype == geo_selections()$areatype & areaname == geo_selections()$areaname,  # filter by selected geography
+          indicator == selected_indicator() # filter by selected indicator
+          )
+    })
 
     
     # creates trend data
     pop_trend_data <- reactive({
-      dataset() |>
-        filter(areatype == geo_selections()$areatype & areaname == geo_selections()$areaname) |>  # filter by selected geography
-        filter(indicator == selected_indicator() & split_name == input$split_filter) |> # filter by selected indicator and selected split
+      req(input$split_filter)
+      
+      ind_data() |>
+        filter(split_name == input$split_filter) |> # filter by selected indicator and selected split
         # create total column
         group_by(year) |>
-        mutate(total = ifelse(any(split_value == "Total"), measure[split_value == "Total"], NA)) |>
-        #mutate(total = measure[split_value == "Total"])|>
+        mutate(total = ifelse(any(split_value %in% c("Total", "All")), measure[split_value %in% c("Total", "All")], NA)) |>
         ungroup() |>
-        filter(split_value != "Total") |>
+        filter(!split_value %in% c("Total", "All")) |>
         arrange(year)
     })
     
     # create single year data for the bar chart 
     pop_rank_data <- reactive({
       pop_trend_data() |>
-        filter(def_period == input$pop_years_filter)
+        filter(year == max(year))
     })
     
     #######################################################.
@@ -232,7 +230,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     output$pop_rank_title <- renderUI({
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(pop_trend_data()) > 0, "No indicators available")
+        need(selected_indicator(), "No indicators available")
       )
       
       # if data is available display chart title
@@ -249,7 +247,7 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
       
       # ensure there is data available, otherwise show message instead
       shiny::validate(
-        need( nrow(pop_trend_data()) > 3, "There are insufficent data points for this indicator to create a trend chart")
+        need(selected_indicator(), "There are insufficent data points for this indicator to create a trend chart")
       )
       
       # if data is available display chart title
@@ -264,12 +262,18 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     # charts -----
     ############################################.
     
+    
+    # returns TRUE/FALSE for each of the switch inputs in the chart controls popover
+    # which can then be used to update the chart accordingly
+    bar_controls <- chart_controls_mod_server("bar_controls")
+    trend_controls <- chart_controls_mod_server("trend_controls")
+    
     # pop rank bar chart  ---------------
     
     output$pop_rank_chart <- renderHighchart({
       
       shiny::validate(
-        need( nrow(pop_rank_data()) > 0, paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
+        need(selected_indicator(), paste0("Data is not available at ", geo_selections()$areatype, " level. Please select either Scotland, Health board or Council area."))
       )
       
       
@@ -277,12 +281,12 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
         data = pop_rank_data(),
         xaxis_col = "split_value",
         yaxis_col = "measure",
-        include_confidence_intervals = input$ci_switch,
+        include_confidence_intervals = bar_controls$ci_switch,
         upci_col = "upci",
         lowci_col = "lowci",
         horizontal = TRUE,
         colour_palette = "single",
-        include_average = input$rank_avg_switch
+        include_average = bar_controls$avg_switch
       ) |>
 
         # add extra bits to chart for downloaded version
@@ -316,11 +320,11 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
         grouping_col = "split_value",
         legend_position = "bottom",
         reduce_xaxis_labels = TRUE,
-        zero_yaxis = input$zero_popgp,
-        include_confidence_intervals = input$trend_ci_switch,
+        zero_yaxis = trend_controls$zero_yaxis_switch,
+        include_confidence_intervals = trend_controls$ci_switch,
         chart_theme = theme,
         colour_palette = "multi",
-        include_average = input$trend_avg_switch
+        include_average = trend_controls$avg_switch
       ) |>
      
         # add extra bits to chart for downloaded version
@@ -486,6 +490,31 @@ pop_groups_server <- function(id, dataset, geo_selections, selected_profile, roo
     observeEvent(input$pop_groups_tour_button, {
       guide_pop_groups$start()
     })
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Bookmarking  -----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # exclude some inputs from appearing in bookmarked URL (i.e. buttons, card ids)
+    setBookmarkExclude(c("pop_groups_bar_card", # bar chart card id
+                         "pop_groups_trend_card", # trend chart card id
+                         "pop_groups_tour_button")) # tour button id
+    
+    
+    # reactive value for storing bookmarked split 
+    bookmarked_split <- reactiveVal(NULL)
+    
+    
+    # when bookmarked URL is opened, and BEFORE any other server code is run, update the
+    # reactive val with the bookmarkd split - this will be used in the observer that dynamically
+    # updates filter choices and sets default selection for the split filter.
+    onRestore(function(state){
+      bookmarked_split(state$input$split_filter)
+    })
+
+    
+    
     
   } # module server
   )# module server
