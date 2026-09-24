@@ -19,7 +19,7 @@ simd_navpanel_ui <- function(id) {
                         open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                         
                         # indicator filter (note this is a module)
-                        div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("simd_indicator_filter"))),
+                        div(id = ns("deprivation_indicator_filter_wrapper"), indicator_filter_mod_ui(ns("indicator"))),
                         
                         # button to scroll to metadata
                         div(id = ns("deprivation_scroll_button"), metadata_scroll_button_UI(id = ns("scroll_btn"), target_id = ns("metadata_section"))),
@@ -101,14 +101,7 @@ simd_navpanel_ui <- function(id) {
               # Popover with filters
               nav_item(
                 div(id = ns("deprivation_popover_left"),
-                    popover(
-                      title = "Filters",
-                      trigger = chart_controls_icon(),
-                      checkboxInput(ns("left_ci_switch"), label = " Include confidence intervals", FALSE),
-                      checkboxInput(ns("left_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
-                      checkboxInput(ns("left_average_switch"), label = "Include averages", FALSE)
-                      
-                    )
+                    chart_controls_mod_UI(id = ns("left_chart_controls"))
                 )
               ),
               
@@ -158,13 +151,7 @@ simd_navpanel_ui <- function(id) {
               
               # popover with filters
               nav_item(
-                popover(
-                  title = "Filters",
-                  trigger = chart_controls_icon(),
-                  checkboxInput(ns("right_ci_switch"), label = " include confidence intervals", FALSE),
-                  checkboxInput(ns("right_zero_axis_switch"), label = "Start y-axis at 0", TRUE),
-                  checkboxInput(ns("right_average_switch"), label = "Include averages", FALSE)
-                ) 
+                chart_controls_mod_UI(id = ns("right_chart_controls"))
               ),
               
               # card footer with download buttons
@@ -209,57 +196,58 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     # permits compatibility between shiny and cicerone tours
     ns <- session$ns
     
+    ######################################################.
+    # Reactive values ----
+    ######################################################.
+    
+    # reactive values for storing user selected quint type and sex type
+    quint_selection <- reactiveVal("Scotland")
+    sex_selection <- reactiveVal("Total")
+    
+    # update rv when user changes quint type
+    observeEvent(input$quint_type, {
+      quint_selection(input$quint_type)
+    })
+    
+    # update rv when user changes sex
+    observeEvent(input$sex_filter, {
+      sex_selection(input$sex_filter)
+    })
+    
+    
     #######################################################.
     ## Dynamic filters -----
     #######################################################.
     
-    # hide the confidence intervals switch from the popovers when potential for improvement
-    # has been selected as there are no CIs for these 2 charts
+
+    # show/hide chart controls in card popovers depending on deprivation measure selected
     observeEvent(input$depr_measures, {
-      if(input$depr_measures == "Potential for improvement"){
-        updateCheckboxInput(session, "left_ci_switch", value = FALSE)
-        updateCheckboxInput(session, "right_ci_switch", value = FALSE)
-        shinyjs::hide("left_ci_switch")
-        shinyjs::hide("right_ci_switch")
-      } else{
-        shinyjs::show("left_ci_switch")
-        shinyjs::show("right_ci_switch")
-      }
+      
+      # only show average switches when 'patterns of inequality' selected
+      toggle(id = "left_chart_controls-avg_switch", condition = input$depr_measures == "Patterns of inequality")
+      toggle(id = "right_chart_controls-avg_switch", condition = input$depr_measures == "Patterns of inequality")
+      
+      # only show average switches when 'potential for improvement' not selected
+      toggle(id = "left_chart_controls-ci_switch", condition = input$depr_measures != "Potential for improvement")
+      toggle(id = "right_chart_controls-ci_switch", condition = input$depr_measures != "Potential for improvement")
+      
+      # only show zero yaxis switch when a trend chart is in the left chart (right chart is always a trend)
+      toggle(id = "left_chart_controls-zero-yaxis-switch", condition = input$depr_measures == "Inequality gap")
     })
     
-    
-    # show the option to start y-axis at zero when trend charts are being presented
-    # and have it pre-set to be switched on, otherwise turn the switch off and hide it
-    observeEvent(input$depr_measures, {
-      if(input$depr_measures == "Inequality gap"){
-        shinyjs::show("left_zero_axis_switch")
-        updateCheckboxInput(session, "left_zero_axis_switch", value = TRUE)
-      } else{
-        updateCheckboxInput(session, "left_zero_axis_switch", value = FALSE)
-        shinyjs::hide("left_zero_axis_switch")
-      }
-    })
+
     
     
-    # show the option to include averages only when patterns of inequality has been selected
-    # and have it pre-set to be switched off, otherwise turn the switch off and hide it
-    observeEvent(input$depr_measures, {
-      if(input$depr_measures == "Patterns of inequality"){
-        shinyjs::show("left_average_switch")
-        shinyjs::show("right_average_switch")
-      } else{
-        updateCheckboxInput(session, "left_average_switch", value = FALSE)
-        updateCheckboxInput(session, "right_average_switch", value = FALSE)
-        shinyjs::hide("left_average_switch")
-        shinyjs::hide("right_average_switch")
-      }
-    })
-    
-    
-    # determining which quint types are available
-    # and enabling/disabling quint type filter accordingly
     observeEvent(indicator_data(), {
       
+
+      # temporarily freeze input
+      freezeReactiveValue(input, "quint_type")
+      
+      # check what was previously selected
+      prev_selection <- quint_selection()
+      
+
       # check what quint types are available for selected indicator
       available_quints <- unique(indicator_data()$quint_type)
       
@@ -273,22 +261,32 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
         }
         shinyjs::disable("quint_type")
       } else {
-        
         # otherwise if both local and scottish quintiles available then enable filter so
-        # users can toggle between the two options (default to Scotland)
+        # users can toggle between the two options (default to Scotland if no previous selection made)
         shinyjs::enable("quint_type")
-        updateRadioButtons(session, "quint_type", selected = "Scotland")
+        default_selection <- if(is.null(prev_selection)) "Scotland" else prev_selection
+        updateRadioButtons(session, "quint_type", selected = default_selection)
       }
-    })
+      
+
+      })
     
+
     
     # update sex filter choices depending on what splits are available for the selected indicator
     # if only totals available (i.e. no male/female splits) then hide filter, otherwise show it
     observeEvent(indicator_data(), {
       
+
+      # temporarily freeze filter
+      freezeReactiveValue(input, "sex_filter")
+      
+      # get previous selection (if applicable)
+      prev_selection <- sex_selection()
+      
       # update filter choices
       choices <- unique(indicator_data()$sex) # get choices
-      selection <- if (input$sex_filter %in% choices) input$sex_filter else "Total" # reapply previous selection if still valid
+      selection <- if (prev_selection %in% choices) prev_selection else "Total" # use previous selection if still valid
       updateSelectizeInput(session, "sex_filter", choices = choices, selected = selection) # update filter with choices
       
       # show/hide filter
@@ -297,7 +295,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
       } else {
         shinyjs::show("sex_filter")
       }
-    }, ignoreNULL = TRUE)
+      
+    })
     
     
     
@@ -327,13 +326,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     
     # generate list of indicators (from the simd indicators dataset) available
     # and return the selected indicator
-    selected_indicator <- indicator_filter_mod_server(id="simd_indicator_filter", simd_data, geo_selections, selected_profile)
+    selected_indicator <- indicator_filter_mod_server(id="indicator", simd_data, geo_selections, selected_profile)
     
     
     # filter data passed to the module by the selected indicator and selected area
     # and further filter by quint type
     indicator_data<- reactive({
-      req(simd_data())
+      req(selected_indicator())
       
       dt <- simd_data() |>
         filter(indicator == selected_indicator()) |>
@@ -350,11 +349,12 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     # this is because each selection results in 2 different charts being displayed
     # It will therefore create a 'left_data' (i.e. data for the left-hand chart) and a 'right_data' (data for the right hand chart)
     simd_measures_data <- reactive({
-      req(indicator_data())
+      req(input$sex_filter)
+      req(input$quint_type)
       
       
       # filter by quint type 
-      if(input$quint_type == "Scotland"){
+      if(quint_selection() == "Scotland"){
         dt <- indicator_data() |>
           filter(quint_type == "sc_quin")
       } else {
@@ -514,6 +514,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     # e. the units to be added to the chart when downloading
     chart_text <- reactive({
       req(simd_measures_data())
+      req(selected_indicator())
       
       switch(input$depr_measures,
              
@@ -629,6 +630,14 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     # CHARTS/TABLES ----
     #######################################.
     
+    
+    # chart controls
+    # returns TRUE/FALSE for each of the switch inputs in the chart controls popover
+    # which can then be used to update the chart accordingly
+    left_controls <- chart_controls_mod_server("left_chart_controls")
+    right_controls <- chart_controls_mod_server("right_chart_controls")
+    
+    
     # render the chart to display on left-hand side (conditional depending on which measure was selected)
     # using the data stored within simd_measures_data()$left_data (which is also conditional depending on what measure was selected)
     output$left_chart <- renderHighchart({
@@ -636,11 +645,13 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
       # only create charts if there is data available to plot
       # validation message suggests the other two area types the user might try (although dep data aren't necessarily available at the lower geog: should the message only suggest available geogs?)
       shiny::validate(
-        need(nrow(indicator_data()) > 0,
-             paste0("Deprivation data are not available at ", geo_selections()$areatype, " level in this profile. Please try a different geography, of either ", 
+        need(selected_indicator(),
+             paste0("Deprivation data are not available at ", geo_selections()$areatype, " level. Please try a different geography, of either ", 
                     paste(setdiff(c("Scotland", "Health board", "Council area"), geo_selections()$areatype), collapse = " or "), 
                     "."))
       )
+      
+      
       
       
       hc <- switch(input$depr_measures,
@@ -649,8 +660,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                    "Patterns of inequality" = create_bar_chart(data = simd_measures_data()$left_data,
                                                                xaxis_col = "quintile",
                                                                yaxis_col = "measure",
-                                                               include_average = input$left_average_switch,
-                                                               include_confidence_intervals = input$left_ci_switch,
+                                                               include_average = left_controls$avg_switch,
+                                                               include_confidence_intervals = left_controls$ci_switch,
                                                                colour_palette = "simd"),
                    
                    # SII trend chart
@@ -660,8 +671,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      upci_col = "upci_sii",
                      lowci_col = "lowci_sii",
                      reduce_xaxis_labels = TRUE,
-                     zero_yaxis = input$left_zero_axis_switch, # filter returns TRUE/FALSE
-                     include_confidence_intervals = input$left_ci_switch), # filter returns TRUE/FALSE
+                     zero_yaxis = left_controls$zero_yaxis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = left_controls$ci_switch), # filter returns TRUE/FALSE
                    
                    
                    # attributable to inequality bar chart
@@ -700,8 +711,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
       
       # only create charts if there is data available to plot
       shiny::validate(
-        need(nrow(indicator_data()) > 0,
-             paste0("Deprivation data are not available at ", geo_selections()$areatype, " level in this profile. Please try a different geography, of either ", 
+        need(selected_indicator(),
+             paste0("Deprivation data are not available at ", geo_selections()$areatype, " level. Please try a different geography, of either ", 
                     paste(setdiff(c("Scotland", "Health board", "Council area"), geo_selections()$areatype), collapse = " or "), 
                     "."))
       )
@@ -716,9 +727,9 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      legend_position = "bottom",
                      reduce_xaxis_labels = TRUE,
                      colour_palette = "simd",
-                     zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-                     include_confidence_intervals = input$right_ci_switch, # filter returns TRUE/FALSE
-                     include_average = input$right_average_switch # filter returns TRUE/FALSE
+                     zero_yaxis = right_controls$zero_yaxis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = right_controls$ci_switch, # filter returns TRUE/FALSE
+                     include_average = right_controls$avg_switch # filter returns TRUE/FALSE
                    ),
                    
                    # RII trend chart
@@ -728,8 +739,8 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      upci_col = "upci_rii_int",
                      lowci_col = "lowci_rii_int",
                      reduce_xaxis_labels = TRUE,
-                     zero_yaxis = input$right_zero_axis_switch, # filter returns TRUE/FALSE
-                     include_confidence_intervals = input$right_ci_switch), # filter returns TRUE/FALSE
+                     zero_yaxis = right_controls$zero_yaxis_switch, # filter returns TRUE/FALSE
+                     include_confidence_intervals = right_controls$ci_switch), # filter returns TRUE/FALSE
                    
                    
                    # PAR trend chart
@@ -738,7 +749,7 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
                      yaxis_col = "par", 
                      reduce_xaxis_labels = TRUE,
                      include_confidence_intervals = FALSE,
-                     zero_yaxis = input$right_zero_axis_switch) # filter returns TRUE/FALSE
+                     zero_yaxis = right_controls$zero_yaxis_switch) # filter returns TRUE/FALSE
       )
       
       # add options for downloaded version only
@@ -894,6 +905,30 @@ simd_navpanel_server <- function(id, simd_data, geo_selections, selected_profile
     observeEvent(input$deprivation_tour_button, {
       guide_deprivation$start()
     })
+    
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Bookmarking logic -----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # exclude some inputs from appearing in bookmarked URL (i.e. buttons, links and card ids)
+    setBookmarkExclude(c("left_card", # id for left card
+                         "right_card", # id for right card
+                         "right_chart_info_link", # 'learn more' link in right card
+                         "left_chart_info_link", # 'learn more' link in left card
+                         "deprivation_tour_button", # guided tour button
+                         "simd_help" # simd info link in sidebar
+                         ))
+    
+    # When a bookmarked URL is opened, BEFORE any server code is run, restore the saved quint_type and
+    # sex_filter values into their reactive values objects. This ensures that when
+    # observers dynamically update these filters when the app launches, the bookmarked selections
+    # are used as the default selections. 
+    onRestore(function(state){
+      quint_selection(state$input$quint_type)
+      sex_selection(state$input$sex_filter)
+    })
+    
     
     
   }) #close moduleServer
