@@ -106,13 +106,10 @@ rank_mod_ui <- function(id) {
      
             nav_spacer(),
             nav_item(
-              div(id = ns("rank_popover"),
-              bslib::popover(
-                title = "Filters",
-                chart_controls_icon(),
-                checkboxInput(ns("ci_switch"), label = " include confidence intervals", TRUE)
-              )
-            )
+              div(
+                id = ns("rank_popover"),
+                chart_controls_mod_UI(id = ns("bar_controls"), controls = c(ci_switch = TRUE))
+                )
             ),
             footer = card_footer(
               toolbar(
@@ -190,6 +187,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
       # only run when Scotland not selected
       # this prevents all other code in this module using ind_data() from being run.
       req(geo_selections()$areatype != "Scotland")
+      req(selected_indicator()) 
       
       profile_data() |>
         filter(indicator == selected_indicator()) |>
@@ -293,9 +291,9 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
     # disable confidence interval checkbox when time selected as comparator
     observe({
       if (input$comparator_switch == TRUE & input$comparator_type == "Time") {
-        shinyjs::disable("ci_switch")
+        shinyjs::disable("bar_controls-ci_switch")
       } else {
-        enable("ci_switch")
+        enable("bar_controls-ci_switch")
       }
       
       
@@ -475,6 +473,10 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
    # CHART  ----
    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
+    # returns TRUE/FALSE for each of the switch inputs in the chart controls popover
+    # which can then be used to update the chart accordingly
+    bar_controls <- chart_controls_mod_server(id = "bar_controls")
+    
     # chart (barchart/dumbell chart)
     output$rank_chart <- renderHighchart({
       req(rank_data())
@@ -560,7 +562,7 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
         
         
         # include confidence intervals when ci switch is turned on on
-        if(input$ci_switch == TRUE) {
+        if(bar_controls$ci_switch == TRUE) {
           x <- x |>
             hc_add_series(rank_data(), "errorbar", hcaes(x = areaname, low = lowci, high = upci), zIndex = 10)
         }
@@ -839,6 +841,22 @@ rank_mod_server <- function(id, profile_data, geo_selections, selected_profile, 
      observeEvent(input$rank_tour_button, {
        guide_rank$start()
      })
+     
+     
+     # ~~~~~~~~~~~~~~~~~~~~
+     # Bookmarking -----
+     # ~~~~~~~~~~~~~~~~~~~~
+     
+     # exclude some inputs from appearing in bookmarked URL (i.e. buttons, card ids)
+     setBookmarkExclude(
+       c("rank_navset_card_pill", "map_card", # card ids
+         "rank_tour_button", # tour button id
+         "map_card_full_screen", "map_bounds", "map_center", "map_zoom", "map_groups", # inputs created automatically with leaflet maps
+         # year filter in sidebar - intentional decision to remove from bookmarking 
+         # to avoid users not realising there is more recent data available if bookmarking a particular year of data
+         "period_filter"
+         ))
+       
      
      
      }) # close moduleServer
