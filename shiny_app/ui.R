@@ -36,7 +36,18 @@ page_navbar(
     leafletjs, # required for leaflet maps (see js code in global scipt)
     fullscreen_card_JS, # required for share buttons (see js code in global script)
     tags$script(src = "https://code.highcharts.com/highcharts.js"), # required for spinecharts
-    includeCSS("www/styles.css") # required to specify formatting (particularly of landing page)
+    includeCSS("www/styles.css"), # required to specify formatting (particularly of landing page)
+    # make sure that any popup modals always stack on top of any other UI elements (high z-index means higher stacking priority)
+    # This is to make sure that when a user has a bslib card in fullscreen mode and clicks the 'share' button,
+    # the modal that appears with the bookmarked URL is always stacked on top)
+    tags$style(HTML("
+        .modal {
+          z-index: 99999 !important;
+        }
+        .modal-backdrop {
+          z-index: 99998 !important;
+        }
+      "))
     ),
 
   #######################################.
