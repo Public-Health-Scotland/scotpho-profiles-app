@@ -22,11 +22,11 @@
 #'
 share_button_mod_UI <- function(id) {
   ns <- NS(id)
-  actionButton(
-    inputId = ns("share_btn"),
+  toolbar_input_button(
+    id = ns("share_btn"),
     label = "Share",
-    icon = icon("share-nodes"),
-    class = "btn-sm"
+    show_label = TRUE,
+    icon = icon("share-nodes")
   )
 }
 

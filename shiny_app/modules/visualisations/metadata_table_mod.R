@@ -92,6 +92,14 @@ metadata_panel_Server <- function(id, r_event, r_metadata, parent_session) {
       })
       
       
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Bookmark exclusions ----
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      
+      # exclude accordion id from appearing in any bookmarked URLs
+      setBookmarkExclude("metadata_accordion")
+      
+      
     }
   )
 }
