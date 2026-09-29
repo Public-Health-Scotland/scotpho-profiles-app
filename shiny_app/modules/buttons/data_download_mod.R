@@ -43,6 +43,8 @@ download_data_btns_ui <- function(id) {
     ),
     div(
       class = "dropdown-menu",
+      # note new 'enabled' argument as of shiny version 1.14.0. The default is 'auto' but setting to 
+      # enabled to ensure buttons are always enabled - required for this workaround version
       shiny::downloadLink(ns("downloadCSV"), label = "as CSV", class = "dropdown-item", enabled = TRUE),
       shiny::downloadLink(ns("downloadRDS"), label = "as RDS", class = "dropdown-item", enabled = TRUE),
       shiny::downloadLink(ns("downloadJSON"), label = "as JSON", class = "dropdown-item", enabled = TRUE),
