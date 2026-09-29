@@ -95,6 +95,23 @@ page_navbar(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
 
+                          # Widespread rollout of bookmarking/sharing
+                          div(
+                            h4("September 2026 : Bookmarking and sharing content", class = "profile-header"),
+                            p("Dashboard views and indicators can now be bookmarked and shared via direct links, making it easier to signpost to specific information. Look for the 'Bookmark' and 'Share' buttons within the dashboard.")
+                          ),
+                          hr(),    
+                          
+                          # transition to 2022 datazones
+                          div(
+                            h4("September 2026 : Transitioning to 2022 datazones", class = "profile-header"),
+                            p("We plan to adopt the 2022 Census datazones as the building blocks for small-area geographies from early 2027. 
+                              This transition from the 2011 datazones will affect indicators reported at Intermediate Zone and HSCP Locality level.
+                              Where feasible, historical time series will be recalculated and backdated using the revised geographies to support continuity of analysis.
+                              The change will also enable future inequalities analyses to be updated using the next Scottish Index of Multiple Deprivation (SIMD) when it becomes available.")
+                          ),
+                          hr(),  
+                          
                           #EXAMPLES OF TEXT USED WHEN ISSUES WITH PUBLISHED DATA ARE CORRECTED - JUST KEEPING SO THAT CAN EASILY EDIT IF SUCH A CORRECTION OCCURS IN FUTURE
                           # Refresh of Male & Female Life Expectancy indicator trend data
                           # div(
@@ -134,25 +151,7 @@ page_navbar(
                           ),
                           hr(),
 
-                          # Updates
-                          div(
-                            h4("February 2026 : Indicator updates", class = "profile-header"),
-                            p("Our rolling indicator updates process is currently underway for data covering the period 2024 and 2024/2025.  Delays in the publication of small area (intermediate zone, HSCP locality) population denominators
-                              mean that for some indicators not all geography levels can currently be updated. Deprivation (SIMD) analysis for recent years is also impacted. When denominator data becomes available we will look to complete these updates for all geography levels.")
-                          ),
-                          hr(),                         
 
-                          
-                        # Change of source for children's PA indicator
-                          div(
-                            h4("February 2026 : Change of data source for children's physical activity indicator", class = "profile-header"),
-                            p("The indicator 'Children meeting physical activity guidelines' (part of the Children and Young People Mental Health Profile) is now sourced from the Scottish Health Survey, rather than the Health Behaviour in School-Aged Children survey.
-                            The new source covers a wider range of ages and is updated more frequently. The full time series back to 2008 has been updated. 
-                            Users may notice the percentages are markedly higher now: this is due to the younger ages included now (2 to 15y, compared with 11y+ previously) 
-                            and the more detailed way the indicator has been derived (from multiple questions answered by the child's parent (for 2 to 12 year olds) or the child (for 13 to 15 year olds), rather than from a single question asked to each child).")
-                          ),
-                          hr(),
-                            
                         # Climate profile info
                          # div(
                          #   h4("October 2025 : New Climate Impact profile", class = "profile-header"),
