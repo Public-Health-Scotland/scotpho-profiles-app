@@ -40,6 +40,8 @@ page_navbar(
     # make sure that any popup modals always stack on top of any other UI elements (high z-index means higher stacking priority)
     # This is to make sure that when a user has a bslib card in fullscreen mode and clicks the 'share' button,
     # the modal that appears with the bookmarked URL is always stacked on top)
+    # Note this issue has been raised (https://github.com/rstudio/shiny/issues/4431)
+    # Keep an eye out for fix in any new shiny package versions
     tags$style(HTML("
         .modal {
           z-index: 99999 !important;
