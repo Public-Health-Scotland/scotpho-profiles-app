@@ -120,7 +120,7 @@ profiles_list <- list(
     domain_order = c("Climate Health Impact", "Weather", "Air Quality", "Climate Attitude", "Demography"),
     subtabs = c("trends_tab", "rank_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
   
@@ -157,7 +157,7 @@ profiles_list <- list(
     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assessed/self-reported", "Service-use"),
     subtabs = NULL,
     nav_id = "shi_tab",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
   
