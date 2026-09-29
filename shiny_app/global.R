@@ -6,8 +6,8 @@
 
 
 # 1. Required packages ----------------------------------------------------------
-library(shiny) # for shiny functions
-library(bslib) # app layout functions/theming
+library(shiny) # for shiny functions (latest version 1.14.0)
+library(bslib) # app layout functions/theming (latest version 0.12.0)
 library(phsstyles) # for phs colour palette
 library(shinyjs) # for various functions to expand/collapse geography filters 
 library(htmltools) # for landing page template to read
