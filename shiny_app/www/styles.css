@@ -91,3 +91,20 @@
   padding:15px;
 }
 
+
+/* Custom minimalist bookmark button for white backgrounds (remove hard border) */
+.white-bg-bookmark {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #495057 !important; /* Elegant dark grey text */
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.white-bg-bookmark:hover {
+  background: rgba(0, 0, 0, 0.05) !important; /* Soft grey tile on hover */
+  color: #1a1a1a !important;                  /* Slightly crisper dark text on hover */
+  border-radius: 4px;
+}
+

@@ -453,8 +453,14 @@ function(input, output, session) {
         title = "Bookmark link",
         easyClose = TRUE,
         size = "l",
-        "This URL preserves your current profile and geography choices, allowing you to return to the same view later or share it with others.",
-        # have to use shiny fluidRow and column here
+       
+        div(
+          class = "mb-4 text-muted", # mb-4 adds spacious vertical margin; text-muted softens the typography
+          "This URL preserves your current profile and geography choices, allowing you to return to the same view later or share it with others. 
+          Copy the link and save it as a browser bookmark, or share it directly with colleagues."
+        ),
+        
+         # have to use shiny fluidRow and column here
         # instead of bslib layout_columns as throws an error
         # for some reason!
         fluidRow(

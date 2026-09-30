@@ -66,7 +66,7 @@ indicator_filter_mod_server <- function(id, filtered_data, geo_selections, selec
 
       # Create a list of choices for the filter grouped by domain 
       choices <- split(dt$indicator, dt$domain) # create list that splits up indicators by domain
-
+      choices <- lapply(choices, function(x) as.list(x)) # convert to list of lists
       }
       
       # Determine default selection:

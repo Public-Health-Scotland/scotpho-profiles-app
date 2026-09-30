@@ -38,7 +38,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       h1("Long-term Monitoring of Health Inequalities in Scotland", style = "font-size:2.5rem"),
       p("This page provides interactive charts and summary data for indicators featured in the latest Long‑Term Monitoring of Health Inequalities in Scotland report. 
       Read the accompanying narrative in the full report", tags$a("here", icon("arrow-up-right-from-square"), href = "https://publichealthscotland.scot/publications/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/", target = "_blank"), "."),
-      bookmarkButton(class = "btn-sm", label = "Bookmark page")
+      bookmarkButton(class = "white-bg-bookmark", label = "Bookmark page")
     ),
 
     # space
@@ -227,7 +227,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 ),
               nav_panel(title = "Table", data_table_mod_UI(ns("simd_bar_tbl"))),
               nav_spacer(),
-              chart_controls_mod_UI(ns("simd_bar_controls"), controls = c(ci_switch = FALSE)),
+              nav_item(chart_controls_mod_UI(ns("simd_bar_controls"), controls = c(ci_switch = FALSE))),
               footer = card_footer(
                 class = "d-flex justify-content-start", 
                 share_button_mod_UI(ns("simd_bar_share"))
@@ -251,7 +251,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
                 ),
               nav_panel(title = "Table", data_table_mod_UI(ns("simd_trend_tbl"))),
               nav_spacer(),
-              chart_controls_mod_UI(ns("simd_trend_controls"), controls = c(ci_switch = FALSE, avg_switch = TRUE, zero_yaxis_switch = TRUE)),
+              nav_item(chart_controls_mod_UI(ns("simd_trend_controls"), controls = c(ci_switch = FALSE, avg_switch = TRUE, zero_yaxis_switch = TRUE))),
               footer = card_footer(
                 class = "d-flex justify-content-start", 
                 share_button_mod_UI(ns("simd_trend_share"))
@@ -286,7 +286,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               nav_panel(title = "Table", data_table_mod_UI(ns("sii_tbl"))),
               nav_panel(title = "Help", about_sii),
               nav_spacer(),
-              chart_controls_mod_UI(ns("sii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
+              nav_item(chart_controls_mod_UI(ns("sii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE))),
               footer = card_footer(
                 class = "d-flex justify-content-start", 
                 share_button_mod_UI(ns("sii_share"))
@@ -310,7 +310,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               nav_panel(title = "Table", data_table_mod_UI(ns("rii_tbl"))),
               nav_panel(title = "Help", about_rii),
               nav_spacer(),
-              chart_controls_mod_UI(ns("rii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE)),
+              nav_item(chart_controls_mod_UI(ns("rii_controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE))),
               footer = card_footer(
                 class = "d-flex justify-content-start", 
                 share_button_mod_UI(ns("rii_share"))
@@ -365,7 +365,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
               nav_panel(title = "Table", data_table_mod_UI(ns("par_trend_tbl"))),
               nav_panel(title = "Help", about_par_trend),
               nav_spacer(),
-              chart_controls_mod_UI(ns("par_trend_controls"), controls = c(zero_yaxis_switch = TRUE)),
+              nav_item(chart_controls_mod_UI(ns("par_trend_controls"), controls = c(zero_yaxis_switch = TRUE))),
               footer = card_footer(
                 class = "d-flex justify-content-start", 
                 share_button_mod_UI(ns("par_trend_share"))

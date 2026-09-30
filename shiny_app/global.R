@@ -6,8 +6,8 @@
 
 
 # 1. Required packages ----------------------------------------------------------
-library(shiny) # for shiny functions
-library(bslib) # app layout functions/theming
+library(shiny) # for shiny functions (latest version 1.14.0)
+library(bslib) # app layout functions/theming (latest version 0.12.0)
 library(phsstyles) # for phs colour palette
 library(shinyjs) # for various functions to expand/collapse geography filters 
 library(htmltools) # for landing page template to read
@@ -120,7 +120,7 @@ profiles_list <- list(
     domain_order = c("Climate Health Impact", "Weather", "Air Quality", "Climate Attitude", "Demography"),
     subtabs = c("trends_tab", "rank_tab", "pop_groups_tab", "about_profile_tab"),
     nav_id = "Profiles",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
   
@@ -157,7 +157,7 @@ profiles_list <- list(
     domain_order = c("Headline indicators", "Morbidity and mortality", "Self-assessed/self-reported", "Service-use"),
     subtabs = NULL,
     nav_id = "shi_tab",
-    new = TRUE,
+    new = FALSE,
     active = TRUE
   ),
   
@@ -319,9 +319,8 @@ phs_theme <- bs_theme(
  
       # buttons styling 
       ".btn-global {background-color: #E0E0E0; border:$phs-blue; color:black; border-radius:15px;}", #  global filter buttons
-      ".btn-download {color:white; background-color:$phs-blue; border:$phs-blue;}", # data download buttons for card footers
-      ".card-footer .btn-download {border:none; text-decoration:underline; color:$phs-blue; background-color:white}", # data download buttons for card footers
-      ".btn-download:hover {background-color: #e0e0e0; color:black; border:#e0e0e0;}", # data download buttons on hover
+     # ".btn-download {color:white; background-color:$phs-blue; border:$phs-blue;}", # data download buttons for card footers
+     # ".btn-download:hover {background-color: #e0e0e0; color:black; border:#e0e0e0;}", # data download buttons on hover
       ".profile-btn-disabled {background-color:#F4F4F4}",
       ".btn-hero {color:black; background-color:#def4ff; border:none;}", # 2 x landing page hero buttons
       ".profile-btn:hover {cursor: pointer;background-color: #e0e0e0;}", # hover colour for landing page profile buttons
