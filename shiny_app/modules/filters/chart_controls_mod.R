@@ -60,16 +60,12 @@ chart_controls_mod_UI <- function(id,
   # add inputs to popover within nav item
     popover(
       title = "Chart settings",
-      trigger = actionButton(
-        inputId = ns("chart_settings_btn"),
-        label = "Settings",
-        icon = icon("gear"),
-        class = "btn-sm" # i.e button small 
-      ),
+      trigger =  bsicons::bs_icon(name = "gear-fill",
+                                  size = "2em",
+                                  title = "Click here to view chart settings", # tooltip/for screenreaders
+                                  class = "text-white bg-phs-blue rounded-circle p-1"), # white icon, blue background, circle, padding
       inputs
     )
-  
-  
 }
 
 
