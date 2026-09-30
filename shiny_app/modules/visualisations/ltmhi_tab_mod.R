@@ -38,7 +38,7 @@ ltmhi_UI <- function(id, ltmhi_dataset) {
       h1("Long-term Monitoring of Health Inequalities in Scotland", style = "font-size:2.5rem"),
       p("This page provides interactive charts and summary data for indicators featured in the latest Long‑Term Monitoring of Health Inequalities in Scotland report. 
       Read the accompanying narrative in the full report", tags$a("here", icon("arrow-up-right-from-square"), href = "https://publichealthscotland.scot/publications/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/long-term-monitoring-of-health-inequalities-in-scotland-by-area-deprivation/", target = "_blank"), "."),
-      bookmarkButton(class = "btn-sm", label = "Bookmark page")
+      bookmarkButton(class = "white-bg-bookmark", label = "Bookmark page")
     ),
 
     # space

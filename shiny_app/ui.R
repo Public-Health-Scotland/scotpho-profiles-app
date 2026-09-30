@@ -264,9 +264,10 @@ page_navbar(
                   )), # close hidden div
   
         # bookmark button
-       div(
-       p("Save or share your profile and geography selections using the button below."),
-       bookmarkButton(class = "btn-sm")
+       div(class = "d-flex justify-content-end", # locate bookmark button to the right hand side
+           style = "margin-bottom: 15px; margin-top: 5px;",
+       #p("Save or share your profile and geography selections using the button below."),
+       bookmarkButton(class = "white-bg-bookmark" , title = "Save or share your profile and geography selections using this button")
        ),
              br(), # add space between header and sub-tabs
 
