@@ -117,7 +117,9 @@ trend_mod_ui <- function(id) {
             choices = c("Rate","Numerator"),
             icon = bs_icon("bar-chart")
           ),
-          toolbar_divider(),
+          #toolbar divider with padding
+          tags$div(toolbar_divider(), class = "mx-3 my-1"), 
+
           # popover with extra controls for trend chart
           chart_controls_mod_UI(id = ns("controls"), controls = c(ci_switch = FALSE, zero_yaxis_switch = TRUE))
 
