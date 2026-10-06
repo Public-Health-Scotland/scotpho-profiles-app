@@ -97,7 +97,7 @@ page_navbar(
 
                           # New mental health inequalities report
                           div(
-                            h4("October 2026 : Bookmarking and sharing content", class = "profile-header"),
+                            h4("October 2026 : New report on mental health inequalities", class = "profile-header"),
                             p("We have published ",
                               tags$a("Mental health inequalities in Scotland", href = "https://www.scotpho.org.uk/media/2711/mental_health_inequalities_in_scotland_2026.pdf", target = "_blank"),
                               ", which is an exploration of selected indicators from the mental health profiles for adults and for children and young people. 
@@ -313,15 +313,13 @@ page_navbar(
                                      )
                                    ),
   
-                                 # only display this card when Mental Health profile selected
+                                 # only display this card when Adult Mental Health profile selected
                                  hidden(
                                    card(
-                                     id = "CMH_banner",
-                                     card_header(bs_icon("info-circle-fill", size = "1.2em"),"Updates to this profile in Jan 2026:",class = "info-box-header"),
-                                     p("Additional indicators about children's mental health outcomes have been added 
-                                       (conduct problems, emotional symptoms, hyperactivity/inattention, prosocial behaviour, and peer relationship problems). 
-                                        Also, the source of the data for 'children meeting physical activity guidelines' has changed, resulting in higher estimates. 
-                                        See the indicator metadata for more information.")
+                                     id = "MEN_banner",
+                                     card_header(bs_icon("info-circle-fill", size = "1.2em"),"Indicator definition change:",class = "info-box-header"),
+                                     p("In Sept 2026 the definition for the adult life satisfaction indicator changed to make it easier to interpret. 
+                                       See the indicator metadata for more information.")
                                      )
                                  ),
                                  

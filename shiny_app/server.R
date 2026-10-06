@@ -190,7 +190,7 @@ function(input, output, session) {
   # This code shows/hides these cards when applicable
   observeEvent(input$profile_choices, {
     toggle(id = "CWB_banner", condition = input$profile_choices == "Population Health")
-    toggle(id = "CMH_banner", condition = input$profile_choices == "Children & Young People Mental Health")
+    toggle(id = "MEN_banner", condition = input$profile_choices == "Adult Mental Health")
   })
   
 
