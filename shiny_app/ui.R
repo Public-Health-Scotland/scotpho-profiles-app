@@ -95,6 +95,17 @@ page_navbar(
                 card_header(bs_icon("info-circle-fill", size = "1.2em"), "What's new",class = "info-box-header"),
                 card_body(gap = 0,
 
+                          # New mental health inequalities report
+                          div(
+                            h4("October 2026 : Bookmarking and sharing content", class = "profile-header"),
+                            p("We have published ",
+                              tags$a("Mental health inequalities in Scotland", href = "https://www.scotpho.org.uk/media/2711/mental_health_inequalities_in_scotland_2026.pdf", target = "_blank"),
+                              ", which is an exploration of selected indicators from the mental health profiles for adults and for children and young people. 
+                              We examine trends and inequalities between the most and least deprived areas: this highlights that population-wide improvements have often not been shared equally. 
+                              The findings provide support for primary prevention through policies that address the wider determinants of mental health.")
+                          ),
+                          hr(),
+                          
                           # Widespread rollout of bookmarking/sharing
                           div(
                             h4("September 2026 : Bookmarking and sharing content", class = "profile-header"),
@@ -126,7 +137,7 @@ page_navbar(
                           #Physical Activity Profile
                           div(h4("June 2026: New Physical Activity profile", class = "profile-header"),
                               p("We have published a limited set of indicators as part of a new Physical Activity profile in collaboration with the Physical Activity for Health Research Centre (PAHRC) at the University of Edinburgh.
-                                This profile contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's.",
+                                This profile contains council and NHS board level indicators which report on active travel, uptake of the Chief Medical Officer's ",
                                 tags$a("Physical Activity Guidelines,", href = "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report",
                                        target = "_blank")," Active Places & Spaces, Active Places of Learning and Sport & Active Leisure. Over time we will work to expand the number of indicators available. Please get in touch with ScotPHO at ", tags$a("phs.scotpho@phs.scot", href = "mailto:phs.scotpho@phs.scot", target = "_blank"), 
                                 "if you would like to feed into development.")
