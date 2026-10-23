@@ -368,6 +368,7 @@ page_navbar(
                                  conditionalPanel("input.profile_choices == 'Alcohol'", about_alc_text),
                                  conditionalPanel("input.profile_choices == 'Children & Young People'", about_cyp_text),
                                  conditionalPanel("input.profile_choices == 'Climate'", about_cli_text),
+                                 conditionalPanel("input.profile_choices == 'JSNA'", about_jsna_text),
                                  conditionalPanel("input.profile_choices == 'Physical Activity'", about_pa_text)
                        )
 

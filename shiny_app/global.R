@@ -124,6 +124,19 @@ profiles_list <- list(
     active = TRUE
   ),
   
+  # Joint Strategic Needs Assessment (JSNA)
+  "JSNA Minimum Core Dataset" = list(
+    short_name = "SNA",
+    homepage_description = markdown("View indicators relating to **Overall health outcome measures**, **Demographics**, **Building blocks of health**, **Health & wellbeing** and **Risk factors**"),
+    domain_order = c("Overall health outcome measures","Demographics","Building blocks of health","Health & wellbeing","Maternal, Children & young people","Risk factors","Adult social care"),
+    subtabs = all_subtabs,
+    nav_id = "Profiles",
+    new = TRUE,
+    active = TRUE
+  ),
+  
+  
+  
   # Adult Mental health info
   "Adult Mental Health" = list(
     short_name = "MEN",

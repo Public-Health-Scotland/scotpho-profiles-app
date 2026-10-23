@@ -294,6 +294,26 @@ about_pa_text <- navset_pill_list(
   )
 )
 
+###########################################.
+### JSNA ----
+
+about_jsna_text <- navset_pill_list(
+  widths = c(3, 9),
+  nav_panel("Overview",
+            h3("Overview"),
+            p("blurb"),
+            br()
+  ),
+  nav_panel("Further information",
+            h3("Futher information"),
+            p("INSERT LINKS FOR FURTHER INFO HERE  ",
+              tags$a("Active Scotland Outcomes Framework dashabord ",href="https://scotland.shinyapps.io/sg-active-scotland-outcomes-framework-indicators/", target = "_blank"),
+              "which provides further information relating to alcohol."),
+            br()
+  )
+)
+
+
 
 ###########################################.
 ### Adult Mental Health ----
