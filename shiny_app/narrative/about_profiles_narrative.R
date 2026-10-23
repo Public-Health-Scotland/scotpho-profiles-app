@@ -312,6 +312,9 @@ about_men_text <-  navset_pill_list(
   p("The mental health indicators include measures of mental health outcomes, as well as of 
     a wide range of interconnected determinants (risk factors and protective factors) of these outcomes. 
     A separate mental health profile for children and young people is available elsewhere on this site. "),
+  p("Inequalities in some of the adult mental health indicators have been highlighted in our report ",
+    tags$a("Mental health inequalities in Scotland", href = "https://www.scotpho.org.uk/media/2711/mental_health_inequalities_in_scotland_2026.pdf", target = "_blank"),
+    ". In this report we examine trends and inequalities between the most and least deprived areas: this highlights that population-wide improvements have often not been shared equally."),
   br()
   ),
   nav_panel("Mental Health Profile for Adults",
@@ -356,6 +359,10 @@ about_cmh_text <-  navset_pill_list(
             p("The mental health indicators include measures of mental health outcomes, as well as of 
     a wide range of interconnected determinants (risk factors and protective factors) of these outcomes. 
     A separate mental health profile for adults is available elsewhere on this site. "),
+            p("Inequalities in some of the mental health indicators for children and young people have been highlighted in our report ",
+              tags$a("Mental health inequalities in Scotland", href = "https://www.scotpho.org.uk/media/2711/mental_health_inequalities_in_scotland_2026.pdf", target = "_blank"),
+              ". In this report we examine trends and inequalities between the most and least deprived areas: this highlights that population-wide improvements have often not been shared equally."),
+            
             br()
   ),
   nav_panel("Mental Health Profile for Children and Young People",
