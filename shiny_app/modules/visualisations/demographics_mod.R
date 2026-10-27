@@ -397,14 +397,16 @@ demographics_mod_server <- function(id, dataset, geo_selections, selected_profil
             id = "m_comp_series", 
             name = "males - Scotland",
             type = "line",
-            color = "black",
+            color = "#666666",
+            marker = list(enabled = FALSE), 
             data = list_parse2(comparator_data()[, .(age, percentage_Male)])
           ) |>
           hcpxy_add_series(
             id = "f_comp_series", 
             name = "females - Scotland",
             type = "line",
-            color = "black",
+            color = "#666666",
+            marker = list(enabled = FALSE),
             data = list_parse2(comparator_data()[, .(age, percentage_Female)])
           )
         
