@@ -577,4 +577,11 @@ about_shi_text <-
   )
 #)
 
+
+#############################################.
+# Health board monitoring profile ------
+#############################################.
+
+about_hbm_text <- "placeholder"
+  
   
