@@ -191,6 +191,7 @@ function(input, output, session) {
   observeEvent(input$profile_choices, {
     toggle(id = "CWB_banner", condition = input$profile_choices == "Population Health")
     toggle(id = "MEN_banner", condition = input$profile_choices == "Adult Mental Health")
+    toggle(id = "HBM_banner", condition = input$profile_choices == "Health Board Monitoring")
   })
   
 

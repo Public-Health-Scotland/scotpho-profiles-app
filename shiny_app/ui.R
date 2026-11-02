@@ -323,6 +323,33 @@ page_navbar(
                                      )
                                  ),
                                  
+                                 # only display this card when Health Board Monitoring profile has been selected
+                                 card(
+                                   class = "m-3",
+                                   id = "HBM_banner",
+                                   card_header(bs_icon("info-circle-fill", size = "1.2em"), "Additional indicators", class = "info-box-header"),
+                                   card_body(
+                                     p("Health board level data for two additional indicators within the 'adult' domain of this indicator set can be
+                                      accessed on the Public Health Scotland website using the links below."),
+                                     tags$ul(
+                                       tags$li(
+                                         tags$a(
+                                           "NHS Smoking services: Successful quit attempts (Percentage of annual LDP standard achieved)", 
+                                           href = "https://publichealthscotland.scot/publications/nhs-stop-smoking-services-scotland/", 
+                                           target = "_blank"
+                                         )
+                                       ),
+                                       tags$li(
+                                         tags$a(
+                                           "Number of referrals into adult weight management and type 2 diabetes prevention and remission (combined)",
+                                           href = "https://publichealthscotland.scot/publications/outcomes-of-referrals-to-weight-management-and-type-2-diabetes-prevention-and-remission-services/",
+                                           target = "_blank"
+                                         )
+                                       )
+                                     )
+                                   )
+                                 ),
+                                 
                                  # only display this card when physical activity profile selected
                                  conditionalPanel(condition = "input.profile_choices == 'Physical Activity'",
                                                   br(),
