@@ -17,6 +17,18 @@ data_tab_modUI <- function(id) {
                        sidebar = sidebar(width = 300, padding = 20,
                                          open = list(mobile = "always-above"), # make contents of side collapse on mobiles above main content
                                          
+                                         #Complete dataset download
+                                         div(style = "display:flex; flex-wrap:wrap; align-items:center; gap:10px;",
+                                             bslib::tooltip(
+                                               trigger = tags$label(class = "control-label", 
+                                                        style = "font-weight:600; margin-bottom:0; margin-right:8px;",
+                                                        tagList("Download entire datasets",
+                                                                icon("info-circle"))),
+                                                        placement = "bottom", "The main dataset contains data on all indicators at various geography levels. The inequalities dataset is a smaller subset of indicators and geographies, split by SIMD quintiles and other measures of inequality."),
+                                             download_data_btns_ui(ns("download_main_data"), label = "Main data"),
+                                             download_data_btns_ui(ns("download_inequalities_data"), label = "Inequalities data")),
+
+                                         
                                          # clear filters button
                                          actionButton(ns("clear_table_filters"),
                                                       label = "Clear all filters",
