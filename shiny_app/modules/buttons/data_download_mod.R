@@ -30,7 +30,7 @@
 
 
 # temporary workaround 
-download_data_btns_ui <- function(id) {
+download_data_btns_ui <- function(id, label = "Download data") {
   ns <- NS(id) # namespace
   div(
     #class = "dropdown",
@@ -39,7 +39,7 @@ download_data_btns_ui <- function(id) {
       type = "button",
       `data-bs-toggle` = "dropdown",
       `aria-expanded` = "false",
-      icon("download"), " Download"
+      icon("download"), label
     ),
     div(
       class = "dropdown-menu",
@@ -52,11 +52,6 @@ download_data_btns_ui <- function(id) {
     )
   )
 }
-
-
-
-
-
 
 
 
