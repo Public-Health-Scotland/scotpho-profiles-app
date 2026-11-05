@@ -14,11 +14,17 @@ download_data_btns_ui <- function(id, size = "sm", label = "Download data") {
   ns <- NS(id) # namespace
   shinyWidgets::dropdownButton(
     label = label, icon = icon("download"), circle = FALSE, status = 'download', size = size,
-    shiny::downloadLink(ns("downloadCSV"), label = "as CSV"),
-    shiny::downloadLink(ns("downloadRDS"), label = "as RDS"),
-    shiny::downloadLink(ns("downloadJSON"), label = "as JSON"),
-    shiny::downloadLink(ns("downloadParquet"), label = "as Parquet")
+    
+    # shiny::downloadLink(ns("downloadCSV"), label = "as CSV"),
+    # shiny::downloadLink(ns("downloadRDS"), label = "as RDS"),
+    # shiny::downloadLink(ns("downloadJSON"), label = "as JSON"),
+    # shiny::downloadLink(ns("downloadParquet"), label = "as Parquet")
+    shiny::downloadButton(ns("downloadCSV"), label = "as CSV", class = "btn-link"),
+    shiny::downloadButton(ns("downloadRDS"), label = "as RDS", class = "btn-link"),
+    shiny::downloadButton(ns("downloadJSON"), label = "as JSON", class = "btn-link"),
+    shiny::downloadButton(ns("downloadParquet"), label = "as Parquet", class = "btn-link")
   )
+  
 }
 
 
@@ -34,27 +40,38 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
     
     dataset <- reactive({
       
-      # Convert data.table to data.frame
-      if ("data.table" %in% class(data())) {
-        data <- as.data.frame(data())
-      }
-      
-      
-      # Select (and rename columns) if selected_columns arg is in use
-      # otherwise download entire df
-      if(!is.null(selected_columns)){
-        data <- data |>
-          select(all_of(selected_columns))
+      df <- if (is.reactive(data)) {
+        data()
       } else {
-      data
+        data
       }
-    })
+      
+      # Convert data.table to data.frame
+      if ("data.table" %in% class(df)) {
+        df <- as.data.frame(df)
+      }
+      
+      #Select (and rename columns) if selected_columns arg is in use
+      # otherwise download entire df
+      if (!is.null(selected_columns)) {
+        df <- dplyr::select(df, all_of(selected_columns))
+      }
+      
+      df
+      })
     
     # download as csv
     output$downloadCSV <- downloadHandler(
-      filename = paste0(file_name, "_", Sys.Date(), ".csv"),
+      function() {
+        paste0(file_name, "_", Sys.Date(), ".csv")
+      },
       content = function(file) {
+
+        message("CSV handler entered")
+
         write.csv(as.data.frame(dataset()), file, row.names = FALSE)
+
+        message("CSV written")
       }
     )
     
@@ -73,7 +90,7 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
         jsonlite::write_json(as.list(dataset()), file)
       }
     )
-    
+
     # download as parquet
     output$downloadParquet <- downloadHandler(
       filename = paste0(file_name, "_", Sys.Date(), ".parquet"),
@@ -81,7 +98,6 @@ download_data_btns_server <- function(id, data, selected_columns = NULL, file_na
         nanoparquet::write_parquet(dataset(), file)
       }
     )
-    
     
   })
 }

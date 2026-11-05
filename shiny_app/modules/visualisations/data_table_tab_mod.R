@@ -25,8 +25,8 @@ data_tab_modUI <- function(id) {
                                                         tagList("Download entire datasets",
                                                                 icon("info-circle"))),
                                                         placement = "bottom", "The main dataset contains data on all indicators at various geography levels. The inequalities dataset is a smaller subset of indicators and geographies, split by SIMD quintiles and other measures of inequality."),
-                                             download_data_btns_ui(ns("download_main_data"), label = "Main data"),
-                                             download_data_btns_ui(ns("download_inequalities_data"), label = "Inequalities data")),
+                                             download_data_btns_ui(id = ns("download_main_data"), label = "Main data"),
+                                             download_data_btns_ui(id = ns("download_inequalities_data"), label = "Inequalities data")),
 
                                          
                                          # clear filters button
@@ -461,6 +461,11 @@ data_tab_mod_Server <- function(id) {
             # data table bulk download (note this is a module )
             # note: use filename argument once data downloads PR merged
             download_data_btns_server(id = "datatable_downloads", data = tableData, file_name="ScotPHO_datatab_extract")
+      
+            # complete dataset downloads
+            download_data_btns_server(id = "download_main_data", data = main_dataset, file_name = "ScotPHO_main_dataset")
+            download_data_btns_server(id = "download_inequalities_data", data = simd_dataset, file_name = "ScotPHO_inequalities_dataset")
+      
       
       
       
