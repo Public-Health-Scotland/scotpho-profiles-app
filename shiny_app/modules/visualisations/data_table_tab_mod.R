@@ -53,7 +53,7 @@ data_tab_modUI <- function(id) {
               selected = "Main Dataset" # default on main dataset
             ),
             helpText("Click the button below to download the entire selected dataset for all indicators, geography types and years."),
-            download_data_btns_ui(id = ns("download_entire_data"), label = "Download entire dataset")
+            download_data_btns_ui(id = ns("download_entire_data"), label = "Download entire dataset", include_csv = FALSE)
           )
           ),
         
