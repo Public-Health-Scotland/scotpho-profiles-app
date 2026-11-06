@@ -32,7 +32,7 @@
 
 
 # temporary workaround 
-download_data_btns_ui <- function(id, label = "Download data", include_csv = TRUE) {
+download_data_btns_ui <- function(id, label = "Download", include_csv = TRUE) {
   ns <- NS(id) # namespace
   div(
     #class = "dropdown",
