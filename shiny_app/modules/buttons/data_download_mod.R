@@ -10,6 +10,8 @@
 # UI function ----
 # id = unique id 
 # size = button size (can be 'sm', 'md' or 'lg')
+#label = text for the download button to display
+#include_csv = toggle option to include or exclude csv filetype. Excluded when downloading whole dataset as too large.
 
 # Note that shinyWidgets::dropdownButton() does not currently work with any download buttons/links
 # under the latest shiny package version (1.14.0). This issue has been raised in the shinyWidgets
@@ -30,7 +32,7 @@
 
 
 # temporary workaround 
-download_data_btns_ui <- function(id) {
+download_data_btns_ui <- function(id, label = "Download", include_csv = TRUE) {
   ns <- NS(id) # namespace
   div(
     #class = "dropdown",
@@ -39,24 +41,24 @@ download_data_btns_ui <- function(id) {
       type = "button",
       `data-bs-toggle` = "dropdown",
       `aria-expanded` = "false",
-      icon("download"), " Download"
+      icon("download"), label
     ),
     div(
       class = "dropdown-menu",
       # note new 'enabled' argument as of shiny version 1.14.0. The default is 'auto' but setting to 
       # enabled to ensure buttons are always enabled - required for this workaround version
-      shiny::downloadLink(ns("downloadCSV"), label = "as CSV", class = "dropdown-item", enabled = TRUE),
+      
+      #Include csv as a filetype unless otherwise specified. (In download data tab csv excluded as entire dataset too large)
+      if(include_csv){
+        shiny::downloadLink(ns("downloadCSV"), label = "as CSV", class = "dropdown-item", enabled = TRUE)},
+      
+      #All other formats included as standard
       shiny::downloadLink(ns("downloadRDS"), label = "as RDS", class = "dropdown-item", enabled = TRUE),
       shiny::downloadLink(ns("downloadJSON"), label = "as JSON", class = "dropdown-item", enabled = TRUE),
       shiny::downloadLink(ns("downloadParquet"), label = "as Parquet", class = "dropdown-item", enabled = TRUE)
     )
   )
 }
-
-
-
-
-
 
 
 

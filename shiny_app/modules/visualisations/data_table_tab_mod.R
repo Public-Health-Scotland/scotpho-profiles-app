@@ -51,9 +51,11 @@ data_tab_modUI <- function(id) {
               label = NULL,
               choices = c("Main Dataset","Inequalities Dataset"),
               selected = "Main Dataset" # default on main dataset
-            )
+            ),
+            helpText("Click the button below to download the entire selected dataset for all indicators, geography types and years."),
+            download_data_btns_ui(id = ns("download_entire_data"), label = "Download entire dataset", include_csv = FALSE)
           )
-        ),
+          ),
         
         # quintile type filter (hidden by default - only shown if inequalities dataset is selected)
         hidden(
@@ -481,7 +483,7 @@ data_tab_mod_Server <- function(id) {
                                  pageLength = 100,
                                  searching = FALSE,
                                  language = list(
-                                   zeroRecords = "Select atleast one geography to display results.")
+                                   zeroRecords = "Select at least one geography to display results.")
                   ))
 
 
@@ -495,6 +497,7 @@ data_tab_mod_Server <- function(id) {
 
             # data table bulk download 
             download_data_btns_server(id = "datatable_downloads", data = tableData, file_name="ScotPHO_datatab_extract")
+            download_data_btns_server(id = "download_entire_data", data = selectedData, file_name = paste0("ScotPHO_datatab_extract_", janitor::make_clean_names(input$dataset_selector)))
 
 
 
