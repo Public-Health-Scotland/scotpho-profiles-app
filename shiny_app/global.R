@@ -163,7 +163,7 @@ profiles_list <- list(
   # Health board monitoring profile
   "Health Board Monitoring" = list(
     short_name = "HBM",
-    homepage_description = markdown("Placeholder text"),
+    homepage_description = markdown("View indicators intended to help NHS Boards monitor progress against the priorities of the **Population Health Framework**."),
     domain_order = c("Overall", "Childhood", "Adulthood (pregnancy)", "Adulthood"),
     subtabs = all_subtabs,
     nav_id = "Profiles",
