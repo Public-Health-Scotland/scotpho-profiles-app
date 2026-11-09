@@ -82,7 +82,9 @@ prepare_techdoc <- function(filepath,
                                                            "DRG" = "Drugs",
                                                            "PHY" = "Physical Activity",
                                                            "POP" = "Population",
-                                                           "SHI" = "Health inequalities")))
+                                                           "SHI" = "Health inequalities",
+                                                           "HBM" = "Health Board Monitoring"
+                                                           )))
   
   
   
