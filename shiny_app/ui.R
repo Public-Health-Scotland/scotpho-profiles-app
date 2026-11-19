@@ -351,7 +351,11 @@ page_navbar(
                                         ),
                                         tags$li(
                                           "Number of people initiated on, and completed, treatment for HCV (unpublished and accessible within the PHS Bloodborne 
-                                           Virus and Sexually Transmitted Infections (BBVSTI) management information dashboard.)"
+                                           Virus and Sexually Transmitted Infections (BBVSTI) management information dashboard)",
+                                          tags$a(
+                                            href = "mailto:phs.bbvsti@phs.scot",
+                                            "Contact PHS BBV/STI team"
+                                          )
                                         )
                                       )
                                     )
